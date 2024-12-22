@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pet Exercise Log</title>
+</head>
+<body>
+    <h1>Pet Exercise Log</h1>
+    <form id="exerciseForm">
+        <label for="petName">Pet Name:</label>
+        <input type="text" id="petName" required><br><br>
+        <label for="exerciseType">Exercise Type:</label>
+        <input type="text" id="exerciseType" required><br><br>
+        <label for="exerciseDuration">Duration (minutes):</label>
+        <input type="number" id="exerciseDuration" required><br><br>
+        <button type="submit">Log Exercise</button>
+    </form>
+    <h2>Exercise Records</h2>
+    <ul id="exerciseList"></ul>
+
+    <script>
+        document.getElementById('exerciseForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const petName = document.getElementById('petName').value;
+            const exerciseType = document.getElementById('exerciseType').value;
+            const exerciseDuration = document.getElementById('exerciseDuration').value;
+            const exerciseData = { petName, exerciseType, exerciseDuration };
+
+            let exercises = localStorage.getItem('exercises');
+            exercises = exercises ? JSON.parse(exercises) : [];
+            exercises.push(exerciseData);
+            localStorage.setItem('exercises', JSON.stringify(exercises));
+
+            displayExercises();
+        });
+
+        function displayExercises() {
+            const exerciseList = document.getElementById('exerciseList');
+            exerciseList.innerHTML = '';
+            let exercises = localStorage.getItem('exercises');
+            exercises = exercises ? JSON.parse(exercises) : [];
+            exercises.forEach(exercise => {
+                const li = document.createElement('li');
+                li.textContent = `${exercise.petName} - ${exercise.exerciseType} for ${exercise.exerciseDuration} minutes`;
+                exerciseList.appendChild(li);
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', displayExercises);
+    </script>
+</body>
+</html>
