@@ -1,13 +1,8 @@
-let currentUser = null;  // To keep track of logged-in user
 let exerciseData = [];
 
-// Helper functions to manage login state
+// Check if logged in
 function isLoggedIn() {
     return localStorage.getItem('loggedIn') === 'true';
-}
-
-function getLoggedInUser() {
-    return JSON.parse(localStorage.getItem('currentUser'));
 }
 
 // Render Sign-In page
@@ -31,7 +26,6 @@ function showSignIn() {
         const user = JSON.parse(localStorage.getItem('users'))?.find(user => user.email === email && user.password === password);
         if (user) {
             localStorage.setItem('loggedIn', 'true');
-            localStorage.setItem('currentUser', JSON.stringify(user));
             showExerciseLog();
         } else {
             alert('Invalid credentials');
@@ -64,22 +58,14 @@ function showSignUp() {
             users.push({ email: newEmail, password: newPassword });
             localStorage.setItem('users', JSON.stringify(users));
             localStorage.setItem('loggedIn', 'true');
-            localStorage.setItem('currentUser', JSON.stringify({ email: newEmail }));
-            showSignIn();
+            showExerciseLog();
         }
     });
 }
 
 // Render Exercise Log page
 function showExerciseLog() {
-    if (!isLoggedIn()) {
-        showSignIn();
-        return;
-    }
-
     const content = document.getElementById('content');
-    currentUser = getLoggedInUser();
-
     content.innerHTML = `
         <h1>Exercise Log</h1>
         <form id="exerciseForm">
@@ -112,9 +98,10 @@ function showExerciseLog() {
         <h2>Exercise Goal Progress</h2>
         <div id="progressBar"></div>
         <div id="progressText">Progress: 0%</div>
-        <h2>Exercise Calendar</h2>
-        <div id="calendar"></div>
     `;
+
+    // Load existing exercise data
+    loadExerciseData();
 
     // Add event listener for form submission
     document.getElementById('exerciseForm').addEventListener('submit', function(event) {
@@ -126,7 +113,8 @@ function showExerciseLog() {
         const afterEnergy = document.getElementById('afterEnergy').value;
         const healthStatus = document.getElementById('healthStatus').value;
         const exerciseNotes = document.getElementById('exerciseNotes').value;
-        
+
+        // Create new exercise entry
         const exerciseEntry = {
             petName,
             exerciseType,
@@ -139,13 +127,15 @@ function showExerciseLog() {
         };
         exerciseData.push(exerciseEntry);
         localStorage.setItem('exerciseData', JSON.stringify(exerciseData));
-        displayExerciseHistory();
+        loadExerciseData();
     });
 
-    // Display exercise history
-    function displayExerciseHistory() {
+    // Display exercise records
+    function loadExerciseData() {
+        exerciseData = JSON.parse(localStorage.getItem('exerciseData')) || [];
         const exerciseList = document.getElementById('exerciseList');
         exerciseList.innerHTML = '';
+
         exerciseData.forEach(entry => {
             const li = document.createElement('li');
             li.innerHTML = `
@@ -156,67 +146,27 @@ function showExerciseLog() {
                 <br><span>Notes: ${entry.notes}</span>
                 <button class="delete">Delete</button>
             `;
-            li.querySelector('.delete').addEventListener('click', () => {
+            li.querySelector('.delete').addEventListener('click', function() {
                 const index = exerciseData.indexOf(entry);
                 if (index > -1) {
                     exerciseData.splice(index, 1);
                     localStorage.setItem('exerciseData', JSON.stringify(exerciseData));
-                    displayExerciseHistory();
+                    loadExerciseData();
                 }
             });
             exerciseList.appendChild(li);
         });
+
+        // Calculate progress (example: 150 minutes per month)
+        const goal = 150;
+        const totalDuration = exerciseData.reduce((sum, entry) => sum + entry.duration, 0);
+        const progress = (totalDuration / goal) * 100;
+        document.getElementById('progressBar').style.width = `${Math.min(progress, 100)}%`;
+        document.getElementById('progressText').textContent = `Progress: ${Math.min(progress, 100).toFixed(2)}%`;
     }
-
-    // Exercise Goal Progress
-    const progressData = JSON.parse(localStorage.getItem('exerciseData')) || [];
-    let totalDuration = progressData.reduce((acc, ex) => acc + ex.duration, 0);
-    const goal = 150; // Example: goal is 150 minutes per month
-    const progress = (totalDuration / goal) * 100;
-    document.getElementById('progressBar').style.width = `${progress}%`;
-    document.getElementById('progressText').textContent = `Progress: ${Math.min(progress, 100).toFixed(2)}%`;
-
-    // Display Exercise Calendar (Mockup)
-    displayCalendar();
 }
 
-// Display Calendar (mockup)
-function displayCalendar() {
-    const calendar = document.getElementById('calendar');
-    const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-    const now = new Date();
-    const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
-    const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-    
-    const totalDays = lastDay.getDate();
-    let dayOfWeek = firstDay.getDay();
-    let calendarHtml = '<div class="calendar-header">';
-    daysOfWeek.forEach(day => {
-        calendarHtml += `<div>${day}</div>`;
-    });
-    calendarHtml += '</div><div class="calendar-body">';
-
-    // Fill empty days before the first day of the month
-    for (let i = 0; i < dayOfWeek; i++) {
-        calendarHtml += '<div class="calendar-day empty"></div>';
-    }
-
-    // Fill in the actual days of the month
-    for (let i = 1; i <= totalDays; i++) {
-        const day = new Date(now.getFullYear(), now.getMonth(), i);
-        const isExerciseDay = exerciseData.some(entry => new Date(entry.date).toLocaleDateString() === day.toLocaleDateString());
-        calendarHtml += `
-            <div class="calendar-day ${isExerciseDay ? 'exercise-day' : ''}">
-                ${i}
-            </div>
-        `;
-    }
-
-    calendarHtml += '</div>';
-    calendar.innerHTML = calendarHtml;
-}
-
-// Initial call to check login status
+// Initial check
 if (isLoggedIn()) {
     showExerciseLog();
 } else {
