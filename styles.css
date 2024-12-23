@@ -1,0 +1,116 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+    color: #333;
+}
+
+h1 {
+    text-align: center;
+    margin-top: 20px;
+    color: #333;
+}
+
+form {
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #444;
+    border-radius: 5px;
+    max-width: 600px;
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    color: white;
+}
+
+input[type="text"],
+input[type="number"] {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+}
+
+button {
+    padding: 10px;
+    margin-top: 10px;
+    background-color: #FFA500; /* Orange */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #FF8C00; /* Darker Orange */
+}
+
+#exerciseList {
+    list-style-type: none;
+    padding: 0;
+}
+
+#exerciseList li {
+    padding: 10px;
+    background-color: #fff;
+    margin: 10px 0;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+}
+
+button {
+    padding: 5px 10px;
+    margin-left: 5px;
+}
+
+button:hover {
+    background-color: #333;
+}
+
+#calendar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    justify-content: center;
+}
+
+.calendar-day {
+    width: 30px;
+    height: 30px;
+    background-color: #e3e3e3;
+    text-align: center;
+    line-height: 30px;
+    cursor: pointer;
+    border-radius: 50%;
+}
+
+.calendar-day.selected {
+    background-color: #FFA500; /* Orange */
+}
+
+canvas {
+    max-width: 100%;
+    height: auto;
+}
+
+ul {
+    list-style-type: none;
+}
+
+ul li button {
+    background-color: #444;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    margin-right: 5px;
+}
+
+ul li button:hover {
+    background-color: #666;
+}
