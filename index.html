@@ -4,317 +4,39 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pet Exercise Log</title>
-    <style>
-        /* General Page Styles */
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #333;
-            color: white;
-            margin: 0;
-            padding: 0;
-        }
-
-        h1, h2 {
-            text-align: center;
-            margin-top: 20px;
-        }
-
-        /* Form Styles */
-        form {
-            margin: 20px auto;
-            padding: 20px;
-            background-color: #444;
-            border-radius: 5px;
-            max-width: 400px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 5px;
-        }
-
-        input[type="email"],
-        input[type="password"],
-        input[type="text"],
-        input[type="number"] {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 10px;
-            border-radius: 4px;
-            border: 1px solid #ccc;
-        }
-
-        button {
-            width: 100%;
-            padding: 10px;
-            background-color: #FFA500;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background-color: #ff8c00;
-        }
-
-        /* Exercise List Styles */
-        #exerciseList {
-            list-style-type: none;
-            padding: 0;
-        }
-
-        #exerciseList li {
-            padding: 10px;
-            background-color: #444;
-            margin: 10px 0;
-            border-radius: 4px;
-            border: 1px solid #ddd;
-        }
-
-        /* Calendar Styles */
-        #calendar {
-            margin: 20px auto;
-            width: 90%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .calendar-day {
-            width: 40px;
-            height: 40px;
-            background-color: #555;
-            margin: 3px;
-            display: inline-block;
-            text-align: center;
-            line-height: 40px;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-
-        .calendar-day.selected {
-            background-color: #FFA500;
-        }
-
-        /* Footer Styles */
-        footer {
-            text-align: center;
-            margin-top: 20px;
-            color: #aaa;
-        }
-
-        a {
-            color: #FFA500;
-        }
-    </style>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <h1>Pet Exercise Log</h1>
 
-    <!-- Sign Up Page -->
-    <div id="signUpPage">
-        <h1>Sign Up</h1>
-        <form id="signUpForm">
-            <label for="email">Email:</label>
-            <input type="email" id="email" required><br><br>
-            <label for="password">Password:</label>
-            <input type="password" id="password" required><br><br>
-            <button type="submit">Sign Up</button>
-        </form>
-        <footer>Already have an account? <a href="#" id="goToSignIn" style="color: #FFA500;">Sign In</a></footer>
-    </div>
+    <!-- Sign-Up / Sign-In Form (Optional) -->
+    <form id="exerciseForm">
+        <label for="petName">Pet Name:</label>
+        <input type="text" id="petName" required><br><br>
+        
+        <label for="petCharacteristics">Pet Characteristics (Breed, Age, Weight, Gender):</label>
+        <input type="text" id="petCharacteristics" placeholder="e.g. Golden Retriever, 5 years, 30kg, Male" required><br><br>
 
-    <!-- Sign In Page -->
-    <div id="signInPage" style="display: none;">
-        <h1>Sign In</h1>
-        <form id="signInForm">
-            <label for="email">Email:</label>
-            <input type="email" id="signInEmail" required><br><br>
-            <label for="password">Password:</label>
-            <input type="password" id="signInPassword" required><br><br>
-            <button type="submit">Sign In</button>
-        </form>
-        <footer>Don't have an account? <a href="#" id="goToSignUp" style="color: #FFA500;">Sign Up</a></footer>
-    </div>
+        <label for="exerciseType">Exercise Type:</label>
+        <input type="text" id="exerciseType" required><br><br>
 
-    <!-- Pet Exercise Log Page -->
-    <div id="exerciseLogPage" style="display: none;">
-        <h1>Pet Exercise Log</h1>
-        <form id="exerciseForm">
-            <label for="petName">Pet Name:</label>
-            <input type="text" id="petName" required><br><br>
-            <label for="exerciseType">Exercise Type:</label>
-            <input type="text" id="exerciseType" required><br><br>
-            <label for="exerciseDuration">Duration (minutes):</label>
-            <input type="number" id="exerciseDuration" required><br><br>
-            <button type="submit">Log Exercise</button>
-        </form>
-        <h2>Exercise Records</h2>
-        <ul id="exerciseList"></ul>
+        <label for="exerciseDuration">Duration (minutes):</label>
+        <input type="number" id="exerciseDuration" required><br><br>
 
-        <h2>Calendar for Exercise Tracking</h2>
-        <div id="calendar"></div>
+        <button type="submit">Log Exercise</button>
+    </form>
 
-        <h2>Exercise Graph</h2>
-        <canvas id="exerciseGraph" width="400" height="200"></canvas>
+    <h2>Exercise Records</h2>
+    <ul id="exerciseList"></ul>
 
-        <footer>Footer Content - Pet Exercise Log</footer>
-    </div>
+    <!-- Calendar Section -->
+    <h3>Exercise Calendar</h3>
+    <div id="calendar"></div>
+
+    <!-- Graph for Exercise Activity -->
+    <canvas id="exerciseGraph" width="400" height="200"></canvas>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-        // Switch between Sign Up and Sign In pages
-        document.getElementById('goToSignUp').addEventListener('click', function() {
-            document.getElementById('signInPage').style.display = 'none';
-            document.getElementById('signUpPage').style.display = 'block';
-        });
-
-        document.getElementById('goToSignIn').addEventListener('click', function() {
-            document.getElementById('signUpPage').style.display = 'none';
-            document.getElementById('signInPage').style.display = 'block';
-        });
-
-        // Sign-Up functionality
-        document.getElementById('signUpForm').addEventListener('submit', function(event) {
-            event.preventDefault();
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-
-            if (!email || !password) {
-                alert('Please fill in both fields');
-                return;
-            }
-
-            // Save credentials to localStorage
-            localStorage.setItem('userEmail', email);
-            localStorage.setItem('userPassword', password);
-
-            alert('Sign-up successful! You can now sign in.');
-            document.getElementById('signUpPage').style.display = 'none';
-            document.getElementById('signInPage').style.display = 'block';
-        });
-
-        // Sign-In functionality
-        document.getElementById('signInForm').addEventListener('submit', function(event) {
-            event.preventDefault();
-            const email = document.getElementById('signInEmail').value;
-            const password = document.getElementById('signInPassword').value;
-
-            const storedEmail = localStorage.getItem('userEmail');
-            const storedPassword = localStorage.getItem('userPassword');
-
-            if (email === storedEmail && password === storedPassword) {
-                alert('Sign-in successful!');
-                document.getElementById('signInPage').style.display = 'none';
-                document.getElementById('exerciseLogPage').style.display = 'block';
-                displayExercises();
-                generateCalendar();
-                generateGraph();
-            } else {
-                alert('Invalid credentials. Please try again.');
-            }
-        });
-
-        // Pet Exercise Log Functionality
-        document.getElementById('exerciseForm').addEventListener('submit', function(event) {
-            event.preventDefault();
-            const petName = document.getElementById('petName').value;
-            const exerciseType = document.getElementById('exerciseType').value;
-            const exerciseDuration = document.getElementById('exerciseDuration').value;
-
-            if (!petName || !exerciseType || exerciseDuration <= 0) {
-                alert('Please fill in all fields with valid data.');
-                return;
-            }
-
-            const timestamp = new Date().toISOString();
-            const exerciseData = { petName, exerciseType, exerciseDuration, timestamp };
-
-            let exercises = localStorage.getItem('exercises');
-            exercises = exercises ? JSON.parse(exercises) : [];
-            exercises.push(exerciseData);
-            localStorage.setItem('exercises', JSON.stringify(exercises));
-
-            document.getElementById('exerciseForm').reset();
-            displayExercises();
-        });
-
-        // Display saved exercises
-        function displayExercises() {
-            const exerciseList = document.getElementById('exerciseList');
-            exerciseList.innerHTML = '';
-            let exercises = localStorage.getItem('exercises');
-            exercises = exercises ? JSON.parse(exercises) : [];
-            exercises.forEach((exercise, index) => {
-                const li = document.createElement('li');
-                li.textContent = `${exercise.petName} - ${exercise.exerciseType} for ${exercise.exerciseDuration} minutes`;
-
-                const viewButton = document.createElement('button');
-                viewButton.textContent = 'View';
-                viewButton.addEventListener('click', function() {
-                    alert(`Pet Name: ${exercise.petName}\nExercise: ${exercise.exerciseType}\nDuration: ${exercise.exerciseDuration} minutes`);
-                });
-
-                const printButton = document.createElement('button');
-                printButton.textContent = 'Print';
-                printButton.addEventListener('click', function() {
-                    window.print();
-                });
-
-                li.appendChild(viewButton);
-                li.appendChild(printButton);
-                exerciseList.appendChild(li);
-            });
-        }
-
-        // Generate Calendar for Exercise Tracking
-        function generateCalendar() {
-            const calendar = document.getElementById('calendar');
-            calendar.innerHTML = '';
-            const daysInMonth = 30; // Simplified for demo purposes
-            for (let i = 1; i <= daysInMonth; i++) {
-                const dayDiv = document.createElement('div');
-                dayDiv.textContent = i;
-                dayDiv.className = 'calendar-day';
-                dayDiv.addEventListener('click', function() {
-                    dayDiv.classList.toggle('selected');
-                });
-                calendar.appendChild(dayDiv);
-            }
-        }
-
-        // Generate Graph for Exercise Data
-        function generateGraph() {
-            const ctx = document.getElementById('exerciseGraph').getContext('2d');
-            const exercises = localStorage.getItem('exercises');
-            const exerciseData = exercises ? JSON.parse(exercises) : [];
-            const exerciseCategories = ['Idle', 'Accepted', 'Active', 'Very Active'];
-            const exerciseDurations = exerciseCategories.map(() => 0);
-
-            exerciseData.forEach(exercise => {
-                if (exercise.exerciseDuration <= 10) {
-                    exerciseDurations[0] += exercise.exerciseDuration;
-                } else if (exercise.exerciseDuration <= 30) {
-                    exerciseDurations[1] += exercise.exerciseDuration;
-                } else if (exercise.exerciseDuration <= 60) {
-                    exerciseDurations[2] += exercise.exerciseDuration;
-                } else {
-                    exerciseDurations[3] += exercise.exerciseDuration;
-                }
-            });
-
-            const chart = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: exerciseCategories,
-                    datasets: [{
-                        label: 'Exercise Duration',
-                        data: exerciseDurations,
-                        backgroundColor: '#FFA500',
-                    }]
-                }
-            });
-        }
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
