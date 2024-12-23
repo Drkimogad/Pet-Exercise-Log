@@ -65,7 +65,7 @@ function showSignUp() {
             localStorage.setItem('users', JSON.stringify(users));
             localStorage.setItem('loggedIn', 'true');
             localStorage.setItem('currentUser', JSON.stringify({ email: newEmail }));
-            showExerciseLog();
+            showSignIn();
         }
     });
 }
@@ -97,6 +97,7 @@ function showExerciseLog() {
         <h2>Exercise Records</h2>
         <ul id="exerciseList"></ul>
 
+        <button id="addProfileBtn">Add Profile</button>
         <h2>Exercise Trend</h2>
         <canvas id="exerciseGraph" width="400" height="200"></canvas>
     `;
@@ -126,6 +127,11 @@ function showExerciseLog() {
 
     displayExercises();
     drawGraph();
+
+    // Add Profile button functionality
+    document.getElementById('addProfileBtn').addEventListener('click', function() {
+        alert('Add Profile functionality is not yet implemented.');
+    });
 }
 
 // Display exercise records
@@ -146,7 +152,7 @@ function displayExercises() {
         const printButton = document.createElement('button');
         printButton.textContent = 'Print';
         printButton.addEventListener('click', function() {
-            window.print();
+            printProfile(exercise);
         });
 
         const deleteButton = document.createElement('button');
@@ -165,47 +171,57 @@ function displayExercises() {
     });
 }
 
-// Draw the exercise trend graph (using Chart.js)
-function drawGraph() {
-    const ctx = document.getElementById('exerciseGraph').getContext('2d');
-    const exerciseCategories = ['Idle', 'Semi Active', 'Active', 'Over Exercised'];
-    const exerciseCounts = [0, 0, 0, 0];  // Idle, Semi Active, Active, Over Exercised
-
-    let exercises = JSON.parse(localStorage.getItem('exercises')) || [];
-    exercises.forEach(exercise => {
-        if (exercise.exerciseDuration < 15) {
-            exerciseCounts[0]++;
-        } else if (exercise.exerciseDuration <= 30) {
-            exerciseCounts[1]++;
-        } else if (exercise.exerciseDuration <= 45) {
-            exerciseCounts[2]++;
-        } else {
-            exerciseCounts[3]++;
+// Function to print the profile and graph
+function printProfile(exercise) {
+    const printWindow = window.open('', '', 'width=600,height=400');
+    printWindow.document.write(`
+        <h1>${exercise.petName}'s Profile</h1>
+        <p>Exercise Type: ${exercise.exerciseType}</p>
+        <p>Exercise Duration: ${exercise.exerciseDuration} minutes</p>
+        <p>Characteristics: ${exercise.characteristics}</p>
+        <canvas id="printGraph" width="400" height="200"></canvas>
+    `);
+    const printCtx = printWindow.document.getElementById('printGraph').getContext('2d');
+    const graphData = [exercise.exerciseDuration];  // Example data for the graph
+    new Chart(printCtx, {
+        type: 'line',
+        data: {
+            labels: ['Exercise'],
+            datasets: [{
+                label: 'Exercise Trend',
+                data: graphData,
+                backgroundColor: 'rgba(255, 105, 31, 0.2)',
+                borderColor: 'rgba(255, 105, 31, 1)',
+                borderWidth: 1
+            }]
         }
     });
+    printWindow.document.close();
+    printWindow.print();
+}
+
+// Draw the exercise graph (trend over time)
+function drawGraph() {
+    const ctx = document.getElementById('exerciseGraph').getContext('2d');
+    let exercises = JSON.parse(localStorage.getItem('exercises')) || [];
+    const data = exercises.map(ex => ex.exerciseDuration);
+    const labels = exercises.map(ex => new Date(ex.timestamp).toLocaleDateString());
 
     new Chart(ctx, {
         type: 'line',
         data: {
-            labels: exerciseCategories,
+            labels: labels,
             datasets: [{
-                label: 'Exercise Trend',
-                data: exerciseCounts,
-                backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                borderColor: 'rgba(255, 99, 132, 1)',
-                borderWidth: 1,
-                fill: true
+                label: 'Exercise Trend (minutes)',
+                data: data,
+                borderColor: '#FF6A13',
+                fill: false
             }]
-        },
-        options: {
-            scales: {
-                y: { beginAtZero: true }
-            }
         }
     });
 }
 
-// Start by checking login status
+// Initial load
 if (isLoggedIn()) {
     showExerciseLog();
 } else {
