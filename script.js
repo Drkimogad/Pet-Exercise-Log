@@ -1,157 +1,148 @@
-// Helper function to show different pages
-function showPage(page) {
-    document.getElementById('content').innerHTML = page;
-}
+let currentUser = null;  // To keep track of logged-in user
+let exerciseData = [];
 
-// Check if the user is logged in
+// Helper functions to manage login state
 function isLoggedIn() {
-    return localStorage.getItem('user') !== null;
+    return localStorage.getItem('loggedIn') === 'true';
 }
 
-// Sign-Up Page
-function showSignUp() {
-    const signUpPage = `
-        <h1>Sign Up</h1>
-        <form id="signUpForm">
-            <label for="signUpEmail">Email:</label>
-            <input type="email" id="signUpEmail" required><br><br>
-            <label for="signUpPassword">Password:</label>
-            <input type="password" id="signUpPassword" required><br><br>
-            <button type="submit">Sign Up</button>
-        </form>
-        <p>Already have an account? <a href="#" onclick="showSignIn()">Sign In</a></p>
-    `;
-    
-    showPage(signUpPage);
-    
-    document.getElementById('signUpForm').addEventListener('submit', function(event) {
-        event.preventDefault();
-        const email = document.getElementById('signUpEmail').value;
-        const password = document.getElementById('signUpPassword').value;
-        if (email && password) {
-            localStorage.setItem('user', JSON.stringify({ email, password }));
-            alert('Sign up successful!');
-            showExerciseLog();
-        } else {
-            alert('Please fill in all fields.');
-        }
-    });
+function getLoggedInUser() {
+    return JSON.parse(localStorage.getItem('currentUser'));
 }
 
-// Sign-In Page
+// Render Sign-In page
 function showSignIn() {
-    const signInPage = `
+    const content = document.getElementById('content');
+    content.innerHTML = `
         <h1>Sign In</h1>
         <form id="signInForm">
-            <label for="signInEmail">Email:</label>
-            <input type="email" id="signInEmail" required><br><br>
-            <label for="signInPassword">Password:</label>
-            <input type="password" id="signInPassword" required><br><br>
+            <label for="email">Email:</label>
+            <input type="email" id="email" required>
+            <label for="password">Password:</label>
+            <input type="password" id="password" required>
             <button type="submit">Sign In</button>
         </form>
         <p>Don't have an account? <a href="#" onclick="showSignUp()">Sign Up</a></p>
     `;
-    
-    showPage(signInPage);
-    
     document.getElementById('signInForm').addEventListener('submit', function(event) {
         event.preventDefault();
-        const email = document.getElementById('signInEmail').value;
-        const password = document.getElementById('signInPassword').value;
-        const user = JSON.parse(localStorage.getItem('user'));
-        if (user && user.email === email && user.password === password) {
-            alert('Sign in successful!');
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const user = JSON.parse(localStorage.getItem('users'))?.find(user => user.email === email && user.password === password);
+        if (user) {
+            localStorage.setItem('loggedIn', 'true');
+            localStorage.setItem('currentUser', JSON.stringify(user));
             showExerciseLog();
         } else {
-            alert('Invalid credentials, please try again.');
+            alert('Invalid credentials');
         }
     });
 }
 
-// Exercise Log Page (after sign-in)
+// Render Sign-Up page
+function showSignUp() {
+    const content = document.getElementById('content');
+    content.innerHTML = `
+        <h1>Sign Up</h1>
+        <form id="signUpForm">
+            <label for="newEmail">Email:</label>
+            <input type="email" id="newEmail" required>
+            <label for="newPassword">Password:</label>
+            <input type="password" id="newPassword" required>
+            <button type="submit">Sign Up</button>
+        </form>
+        <p>Already have an account? <a href="#" onclick="showSignIn()">Sign In</a></p>
+    `;
+    document.getElementById('signUpForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        const newEmail = document.getElementById('newEmail').value;
+        const newPassword = document.getElementById('newPassword').value;
+        const users = JSON.parse(localStorage.getItem('users')) || [];
+        if (users.find(user => user.email === newEmail)) {
+            alert('Email already exists');
+        } else {
+            users.push({ email: newEmail, password: newPassword });
+            localStorage.setItem('users', JSON.stringify(users));
+            localStorage.setItem('loggedIn', 'true');
+            localStorage.setItem('currentUser', JSON.stringify({ email: newEmail }));
+            showExerciseLog();
+        }
+    });
+}
+
+// Render Exercise Log page
 function showExerciseLog() {
     if (!isLoggedIn()) {
-        alert('Please sign in first.');
         showSignIn();
         return;
     }
-    
-    const exerciseLogPage = `
-        <h1>Pet Exercise Log</h1>
+
+    const content = document.getElementById('content');
+    currentUser = getLoggedInUser();
+
+    content.innerHTML = `
+        <h1>Exercise Log</h1>
         <form id="exerciseForm">
             <label for="petName">Pet Name:</label>
-            <input type="text" id="petName" required><br><br>
-
-            <label for="petCharacteristics">Pet Characteristics (Breed, Age, Weight, Gender):</label>
-            <input type="text" id="petCharacteristics" placeholder="e.g. Golden Retriever, 5 years, 30kg, Male" required><br><br>
-
+            <input type="text" id="petName" required>
             <label for="exerciseType">Exercise Type:</label>
-            <input type="text" id="exerciseType" required><br><br>
-
+            <input type="text" id="exerciseType" required>
             <label for="exerciseDuration">Duration (minutes):</label>
-            <input type="number" id="exerciseDuration" required><br><br>
-
+            <input type="text" id="exerciseDuration" required>
+            <label for="characteristics">Characteristics:</label>
+            <input type="text" id="characteristics" placeholder="Breed, Age, Weight, etc.">
             <button type="submit">Log Exercise</button>
         </form>
 
         <h2>Exercise Records</h2>
         <ul id="exerciseList"></ul>
 
-        <h3>Exercise Calendar</h3>
-        <div id="calendar"></div>
-
+        <h2>Exercise Trend</h2>
         <canvas id="exerciseGraph" width="400" height="200"></canvas>
     `;
-    
-    showPage(exerciseLogPage);
-    document.getElementById('exerciseForm').addEventListener('submit', handleExerciseForm);
+    document.getElementById('exerciseForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        const petName = document.getElementById('petName').value;
+        const exerciseType = document.getElementById('exerciseType').value;
+        const exerciseDuration = parseInt(document.getElementById('exerciseDuration').value);
+        const characteristics = document.getElementById('characteristics').value;
+        if (!petName || !exerciseType || isNaN(exerciseDuration)) {
+            alert('Please fill in all fields with valid data.');
+            return;
+        }
+        const timestamp = new Date().toISOString();
+        const exerciseDataEntry = { petName, exerciseType, exerciseDuration, characteristics, timestamp };
+        
+        // Save data to local storage
+        let exercises = JSON.parse(localStorage.getItem('exercises')) || [];
+        exercises.push(exerciseDataEntry);
+        localStorage.setItem('exercises', JSON.stringify(exercises));
+
+        // Reset form
+        document.getElementById('exerciseForm').reset();
+        displayExercises();
+        drawGraph();
+    });
+
     displayExercises();
-    generateCalendar();
-    generateGraph();
+    drawGraph();
 }
 
-// Handle form submission to log exercise
-function handleExerciseForm(event) {
-    event.preventDefault();
-    
-    const petName = document.getElementById('petName').value;
-    const petCharacteristics = document.getElementById('petCharacteristics').value;
-    const exerciseType = document.getElementById('exerciseType').value;
-    const exerciseDuration = document.getElementById('exerciseDuration').value;
-    
-    if (!petName || !petCharacteristics || !exerciseType || exerciseDuration <= 0) {
-        alert('Please fill in all fields with valid data.');
-        return;
-    }
-
-    const timestamp = new Date().toISOString();
-    const exerciseData = { petName, petCharacteristics, exerciseType, exerciseDuration, timestamp };
-    
-    let exercises = localStorage.getItem('exercises');
-    exercises = exercises ? JSON.parse(exercises) : [];
-    exercises.push(exerciseData);
-    localStorage.setItem('exercises', JSON.stringify(exercises));
-
-    document.getElementById('exerciseForm').reset();
-    displayExercises();
-}
-
-// Display Saved Exercises
+// Display exercise records
 function displayExercises() {
     const exerciseList = document.getElementById('exerciseList');
     exerciseList.innerHTML = '';
-    
-    let exercises = localStorage.getItem('exercises');
-    exercises = exercises ? JSON.parse(exercises) : [];
-    
+    let exercises = JSON.parse(localStorage.getItem('exercises')) || [];
     exercises.forEach((exercise, index) => {
         const li = document.createElement('li');
-        li.innerHTML = `${exercise.petName} - ${exercise.exerciseType} for ${exercise.exerciseDuration} minutes. (${exercise.petCharacteristics})`;
+        li.textContent = `${exercise.petName} - ${exercise.exerciseType} for ${exercise.exerciseDuration} minutes (${exercise.characteristics})`;
 
         const editButton = document.createElement('button');
         editButton.textContent = 'Edit';
-        // Edit button functionality here (optional)
-        
+        editButton.addEventListener('click', function() {
+            alert('Edit functionality is not implemented yet.');
+        });
+
         const printButton = document.createElement('button');
         printButton.textContent = 'Print';
         printButton.addEventListener('click', function() {
@@ -164,6 +155,7 @@ function displayExercises() {
             exercises.splice(index, 1);
             localStorage.setItem('exercises', JSON.stringify(exercises));
             displayExercises();
+            drawGraph();
         });
 
         li.appendChild(editButton);
@@ -173,32 +165,14 @@ function displayExercises() {
     });
 }
 
-// Generate Calendar for Exercise Tracking
-function generateCalendar() {
-    const calendar = document.getElementById('calendar');
-    calendar.innerHTML = '';
-    const daysInMonth = 30;
-    for (let i = 1; i <= daysInMonth; i++) {
-        const dayDiv = document.createElement('div');
-        dayDiv.textContent = i;
-        dayDiv.className = 'calendar-day';
-        dayDiv.addEventListener('click', function() {
-            dayDiv.classList.toggle('selected');
-        });
-        calendar.appendChild(dayDiv);
-    }
-}
-
-// Generate Graph for Exercise Data
-function generateGraph() {
+// Draw the exercise trend graph (using Chart.js)
+function drawGraph() {
     const ctx = document.getElementById('exerciseGraph').getContext('2d');
-    const exercises = localStorage.getItem('exercises');
-    const exerciseData = exercises ? JSON.parse(exercises) : [];
-    
     const exerciseCategories = ['Idle', 'Semi Active', 'Active', 'Over Exercised'];
     const exerciseCounts = [0, 0, 0, 0];  // Idle, Semi Active, Active, Over Exercised
-    
-    exerciseData.forEach(exercise => {
+
+    let exercises = JSON.parse(localStorage.getItem('exercises')) || [];
+    exercises.forEach(exercise => {
         if (exercise.exerciseDuration < 15) {
             exerciseCounts[0]++;
         } else if (exercise.exerciseDuration <= 30) {
@@ -211,28 +185,27 @@ function generateGraph() {
     });
 
     new Chart(ctx, {
-        type: 'bar',
+        type: 'line',
         data: {
             labels: exerciseCategories,
             datasets: [{
-                label: 'Exercise Activity',
+                label: 'Exercise Trend',
                 data: exerciseCounts,
                 backgroundColor: 'rgba(255, 99, 132, 0.2)',
                 borderColor: 'rgba(255, 99, 132, 1)',
-                borderWidth: 1
+                borderWidth: 1,
+                fill: true
             }]
         },
         options: {
             scales: {
-                y: {
-                    beginAtZero: true
-                }
+                y: { beginAtZero: true }
             }
         }
     });
 }
 
-// Initialize the application based on login status
+// Start by checking login status
 if (isLoggedIn()) {
     showExerciseLog();
 } else {
