@@ -177,6 +177,24 @@ function displayExercises() {
     });
 }
 
+// Function to edit an exercise entry
+function editExercise(index) {
+    let exercises = JSON.parse(localStorage.getItem('exercises')) || [];
+    const exercise = exercises[index];
+    
+    document.getElementById('petName').value = exercise.petName;
+    document.getElementById('exerciseType').value = exercise.exerciseType;
+    document.getElementById('exerciseDuration').value = exercise.exerciseDuration;
+    document.getElementById('characteristics').value = exercise.characteristics;
+
+    // Remove the entry from storage
+    exercises.splice(index, 1);
+    localStorage.setItem('exercises', JSON.stringify(exercises));
+
+    // Scroll to the form for editing
+    window.scrollTo(0, document.getElementById('exerciseForm').offsetTop);
+}
+
 // Function to print the profile and graph
 function printProfile(exercise) {
     const printWindow = window.open('', '', 'width=600,height=400');
@@ -185,28 +203,27 @@ function printProfile(exercise) {
         <p>Exercise Type: ${exercise.exerciseType}</p>
         <p>Exercise Duration: ${exercise.exerciseDuration} minutes</p>
         <p>Characteristics: ${exercise.characteristics}</p>
-        <canvas id="printGraph" width="400" height="200"></canvas>
     `);
-    const printCtx = printWindow.document.getElementById('printGraph').getContext('2d');
-    const graphData = [exercise.exerciseDuration];  // Example data for the graph
-    new Chart(printCtx, {
+
+    const ctx = printWindow.document.createElement('canvas').getContext('2d');
+    new Chart(ctx, {
         type: 'line',
         data: {
-            labels: ['Exercise'],
+            labels: ['1', '2', '3', '4'],
             datasets: [{
                 label: 'Exercise Trend',
-                data: graphData,
-                backgroundColor: 'rgba(255, 105, 31, 0.2)',
-                borderColor: 'rgba(255, 105, 31, 1)',
-                borderWidth: 1
+                data: [10, 20, 30, 40],
+                borderColor: '#FF6A13',
+                fill: false
             }]
         }
     });
+    printWindow.document.body.appendChild(ctx.canvas);
     printWindow.document.close();
     printWindow.print();
 }
 
-// Render exercise graph
+// Render the exercise trend graph
 function drawGraph() {
     const ctx = document.getElementById('exerciseGraph').getContext('2d');
     let exercises = JSON.parse(localStorage.getItem('exercises')) || [];
@@ -227,17 +244,20 @@ function drawGraph() {
     });
 }
 
-// Render exercise calendar
+// Render the exercise calendar
 function renderCalendar() {
     const calendar = document.getElementById('calendar');
     const exercises = JSON.parse(localStorage.getItem('exercises')) || [];
     const dates = exercises.map(ex => new Date(ex.timestamp).toLocaleDateString());
 
-    // Create a basic calendar interface (example)
-    calendar.innerHTML = `<p>Exercise log calendar is coming soon!</p>`;
+    let calendarHtml = `<table><tr>`;
+    for (let i = 1; i <= 31; i++) {
+        calendarHtml += `<td>${i}</td>`;
+    }
+    calendarHtml += `</tr></table>`;
+    calendar.innerHTML = calendarHtml;
 }
 
-// Load the page with user logged in or show sign-in
 if (isLoggedIn()) {
     showExerciseLog();
 } else {
