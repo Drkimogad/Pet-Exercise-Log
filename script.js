@@ -88,9 +88,9 @@ function showExerciseLog() {
             <label for="exerciseType">Exercise Type:</label>
             <input type="text" id="exerciseType" required>
             <label for="exerciseDuration">Duration (minutes):</label>
-            <input type="text" id="exerciseDuration" required>
-            <label for="characteristics">Characteristics:</label>
-            <input type="text" id="characteristics" placeholder="Breed, Age, Weight, etc.">
+            <input type="number" id="exerciseDuration" required>
+            <label for="characteristics">Characteristics (e.g., Breed, Age, Weight):</label>
+            <input type="text" id="characteristics">
             <button type="submit">Log Exercise</button>
         </form>
 
@@ -98,8 +98,12 @@ function showExerciseLog() {
         <ul id="exerciseList"></ul>
 
         <button id="addProfileBtn">Add Profile</button>
+
         <h2>Exercise Trend</h2>
         <canvas id="exerciseGraph" width="400" height="200"></canvas>
+
+        <h3>Exercise Calendar</h3>
+        <div id="calendar"></div>
     `;
     document.getElementById('exerciseForm').addEventListener('submit', function(event) {
         event.preventDefault();
@@ -132,6 +136,8 @@ function showExerciseLog() {
     document.getElementById('addProfileBtn').addEventListener('click', function() {
         alert('Add Profile functionality is not yet implemented.');
     });
+
+    renderCalendar();
 }
 
 // Display exercise records
@@ -146,7 +152,7 @@ function displayExercises() {
         const editButton = document.createElement('button');
         editButton.textContent = 'Edit';
         editButton.addEventListener('click', function() {
-            alert('Edit functionality is not implemented yet.');
+            editExercise(index);
         });
 
         const printButton = document.createElement('button');
@@ -200,7 +206,7 @@ function printProfile(exercise) {
     printWindow.print();
 }
 
-// Draw the exercise graph (trend over time)
+// Render exercise graph
 function drawGraph() {
     const ctx = document.getElementById('exerciseGraph').getContext('2d');
     let exercises = JSON.parse(localStorage.getItem('exercises')) || [];
@@ -221,7 +227,17 @@ function drawGraph() {
     });
 }
 
-// Initial load
+// Render exercise calendar
+function renderCalendar() {
+    const calendar = document.getElementById('calendar');
+    const exercises = JSON.parse(localStorage.getItem('exercises')) || [];
+    const dates = exercises.map(ex => new Date(ex.timestamp).toLocaleDateString());
+
+    // Create a basic calendar interface (example)
+    calendar.innerHTML = `<p>Exercise log calendar is coming soon!</p>`;
+}
+
+// Load the page with user logged in or show sign-in
 if (isLoggedIn()) {
     showExerciseLog();
 } else {
