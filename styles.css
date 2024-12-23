@@ -4,6 +4,10 @@ body {
     background-color: #f8f8f8;
     margin: 0;
     padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
 }
 
 h1, h2, h3, p {
@@ -19,7 +23,6 @@ form {
     margin: 20px;
     width: 80%;
     max-width: 500px;
-    margin: 0 auto;
 }
 
 label {
@@ -67,10 +70,6 @@ button {
     margin-right: 10px;
 }
 
-button:hover {
-    background-color: #4c51bf;
-}
-
 button.delete {
     background-color: #e53e3e;
 }
@@ -90,49 +89,4 @@ button.delete:hover {
 #progressText {
     margin-top: 10px;
     font-size: 1.2em;
-}
-
-/* Calendar Styles */
-.calendar-header {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 10px;
-    margin: 20px 0;
-    font-weight: bold;
-}
-
-.calendar-body {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 5px;
-}
-
-.calendar-day {
-    text-align: center;
-    padding: 10px;
-    background-color: #f7fafc;
-    border-radius: 4px;
-    cursor: pointer;
-}
-
-.calendar-day.exercise-day {
-    background-color: #48bb78;
-    color: white;
-}
-
-.calendar-day.empty {
-    background-color: #edf2f7;
-}
-
-/* Notifications */
-#notification {
-    position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    padding: 10px;
-    background-color: #48bb78;
-    color: white;
-    border-radius: 5px;
-    display: none;
 }
