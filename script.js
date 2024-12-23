@@ -89,146 +89,134 @@ function showExerciseLog() {
             <input type="text" id="exerciseType" required>
             <label for="exerciseDuration">Duration (minutes):</label>
             <input type="number" id="exerciseDuration" required>
-            <label for="characteristics">Characteristics (e.g., Breed, Age, Weight):</label>
-            <input type="text" id="characteristics">
+            <label for="beforeEnergy">Energy Level (Before Exercise):</label>
+            <select id="beforeEnergy">
+                <option value="Low">Low</option>
+                <option value="Medium">Medium</option>
+                <option value="High">High</option>
+            </select>
+            <label for="afterEnergy">Energy Level (After Exercise):</label>
+            <select id="afterEnergy">
+                <option value="Low">Low</option>
+                <option value="Medium">Medium</option>
+                <option value="High">High</option>
+            </select>
+            <label for="healthStatus">Health Status:</label>
+            <input type="text" id="healthStatus" placeholder="e.g., Joint issues, Age-related concerns">
+            <label for="exerciseNotes">Notes:</label>
+            <input type="text" id="exerciseNotes">
             <button type="submit">Log Exercise</button>
         </form>
         <h2>Exercise Records</h2>
         <ul id="exerciseList"></ul>
-        <h2>Exercise Trend</h2>
-        <canvas id="exerciseGraph" width="400" height="200"></canvas>
-        <h3>Exercise Calendar</h3>
+        <h2>Exercise Goal Progress</h2>
+        <div id="progressBar"></div>
+        <div id="progressText">Progress: 0%</div>
+        <h2>Exercise Calendar</h2>
         <div id="calendar"></div>
     `;
+
+    // Add event listener for form submission
     document.getElementById('exerciseForm').addEventListener('submit', function(event) {
         event.preventDefault();
         const petName = document.getElementById('petName').value;
         const exerciseType = document.getElementById('exerciseType').value;
         const exerciseDuration = parseInt(document.getElementById('exerciseDuration').value);
-        const characteristics = document.getElementById('characteristics').value;
-        if (!petName || !exerciseType || isNaN(exerciseDuration)) {
-            alert('Please fill in all fields with valid data.');
-            return;
-        }
-        const timestamp = new Date().toISOString();
-        const exerciseDataEntry = { petName, exerciseType, exerciseDuration, characteristics, timestamp };
+        const beforeEnergy = document.getElementById('beforeEnergy').value;
+        const afterEnergy = document.getElementById('afterEnergy').value;
+        const healthStatus = document.getElementById('healthStatus').value;
+        const exerciseNotes = document.getElementById('exerciseNotes').value;
         
-        // Save data to local storage
-        let exercises = JSON.parse(localStorage.getItem('exercises')) || [];
-        exercises.push(exerciseDataEntry);
-        localStorage.setItem('exercises', JSON.stringify(exercises));
-
-        // Reset form
-        document.getElementById('exerciseForm').reset();
-        displayExercises();
-        drawGraph();
+        const exerciseEntry = {
+            petName,
+            exerciseType,
+            duration: exerciseDuration,
+            beforeEnergy,
+            afterEnergy,
+            healthStatus,
+            notes: exerciseNotes,
+            date: new Date().toLocaleDateString()
+        };
+        exerciseData.push(exerciseEntry);
+        localStorage.setItem('exerciseData', JSON.stringify(exerciseData));
+        displayExerciseHistory();
     });
 
-    displayExercises();
-    drawGraph();
-    renderCalendar();
-}
-
-// Display exercise records
-function displayExercises() {
-    const exerciseList = document.getElementById('exerciseList');
-    exerciseList.innerHTML = '';
-    let exercises = JSON.parse(localStorage.getItem('exercises')) || [];
-    exercises.forEach((exercise, index) => {
-        const li = document.createElement('li');
-        li.textContent = `${exercise.petName} - ${exercise.exerciseType} for ${exercise.exerciseDuration} minutes (${exercise.characteristics})`;
-
-        const editButton = document.createElement('button');
-        editButton.textContent = 'Edit';
-        editButton.addEventListener('click', function() {
-            editExercise(index);
+    // Display exercise history
+    function displayExerciseHistory() {
+        const exerciseList = document.getElementById('exerciseList');
+        exerciseList.innerHTML = '';
+        exerciseData.forEach(entry => {
+            const li = document.createElement('li');
+            li.innerHTML = `
+                <strong>${entry.petName}</strong> (${entry.date}): 
+                ${entry.exerciseType} - ${entry.duration} min. 
+                <em>Energy before: ${entry.beforeEnergy}, after: ${entry.afterEnergy}</em> 
+                <br><span>Health Status: ${entry.healthStatus}</span>
+                <br><span>Notes: ${entry.notes}</span>
+                <button class="delete">Delete</button>
+            `;
+            li.querySelector('.delete').addEventListener('click', () => {
+                const index = exerciseData.indexOf(entry);
+                if (index > -1) {
+                    exerciseData.splice(index, 1);
+                    localStorage.setItem('exerciseData', JSON.stringify(exerciseData));
+                    displayExerciseHistory();
+                }
+            });
+            exerciseList.appendChild(li);
         });
-
-        const printButton = document.createElement('button');
-        printButton.textContent = 'Print';
-        printButton.addEventListener('click', function() {
-            printProfile(exercise);
-        });
-
-        const deleteButton = document.createElement('button');
-        deleteButton.textContent = 'Delete';
-        deleteButton.addEventListener('click', function() {
-            exercises.splice(index, 1);
-            localStorage.setItem('exercises', JSON.stringify(exercises));
-            displayExercises();
-            drawGraph();
-        });
-
-        li.appendChild(editButton);
-        li.appendChild(printButton);
-        li.appendChild(deleteButton);
-        exerciseList.appendChild(li);
-    });
-}
-
-// Function to print the profile and graph
-function printProfile(exercise) {
-    const printWindow = window.open('', '', 'width=600,height=400');
-    printWindow.document.write(`
-        <h1>${exercise.petName}'s Profile</h1>
-        <p>Exercise Type: ${exercise.exerciseType}</p>
-        <p>Exercise Duration: ${exercise.exerciseDuration} minutes</p>
-        <p>Characteristics: ${exercise.characteristics}</p>
-        <canvas id="printGraph" width="400" height="200"></canvas>
-    `);
-    const printCtx = printWindow.document.getElementById('printGraph').getContext('2d');
-    new Chart(printCtx, {
-        type: 'line',
-        data: {
-            labels: [new Date(exercise.timestamp).toLocaleDateString()],
-            datasets: [{
-                label: 'Exercise Duration (minutes)',
-                data: [exercise.exerciseDuration],
-                borderColor: 'rgba(75, 192, 192, 1)',
-                borderWidth: 1,
-                fill: false
-            }]
-        }
-    });
-    printWindow.document.close();
-    printWindow.print();
-}
-
-// Function to render the calendar
-function renderCalendar() {
-    const calendar = document.getElementById('calendar');
-    const exercises = JSON.parse(localStorage.getItem('exercises')) || [];
-    const dates = exercises.map(ex => new Date(ex.timestamp).toLocaleDateString());
-
-    const currentDate = new Date();
-    const daysInMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate();
-    const startDay = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1).getDay();
-    let calendarHTML = '<div class="calendar-header"><span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span></div><div class="calendar-body">';
-
-    for (let i = 0; i < startDay; i++) {
-        calendarHTML += '<div class="calendar-day empty"></div>';
     }
 
-    for (let day = 1; day <= daysInMonth; day++) {
-        const dateStr = new Date(currentDate.getFullYear(), currentDate.getMonth(), day).toLocaleDateString();
-        const isExerciseDay = dates.includes(dateStr);
-        calendarHTML += `
-            <div class="calendar-day ${isExerciseDay ? 'exercise-day' : ''}" onclick="showExerciseForDay('${dateStr}')">
-                ${day}
+    // Exercise Goal Progress
+    const progressData = JSON.parse(localStorage.getItem('exerciseData')) || [];
+    let totalDuration = progressData.reduce((acc, ex) => acc + ex.duration, 0);
+    const goal = 150; // Example: goal is 150 minutes per month
+    const progress = (totalDuration / goal) * 100;
+    document.getElementById('progressBar').style.width = `${progress}%`;
+    document.getElementById('progressText').textContent = `Progress: ${Math.min(progress, 100).toFixed(2)}%`;
+
+    // Display Exercise Calendar (Mockup)
+    displayCalendar();
+}
+
+// Display Calendar (mockup)
+function displayCalendar() {
+    const calendar = document.getElementById('calendar');
+    const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const now = new Date();
+    const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+    const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+    
+    const totalDays = lastDay.getDate();
+    let dayOfWeek = firstDay.getDay();
+    let calendarHtml = '<div class="calendar-header">';
+    daysOfWeek.forEach(day => {
+        calendarHtml += `<div>${day}</div>`;
+    });
+    calendarHtml += '</div><div class="calendar-body">';
+
+    // Fill empty days before the first day of the month
+    for (let i = 0; i < dayOfWeek; i++) {
+        calendarHtml += '<div class="calendar-day empty"></div>';
+    }
+
+    // Fill in the actual days of the month
+    for (let i = 1; i <= totalDays; i++) {
+        const day = new Date(now.getFullYear(), now.getMonth(), i);
+        const isExerciseDay = exerciseData.some(entry => new Date(entry.date).toLocaleDateString() === day.toLocaleDateString());
+        calendarHtml += `
+            <div class="calendar-day ${isExerciseDay ? 'exercise-day' : ''}">
+                ${i}
             </div>
         `;
     }
 
-    calendarHTML += '</div>';
-    calendar.innerHTML = calendarHTML;
+    calendarHtml += '</div>';
+    calendar.innerHTML = calendarHtml;
 }
 
-// Function to show exercises for a specific day
-function showExerciseForDay(date) {
-    alert(`Show exercises for ${date}`);
-}
-
-// Initialize the page
+// Initial call to check login status
 if (isLoggedIn()) {
     showExerciseLog();
 } else {
