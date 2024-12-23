@@ -4,6 +4,79 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pet Exercise Log</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        h1 {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        form {
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+            max-width: 400px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input[type="text"],
+        input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        #exerciseList {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        #exerciseList li {
+            padding: 10px;
+            background-color: #fff;
+            margin: 10px 0;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+
+        @media (max-width: 600px) {
+            form {
+                width: 90%;
+                padding: 15px;
+            }
+
+            button {
+                padding: 15px;
+            }
+        }
+    </style>
 </head>
 <body>
     <h1>Pet Exercise Log</h1>
@@ -25,13 +98,19 @@
             const petName = document.getElementById('petName').value;
             const exerciseType = document.getElementById('exerciseType').value;
             const exerciseDuration = document.getElementById('exerciseDuration').value;
-            const exerciseData = { petName, exerciseType, exerciseDuration };
+            if (!petName || !exerciseType || exerciseDuration <= 0) {
+                alert('Please fill in all fields with valid data.');
+                return;
+            }
+            const timestamp = new Date().toISOString();
+            const exerciseData = { petName, exerciseType, exerciseDuration, timestamp };
 
             let exercises = localStorage.getItem('exercises');
             exercises = exercises ? JSON.parse(exercises) : [];
             exercises.push(exerciseData);
             localStorage.setItem('exercises', JSON.stringify(exercises));
 
+            document.getElementById('exerciseForm').reset();
             displayExercises();
         });
 
@@ -40,9 +119,17 @@
             exerciseList.innerHTML = '';
             let exercises = localStorage.getItem('exercises');
             exercises = exercises ? JSON.parse(exercises) : [];
-            exercises.forEach(exercise => {
+            exercises.forEach((exercise, index) => {
                 const li = document.createElement('li');
                 li.textContent = `${exercise.petName} - ${exercise.exerciseType} for ${exercise.exerciseDuration} minutes`;
+                const deleteButton = document.createElement('button');
+                deleteButton.textContent = 'Delete';
+                deleteButton.addEventListener('click', function() {
+                    exercises.splice(index, 1);
+                    localStorage.setItem('exercises', JSON.stringify(exercises));
+                    displayExercises();
+                });
+                li.appendChild(deleteButton);
                 exerciseList.appendChild(li);
             });
         }
