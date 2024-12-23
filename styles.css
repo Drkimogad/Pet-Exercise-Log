@@ -1,106 +1,72 @@
 body {
     font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
     margin: 0;
     padding: 0;
-    background-color: #f4f4f4;
-    color: #333;
 }
 
-h1 {
+h1, h2 {
     text-align: center;
-    margin-top: 20px;
     color: #333;
 }
 
 form {
     margin: 20px auto;
     padding: 20px;
-    background-color: #444;
+    background-color: #fff;
     border-radius: 5px;
-    max-width: 600px;
-    display: flex;
-    flex-direction: column;
+    max-width: 400px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
 label {
     display: block;
-    margin-bottom: 5px;
-    color: white;
-}
-
-input[type="text"],
-input[type="number"] {
-    width: 100%;
-    padding: 8px;
     margin-bottom: 10px;
-    border-radius: 4px;
-    border: 1px solid #ccc;
+    color: #444;
 }
 
-button {
+input[type="text"], input[type="email"], input[type="password"], input[type="number"] {
+    width: 100%;
     padding: 10px;
-    margin-top: 10px;
-    background-color: #FFA500; /* Orange */
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-}
-
-button:hover {
-    background-color: #FF8C00; /* Darker Orange */
-}
-
-#exerciseList {
-    list-style-type: none;
-    padding: 0;
-}
-
-#exerciseList li {
-    padding: 10px;
-    background-color: #fff;
-    margin: 10px 0;
-    border-radius: 4px;
+    margin-bottom: 10px;
+    border-radius: 5px;
     border: 1px solid #ddd;
 }
 
 button {
-    padding: 5px 10px;
-    margin-left: 5px;
+    background-color: #FFA500;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px;
+    width: 100%;
+    cursor: pointer;
 }
 
 button:hover {
-    background-color: #333;
+    background-color: #FF8C00;
 }
 
-#calendar {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 5px;
-    justify-content: center;
+a {
+    color: #FF8C00;
+    text-decoration: none;
 }
 
-.calendar-day {
-    width: 30px;
-    height: 30px;
-    background-color: #e3e3e3;
-    text-align: center;
-    line-height: 30px;
-    cursor: pointer;
-    border-radius: 50%;
-}
-
-.calendar-day.selected {
-    background-color: #FFA500; /* Orange */
-}
-
-canvas {
-    max-width: 100%;
-    height: auto;
+a:hover {
+    text-decoration: underline;
 }
 
 ul {
+    padding: 0;
     list-style-type: none;
+}
+
+ul li {
+    padding: 15px;
+    background-color: #fff;
+    margin: 10px 0;
+    border: 1px solid #ddd;
+    border-radius: 5px;
 }
 
 ul li button {
@@ -113,4 +79,31 @@ ul li button {
 
 ul li button:hover {
     background-color: #666;
+}
+
+#calendar {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 10px;
+}
+
+.calendar-day {
+    width: 30px;
+    height: 30px;
+    display: inline-block;
+    background-color: #ddd;
+    text-align: center;
+    line-height: 30px;
+    border-radius: 5px;
+    margin: 2px;
+    cursor: pointer;
+}
+
+.calendar-day.selected {
+    background-color: #FFA500;
+}
+
+canvas {
+    display: block;
+    margin: 20px auto;
 }
