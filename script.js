@@ -23,7 +23,8 @@ function showSignIn() {
         event.preventDefault();
         const email = document.getElementById('email').value;
         const password = document.getElementById('password').value;
-        const user = JSON.parse(localStorage.getItem('users'))?.find(user => user.email === email && user.password === password);
+        const users = JSON.parse(localStorage.getItem('users')) || [];
+        const user = users.find(user => user.email === email && user.password === password);
         if (user) {
             localStorage.setItem('loggedIn', 'true');
             showExerciseLog();
@@ -96,7 +97,9 @@ function showExerciseLog() {
         <h2>Exercise Records</h2>
         <ul id="exerciseList"></ul>
         <h2>Exercise Goal Progress</h2>
-        <div id="progressBar"></div>
+        <div id="progressBarContainer">
+            <div id="progressBar"></div>
+        </div>
         <div id="progressText">Progress: 0%</div>
     `;
 
