@@ -93,15 +93,10 @@ function showExerciseLog() {
             <input type="text" id="characteristics">
             <button type="submit">Log Exercise</button>
         </form>
-
         <h2>Exercise Records</h2>
         <ul id="exerciseList"></ul>
-
-        <button id="addProfileBtn">Add Profile</button>
-
         <h2>Exercise Trend</h2>
         <canvas id="exerciseGraph" width="400" height="200"></canvas>
-
         <h3>Exercise Calendar</h3>
         <div id="calendar"></div>
     `;
@@ -131,12 +126,6 @@ function showExerciseLog() {
 
     displayExercises();
     drawGraph();
-
-    // Add Profile button functionality
-    document.getElementById('addProfileBtn').addEventListener('click', function() {
-        alert('Add Profile functionality is not yet implemented.');
-    });
-
     renderCalendar();
 }
 
@@ -177,24 +166,6 @@ function displayExercises() {
     });
 }
 
-// Function to edit an exercise entry
-function editExercise(index) {
-    let exercises = JSON.parse(localStorage.getItem('exercises')) || [];
-    const exercise = exercises[index];
-    
-    document.getElementById('petName').value = exercise.petName;
-    document.getElementById('exerciseType').value = exercise.exerciseType;
-    document.getElementById('exerciseDuration').value = exercise.exerciseDuration;
-    document.getElementById('characteristics').value = exercise.characteristics;
-
-    // Remove the entry from storage
-    exercises.splice(index, 1);
-    localStorage.setItem('exercises', JSON.stringify(exercises));
-
-    // Scroll to the form for editing
-    window.scrollTo(0, document.getElementById('exerciseForm').offsetTop);
-}
-
 // Function to print the profile and graph
 function printProfile(exercise) {
     const printWindow = window.open('', '', 'width=600,height=400');
@@ -203,61 +174,61 @@ function printProfile(exercise) {
         <p>Exercise Type: ${exercise.exerciseType}</p>
         <p>Exercise Duration: ${exercise.exerciseDuration} minutes</p>
         <p>Characteristics: ${exercise.characteristics}</p>
+        <canvas id="printGraph" width="400" height="200"></canvas>
     `);
-
-    const ctx = printWindow.document.createElement('canvas').getContext('2d');
-    new Chart(ctx, {
+    const printCtx = printWindow.document.getElementById('printGraph').getContext('2d');
+    new Chart(printCtx, {
         type: 'line',
         data: {
-            labels: ['1', '2', '3', '4'],
+            labels: [new Date(exercise.timestamp).toLocaleDateString()],
             datasets: [{
-                label: 'Exercise Trend',
-                data: [10, 20, 30, 40],
-                borderColor: '#FF6A13',
+                label: 'Exercise Duration (minutes)',
+                data: [exercise.exerciseDuration],
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1,
                 fill: false
             }]
         }
     });
-    printWindow.document.body.appendChild(ctx.canvas);
     printWindow.document.close();
     printWindow.print();
 }
 
-// Render the exercise trend graph
-function drawGraph() {
-    const ctx = document.getElementById('exerciseGraph').getContext('2d');
-    let exercises = JSON.parse(localStorage.getItem('exercises')) || [];
-    const data = exercises.map(ex => ex.exerciseDuration);
-    const labels = exercises.map(ex => new Date(ex.timestamp).toLocaleDateString());
-
-    new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: labels,
-            datasets: [{
-                label: 'Exercise Trend (minutes)',
-                data: data,
-                borderColor: '#FF6A13',
-                fill: false
-            }]
-        }
-    });
-}
-
-// Render the exercise calendar
+// Function to render the calendar
 function renderCalendar() {
     const calendar = document.getElementById('calendar');
     const exercises = JSON.parse(localStorage.getItem('exercises')) || [];
     const dates = exercises.map(ex => new Date(ex.timestamp).toLocaleDateString());
 
-    let calendarHtml = `<table><tr>`;
-    for (let i = 1; i <= 31; i++) {
-        calendarHtml += `<td>${i}</td>`;
+    const currentDate = new Date();
+    const daysInMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate();
+    const startDay = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1).getDay();
+    let calendarHTML = '<div class="calendar-header"><span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span></div><div class="calendar-body">';
+
+    for (let i = 0; i < startDay; i++) {
+        calendarHTML += '<div class="calendar-day empty"></div>';
     }
-    calendarHtml += `</tr></table>`;
-    calendar.innerHTML = calendarHtml;
+
+    for (let day = 1; day <= daysInMonth; day++) {
+        const dateStr = new Date(currentDate.getFullYear(), currentDate.getMonth(), day).toLocaleDateString();
+        const isExerciseDay = dates.includes(dateStr);
+        calendarHTML += `
+            <div class="calendar-day ${isExerciseDay ? 'exercise-day' : ''}" onclick="showExerciseForDay('${dateStr}')">
+                ${day}
+            </div>
+        `;
+    }
+
+    calendarHTML += '</div>';
+    calendar.innerHTML = calendarHTML;
 }
 
+// Function to show exercises for a specific day
+function showExerciseForDay(date) {
+    alert(`Show exercises for ${date}`);
+}
+
+// Initialize the page
 if (isLoggedIn()) {
     showExerciseLog();
 } else {
