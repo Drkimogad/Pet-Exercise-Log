@@ -1,109 +1,75 @@
 body {
     font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
     margin: 0;
     padding: 0;
+    background-color: #f4f4f4;
 }
 
 h1, h2 {
-    text-align: center;
     color: #333;
 }
 
-form {
-    margin: 20px auto;
-    padding: 20px;
-    background-color: #fff;
-    border-radius: 5px;
-    max-width: 400px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
-
-label {
-    display: block;
-    margin-bottom: 10px;
-    color: #444;
-}
-
-input[type="text"], input[type="email"], input[type="password"], input[type="number"] {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 10px;
-    border-radius: 5px;
-    border: 1px solid #ddd;
-}
-
 button {
-    background-color: #FFA500;
+    background-color: #FF6A13; /* Orange */
     color: white;
     border: none;
-    border-radius: 5px;
-    padding: 10px;
-    width: 100%;
+    padding: 10px 20px;
     cursor: pointer;
+    margin-right: 10px;
 }
 
 button:hover {
-    background-color: #FF8C00;
+    background-color: #D65A10; /* Darker orange */
 }
 
-a {
-    color: #FF8C00;
-    text-decoration: none;
+footer {
+    background-color: #333;
+    color: white;
+    text-align: center;
+    padding: 10px;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    font-size: 14px;
 }
 
-a:hover {
-    text-decoration: underline;
+footer p {
+    margin: 0;
+}
+
+#exerciseGraph {
+    margin-top: 20px;
+}
+
+form {
+    margin-bottom: 20px;
+}
+
+form label {
+    font-weight: bold;
+}
+
+form input {
+    padding: 8px;
+    margin: 5px;
+    width: 100%;
 }
 
 ul {
-    padding: 0;
     list-style-type: none;
+    padding: 0;
 }
 
 ul li {
-    padding: 15px;
-    background-color: #fff;
+    background: #fff;
     margin: 10px 0;
-    border: 1px solid #ddd;
+    padding: 10px;
     border-radius: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 ul li button {
-    background-color: #444;
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    margin-right: 5px;
-}
-
-ul li button:hover {
-    background-color: #666;
-}
-
-#calendar {
-    display: flex;
-    flex-wrap: wrap;
-    margin: 10px;
-}
-
-.calendar-day {
-    width: 30px;
-    height: 30px;
-    display: inline-block;
-    background-color: #ddd;
-    text-align: center;
-    line-height: 30px;
-    border-radius: 5px;
-    margin: 2px;
-    cursor: pointer;
-}
-
-.calendar-day.selected {
-    background-color: #FFA500;
-}
-
-canvas {
-    display: block;
-    margin: 20px auto;
+    margin-left: 10px;
 }
