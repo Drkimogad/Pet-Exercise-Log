@@ -1,14 +1,4 @@
-body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #f4f4f4;
-}
-
-h1, h2 {
-    color: #333;
-}
-
+/* Styles for buttons */
 button {
     background-color: #FF6A13; /* Orange */
     color: white;
@@ -22,6 +12,43 @@ button:hover {
     background-color: #D65A10; /* Darker orange */
 }
 
+/* Profile Edit Button */
+button.edit-btn {
+    background-color: #4CAF50;
+}
+
+button.edit-btn:hover {
+    background-color: #45a049;
+}
+
+/* Calendar Styling */
+#calendar {
+    margin-top: 20px;
+}
+
+#calendar table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#calendar td {
+    padding: 8px;
+    text-align: center;
+    border: 1px solid #ddd;
+}
+
+#calendar td:hover {
+    background-color: #f0f0f0;
+}
+
+/* Overall Styling */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+}
+
 footer {
     background-color: #333;
     color: white;
@@ -30,62 +57,8 @@ footer {
     position: fixed;
     bottom: 0;
     width: 100%;
-    font-size: 14px;
 }
 
 footer p {
     margin: 0;
-}
-
-form {
-    margin-bottom: 20px;
-}
-
-form label {
-    font-weight: bold;
-}
-
-form input {
-    padding: 8px;
-    margin: 5px;
-    width: 100%;
-}
-
-ul {
-    list-style-type: none;
-    padding: 0;
-}
-
-ul li {
-    background: #fff;
-    margin: 10px 0;
-    padding: 10px;
-    border-radius: 5px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-ul li button {
-    margin-left: 10px;
-}
-
-#exerciseGraph {
-    margin-top: 20px;
-}
-
-#addProfileBtn {
-    background-color: #4CAF50;
-    color: white;
-    padding: 10px;
-    margin-top: 20px;
-    cursor: pointer;
-}
-
-#addProfileBtn:hover {
-    background-color: #45a049;
-}
-
-#calendar {
-    margin-top: 20px;
 }
