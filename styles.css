@@ -37,10 +37,6 @@ footer p {
     margin: 0;
 }
 
-#exerciseGraph {
-    margin-top: 20px;
-}
-
 form {
     margin-bottom: 20px;
 }
@@ -72,4 +68,20 @@ ul li {
 
 ul li button {
     margin-left: 10px;
+}
+
+#exerciseGraph {
+    margin-top: 20px;
+}
+
+#addProfileBtn {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px;
+    margin-top: 20px;
+    cursor: pointer;
+}
+
+#addProfileBtn:hover {
+    background-color: #45a049;
 }
