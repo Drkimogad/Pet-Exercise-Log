@@ -1,64 +1,63 @@
-/* Styles for buttons */
+/* General input and label styling */
+label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+input {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
 button {
-    background-color: #FF6A13; /* Orange */
+    padding: 10px 15px;
+    background-color: #4CAF50;
     color: white;
     border: none;
-    padding: 10px 20px;
+    border-radius: 4px;
     cursor: pointer;
-    margin-right: 10px;
 }
 
 button:hover {
-    background-color: #D65A10; /* Darker orange */
-}
-
-/* Profile Edit Button */
-button.edit-btn {
-    background-color: #4CAF50;
-}
-
-button.edit-btn:hover {
     background-color: #45a049;
 }
 
-/* Calendar Styling */
-#calendar {
-    margin-top: 20px;
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
 }
 
-#calendar table {
-    width: 100%;
-    border-collapse: collapse;
+.calendar-body {
+    display: flex;
+    flex-wrap: wrap;
+    width: 210px; /* Adjust size as needed */
 }
 
-#calendar td {
-    padding: 8px;
-    text-align: center;
-    border: 1px solid #ddd;
+.calendar-day {
+    width: 30px;
+    height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 2px;
+    cursor: pointer;
 }
 
-#calendar td:hover {
+.calendar-day.empty {
     background-color: #f0f0f0;
 }
 
-/* Overall Styling */
-body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #f4f4f4;
+.calendar-day.exercise-day {
+    background-color: #8BC34A; /* Highlight days with exercise records */
 }
 
-footer {
-    background-color: #333;
-    color: white;
-    text-align: center;
-    padding: 10px;
-    position: fixed;
-    bottom: 0;
-    width: 100%;
+.calendar-day:hover {
+    background-color: #FFEB3B; /* Hover effect */
 }
 
-footer p {
-    margin: 0;
+h1, h2, h3 {
+    color: #4CAF50;
 }
