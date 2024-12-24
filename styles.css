@@ -57,3 +57,17 @@ button:hover {
 a {
     color: #4CAF50;
 }
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+}
+.calendar-day {
+    padding: 10px;
+    border: 1px solid #ccc;
+    text-align: center;
+    cursor: pointer;
+}
+.calendar-day.marked {
+    background-color: #add8e6;
+}
