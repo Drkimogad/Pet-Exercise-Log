@@ -1,16 +1,14 @@
-console.log("JavaScript loaded"); // Debug statement
+console.log("JavaScript loaded");
 
 let exerciseData = [];
 
 // Check if logged in
 function isLoggedIn() {
-    console.log("Checking if user is logged in"); // Debug statement
     return localStorage.getItem('loggedIn') === 'true';
 }
 
 // Render Sign-In page
 function showSignIn() {
-    console.log("Rendering Sign-In Page"); // Debug statement
     const content = document.getElementById('content');
     content.innerHTML = `
         <h1>Sign In</h1>
@@ -40,7 +38,6 @@ function showSignIn() {
 
 // Render Sign-Up page
 function showSignUp() {
-    console.log("Rendering Sign-Up Page"); // Debug statement
     const content = document.getElementById('content');
     content.innerHTML = `
         <h1>Sign Up</h1>
@@ -64,120 +61,127 @@ function showSignUp() {
             users.push({ email: newEmail, password: newPassword });
             localStorage.setItem('users', JSON.stringify(users));
             localStorage.setItem('loggedIn', 'true');
-            showExerciseLog();
+            showSignIn();
         }
     });
 }
 
 // Render Exercise Log page
 function showExerciseLog() {
-    console.log("Rendering Exercise Log Page"); // Debug statement
     const content = document.getElementById('content');
     content.innerHTML = `
-        <h1>Exercise Log</h1>
-        <form id="exerciseForm">
+        <h1>Create Pet Profile</h1>
+        <form id="profileForm">
             <label for="petName">Pet Name:</label>
             <input type="text" id="petName" required>
-            <label for="exerciseType">Exercise Type:</label>
-            <input type="text" id="exerciseType" required>
+            <label for="petImage">Pet Image:</label>
+            <input type="file" id="petImage" accept="image/*">
+            <button type="submit">Save Pet Profile</button>
+        </form>
+        
+        <h1>Exercise Log</h1>
+        <form id="exerciseForm">
             <label for="exerciseDuration">Duration (minutes):</label>
             <input type="number" id="exerciseDuration" required>
-            <label for="beforeEnergy">Energy Level (Before Exercise):</label>
-            <select id="beforeEnergy">
-                <option value="Low">Low</option>
-                <option value="Medium">Medium</option>
-                <option value="High">High</option>
-            </select>
-            <label for="afterEnergy">Energy Level (After Exercise):</label>
-            <select id="afterEnergy">
-                <option value="Low">Low</option>
-                <option value="Medium">Medium</option>
-                <option value="High">High</option>
-            </select>
-            <label for="healthStatus">Health Status:</label>
-            <input type="text" id="healthStatus" placeholder="e.g., Joint issues, Age-related concerns">
-            <label for="exerciseNotes">Notes:</label>
-            <input type="text" id="exerciseNotes">
             <button type="submit">Log Exercise</button>
         </form>
         <h2>Exercise Records</h2>
         <ul id="exerciseList"></ul>
-        <h2>Exercise Goal Progress</h2>
-        <div id="progressBarContainer">
-            <div id="progressBar"></div>
-        </div>
-        <div id="progressText">Progress: 0%</div>
+
+        <h1>Saved Pet Profiles</h1>
+        <div id="savedProfiles"></div>
     `;
 
-    // Load existing exercise data
-    loadExerciseData();
+    // Load saved pet profiles and display
+    loadSavedProfiles();
 
-    // Add event listener for form submission
-    document.getElementById('exerciseForm').addEventListener('submit', function(event) {
+    // Handle profile creation form
+    document.getElementById('profileForm').addEventListener('submit', function(event) {
         event.preventDefault();
         const petName = document.getElementById('petName').value;
-        const exerciseType = document.getElementById('exerciseType').value;
-        const exerciseDuration = parseInt(document.getElementById('exerciseDuration').value);
-        const beforeEnergy = document.getElementById('beforeEnergy').value;
-        const afterEnergy = document.getElementById('afterEnergy').value;
-        const healthStatus = document.getElementById('healthStatus').value;
-        const exerciseNotes = document.getElementById('exerciseNotes').value;
+        const petImage = document.getElementById('petImage').files[0];
+        const reader = new FileReader();
 
-        // Create new exercise entry
-        const exerciseEntry = {
-            petName,
-            exerciseType,
-            duration: exerciseDuration,
-            beforeEnergy,
-            afterEnergy,
-            healthStatus,
-            notes: exerciseNotes,
-            date: new Date().toLocaleDateString()
+        reader.onload = function(e) {
+            const newProfile = { petName, petImage: e.target.result };
+            let profiles = JSON.parse(localStorage.getItem('petProfiles')) || [];
+            profiles.push(newProfile);
+            localStorage.setItem('petProfiles', JSON.stringify(profiles));
+            loadSavedProfiles();
         };
+
+        if (petImage) {
+            reader.readAsDataURL(petImage);
+        }
+    });
+
+    // Handle exercise log form
+    document.getElementById('exerciseForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        const exerciseDuration = document.getElementById('exerciseDuration').value;
+        const exerciseEntry = { exerciseDuration, date: new Date().toLocaleDateString() };
         exerciseData.push(exerciseEntry);
         localStorage.setItem('exerciseData', JSON.stringify(exerciseData));
         loadExerciseData();
     });
 
     // Display exercise records
-    function loadExerciseData() {
-        console.log("Loading exercise data"); // Debug statement
-        exerciseData = JSON.parse(localStorage.getItem('exerciseData')) || [];
-        const exerciseList = document.getElementById('exerciseList');
-        exerciseList.innerHTML = '';
+    loadExerciseData();
+}
 
-        exerciseData.forEach(entry => {
-            const li = document.createElement('li');
-            li.innerHTML = `
-                <strong>${entry.petName}</strong> (${entry.date}): 
-                ${entry.exerciseType} - ${entry.duration} min. 
-                <em>Energy before: ${entry.beforeEnergy}, after: ${entry.afterEnergy}</em> 
-                <br><span>Health Status: ${entry.healthStatus}</span>
-                <br><span>Notes: ${entry.notes}</span>
-                <button class="delete">Delete</button>
-            `;
-            li.querySelector('.delete').addEventListener('click', function() {
-                const index = exerciseData.indexOf(entry);
-                if (index > -1) {
-                    exerciseData.splice(index, 1);
-                    localStorage.setItem('exerciseData', JSON.stringify(exerciseData));
-                    loadExerciseData();
-                }
-            });
-            exerciseList.appendChild(li);
-        });
+// Load saved pet profiles
+function loadSavedProfiles() {
+    const profiles = JSON.parse(localStorage.getItem('petProfiles')) || [];
+    const savedProfilesDiv = document.getElementById('savedProfiles');
+    savedProfilesDiv.innerHTML = '';
+    
+    profiles.forEach((profile, index) => {
+        const profileDiv = document.createElement('div');
+        profileDiv.innerHTML = `
+            <h3>${profile.petName}</h3>
+            <img src="${profile.petImage}" alt="Pet Image" width="100" height="100">
+            <button onclick="editProfile(${index})">Edit</button>
+            <button onclick="printProfile(${index})">Print</button>
+        `;
+        savedProfilesDiv.appendChild(profileDiv);
+    });
+}
 
-        // Calculate progress (example: 150 minutes per month)
-        const goal = 150;
-        const totalDuration = exerciseData.reduce((sum, entry) => sum + entry.duration, 0);
-        const progress = (totalDuration / goal) * 100;
-        document.getElementById('progressBar').style.width = `${Math.min(progress, 100)}%`;
-        document.getElementById('progressText').textContent = `Progress: ${Math.min(progress, 100).toFixed(2)}%`;
-    }
+// Load exercise data
+function loadExerciseData() {
+    exerciseData = JSON.parse(localStorage.getItem('exerciseData')) || [];
+    const exerciseList = document.getElementById('exerciseList');
+    exerciseList.innerHTML = '';
+    
+    exerciseData.forEach(entry => {
+        const li = document.createElement('li');
+        li.innerHTML = `
+            ${entry.date}: ${entry.exerciseDuration} minutes
+        `;
+        exerciseList.appendChild(li);
+    });
+}
+
+// Edit Profile
+function editProfile(index) {
+    const profiles = JSON.parse(localStorage.getItem('petProfiles')) || [];
+    const profile = profiles[index];
+    document.getElementById('petName').value = profile.petName;
+    document.getElementById('petImage').value = '';
+    localStorage.setItem('editingProfileIndex', index);
+}
+
+// Print Profile
+function printProfile(index) {
+    const profiles = JSON.parse(localStorage.getItem('petProfiles')) || [];
+    const profile = profiles[index];
+    const printWindow = window.open('', '', 'width=600,height=400');
+    printWindow.document.write(`<h1>${profile.petName}</h1>`);
+    printWindow.document.write(`<img src="${profile.petImage}" alt="Pet Image" width="100" height="100">`);
+    printWindow.document.write('<br><button onclick="window.print()">Print</button>');
 }
 
 // Initial check
-console.log("Initial login check"); // Debug statement
 if (isLoggedIn()) {
     showExerciseLog();
 } else {
