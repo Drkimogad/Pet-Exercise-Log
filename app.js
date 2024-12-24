@@ -36,7 +36,7 @@ function showSignIn() {
     });
 }
 
-// Render Exercise Log and Profile Management page
+// Render Exercise Log and Profile Management
 function showExerciseLog() {
     const content = document.getElementById('content');
     content.innerHTML = `
@@ -46,12 +46,12 @@ function showExerciseLog() {
             <input type="text" id="petName" required>
             <label for="petCharacteristics">Characteristics:</label>
             <textarea id="petCharacteristics" rows="3" placeholder="e.g., Active, Friendly"></textarea>
-            <label for="exerciseGoal">Exercise Goal (hrs and description):</label>
+            <label for="exerciseGoal">Exercise Goal:</label>
             <textarea id="exerciseGoal" rows="2" placeholder="e.g., 2 hours per day"></textarea>
             <label for="petImage">Pet Image:</label>
             <input type="file" id="petImage" accept="image/*">
             <h2>Exercise Calendar</h2>
-            <div id="calendar"></div>
+            <div id="calendar" class="calendar-grid"></div>
             <h2>Exercise Trend</h2>
             <canvas id="exerciseGraph" width="400" height="200"></canvas>
             <button type="submit">Save Pet Profile</button>
@@ -62,7 +62,9 @@ function showExerciseLog() {
     `;
 
     generateCalendar();
+    renderExerciseGraph();
     loadSavedProfiles();
+
     document.getElementById('profileForm').addEventListener('submit', handleProfileSave);
 }
 
@@ -77,6 +79,17 @@ function generateCalendar() {
         day.addEventListener('click', () => day.classList.toggle('marked'));
         calendarDiv.appendChild(day);
     }
+}
+
+// Render Exercise Graph Placeholder
+function renderExerciseGraph() {
+    const canvas = document.getElementById('exerciseGraph');
+    const ctx = canvas.getContext('2d');
+    ctx.beginPath();
+    ctx.moveTo(0, 100);
+    ctx.quadraticCurveTo(200, 50, 400, 100);
+    ctx.strokeStyle = "blue";
+    ctx.stroke();
 }
 
 // Save Pet Profile
@@ -122,11 +135,6 @@ function loadSavedProfiles() {
     });
 }
 
-// Edit Profile
-function editProfile(index) {
-    // Similar to the save functionality, pre-fill the form with profile data.
-}
-
 // Delete Profile
 function deleteProfile(index) {
     const profiles = JSON.parse(localStorage.getItem('petProfiles')) || [];
@@ -145,4 +153,11 @@ function printProfile(index) {
     printWindow.document.write(`<p>${profile.exerciseGoal}</p>`);
     printWindow.document.write(`<img src="${profile.petImage}" alt="Pet Image" width="100" height="100">`);
     printWindow.document.write('<br><button onclick="window.print()">Print</button>');
+}
+
+// Initial check
+if (isLoggedIn()) {
+    showExerciseLog();
+} else {
+    showSignIn();
 }
