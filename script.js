@@ -1,12 +1,16 @@
+console.log("JavaScript loaded"); // Debug statement
+
 let exerciseData = [];
 
 // Check if logged in
 function isLoggedIn() {
+    console.log("Checking if user is logged in"); // Debug statement
     return localStorage.getItem('loggedIn') === 'true';
 }
 
 // Render Sign-In page
 function showSignIn() {
+    console.log("Rendering Sign-In Page"); // Debug statement
     const content = document.getElementById('content');
     content.innerHTML = `
         <h1>Sign In</h1>
@@ -36,6 +40,7 @@ function showSignIn() {
 
 // Render Sign-Up page
 function showSignUp() {
+    console.log("Rendering Sign-Up Page"); // Debug statement
     const content = document.getElementById('content');
     content.innerHTML = `
         <h1>Sign Up</h1>
@@ -66,6 +71,7 @@ function showSignUp() {
 
 // Render Exercise Log page
 function showExerciseLog() {
+    console.log("Rendering Exercise Log Page"); // Debug statement
     const content = document.getElementById('content');
     content.innerHTML = `
         <h1>Exercise Log</h1>
@@ -135,6 +141,7 @@ function showExerciseLog() {
 
     // Display exercise records
     function loadExerciseData() {
+        console.log("Loading exercise data"); // Debug statement
         exerciseData = JSON.parse(localStorage.getItem('exerciseData')) || [];
         const exerciseList = document.getElementById('exerciseList');
         exerciseList.innerHTML = '';
@@ -170,6 +177,7 @@ function showExerciseLog() {
 }
 
 // Initial check
+console.log("Initial login check"); // Debug statement
 if (isLoggedIn()) {
     showExerciseLog();
 } else {
