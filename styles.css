@@ -32,7 +32,7 @@ label {
     font-weight: bold;
 }
 
-input[type="text"], input[type="email"], input[type="password"], input[type="number"], select {
+input[type="text"], input[type="email"], input[type="password"], input[type="number"], select, input[type="file"] {
     margin-top: 5px;
     padding: 10px;
     font-size: 16px;
@@ -43,63 +43,17 @@ input[type="text"], input[type="email"], input[type="password"], input[type="num
 button {
     margin-top: 20px;
     padding: 10px;
-    font-size: 16px;
-    background-color: #28a745;
-    color: #fff;
+    background-color: #4CAF50;
+    color: white;
     border: none;
     border-radius: 4px;
     cursor: pointer;
 }
 
 button:hover {
-    background-color: #218838;
+    background-color: #45a049;
 }
 
-ul {
-    list-style-type: none;
-    padding: 0;
-}
-
-li {
-    background-color: #f9f9f9;
-    margin-top: 10px;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    position: relative;
-}
-
-.delete {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background-color: #dc3545;
-    color: white;
-    border: none;
-    padding: 5px;
-    border-radius: 3px;
-    cursor: pointer;
-}
-
-.delete:hover {
-    background-color: #c82333;
-}
-
-#progressBarContainer {
-    width: 100%;
-    background-color: #e9ecef;
-    border-radius: 4px;
-    overflow: hidden;
-    margin-top: 20px;
-}
-
-#progressBar {
-    width: 0;
-    height: 20px;
-    background-color: #28a745;
-}
-
-#progressText {
-    margin-top: 10px;
-    font-weight: bold;
+a {
+    color: #4CAF50;
 }
