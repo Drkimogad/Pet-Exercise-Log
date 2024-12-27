@@ -19,7 +19,7 @@ function showSignIn() {
             <input type="password" id="password" required>
             <button type="submit">Sign In</button>
         </form>
-        <p>Don't have an account? <a href="#" onclick="showSignUp()">Sign Up</a></p>
+        <p>Don't have an account? <a href="#" onclick="showSignUp()">Sign Up</a></p> ensure it directs to sign in 
     `;
     document.getElementById('signInForm').addEventListener('submit', function(event) {
         event.preventDefault();
