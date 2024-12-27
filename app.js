@@ -1,5 +1,6 @@
 console.log("JavaScript loaded");
 
+// Initialize Exercise Data
 let exerciseData = [];
 
 // Check if logged in
@@ -19,7 +20,7 @@ function showSignIn() {
             <input type="password" id="password" required>
             <button type="submit">Sign In</button>
         </form>
-        <p>Don't have an account? <a href="#" onclick="showSignUp()">Sign Up</a></p> ensure it directs to sign in 
+        <p>Don't have an account? <a href="#" onclick="showSignUp()">Sign Up</a></p>
     `;
     document.getElementById('signInForm').addEventListener('submit', function(event) {
         event.preventDefault();
@@ -32,6 +33,38 @@ function showSignIn() {
             showExerciseLog();
         } else {
             alert('Invalid credentials');
+        }
+    });
+}
+
+// Render Sign-Up page
+function showSignUp() {
+    const content = document.getElementById('content');
+    content.innerHTML = `
+        <h1>Sign Up</h1>
+        <form id="signUpForm">
+            <label for="email">Email:</label>
+            <input type="email" id="signUpEmail" required>
+            <label for="password">Password:</label>
+            <input type="password" id="signUpPassword" required>
+            <button type="submit">Sign Up</button>
+        </form>
+        <p>Already have an account? <a href="#" onclick="showSignIn()">Sign In</a></p>
+    `;
+    document.getElementById('signUpForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        const email = document.getElementById('signUpEmail').value;
+        const password = document.getElementById('signUpPassword').value;
+        let users = JSON.parse(localStorage.getItem('users')) || [];
+        const userExists = users.some(user => user.email === email);
+
+        if (userExists) {
+            alert('User already exists. Please use a different email or sign in.');
+        } else {
+            users.push({ email, password });
+            localStorage.setItem('users', JSON.stringify(users));
+            alert('Sign-up successful! Redirecting to Sign-In page.');
+            showSignIn();
         }
     });
 }
