@@ -1,3 +1,4 @@
+/* General styling */
 body {
     font-family: Arial, sans-serif;
     background-color: #f0f0f0;
@@ -32,42 +33,86 @@ label {
     font-weight: bold;
 }
 
-input[type="text"], input[type="email"], input[type="password"], input[type="number"], select, input[type="file"] {
-    margin-top: 5px;
-    padding: 10px;
-    font-size: 16px;
-    border: 1px solid #ccc;
+input[type="text"], input[type="email"], input[type="password"], input[type="number"], select, textarea {
+    margin: 5px 0;
+    padding: 8px;
+    border: 1px solid #ddd;
     border-radius: 4px;
 }
 
 button {
-    margin-top: 20px;
     padding: 10px;
-    background-color: #4CAF50;
-    color: white;
+    background-color: #333;
+    color: #fff;
     border: none;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+button:hover {
+    background-color: #555;
+}
+
+/* Calendar Styling */
+.calendar-grid {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.calendar-row {
+    display: flex;
+    justify-content: space-around;
+}
+
+.calendar-day {
+    width: 40px;
+    height: 40px;
+    margin: 5px;
+    background-color: #f9f9f9;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     border-radius: 4px;
     cursor: pointer;
 }
 
-button:hover {
-    background-color: #45a049;
+.calendar-day.marked {
+    background-color: #8bc34a;
+    color: white;
+}
+
+.calendar-input {
+    margin-top: 5px;
+    width: 60%;
+    padding: 4px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+/* Footer Styling */
+footer {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 14px;
+    color: #777;
+}
+
+/* Sign-Up and Sign-In Pages */
+#signInForm, #signUpForm {
+    background-color: #f4f4f4;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
 }
 
 a {
-    color: #4CAF50;
+    color: #333;
+    text-decoration: none;
 }
-.calendar-grid {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 5px;
-}
-.calendar-day {
+
+footer {
+    color: #333;
+    background-color: #333;
+    color: white;
     padding: 10px;
-    border: 1px solid #ccc;
-    text-align: center;
-    cursor: pointer;
-}
-.calendar-day.marked {
-    background-color: #add8e6;
 }
