@@ -1,6 +1,5 @@
 console.log("JavaScript loaded");
 
-// Initialize Exercise Data
 let exerciseData = [];
 
 // Check if logged in
@@ -43,29 +42,23 @@ function showSignUp() {
     content.innerHTML = `
         <h1>Sign Up</h1>
         <form id="signUpForm">
-            <label for="email">Email:</label>
+            <label for="signUpEmail">Email:</label>
             <input type="email" id="signUpEmail" required>
-            <label for="password">Password:</label>
+            <label for="signUpPassword">Password:</label>
             <input type="password" id="signUpPassword" required>
             <button type="submit">Sign Up</button>
         </form>
-        <p>Already have an account? <a href="#" onclick="showSignIn()">Sign In</a></p>
+        <footer>&copy; 2024 Your Pet Tracker</footer>
     `;
     document.getElementById('signUpForm').addEventListener('submit', function(event) {
         event.preventDefault();
         const email = document.getElementById('signUpEmail').value;
         const password = document.getElementById('signUpPassword').value;
-        let users = JSON.parse(localStorage.getItem('users')) || [];
-        const userExists = users.some(user => user.email === email);
-
-        if (userExists) {
-            alert('User already exists. Please use a different email or sign in.');
-        } else {
-            users.push({ email, password });
-            localStorage.setItem('users', JSON.stringify(users));
-            alert('Sign-up successful! Redirecting to Sign-In page.');
-            showSignIn();
-        }
+        const users = JSON.parse(localStorage.getItem('users')) || [];
+        users.push({ email, password });
+        localStorage.setItem('users', JSON.stringify(users));
+        alert('Sign Up successful! Please sign in.');
+        showSignIn();
     });
 }
 
@@ -105,13 +98,22 @@ function showExerciseLog() {
 function generateCalendar() {
     const calendarDiv = document.getElementById('calendar');
     calendarDiv.innerHTML = '';
-    for (let i = 1; i <= 30; i++) {
+    const daysInMonth = 30; // Adjust for the number of days in the month
+    const calendarRow = document.createElement('div');
+    calendarRow.classList.add('calendar-row');
+    for (let i = 1; i <= daysInMonth; i++) {
         const day = document.createElement('div');
         day.textContent = i;
         day.classList.add('calendar-day');
+        const inputMinutes = document.createElement('input');
+        inputMinutes.type = 'number';
+        inputMinutes.placeholder = 'mins';
+        inputMinutes.classList.add('calendar-input');
+        day.appendChild(inputMinutes);
         day.addEventListener('click', () => day.classList.toggle('marked'));
-        calendarDiv.appendChild(day);
+        calendarRow.appendChild(day);
     }
+    calendarDiv.appendChild(calendarRow);
 }
 
 // Render Exercise Graph Placeholder
