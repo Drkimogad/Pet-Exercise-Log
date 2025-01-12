@@ -48,7 +48,6 @@ function showSignUp() {
             <input type="password" id="signUpPassword" required>
             <button type="submit">Sign Up</button>
         </form>
-        <footer>&copy; 2024 Your Pet Tracker</footer>
     `;
     document.getElementById('signUpForm').addEventListener('submit', function(event) {
         event.preventDefault();
@@ -76,21 +75,17 @@ function showExerciseLog() {
             <textarea id="exerciseGoal" rows="2" placeholder="e.g., 2 hours per day"></textarea>
             <label for="petImage">Pet Image:</label>
             <input type="file" id="petImage" accept="image/*">
-            
             <h2>Exercise Calendar</h2>
             <div id="calendar" class="calendar-grid"></div>
-            
             <h2>Exercise Trend</h2>
             <canvas id="exerciseGraph" width="400" height="200"></canvas>
-            
             <button type="submit">Save Pet Profile</button>
         </form>
         
         <h1>Saved Pet Profiles</h1>
         <div id="savedProfiles"></div>
-        <button id="logoutButton" onclick="logout()">Logout</button>
     `;
-
+    
     generateCalendar();
     renderExerciseGraph();
     loadSavedProfiles();
@@ -194,13 +189,15 @@ function printProfile(index) {
     printWindow.document.write('<br><button onclick="window.print()">Print</button>');
 }
 
-// Logout Functionality
-function logout() {
-    localStorage.removeItem('loggedIn');
+// Log Out
+function logOut() {
+    localStorage.setItem('loggedIn', 'false');
     showSignIn();
 }
 
 // Initial check
 if (isLoggedIn()) {
     showExerciseLog();
-} else 
+} else {
+    showSignIn();
+}
