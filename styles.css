@@ -1,154 +1,120 @@
-/* General Styling */
+/* General styling */
 body {
     font-family: Arial, sans-serif;
-    background-color: #f0f0f0;
     margin: 0;
     padding: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
+    background-color: transparent; /* Clear background */
+    color: #333;
 }
 
-/* Content Container */
-#content {
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    width: 75%; /* 75% of the screen width */
-    max-width: 800px; /* Max width to prevent it from being too large */
-    display: flex;
-    flex-direction: column; /* Align contents vertically */
-    gap: 20px; /* Space between sections */
-}
-
-/* Header & Footer Styling */
-header, footer {
-    background-color: #36454F; /* Charcoal */
+/* Header styling */
+header {
+    background-color: #36454F; /* Charcoal color */
     color: white;
-    padding: 10px;
+    padding: 1em;
     text-align: center;
 }
 
+/* Footer styling */
 footer {
-    margin-top: 20px;
-}
-
-/* Form Styling */
-form {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-label {
-    margin-top: 10px;
-    font-weight: bold;
+    background-color: #36454F; /* Charcoal color */
+    color: white;
+    padding: 1em;
+    text-align: center;
+    position: fixed;
     width: 100%;
+    bottom: 0;
 }
 
-input[type="text"], input[type="email"], input[type="password"], input[type="number"], select, textarea {
-    margin: 5px 0;
-    padding: 8px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    width: 100%; /* Form elements take up the full width */
-}
-
+/* Button styling */
 button {
-    padding: 10px;
-    background-color: #FFDB58; /* Mustard Orange */
-    color: #fff;
+    background-color: #FFDB58; /* Mustard orange */
+    color: white;
     border: none;
+    padding: 0.5em 1em;
+    border-radius: 5px;
     cursor: pointer;
-    border-radius: 4px;
-    width: 100%; /* Button takes up the full width */
-    margin-top: 20px;
+    font-size: 1em;
 }
 
 button:hover {
-    background-color: #e0b848; /* Slightly darker mustard */
+    background-color: #E5C148; /* Slightly darker mustard orange */
 }
 
-/* Calendar Styling */
+/* Form inputs */
+input, textarea {
+    width: 100%;
+    padding: 0.5em;
+    margin: 0.5em 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+/* Calendar styling */
 .calendar-grid {
     display: flex;
     flex-wrap: wrap;
-}
-
-.calendar-row {
-    display: flex;
-    justify-content: space-around;
+    gap: 5px;
+    margin: 1em 0;
 }
 
 .calendar-day {
-    width: 40px;
-    height: 40px;
-    margin: 5px;
-    background-color: #FFDB58; /* Mustard Orange */
     display: flex;
-    justify-content: center;
+    flex-direction: column;
     align-items: center;
-    border-radius: 4px;
-    cursor: pointer;
+    justify-content: center;
+    border: 1px solid #ccc;
+    padding: 0.5em;
+    width: 50px;
+    height: 50px;
+    text-align: center;
 }
 
 .calendar-day.marked {
-    background-color: #8bc34a;
+    background-color: #FFDB58; /* Mustard orange for marked days */
     color: white;
 }
 
 .calendar-input {
     margin-top: 5px;
-    width: 60%;
-    padding: 4px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
+    width: 80%;
+    padding: 0.25em;
 }
 
-/* Pet Profile Styles */
-h1, h2 {
-    color: #333;
+/* Profile card styling */
+#savedProfiles > div {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 1em;
+    margin: 1em 0;
+    background-color: #f9f9f9;
 }
 
-h1 {
-    text-align: center;
+#savedProfiles img {
+    display: block;
+    margin: 0.5em 0;
+    border-radius: 5px;
 }
 
-#profileForm {
-    width: 100%;
-}
-
-#profileForm input, #profileForm textarea {
-    width: 100%; /* Ensure all input fields are aligned */
-}
-
-/* Saved Profiles */
-#savedProfiles {
-    margin-top: 20px;
-}
-
-#savedProfiles div {
-    margin-bottom: 20px;
-}
-
-button.logout {
-    background-color: #FFDB58; /* Mustard Orange */
-    color: #fff;
-    border: none;
-    cursor: pointer;
-    border-radius: 4px;
-    width: 100%;
-    padding: 10px;
-}
-
-/* Links Styling */
+/* Links */
 a {
-    color: #333;
+    color: #FFDB58; /* Mustard orange */
     text-decoration: none;
 }
 
 a:hover {
     text-decoration: underline;
+}
+
+/* Responsive styling */
+@media (max-width: 600px) {
+    .calendar-day {
+        width: 40px;
+        height: 40px;
+    }
+
+    button {
+        font-size: 0.9em;
+        padding: 0.4em 0.8em;
+    }
 }
