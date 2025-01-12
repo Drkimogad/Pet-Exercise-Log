@@ -1,7 +1,7 @@
 /* General styling */
 body {
     font-family: Arial, sans-serif;
-    background-color: #f0f0f0;
+    background-color: #ffffff; /* White background */
     margin: 0;
     padding: 0;
     display: flex;
@@ -11,16 +11,16 @@ body {
 }
 
 #content {
-    background-color: #fff;
+    background-color: #ffffff; /* White background for the content block */
     padding: 20px;
     border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
     width: 100%;
     max-width: 600px;
 }
 
 h1, h2 {
-    color: #333;
+    color: #333333; /* Charcoal text color */
 }
 
 form {
@@ -31,26 +31,33 @@ form {
 label {
     margin-top: 10px;
     font-weight: bold;
+    color: #333333; /* Charcoal label color */
 }
 
-input[type="text"], input[type="email"], input[type="password"], input[type="number"], select, textarea {
+input[type="text"], 
+input[type="email"], 
+input[type="password"], 
+input[type="number"], 
+select, 
+textarea {
     margin: 5px 0;
     padding: 8px;
-    border: 1px solid #ddd;
+    border: 1px solid #cccccc; /* Light border for inputs */
     border-radius: 4px;
 }
 
 button {
     padding: 10px;
-    background-color: #FFDB58;
-    color: #fff;
+    background-color: #FFDB58; /* Mustard orange background */
+    color: #333333; /* Charcoal text */
     border: none;
     cursor: pointer;
     border-radius: 4px;
 }
 
 button:hover {
-    background-color: #FFDB58;
+    background-color: #FFC107; /* Brighter mustard orange for hover */
+    color: #ffffff; /* White text on hover */
 }
 
 /* Calendar Styling */
@@ -68,24 +75,25 @@ button:hover {
     width: 40px;
     height: 40px;
     margin: 5px;
-    background-color: #FFDB58;
+    background-color: #FFDB58; /* Mustard orange background */
     display: flex;
     justify-content: center;
     align-items: center;
     border-radius: 4px;
     cursor: pointer;
+    color: #333333; /* Charcoal text */
 }
 
 .calendar-day.marked {
-    background-color: #8bc34a;
-    color: white;
+    background-color: #36454F; /* Charcoal background for marked days */
+    color: #ffffff; /* White text for marked days */
 }
 
 .calendar-input {
     margin-top: 5px;
     width: 60%;
     padding: 4px;
-    border: 1px solid #ddd;
+    border: 1px solid #cccccc; /* Light border for inputs */
     border-radius: 4px;
 }
 
@@ -94,25 +102,25 @@ footer {
     text-align: center;
     margin-top: 20px;
     font-size: 14px;
-    color: #36454F;
+    color: #ffffff; /* White text */
+    background-color: #36454F; /* Charcoal background */
+    padding: 10px;
+    border-radius: 4px;
 }
 
 /* Sign-Up and Sign-In Pages */
 #signInForm, #signUpForm {
-    background-color: #36454F;
+    background-color: #36454F; /* Charcoal background */
     padding: 20px;
     border-radius: 8px;
-    box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
 }
 
 a {
-    color: #333;
+    color: #FFDB58; /* Mustard orange for links */
     text-decoration: none;
 }
 
-footer {
-    color: #333;
-    background-color: #36454F;
-    color: white;
-    padding: 10px;
+a:hover {
+    color: #FFC107; /* Brighter mustard orange on hover */
 }
