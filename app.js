@@ -84,6 +84,7 @@ function showExerciseLog() {
         
         <h1>Saved Pet Profiles</h1>
         <div id="savedProfiles"></div>
+        <button onclick="logOut()">Log Out</button>
     `;
     
     generateCalendar();
