@@ -18,6 +18,9 @@ body {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     width: 75%; /* 75% of the screen width */
     max-width: 800px; /* Max width to prevent it from being too large */
+    display: flex;
+    flex-direction: column; /* Align contents vertically */
+    gap: 20px; /* Space between sections */
 }
 
 /* Header & Footer Styling */
@@ -65,7 +68,7 @@ button {
 }
 
 button:hover {
-    background-color: #FFDB58;
+    background-color: #e0b848; /* Slightly darker mustard */
 }
 
 /* Calendar Styling */
