@@ -213,6 +213,10 @@ function showApp() {
         showNavigation();
     }
     handleRoute(location.hash.replace('#', '') || 'exercise-log');
+        if (route === 'exercise-log') {
+        showExerciseLog(); // Redirect to the create profile page.
+    } else {
+        handleRoute(route); // Handle other routes if necessary.
 }
 
 // Log Out
