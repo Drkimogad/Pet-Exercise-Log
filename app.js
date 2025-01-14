@@ -212,7 +212,11 @@ function showApp() {
     if (!document.querySelector('nav')) {
         showNavigation();
     }
+        if (!hasCompletedProfile()) {
+        showExerciseLog(); // Directs to profile creation
+    } else {
     handleRoute(location.hash.replace('#', '') || 'exercise-log');
+    }
 }
 
 // Log Out
