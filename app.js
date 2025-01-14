@@ -99,7 +99,35 @@ function showExerciseLog() {
 
     document.getElementById('profileForm').addEventListener('submit', handleProfileSave);
 }
+// Generate Exercise Calendar
+function generateCalendar() {
+    const calendarDiv = document.getElementById('calendar');
+    calendarDiv.innerHTML = '';
+    const daysInMonth = 30;
+    for (let i = 1; i <= daysInMonth; i++) {
+        const day = document.createElement('div');
+        day.textContent = i;
+        day.classList.add('calendar-day');
+        const inputMinutes = document.createElement('input');
+        inputMinutes.type = 'number';
+        inputMinutes.placeholder = 'mins';
+        inputMinutes.classList.add('calendar-input');
+        day.appendChild(inputMinutes);
+        day.addEventListener('click', () => day.classList.toggle('marked'));
+        calendarDiv.appendChild(day);
+    }
+}
 
+// Render Exercise Graph Placeholder
+function renderExerciseGraph() {
+    const canvas = document.getElementById('exerciseGraph');
+    const ctx = canvas.getContext('2d');
+    ctx.beginPath();
+    ctx.moveTo(0, 100);
+    ctx.quadraticCurveTo(200, 50, 400, 100);
+    ctx.strokeStyle = "blue";
+    ctx.stroke();
+}
 // Save Pet Profile
 function handleProfileSave(event) {
     event.preventDefault();
