@@ -45,7 +45,11 @@ function showSignIn() {
         const user = users.find(user => user.email === email && user.password === password);
         if (user) {
             localStorage.setItem('loggedIn', 'true');
+            if (!hasCompletedProfile()) {
+                showExerciseLog(); // Redirect to profile creation
+            } else {
             showApp();
+            }
         } else {
             alert('Invalid credentials');
         }
