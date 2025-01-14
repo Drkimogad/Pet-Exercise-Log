@@ -48,7 +48,7 @@ function showSignIn() {
             if (!hasCompletedProfile()) {
                 showExerciseLog(); // Redirect to profile creation
             } else {
-            showApp();
+                showApp(); // Redirect to main app
             }
         } else {
             alert('Invalid credentials');
