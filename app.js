@@ -7,6 +7,11 @@ function isLoggedIn() {
     return localStorage.getItem('loggedIn') === 'true';
 }
 
+// Check if profile is completed
+function hasCompletedProfile() {
+    return localStorage.getItem('profileCompleted') === 'true';
+}
+
 // Render Navigation Bar
 function showNavigation() {
     const nav = document.createElement('nav');
@@ -72,7 +77,7 @@ function showSignUp() {
     });
 }
 
-// Render Exercise Log
+// Render Exercise Log (Profile Creation)
 function showExerciseLog() {
     const content = document.getElementById('content');
     content.innerHTML = `
@@ -91,11 +96,10 @@ function showExerciseLog() {
             <canvas id="exerciseGraph" width="400" height="200"></canvas>
             <button type="submit">Save Pet Profile</button>
         </form>
-        
         <h1>Saved Pet Profiles</h1>
         <div id="savedProfiles"></div>
     `;
-    
+
     generateCalendar();
     renderExerciseGraph();
     loadSavedProfiles();
@@ -107,7 +111,7 @@ function showExerciseLog() {
 function generateCalendar() {
     const calendarDiv = document.getElementById('calendar');
     calendarDiv.innerHTML = '';
-    const daysInMonth = 30; // Adjust for the number of days in the month
+    const daysInMonth = 30;
     for (let i = 1; i <= daysInMonth; i++) {
         const day = document.createElement('div');
         day.textContent = i;
@@ -147,7 +151,10 @@ function handleProfileSave(event) {
         let profiles = JSON.parse(localStorage.getItem('petProfiles')) || [];
         profiles.push(newProfile);
         localStorage.setItem('petProfiles', JSON.stringify(profiles));
+        localStorage.setItem('profileCompleted', 'true'); // Mark as completed
         loadSavedProfiles();
+        alert('Profile saved successfully!');
+        handleRoute('exercise-log'); // Redirect to calendar after saving
     };
 
     if (petImage) {
@@ -168,9 +175,7 @@ function loadSavedProfiles() {
             <p>${profile.petCharacteristics}</p>
             <p>${profile.exerciseGoal}</p>
             <img src="${profile.petImage}" alt="Pet Image" width="100" height="100">
-            <button onclick="editProfile(${index})">Edit</button>
             <button onclick="deleteProfile(${index})">Delete</button>
-            <button onclick="printProfile(${index})">Print</button>
         `;
         savedProfilesDiv.appendChild(profileDiv);
     });
@@ -182,18 +187,6 @@ function deleteProfile(index) {
     profiles.splice(index, 1);
     localStorage.setItem('petProfiles', JSON.stringify(profiles));
     loadSavedProfiles();
-}
-
-// Print Profile
-function printProfile(index) {
-    const profiles = JSON.parse(localStorage.getItem('petProfiles')) || [];
-    const profile = profiles[index];
-    const printWindow = window.open('', '', 'width=600,height=400');
-    printWindow.document.write(`<h1>${profile.petName}</h1>`);
-    printWindow.document.write(`<p>${profile.petCharacteristics}</p>`);
-    printWindow.document.write(`<p>${profile.exerciseGoal}</p>`);
-    printWindow.document.write(`<img src="${profile.petImage}" alt="Pet Image" width="100" height="100">`);
-    printWindow.document.write('<br><button onclick="window.print()">Print</button>');
 }
 
 // Route Handling
@@ -212,17 +205,18 @@ function showApp() {
     if (!document.querySelector('nav')) {
         showNavigation();
     }
-        if (!hasCompletedProfile()) {
-        showExerciseLog(); // Directs to profile creation
+    if (!hasCompletedProfile()) {
+        showExerciseLog(); // Redirect to profile creation
     } else {
-    handleRoute(location.hash.replace('#', '') || 'exercise-log');
+        handleRoute(location.hash.replace('#', '') || 'exercise-log');
     }
 }
 
 // Log Out
 function logOut() {
     localStorage.setItem('loggedIn', 'false');
-    document.body.querySelector('nav')?.remove(); // Remove navigation bar
+    localStorage.setItem('profileCompleted', 'false');
+    document.body.querySelector('nav')?.remove();
     showSignIn();
 }
 
