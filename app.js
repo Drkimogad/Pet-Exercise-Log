@@ -39,14 +39,12 @@ function showSignIn() {
         const users = JSON.parse(localStorage.getItem('users')) || [];
         const user = users.find(user => user.email === email && user.password === password);
         if (user) {
-        localStorage.setItem('loggedIn', 'true');
-    // Explicitly show the profile creation page
-        location.hash = '#exercise-log'; // Force route to 'exercise-log' after login
-        showApp(); // Call the function to render the appropriate content
+            localStorage.setItem('loggedIn', 'true');
+            location.hash = '#profile-management'; // Force route to 'profile-management' after login (this will be profile creation)
+            showApp(); // Call the function to render the appropriate content
         } else {
-         alert('Invalid credentials');
+          alert('Invalid credentials');
         }
-
     });
 }
 
