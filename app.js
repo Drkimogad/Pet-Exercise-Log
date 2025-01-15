@@ -7,17 +7,6 @@ function isLoggedIn() {
     return localStorage.getItem('loggedIn') === 'true';
 }
 
-// Render Navigation Bar
-function showNavigation() {
-    const nav = document.createElement('nav');
-    nav.innerHTML = `
-        <a href="#exercise-log" onclick="handleRoute('exercise-log')">Exercise Log</a>
-        <a href="#profile-management" onclick="handleRoute('profile-management')">Profile Management</a>
-        <button onclick="logOut()">Log Out</button>
-    `;
-    document.body.insertBefore(nav, document.getElementById('content'));
-}
-
 // Render Sign-In page
 function showSignIn() {
     const content = document.getElementById('content');
@@ -32,7 +21,7 @@ function showSignIn() {
         </form>
         <p>Don't have an account? <a href="#" onclick="showSignUp()">Sign Up</a></p>
     `;
-    document.getElementById('signInForm').addEventListener('submit', function (event) {
+    document.getElementById('signInForm').addEventListener('submit', function(event) {
         event.preventDefault();
         const email = document.getElementById('email').value;
         const password = document.getElementById('password').value;
@@ -40,7 +29,7 @@ function showSignIn() {
         const user = users.find(user => user.email === email && user.password === password);
         if (user) {
             localStorage.setItem('loggedIn', 'true');
-            showApp();
+            showExerciseLog();
         } else {
             alert('Invalid credentials');
         }
@@ -59,8 +48,9 @@ function showSignUp() {
             <input type="password" id="signUpPassword" required>
             <button type="submit">Sign Up</button>
         </form>
+        <footer>&copy; 2024 Your Pet Tracker</footer>
     `;
-    document.getElementById('signUpForm').addEventListener('submit', function (event) {
+    document.getElementById('signUpForm').addEventListener('submit', function(event) {
         event.preventDefault();
         const email = document.getElementById('signUpEmail').value;
         const password = document.getElementById('signUpPassword').value;
@@ -72,7 +62,7 @@ function showSignUp() {
     });
 }
 
-// Render Exercise Log
+// Render Exercise Log and Profile Management
 function showExerciseLog() {
     const content = document.getElementById('content');
     content.innerHTML = `
@@ -86,6 +76,7 @@ function showExerciseLog() {
             <textarea id="exerciseGoal" rows="2" placeholder="e.g., 2 hours per day"></textarea>
             <label for="petImage">Pet Image:</label>
             <input type="file" id="petImage" accept="image/*">
+            <h2>Exercise Calendar</h2>
             <div id="calendar" class="calendar-grid"></div>
             <h2>Exercise Trend</h2>
             <canvas id="exerciseGraph" width="400" height="200"></canvas>
@@ -95,7 +86,7 @@ function showExerciseLog() {
         <h1>Saved Pet Profiles</h1>
         <div id="savedProfiles"></div>
     `;
-    
+
     generateCalendar();
     renderExerciseGraph();
     loadSavedProfiles();
@@ -108,6 +99,8 @@ function generateCalendar() {
     const calendarDiv = document.getElementById('calendar');
     calendarDiv.innerHTML = '';
     const daysInMonth = 30; // Adjust for the number of days in the month
+    const calendarRow = document.createElement('div');
+    calendarRow.classList.add('calendar-row');
     for (let i = 1; i <= daysInMonth; i++) {
         const day = document.createElement('div');
         day.textContent = i;
@@ -118,8 +111,9 @@ function generateCalendar() {
         inputMinutes.classList.add('calendar-input');
         day.appendChild(inputMinutes);
         day.addEventListener('click', () => day.classList.toggle('marked'));
-        calendarDiv.appendChild(day);
+        calendarRow.appendChild(day);
     }
+    calendarDiv.appendChild(calendarRow);
 }
 
 // Render Exercise Graph Placeholder
@@ -142,7 +136,7 @@ function handleProfileSave(event) {
     const petImage = document.getElementById('petImage').files[0];
     const reader = new FileReader();
 
-    reader.onload = function (e) {
+    reader.onload = function(e) {
         const newProfile = { petName, petCharacteristics, exerciseGoal, petImage: e.target.result };
         let profiles = JSON.parse(localStorage.getItem('petProfiles')) || [];
         profiles.push(newProfile);
@@ -196,35 +190,9 @@ function printProfile(index) {
     printWindow.document.write('<br><button onclick="window.print()">Print</button>');
 }
 
-// Route Handling
-function handleRoute(route) {
-    switch (route) {
-        case 'exercise-log':
-            showExerciseLog();
-            break;
-        default:
-            showSignIn();
-    }
-}
-
-// Main App Interface
-function showApp() {
-    if (!document.querySelector('nav')) {
-        showNavigation();
-    }
-    handleRoute(location.hash.replace('#', '') || 'exercise-log');
-}
-
-// Log Out
-function logOut() {
-    localStorage.setItem('loggedIn', 'false');
-    document.body.querySelector('nav')?.remove(); // Remove navigation bar
-    showSignIn();
-}
-
-// Initial Check
+// Initial check
 if (isLoggedIn()) {
-    showApp();
+    showExerciseLog();
 } else {
     showSignIn();
 }
