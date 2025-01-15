@@ -198,19 +198,27 @@ function printProfile(index) {
 function handleRoute(route) {
     switch (route) {
         case 'exercise-log':
-            showExerciseLog();
+            showExerciseLog(); // Show the exercise log
+            break;
+        case 'profile-management':
+            showExerciseLog(); // Show profile creation
             break;
         default:
-            showSignIn();
+            showSignIn(); // Default case: show sign in
     }
 }
 
 // Main App Interface
 function showApp() {
     if (!document.querySelector('nav')) {
-        showNavigation();
+        showNavigation();  // Show navigation bar
     }
-    handleRoute(location.hash.replace('#', '') || 'exercise-log');
+
+    if (location.hash === '' || location.hash === '#') {
+        location.hash = '#profile-management';  // Redirect to profile creation page upon successful login
+    }
+
+    handleRoute(location.hash.replace('#', '') || 'profile-management');  // Default to profile creation if hash is not set
 }
 
 // Log Out
