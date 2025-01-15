@@ -1,13 +1,10 @@
 console.log("JavaScript loaded");
 
+let exerciseData = [];
+
 // Check if logged in
 function isLoggedIn() {
     return localStorage.getItem('loggedIn') === 'true';
-}
-
-// Check if profile is completed
-function hasCompletedProfile() {
-    return localStorage.getItem('profileCompleted') === 'true';
 }
 
 // Render Navigation Bar
@@ -21,7 +18,7 @@ function showNavigation() {
     document.body.insertBefore(nav, document.getElementById('content'));
 }
 
-// Render Sign-In Page
+// Render Sign-In page
 function showSignIn() {
     const content = document.getElementById('content');
     content.innerHTML = `
@@ -40,7 +37,7 @@ function showSignIn() {
         const email = document.getElementById('email').value;
         const password = document.getElementById('password').value;
         const users = JSON.parse(localStorage.getItem('users')) || [];
-        const user = users.find(u => u.email === email && u.password === password);
+        const user = users.find(user => user.email === email && user.password === password);
         if (user) {
             localStorage.setItem('loggedIn', 'true');
             showApp();
@@ -50,7 +47,7 @@ function showSignIn() {
     });
 }
 
-// Render Sign-Up Page
+// Render Sign-Up page
 function showSignUp() {
     const content = document.getElementById('content');
     content.innerHTML = `
@@ -108,7 +105,7 @@ function showExerciseLog() {
 function generateCalendar() {
     const calendarDiv = document.getElementById('calendar');
     calendarDiv.innerHTML = '';
-    const daysInMonth = 30;
+    const daysInMonth = 30; // Adjust for the number of days in the month
     for (let i = 1; i <= daysInMonth; i++) {
         const day = document.createElement('div');
         day.textContent = i;
@@ -133,6 +130,7 @@ function renderExerciseGraph() {
     ctx.strokeStyle = "blue";
     ctx.stroke();
 }
+
 // Save Pet Profile
 function handleProfileSave(event) {
     event.preventDefault();
@@ -144,13 +142,10 @@ function handleProfileSave(event) {
 
     reader.onload = function (e) {
         const newProfile = { petName, petCharacteristics, exerciseGoal, petImage: e.target.result };
-        const profiles = JSON.parse(localStorage.getItem('petProfiles')) || [];
+        let profiles = JSON.parse(localStorage.getItem('petProfiles')) || [];
         profiles.push(newProfile);
         localStorage.setItem('petProfiles', JSON.stringify(profiles));
-        localStorage.setItem('profileCompleted', 'true');
-        alert('Profile saved successfully!');
         loadSavedProfiles();
-        handleRoute('exercise-log');
     };
 
     if (petImage) {
@@ -171,7 +166,9 @@ function loadSavedProfiles() {
             <p>${profile.petCharacteristics}</p>
             <p>${profile.exerciseGoal}</p>
             <img src="${profile.petImage}" alt="Pet Image" width="100" height="100">
+            <button onclick="editProfile(${index})">Edit</button>
             <button onclick="deleteProfile(${index})">Delete</button>
+            <button onclick="printProfile(${index})">Print</button>
         `;
         savedProfilesDiv.appendChild(profileDiv);
     });
@@ -183,6 +180,18 @@ function deleteProfile(index) {
     profiles.splice(index, 1);
     localStorage.setItem('petProfiles', JSON.stringify(profiles));
     loadSavedProfiles();
+}
+
+// Print Profile
+function printProfile(index) {
+    const profiles = JSON.parse(localStorage.getItem('petProfiles')) || [];
+    const profile = profiles[index];
+    const printWindow = window.open('', '', 'width=600,height=400');
+    printWindow.document.write(`<h1>${profile.petName}</h1>`);
+    printWindow.document.write(`<p>${profile.petCharacteristics}</p>`);
+    printWindow.document.write(`<p>${profile.exerciseGoal}</p>`);
+    printWindow.document.write(`<img src="${profile.petImage}" alt="Pet Image" width="100" height="100">`);
+    printWindow.document.write('<br><button onclick="window.print()">Print</button>');
 }
 
 // Route Handling
@@ -201,26 +210,19 @@ function showApp() {
     if (!document.querySelector('nav')) {
         showNavigation();
     }
-    if (!hasCompletedProfile()) {
-        showExerciseLog();
-    } else {
-        handleRoute(location.hash.replace('#', '') || 'exercise-log');
-    }
+    handleRoute(location.hash.replace('#', '') || 'exercise-log');
 }
 
 // Log Out
 function logOut() {
     localStorage.setItem('loggedIn', 'false');
-    localStorage.setItem('profileCompleted', 'false');
-    document.body.querySelector('nav')?.remove();
+    document.body.querySelector('nav')?.remove(); // Remove navigation bar
     showSignIn();
 }
 
-// Ensure DOM is loaded before initializing
-document.addEventListener('DOMContentLoaded', () => {
-    if (isLoggedIn()) {
-        showApp();
-    } else {
-        showSignIn();
-    }
-});
+// Initial Check
+if (isLoggedIn()) {
+    showApp();
+} else {
+    showSignIn();
+}
