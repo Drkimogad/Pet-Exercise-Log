@@ -195,17 +195,14 @@ function printProfile(index) {
     printWindow.document.write('<br><button onclick="window.print()">Print</button>');
 }
 
-// Route Handling
 function handleRoute(route) {
-    switch (route) {
-        case 'exercise-log':
-            showExerciseLog(); // Show the exercise log
-            break;
-        case 'profile-management':
-            showExerciseLog(); // Show profile creation
-            break;
-        default:
-            showSignIn(); // Default case: show sign in
+    if (route === 'exercise-log') {
+        showExerciseLog(); // This will show the exercise log section
+    } else if (route === 'profile-management') {
+        showProfileManagement(); // This will show the profile management section
+    } else {
+        // Default case, fallback route
+        showSignIn(); // Show the sign-in page as default
     }
 }
 
