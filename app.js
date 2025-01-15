@@ -98,15 +98,14 @@ function showExerciseLog() {
         <h2>Exercise Graph</h2>
         <canvas id="exerciseGraph" width="400" height="200"></canvas>
     `;
-
-    // Highlighted: Ensure calendar and graph render after DOM update
-    generateCalendar();
-    renderExerciseGraph();
+    generateCalendar(); // Ensure this is called after the DOM is updated
+    renderExerciseGraph(); // Initialize the chart
+}
     loadSavedProfiles();
+
     document.getElementById('profileForm').addEventListener('submit', handleProfileSave);
 }
-
-// Highlighted: Generate Exercise Calendar
+// Generate Exercise Calendar
 function generateCalendar() {
     const calendarDiv = document.getElementById('calendar');
     calendarDiv.innerHTML = '';
@@ -125,7 +124,7 @@ function generateCalendar() {
     }
 }
 
-// Highlighted: Render Exercise Graph
+// Render Exercise Graph Placeholder
 function renderExerciseGraph() {
     const canvas = document.getElementById('exerciseGraph');
     const ctx = canvas.getContext('2d');
@@ -135,8 +134,7 @@ function renderExerciseGraph() {
     ctx.strokeStyle = "blue";
     ctx.stroke();
 }
-
-// Highlighted: Save Pet Profile
+// Save Pet Profile
 function handleProfileSave(event) {
     event.preventDefault();
     const petName = document.getElementById('petName').value;
@@ -161,7 +159,7 @@ function handleProfileSave(event) {
     }
 }
 
-// Highlighted: Load Saved Pet Profiles
+// Load Saved Pet Profiles
 function loadSavedProfiles() {
     const profiles = JSON.parse(localStorage.getItem('petProfiles')) || [];
     const savedProfilesDiv = document.getElementById('savedProfiles');
