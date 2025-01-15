@@ -40,10 +40,9 @@ function showSignIn() {
         const user = users.find(user => user.email === email && user.password === password);
         if (user) {
             localStorage.setItem('loggedIn', 'true');
-            location.hash = '#profile-management'; // Force route to 'profile-management' after login (this will be profile creation)
-            showApp(); // Call the function to render the appropriate content
+            showApp();
         } else {
-          alert('Invalid credentials');
+            alert('Invalid credentials');
         }
     });
 }
@@ -73,7 +72,7 @@ function showSignUp() {
     });
 }
 
-// Render Exercise Log (Profile Creation)
+// Render Exercise Log
 function showExerciseLog() {
     const content = document.getElementById('content');
     content.innerHTML = `
@@ -87,19 +86,21 @@ function showExerciseLog() {
             <textarea id="exerciseGoal" rows="2" placeholder="e.g., 2 hours per day"></textarea>
             <label for="petImage">Pet Image:</label>
             <input type="file" id="petImage" accept="image/*">
+            <div id="calendar" class="calendar-grid"></div>
+            <h2>Exercise Trend</h2>
+            <canvas id="exerciseGraph" width="400" height="200"></canvas>
             <button type="submit">Save Pet Profile</button>
         </form>
+        
         <h1>Saved Pet Profiles</h1>
         <div id="savedProfiles"></div>
-        <h2>Exercise Calendar</h2>
-        <div id="calendar"></div>
-        <h2>Exercise Graph</h2>
-        <canvas id="exerciseGraph" width="400" height="200"></canvas>
     `;
-    generateCalendar(); // Ensure this is called after the DOM is updated
-    renderExerciseGraph(); // Initialize the chart
-    loadSavedProfiles(); // Ensure saved profiles are loaded
-    document.getElementById('profileForm').addEventListener('submit', handleProfileSave); // Add event listener for profile save
+    
+    generateCalendar();
+    renderExerciseGraph();
+    loadSavedProfiles();
+
+    document.getElementById('profileForm').addEventListener('submit', handleProfileSave);
 }
 
 // Generate Exercise Calendar
@@ -199,27 +200,23 @@ function printProfile(index) {
 function handleRoute(route) {
     switch (route) {
         case 'exercise-log':
-            showExerciseLog(); // Show the exercise log
-            break;
-        case 'profile-management':
-            showExerciseLog(); // Show profile creation
+            showExerciseLog();
             break;
         default:
-            showSignIn(); // Default case: show sign in
+            showSignIn();
     }
 }
 
 // Main App Interface
 function showApp() {
     if (!document.querySelector('nav')) {
-        showNavigation();  // Show navigation bar
+        showNavigation();
     }
-
-    if (location.hash === '' || location.hash === '#') {
-        location.hash = '#profile-management';  // Redirect to profile creation page upon successful login
+        if (!hasCompletedProfile()) {
+        showExerciseLog(); // Directs to profile creation
+    } else {
+    handleRoute(location.hash.replace('#', '') || 'exercise-log');
     }
-
-    handleRoute(location.hash.replace('#', '') || 'profile-management');  // Default to profile creation if hash is not set
 }
 
 // Log Out
