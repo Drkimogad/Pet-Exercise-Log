@@ -93,8 +93,14 @@ function showExerciseLog() {
         </form>
         <h1>Saved Pet Profiles</h1>
         <div id="savedProfiles"></div>
+       <h2>Exercise Calendar</h2>
+        <div id="calendar"></div>
+        <h2>Exercise Graph</h2>
+        <canvas id="exerciseGraph" width="400" height="200"></canvas>
     `;
-
+    generateCalendar(); // Ensure this is called after the DOM is updated
+    renderExerciseGraph(); // Initialize the chart
+}
     loadSavedProfiles();
 
     document.getElementById('profileForm').addEventListener('submit', handleProfileSave);
