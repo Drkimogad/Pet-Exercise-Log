@@ -147,6 +147,107 @@ function handleProfileSave(event) {
     if (petImage) {
         reader.readAsDataURL(petImage);
     }
+console.log("JavaScript loaded");
+
+let exerciseData = [];
+
+// Check if logged in
+function isLoggedIn() {
+    return localStorage.getItem('loggedIn') === 'true';
+}
+
+// Render Sign-In page
+function showSignIn() {
+    const content = document.getElementById('content');
+    content.innerHTML = `
+        <h1>Sign In</h1>
+        <form id="signInForm">
+            <label for="email">Email:</label>
+            <input type="email" id="email" required>
+            <label for="password">Password:</label>
+            <input type="password" id="password" required>
+            <button type="submit">Sign In</button>
+        </form>
+        <p>Don't have an account? <a href="#" onclick="showSignUp()">Sign Up</a></p>
+    `;
+    document.getElementById('signInForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const users = JSON.parse(localStorage.getItem('users')) || [];
+        const user = users.find(user => user.email === email && user.password === password);
+        if (user) {
+            localStorage.setItem('loggedIn', 'true');
+            showExerciseLog();
+        } else {
+            alert('Invalid credentials');
+        }
+    });
+}
+
+// Render Exercise Log and Profile Management page
+function showExerciseLog() {
+    const content = document.getElementById('content');
+    content.innerHTML = `
+        <h1>Create Pet Profile</h1>
+        <form id="profileForm">
+            <label for="petName">Pet Name:</label>
+            <input type="text" id="petName" required>
+            <label for="petCharacteristics">Characteristics:</label>
+            <textarea id="petCharacteristics" rows="3" placeholder="e.g., Active, Friendly"></textarea>
+            <label for="exerciseGoal">Exercise Goal (hrs and description):</label>
+            <textarea id="exerciseGoal" rows="2" placeholder="e.g., 2 hours per day"></textarea>
+            <label for="petImage">Pet Image:</label>
+            <input type="file" id="petImage" accept="image/*">
+            <h2>Exercise Calendar</h2>
+            <div id="calendar"></div>
+            <h2>Exercise Trend</h2>
+            <canvas id="exerciseGraph" width="400" height="200"></canvas>
+            <button type="submit">Save Pet Profile</button>
+        </form>
+        
+        <h1>Saved Pet Profiles</h1>
+        <div id="savedProfiles"></div>
+    `;
+
+    generateCalendar();
+    loadSavedProfiles();
+    document.getElementById('profileForm').addEventListener('submit', handleProfileSave);
+}
+
+// Generate Exercise Calendar
+function generateCalendar() {
+    const calendarDiv = document.getElementById('calendar');
+    calendarDiv.innerHTML = '';
+    for (let i = 1; i <= 30; i++) {
+        const day = document.createElement('div');
+        day.textContent = i;
+        day.classList.add('calendar-day');
+        day.addEventListener('click', () => day.classList.toggle('marked'));
+        calendarDiv.appendChild(day);
+    }
+}
+
+// Save Pet Profile
+function handleProfileSave(event) {
+    event.preventDefault();
+    const petName = document.getElementById('petName').value;
+    const petCharacteristics = document.getElementById('petCharacteristics').value;
+    const exerciseGoal = document.getElementById('exerciseGoal').value;
+    const petImage = document.getElementById('petImage').files[0];
+    const reader = new FileReader();
+
+    reader.onload = function(e) {
+        const newProfile = { petName, petCharacteristics, exerciseGoal, petImage: e.target.result };
+        let profiles = JSON.parse(localStorage.getItem('petProfiles')) || [];
+        profiles.push(newProfile);
+        localStorage.setItem('petProfiles', JSON.stringify(profiles));
+        loadSavedProfiles();
+    };
+
+    if (petImage) {
+        reader.readAsDataURL(petImage);
+    }
 }
 
 // Load Saved Pet Profiles
@@ -168,6 +269,11 @@ function loadSavedProfiles() {
         `;
         savedProfilesDiv.appendChild(profileDiv);
     });
+}
+
+// Edit Profile
+function editProfile(index) {
+    // Similar to the save functionality, pre-fill the form with profile data.
 }
 
 // Delete Profile
