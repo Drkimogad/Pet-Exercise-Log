@@ -21,10 +21,10 @@ function showSignUp() {
         </form>
         <p>Already have an account? <a href="#" onclick="showSignIn()">Sign In</a></p>
     `;
-    
+
     showPage(signUpPage);
-    
-    document.getElementById('signUpForm').addEventListener('submit', function(event) {
+
+    document.getElementById('signUpForm').addEventListener('submit', function (event) {
         event.preventDefault();
         const email = document.getElementById('signUpEmail').value;
         const password = document.getElementById('signUpPassword').value;
@@ -41,6 +41,44 @@ function showSignUp() {
 
 // Sign-In Page
 function showSignIn() {
+    const signInPage = `
+        <h1>Sign In</h1>
+        <form id="signInForm">
+            <label for="signInEmail">Email:</label>
+            <input type="email" id="signInEmail" required><br><br>
+            <label for="signInPassword">Password:</label>
+            <input type="password" id="signInPassword" required><br><br>
+            <button type="submit">Sign In</button>
+        </form>
+        <p>Don't have an account? <a href="#" onclick="showSignUp()">Sign Up</a></p>
+    `;
+
+    showPage(signInPage);
+
+    document.getElementById('signInForm').addEventListener('submit', function (event) {
+        event.preventDefault();
+        const email = document.getElementById('signInEmail').value;
+        const password = document.getElementById('signInPassword').value;
+        const user = JSON.parse(localStorage.getItem('user'));
+
+        if (user && user.email === email && user.password === password) {
+            alert('Sign in successful!');
+            showExerciseLog(); // Redirect to profile creation page
+        } else {
+            alert('Invalid credentials, please try again.');
+        }
+    });
+}
+
+// Exercise Log Page (after sign-in)
+function showExerciseLog() {
+    if (!isLoggedIn()) {
+        alert('Please sign in first.');
+        showSignIn();
+        return;
+    }
+
+    const exerciseLogPage = `
         <h1>Create Pet Profile</h1>
         <form id="profileForm">
             <label for="petName">Pet Name:</label>
@@ -61,6 +99,8 @@ function showSignIn() {
         <h1>Saved Pet Profiles</h1>
         <div id="savedProfiles"></div>
     `;
+
+    showPage(exerciseLogPage);
 
     generateCalendar();
     renderExerciseGraph();
@@ -111,7 +151,7 @@ function handleProfileSave(event) {
     const petImage = document.getElementById('petImage').files[0];
     const reader = new FileReader();
 
-    reader.onload = function(e) {
+    reader.onload = function (e) {
         const newProfile = { petName, petCharacteristics, exerciseGoal, petImage: e.target.result };
         let profiles = JSON.parse(localStorage.getItem('petProfiles')) || [];
         profiles.push(newProfile);
@@ -137,7 +177,6 @@ function loadSavedProfiles() {
             <p>${profile.petCharacteristics}</p>
             <p>${profile.exerciseGoal}</p>
             <img src="${profile.petImage}" alt="Pet Image" width="100" height="100">
-            <button onclick="editProfile(${index})">Edit</button>
             <button onclick="deleteProfile(${index})">Delete</button>
             <button onclick="printProfile(${index})">Print</button>
         `;
@@ -164,9 +203,10 @@ function printProfile(index) {
     printWindow.document.write(`<img src="${profile.petImage}" alt="Pet Image" width="100" height="100">`);
     printWindow.document.write('<br><button onclick="window.print()">Print</button>');
 }
-// Initialize the application based on login status
+
+// Initial check
 if (isLoggedIn()) {
-    showExerciseLog(); // Redirect to profile creation if logged in
+    showExerciseLog();
 } else {
     showSignIn();
 }
