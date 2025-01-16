@@ -31,7 +31,7 @@ function showSignUp() {
         if (email && password) {
             localStorage.setItem('user', JSON.stringify({ email, password }));
             alert('Sign up successful!');
-            showExerciseLog();
+            showExerciseLog(); // Redirect to profile creation page after signing up
         } else {
             alert('Please fill in all fields.');
         }
@@ -61,7 +61,7 @@ function showSignIn() {
         const user = JSON.parse(localStorage.getItem('user'));
         if (user && user.email === email && user.password === password) {
             alert('Sign in successful!');
-            showExerciseLog();
+            showExerciseLog(); // Redirect to profile creation page after signing in
         } else {
             alert('Invalid credentials, please try again.');
         }
@@ -234,47 +234,7 @@ function generateGraph() {
 
 // Initialize the application based on login status
 if (isLoggedIn()) {
-    showExerciseLog();
+    showExerciseLog(); // Redirect to profile creation if logged in
 } else {
     showSignIn();
 }
-
-// Route Handling
-function handleRoute(route) {
-    switch (route) {
-        case 'exercise-log':
-            showExerciseLog();
-            break;
-        default:
-            showSignIn();
-    }
-}
-
-// Main App Interface
-function showApp() {
-    if (!document.querySelector('nav')) {
-        showNavigation();
-    }
-    if (!hasCompletedProfile()) {
-        showExerciseLog();
-    } else {
-        handleRoute(location.hash.replace('#', '') || 'exercise-log');
-    }
-}
-
-// Log Out
-function logOut() {
-    localStorage.setItem('loggedIn', 'false');
-    localStorage.setItem('profileCompleted', 'false');
-    document.body.querySelector('nav')?.remove();
-    showSignIn();
-}
-
-// Ensure DOM is loaded before initializing
-document.addEventListener('DOMContentLoaded', () => {
-    if (isLoggedIn()) {
-        showApp();
-    } else {
-        showSignIn();
-    }
-});
