@@ -80,20 +80,36 @@ function showExerciseLog() {
 
     const exerciseLogPage = `
         <h1>Create Pet Profile</h1>
-        <form id="profileForm">
-            <label for="petName">Pet Name:</label>
-            <input type="text" id="petName" required>
-            <label for="petCharacteristics">Characteristics:</label>
-            <textarea id="petCharacteristics" rows="3" placeholder="e.g., Active, Friendly"></textarea>
-            <label for="exerciseGoal">Exercise Goal:</label>
-            <textarea id="exerciseGoal" rows="2" placeholder="e.g., 2 hours per day"></textarea>
-            <label for="petImage">Pet Image:</label>
-            <input type="file" id="petImage" accept="image/*">
-            <h2>Exercise Calendar</h2>
-            <div id="calendar" class="calendar-grid"></div>
-            <h2>Exercise Trend</h2>
-            <canvas id="exerciseGraph" width="400" height="200"></canvas>
-            <button type="submit">Save Pet Profile</button>
+        <form id="exerciseForm">
+          <label for="exerciseType">Type of Exercise:</label>
+          <input type="text" id="exerciseType" placeholder="e.g., Walking, Running" required>
+
+          <label for="exerciseDuration">Duration (minutes):</label>
+          <input type="number" id="exerciseDuration" placeholder="e.g., 30" required>
+
+          <label for="exerciseDate">Date:</label>
+          <input type="date" id="exerciseDate" required>
+
+          <label for="exerciseTime">Time:</label>
+          <input type="time" id="exerciseTime" required>
+
+          <label for="exerciseIntensity">Intensity Level:</label>
+            <select id="exerciseIntensity" required>
+            <option value="low">Low</option>
+            <option value="medium">Medium</option>
+            <option value="high">High</option>
+            </select>
+
+          <label for="caloriesBurned">Calories Burned (optional):</label>
+          <input type="number" id="caloriesBurned" placeholder="e.g., 150">
+
+          <label for="exerciseNotes">Notes/Comments:</label>
+          <textarea id="exerciseNotes" placeholder="Any observations or details"></textarea>
+
+          <label for="exerciseLocation">Location (optional):</label>
+          <input type="text" id="exerciseLocation" placeholder="e.g., Park">
+
+          <button type="submit" id="addLog">Add Exercise</button>
         </form>
         
         <h1>Saved Pet Profiles</h1>
@@ -203,6 +219,18 @@ function printProfile(index) {
     printWindow.document.write(`<img src="${profile.petImage}" alt="Pet Image" width="100" height="100">`);
     printWindow.document.write('<br><button onclick="window.print()">Print</button>');
 }
+
+<script>
+    function logout() {
+        // Clear any session or local storage data if necessary
+        localStorage.clear();  // or sessionStorage.clear();
+
+        // Redirect to the login page or home page
+        window.location.href = "login.html";  // replace with your login page URL
+    }
+</script>
+
+
 
 // Initial check
 if (isLoggedIn()) {
