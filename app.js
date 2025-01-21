@@ -81,6 +81,12 @@ function showExerciseLog() {
     const exerciseLogPage = `
         <h1>Create Pet Profile</h1>
         <form id="exerciseForm">
+          <label for="petName">Pet Name:</label>
+          <input type="text" id="petName" required>
+            
+          <label for="petCharacteristics">Characteristics:</label>
+          <textarea id="petCharacteristics" rows="3" placeholder="e.g., Gender, Age, Activity level, Temperament"></textarea>
+         
           <label for="exerciseType">Type of Exercise:</label>
           <input type="text" id="exerciseType" placeholder="e.g., Walking, Running" required>
 
@@ -89,6 +95,9 @@ function showExerciseLog() {
 
           <label for="exerciseDate">Date:</label>
           <input type="date" id="exerciseDate" required>
+
+          <label for="bodyconditionScoring">Scoring:</label>
+          <input type="scoring" id="bodyconditionScoring" required>
 
           <label for="exerciseTime">Time:</label>
           <input type="time" id="exerciseTime" required>
