@@ -3,21 +3,22 @@ body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
-    background-color: transparent; /* Clear background */
+    background-color: #f4f4f4; /* Light grey background for better contrast */
     color: #333;
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh; /* Full height */
-    overflow: hidden; /* Avoid scrollbars for full-height layout */
+    min-height: 100vh; /* Full height */
 }
 
 /* Header styling */
 header {
     background-color: #36454F; /* Charcoal color */
     color: white;
-    padding: 1em;
+    padding: 1.5em;  /* Increased padding for better spacing */
     text-align: center;
+    font-size: 1.5em;  /* Larger text for better readability */
+    font-weight: bold;
 }
 
 /* Footer styling */
@@ -34,10 +35,11 @@ footer {
 /* Form container */
 form {
     background-color: #fff;
-    padding: 2em;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    width: 60%; /* Form width */
+    padding: 2.5em;  /* Increased padding */
+    border-radius: 12px;  /* Smoother border */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    width: 50%;  /* Adjusted form width */
+    max-width: 600px;  /* Limit max width */
     margin: 0 auto;
     display: flex;
     flex-direction: column;
@@ -46,10 +48,18 @@ form {
 /* Form inputs */
 input, textarea {
     width: 100%;
-    padding: 0.8em;
-    margin: 0.5em 0;
-    border: 1px solid #ccc;
-    border-radius: 5px;
+    padding: 1em;  /* Increased padding for better touch */
+    margin: 0.6em 0;
+    border: 1px solid #bbb;
+    border-radius: 8px;  /* Rounded borders */
+    font-size: 1em;
+}
+
+/* Focus effect */
+input:focus, textarea:focus {
+    border-color: #FFDB58;  /* Mustard orange */
+    outline: none;
+    box-shadow: 0 0 5px rgba(255, 219, 88, 0.7);
 }
 
 /* Button styling */
@@ -57,15 +67,16 @@ button {
     background-color: #FFDB58; /* Mustard orange */
     color: white;
     border: none;
-    padding: 0.8em 1em;
-    border-radius: 5px;
+    padding: 1em;
+    border-radius: 8px;
     cursor: pointer;
-    font-size: 1em;
-    margin-top: 1em;
+    font-size: 1.1em;
+    font-weight: bold;
+    transition: background-color 0.3s ease-in-out;
 }
 
 button:hover {
-    background-color: #E5C148; /* Slightly darker mustard orange */
+    background-color: #E5C148; /* Darker mustard */
 }
 
 /* Links */
@@ -74,20 +85,53 @@ a {
     text-decoration: none;
     margin-top: 1em;
     text-align: center;
+    font-weight: bold;
 }
 
 a:hover {
     text-decoration: underline;
 }
 
+/* Calendar container */
+#calendar {
+    width: 100%;
+    max-width: 800px;
+    margin: 2em auto;
+    background: #fff;
+    padding: 2em;
+    border-radius: 10px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+}
+
 /* Responsive styling */
-@media (max-width: 600px) {
+@media (max-width: 768px) {
     form {
-        width: 90%; /* Adjust form width for smaller screens */
+        width: 80%;
+    }
+
+    button {
+        font-size: 1em;
+        padding: 0.8em;
+    }
+}
+
+@media (max-width: 480px) {
+    form {
+        width: 95%;
+    }
+
+    input, textarea {
+        font-size: 0.9em;
     }
 
     button {
         font-size: 0.9em;
-        padding: 0.6em 1em;
     }
 }
+
+/* --- Updates Added ---
+   - Improved form padding and border-radius for aesthetics.
+   - Added focus effect for inputs.
+   - Adjusted calendar container styling to avoid zoom issues.
+   - Enhanced button styles for better UX.
+*/
