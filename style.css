@@ -38,7 +38,7 @@ form {
     padding: 2.5em;  /* Increased padding */
     border-radius: 12px;  /* Smoother border */
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-    width: 50%;  /* Adjusted form width */
+    width: 80%;  /* Adjusted form width */
     max-width: 600px;  /* Limit max width */
     margin: 0 auto;
     display: flex;
@@ -94,12 +94,13 @@ a:hover {
 
 /* Calendar container */
 #calendar {
-    width: 100%;
+    width: 20%;
     max-width: 800px;
     margin: 2em auto;
     background: #fff;
     padding: 2em;
     border-radius: 10px;
+    flex-direction: column;
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
 }
 
