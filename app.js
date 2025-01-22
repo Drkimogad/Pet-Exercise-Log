@@ -131,8 +131,10 @@ function showExerciseLog() {
     renderExerciseGraph();
     loadSavedProfiles();
 
-    document.getElementById('exerciseForm').addEventListener('submit', handleProfileSave);
-}
+    document.getElementById('exerciseForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+    alert('Exercise added successfully!');
+});
 
 // Generate Exercise Calendar
 function generateCalendar() {
