@@ -79,6 +79,12 @@ button:hover {
     background-color: #E5C148; /* Darker mustard */
 }
 
+/* Logout button */
+button.logout {
+    align-self: flex-end; /* Positions the logout button to the right */
+    margin-bottom: 1em;
+} /* --- Added for logout alignment --- */
+
 /* Links */
 a {
     color: #FFDB58; /* Mustard orange */
@@ -100,9 +106,21 @@ a:hover {
     background: #fff;
     padding: 2em;
     border-radius: 10px;
-    flex-direction: horizontal;
+    display: block; /* Ensures visibility */
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
-}
+} /* --- Ensures visibility of calendar --- */
+
+/* Graph and pet log containers */
+#graph, #pet-log {
+    display: block; /* Ensures visibility */
+    width: 100%;
+    max-width: 800px;
+    margin: 2em auto;
+    padding: 2em;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+} /* --- Ensures visibility of graph and saved pet log --- */
 
 /* Responsive styling */
 @media (max-width: 768px) {
@@ -114,6 +132,10 @@ a:hover {
         font-size: 1em;
         padding: 0.8em;
     }
+
+    #calendar, #graph, #pet-log {
+        display: block; /* Ensures visibility on small screens */
+    } /* --- Added to ensure visibility --- */
 }
 
 @media (max-width: 480px) {
@@ -131,8 +153,7 @@ a:hover {
 }
 
 /* --- Updates Added ---
-   - Improved form padding and border-radius for aesthetics.
-   - Added focus effect for inputs.
-   - Adjusted calendar container styling to avoid zoom issues.
-   - Enhanced button styles for better UX.
+   - Aligned logout button to the right.
+   - Ensured visibility for calendar, graph, and saved pet log.
+   - Highlighted added or modified sections with comments.
 */
