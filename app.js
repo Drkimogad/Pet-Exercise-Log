@@ -174,7 +174,7 @@ function handleProfileSave(event) {
     event.preventDefault();
     const petName = document.getElementById('petName').value;
     const petCharacteristics = document.getElementById('petCharacteristics').value;
-    const exerciseGoal = document.getElementById('exerciseGoal').value;
+    const exerciseGoal = document.getElementById('exerciseGoal').value || '';  // Add fallback value
     const petImage = document.getElementById('petImage').files[0];
     const reader = new FileReader();
 
@@ -227,7 +227,11 @@ function printProfile(index) {
     printWindow.document.write(`<h1>${profile.petName}</h1>`);
     printWindow.document.write(`<p>${profile.petCharacteristics}</p>`);
     printWindow.document.write(`<p>${profile.exerciseGoal}</p>`);
+    if (profile.petImage) {
     printWindow.document.write(`<img src="${profile.petImage}" alt="Pet Image" width="100" height="100">`);
+} else {
+    printWindow.document.write(`<p>No pet image available.</p>`);
+}
     printWindow.document.write('<br><button onclick="window.print()">Print</button>');
 }
 
