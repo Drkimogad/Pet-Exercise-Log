@@ -81,44 +81,44 @@ function showExerciseLog() {
     const exerciseLogPage = `
         <h1>Create Pet Profile</h1>
         <form id="exerciseForm">
-          <label for="petName">Pet Name:</label>
-          <input type="text" id="petName" required>
-            
-          <label for="petCharacteristics">Characteristics:</label>
-          <textarea id="petCharacteristics" rows="3" placeholder="e.g., Gender, Age, Activity level, Temperament"></textarea>
-         
-          <label for="exerciseType">Type of Exercise:</label>
-          <input type="text" id="exerciseType" placeholder="e.g., Walking, Running" required>
+            <label for="petName">Pet Name:</label>
+            <input type="text" id="petName" required>
 
-          <label for="exerciseDuration">Duration (minutes):</label>
-          <input type="number" id="exerciseDuration" placeholder="e.g., 30" required>
+            <label for="petCharacteristics">Characteristics:</label>
+            <textarea id="petCharacteristics" rows="3" placeholder="e.g., Gender, Age, Activity level, Temperament"></textarea>
 
-          <label for="exerciseDate">Date:</label>
-          <input type="date" id="exerciseDate" required>
+            <label for="exerciseType">Type of Exercise:</label>
+            <input type="text" id="exerciseType" placeholder="e.g., Walking, Running" required>
 
-          <label for="bodyconditionScoring">Scoring:</label>
-          <input type="scoring" id="bodyconditionScoring" required>
+            <label for="exerciseDuration">Duration (minutes):</label>
+            <input type="number" id="exerciseDuration" placeholder="e.g., 30" required>
 
-          <label for="exerciseTime">Time:</label>
-          <input type="time" id="exerciseTime" required>
+            <label for="exerciseDate">Date:</label>
+            <input type="date" id="exerciseDate" required>
 
-          <label for="exerciseIntensity">Intensity Level:</label>
+            <label for="bodyconditionScoring">Scoring:</label>
+            <input type="text" id="bodyconditionScoring" placeholder="e.g., Obese, Overweight, Lean" required>
+
+            <label for="exerciseTime">Time:</label>
+            <input type="time" id="exerciseTime" required>
+
+            <label for="exerciseIntensity">Intensity Level:</label>
             <select id="exerciseIntensity" required>
-            <option value="low">Low</option>
-            <option value="medium">Medium</option>
-            <option value="high">High</option>
+                <option value="low">Low</option>
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
             </select>
 
-          <label for="caloriesBurned">Calories Burned (optional):</label>
-          <input type="number" id="caloriesBurned" placeholder="e.g., 150">
+            <label for="caloriesBurned">Calories Burned (optional):</label>
+            <input type="number" id="caloriesBurned" placeholder="e.g., 150 calories">
 
-          <label for="exerciseNotes">Notes/Comments:</label>
-          <textarea id="exerciseNotes" placeholder="Any observations or details"></textarea>
+            <label for="exerciseNotes">Notes/Comments:</label>
+            <textarea id="exerciseNotes" placeholder="Any observations or details"></textarea>
 
-          <label for="exerciseLocation">Location (optional):</label>
-          <input type="text" id="exerciseLocation" placeholder="e.g., Park">
+            <label for="exerciseLocation">Location (optional):</label>
+            <input type="text" id="exerciseLocation" placeholder="e.g., Park">
 
-          <button type="submit" id="addLog">Add Exercise</button>
+            <button type="submit" id="addLog">Add Exercise</button>
         </form>
         
         <h1>Saved Pet Profiles</h1>
