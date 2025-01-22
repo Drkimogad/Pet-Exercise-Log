@@ -131,7 +131,7 @@ function showExerciseLog() {
     renderExerciseGraph();
     loadSavedProfiles();
 
-    document.getElementById('profileForm').addEventListener('submit', handleProfileSave);
+    document.getElementById('exerciseForm').addEventListener('submit', handleProfileSave);
 }
 
 // Generate Exercise Calendar
