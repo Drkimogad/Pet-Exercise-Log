@@ -8,6 +8,11 @@ function isLoggedIn() {
     return localStorage.getItem('user') !== null;
 }
 
+// Secure password storage using Base64 encoding (replace with hashing in production)
+function hashPassword(password) {
+    return btoa(password);  // Replace with a proper hashing function for production
+}
+
 // Sign-Up Page
 function showSignUp() {
     const signUpPage = `
@@ -27,12 +32,12 @@ function showSignUp() {
     document.getElementById('signUpForm').addEventListener('submit', function (event) {
         event.preventDefault();
         const email = document.getElementById('signUpEmail').value;
-        const password = document.getElementById('signUpPassword').value;
+        const password = hashPassword(document.getElementById('signUpPassword').value);
 
         if (email && password) {
             localStorage.setItem('user', JSON.stringify({ email, password }));
             alert('Sign up successful!');
-            showExerciseLog(); // Redirect to profile creation page
+            showExerciseLog();
         } else {
             alert('Please fill in all fields.');
         }
@@ -58,12 +63,12 @@ function showSignIn() {
     document.getElementById('signInForm').addEventListener('submit', function (event) {
         event.preventDefault();
         const email = document.getElementById('signInEmail').value;
-        const password = document.getElementById('signInPassword').value;
+        const password = hashPassword(document.getElementById('signInPassword').value);
         const user = JSON.parse(localStorage.getItem('user'));
 
         if (user && user.email === email && user.password === password) {
             alert('Sign in successful!');
-            showExerciseLog(); // Redirect to profile creation page
+            showExerciseLog();
         } else {
             alert('Invalid credentials, please try again.');
         }
@@ -109,64 +114,26 @@ function showExerciseLog() {
                 <option value="high">High</option>
             </select>
 
-            <label for="caloriesBurned">Calories Burned (optional):</label>
-            <input type="number" id="caloriesBurned" placeholder="e.g., 150 calories">
-
             <label for="exerciseNotes">Notes/Comments:</label>
             <textarea id="exerciseNotes" placeholder="Any observations or details"></textarea>
-
-            <label for="exerciseLocation">Location (optional):</label>
-            <input type="text" id="exerciseLocation" placeholder="e.g., Park">
 
             <button type="submit" id="addLog">Add Exercise</button>
         </form>
         
         <h1>Saved Pet Profiles</h1>
         <div id="savedProfiles"></div>
+        <button onclick="logout()">Logout</button>
     `;
 
     showPage(exerciseLogPage);
 
-    generateCalendar();
-    renderExerciseGraph();
-    loadSavedProfiles();
-
     document.getElementById('exerciseForm').addEventListener('submit', function(event) {
-    event.preventDefault();
-    alert('Exercise added successfully!');
-});
+        event.preventDefault();
+        alert('Exercise added successfully!');
+        loadSavedProfiles();
+    });
 
-// Generate Exercise Calendar
-function generateCalendar() {
-    const calendarDiv = document.getElementById('calendar');
-    calendarDiv.innerHTML = '';
-    const daysInMonth = 30; // Adjust for the number of days in the month
-    const calendarRow = document.createElement('div');
-    calendarRow.classList.add('calendar-row');
-    for (let i = 1; i <= daysInMonth; i++) {
-        const day = document.createElement('div');
-        day.textContent = i;
-        day.classList.add('calendar-day');
-        const inputMinutes = document.createElement('input');
-        inputMinutes.type = 'number';
-        inputMinutes.placeholder = 'mins';
-        inputMinutes.classList.add('calendar-input');
-        day.appendChild(inputMinutes);
-        day.addEventListener('click', () => day.classList.toggle('marked'));
-        calendarRow.appendChild(day);
-    }
-    calendarDiv.appendChild(calendarRow);
-}
-
-// Render Exercise Graph Placeholder
-function renderExerciseGraph() {
-    const canvas = document.getElementById('exerciseGraph');
-    const ctx = canvas.getContext('2d');
-    ctx.beginPath();
-    ctx.moveTo(0, 100);
-    ctx.quadraticCurveTo(200, 50, 400, 100);
-    ctx.strokeStyle = "blue";
-    ctx.stroke();
+    loadSavedProfiles();
 }
 
 // Save Pet Profile
@@ -174,21 +141,13 @@ function handleProfileSave(event) {
     event.preventDefault();
     const petName = document.getElementById('petName').value;
     const petCharacteristics = document.getElementById('petCharacteristics').value;
-    const exerciseGoal = document.getElementById('exerciseGoal').value || '';  // Add fallback value
-    const petImage = document.getElementById('petImage').files[0];
-    const reader = new FileReader();
 
-    reader.onload = function (e) {
-        const newProfile = { petName, petCharacteristics, exerciseGoal, petImage: e.target.result };
-        let profiles = JSON.parse(localStorage.getItem('petProfiles')) || [];
-        profiles.push(newProfile);
-        localStorage.setItem('petProfiles', JSON.stringify(profiles));
-        loadSavedProfiles();
-    };
+    const newProfile = { petName, petCharacteristics };
+    let profiles = JSON.parse(localStorage.getItem('petProfiles')) || [];
+    profiles.push(newProfile);
+    localStorage.setItem('petProfiles', JSON.stringify(profiles));
 
-    if (petImage) {
-        reader.readAsDataURL(petImage);
-    }
+    loadSavedProfiles();
 }
 
 // Load Saved Pet Profiles
@@ -202,8 +161,6 @@ function loadSavedProfiles() {
         profileDiv.innerHTML = `
             <h3>${profile.petName}</h3>
             <p>${profile.petCharacteristics}</p>
-            <p>${profile.exerciseGoal}</p>
-            <img src="${profile.petImage}" alt="Pet Image" width="100" height="100">
             <button onclick="deleteProfile(${index})">Delete</button>
             <button onclick="printProfile(${index})">Print</button>
         `;
@@ -226,26 +183,15 @@ function printProfile(index) {
     const printWindow = window.open('', '', 'width=600,height=400');
     printWindow.document.write(`<h1>${profile.petName}</h1>`);
     printWindow.document.write(`<p>${profile.petCharacteristics}</p>`);
-    printWindow.document.write(`<p>${profile.exerciseGoal}</p>`);
-    if (profile.petImage) {
-    printWindow.document.write(`<img src="${profile.petImage}" alt="Pet Image" width="100" height="100">`);
-} else {
-    printWindow.document.write(`<p>No pet image available.</p>`);
-}
     printWindow.document.write('<br><button onclick="window.print()">Print</button>');
 }
 
-<script>
-    function logout() {
-        // Clear any session or local storage data if necessary
-        localStorage.clear();  // or sessionStorage.clear();
-
-        // Redirect to the login page or home page
-        window.location.href = "login.html";  // replace with your login page URL
-    }
-</script>
-
-
+// Logout function
+function logout() {
+    localStorage.clear();
+    alert('You have been logged out.');
+    showSignIn();
+}
 
 // Initial check
 if (isLoggedIn()) {
