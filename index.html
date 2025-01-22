@@ -30,7 +30,7 @@
           <input type="date" id="exerciseDate" required>
 
           <label for="bodyconditionScoring">Scoring:</label>
-          <input type="scoring" id="bodyconditionScoring" required>
+          <input type="text" id="bodyconditionScoring" placeholder="e.g., Obese, Overweight, lean" required>
 
           <label for="exerciseTime">Time:</label>
           <input type="time" id="exerciseTime" required>
@@ -43,7 +43,7 @@
             </select>
 
           <label for="caloriesBurned">Calories Burned (optional):</label>
-          <input type="number" id="caloriesBurned" placeholder="e.g., 150">
+          <input type="text" id="caloriesBurned" placeholder="e.g., 150 calories">
 
           <label for="exerciseNotes">Notes/Comments:</label>
           <textarea id="exerciseNotes" placeholder="Any observations or details"></textarea>
@@ -67,6 +67,9 @@
         <h2>Exercise Summary</h2>
         <canvas id="exerciseChart"></canvas>
     </div>
+    
+    <button id="logoutButton" onclick="logout()">Logout</button>
+
     
     <!-- Footer -->
     <footer>
