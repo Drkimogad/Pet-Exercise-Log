@@ -85,46 +85,71 @@ function showExerciseLog() {
 
     const exerciseLogPage = `
         <h1>Create Pet Profile</h1>
-            <form id="exerciseForm">
-                <label for="petName">Pet Name:</label>
-                <input type="text" id="petName" required>
+        <form id="exerciseForm">
+            <label for="petName">Pet Name:</label>
+            <input type="text" id="petName" required>
+            
+            <label for="petCharacteristics">Characteristics:</label>
+            <textarea id="petCharacteristics" rows="3" placeholder="e.g., Gender, Age, Activity level, Temperament"></textarea>
 
-                <label for="petCharacteristics">Characteristics:</label>
-                <textarea id="petCharacteristics" rows="3" placeholder="e.g., Gender, Age, Activity level, Temperament"></textarea>
+            <label for="exerciseType">Type of Exercise:</label>
+            <input type="text" id="exerciseType" placeholder="e.g., Walking, Running" required>
 
-                <label for="exerciseType">Type of Exercise:</label>
-                <input type="text" id="exerciseType" placeholder="e.g., Walking, Running" required>
+            <label for="exerciseDuration">Duration (minutes):</label>
+            <input type="number" id="exerciseDuration" placeholder="e.g., 30" required>
 
-                <label for="exerciseDuration">Duration (minutes):</label>
-                <input type="number" id="exerciseDuration" placeholder="e.g., 30" required>
+            <label for="exerciseDate">Date:</label>
+            <input type="date" id="exerciseDate" required>
 
-                <label for="exerciseDate">Date:</label>
-                <input type="date" id="exerciseDate" required>
+            <label for="bodyconditionScoring">Scoring:</label>
+            <input type="text" id="bodyconditionScoring" placeholder="e.g., Obese, Overweight, Lean" required>
 
-                <label for="bodyconditionScoring">Scoring:</label>
-                <input type="text" id="bodyconditionScoring" placeholder="e.g., Obese, Overweight, Lean" required>
+            <label for="exerciseTime">Time:</label>
+            <input type="time" id="exerciseTime" required>
 
-                <label for="exerciseTime">Time:</label>
-                <input type="time" id="exerciseTime" required>
+            <label for="exerciseIntensity">Intensity Level:</label>
+            <select id="exerciseIntensity" required>
+                <option value="low">Low</option>
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
+            </select>
 
-                <label for="exerciseIntensity">Intensity Level:</label>
-                <select id="exerciseIntensity" required>
-                    <option value="low">Low</option>
-                    <option value="medium">Medium</option>
-                    <option value="high">High</option>
-                </select>
+            <label for="caloriesBurned">Calories Burned (optional):</label>
+            <input type="number" id="caloriesBurned" placeholder="e.g., 150 calories">
 
-                <label for="caloriesBurned">Calories Burned (optional):</label>
-                <input type="number" id="caloriesBurned" placeholder="e.g., 150 calories">
+            <label for="exerciseNotes">Notes/Comments:</label>
+            <textarea id="exerciseNotes" placeholder="Any observations or details"></textarea>
 
-                <label for="exerciseNotes">Notes/Comments:</label>
-                <textarea id="exerciseNotes" placeholder="Any observations or details"></textarea>
+            <label for="exerciseLocation">Location (optional):</label>
+            <input type="text" id="exerciseLocation" placeholder="e.g., Park">
 
-                <label for="exerciseLocation">Location (optional):</label>
-                <input type="text" id="exerciseLocation" placeholder="e.g., Park">
+            <!-- Exercise Calendar -->
+            <div id="exerciseCalendar">
+                <h2>Exercise Calendar</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Sunday</th>
+                            <th>Monday</th>
+                            <th>Tuesday</th>
+                            <th>Wednesday</th>
+                            <th>Thursday</th>
+                            <th>Friday</th>
+                            <th>Saturday</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Calendar rows will be dynamically inserted here by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
 
-                <button type="submit">Add Exercise</button>
-            </form>
+            <!-- Canvas for Chart.js -->
+            <h2>Exercise Summary</h2>
+            <canvas id="exerciseChart"></canvas>
+
+            <button type="submit">Add Exercise</button>
+        </form>
         
         <h1>Saved Pet Profiles</h1>
         <div id="savedProfiles"></div>
@@ -135,6 +160,7 @@ function showExerciseLog() {
 
     document.getElementById('exerciseForm').addEventListener('submit', function(event) {
         event.preventDefault();
+        handleProfileSave(event);
         alert('Exercise added successfully!');
         loadSavedProfiles();
     });
@@ -142,12 +168,9 @@ function showExerciseLog() {
     loadSavedProfiles();
 }
 
-    document.getElementById('profileForm').addEventListener('submit', handleProfileSave);
-}
-
 // Generate Exercise Calendar
 function generateCalendar() {
-    const calendarDiv = document.getElementById('calendar');
+    const calendarDiv = document.getElementById('exerciseCalendar');
     calendarDiv.innerHTML = '';
     const daysInMonth = 30; // Adjust for the number of days in the month
     const calendarRow = document.createElement('div');
@@ -169,7 +192,7 @@ function generateCalendar() {
 
 // Render Exercise Graph Placeholder
 function renderExerciseGraph() {
-    const canvas = document.getElementById('exerciseGraph');
+    const canvas = document.getElementById('exerciseChart');
     const ctx = canvas.getContext('2d');
     ctx.beginPath();
     ctx.moveTo(0, 100);
@@ -183,8 +206,29 @@ function handleProfileSave(event) {
     event.preventDefault();
     const petName = document.getElementById('petName').value;
     const petCharacteristics = document.getElementById('petCharacteristics').value;
+    const exerciseType = document.getElementById('exerciseType').value;
+    const exerciseDuration = document.getElementById('exerciseDuration').value;
+    const exerciseDate = document.getElementById('exerciseDate').value;
+    const bodyconditionScoring = document.getElementById('bodyconditionScoring').value;
+    const exerciseTime = document.getElementById('exerciseTime').value;
+    const exerciseIntensity = document.getElementById('exerciseIntensity').value;
+    const caloriesBurned = document.getElementById('caloriesBurned').value;
+    const exerciseNotes = document.getElementById('exerciseNotes').value;
+    const exerciseLocation = document.getElementById('exerciseLocation').value;
 
-    const newProfile = { petName, petCharacteristics };
+    const newProfile = {
+        petName, 
+        petCharacteristics, 
+        exerciseType, 
+        exerciseDuration, 
+        exerciseDate, 
+        bodyconditionScoring, 
+        exerciseTime, 
+        exerciseIntensity, 
+        caloriesBurned, 
+        exerciseNotes, 
+        exerciseLocation
+    };
     let profiles = JSON.parse(localStorage.getItem('petProfiles')) || [];
     profiles.push(newProfile);
     localStorage.setItem('petProfiles', JSON.stringify(profiles));
@@ -205,6 +249,7 @@ function loadSavedProfiles() {
             <p>${profile.petCharacteristics}</p>
             <button onclick="deleteProfile(${index})">Delete</button>
             <button onclick="printProfile(${index})">Print</button>
+            <button onclick="editProfile(${index})">Edit</button>
         `;
         savedProfilesDiv.appendChild(profileDiv);
     });
@@ -226,6 +271,29 @@ function printProfile(index) {
     printWindow.document.write(`<h1>${profile.petName}</h1>`);
     printWindow.document.write(`<p>${profile.petCharacteristics}</p>`);
     printWindow.document.write('<br><button onclick="window.print()">Print</button>');
+}
+
+// Edit Profile
+function editProfile(index) {
+    const profiles = JSON.parse(localStorage.getItem('petProfiles')) || [];
+    const profile = profiles[index];
+
+    document.getElementById('petName').value = profile.petName;
+    document.getElementById('petCharacteristics').value = profile.petCharacteristics;
+    document.getElementById('exerciseType').value = profile.exerciseType;
+    document.getElementById('exerciseDuration').value = profile.exerciseDuration;
+    document.getElementById('exerciseDate').value = profile.exerciseDate;
+    document.getElementById('bodyconditionScoring').value = profile.bodyconditionScoring;
+    document.getElementById('exerciseTime').value = profile.exerciseTime;
+    document.getElementById('exerciseIntensity').value = profile.exerciseIntensity;
+    document.getElementById('caloriesBurned').value = profile.caloriesBurned;
+    document.getElementById('exerciseNotes').value = profile.exerciseNotes;
+    document.getElementById('exerciseLocation').value = profile.exerciseLocation;
+
+    profiles.splice(index, 1);
+    localStorage.setItem('petProfiles', JSON.stringify(profiles));
+
+    loadSavedProfiles();
 }
 
 // Logout function
