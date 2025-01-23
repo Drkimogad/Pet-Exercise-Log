@@ -124,25 +124,7 @@ function showExerciseLog() {
             <input type="text" id="exerciseLocation" placeholder="e.g., Park">
 
             <!-- Exercise Calendar -->
-            <div id="exerciseCalendar">
-                <h2>Exercise Calendar</h2>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Sunday</th>
-                            <th>Monday</th>
-                            <th>Tuesday</th>
-                            <th>Wednesday</th>
-                            <th>Thursday</th>
-                            <th>Friday</th>
-                            <th>Saturday</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Calendar rows will be dynamically inserted here by JavaScript -->
-                    </tbody>
-                </table>
-            </div>
+            <div id="exerciseCalendar"></div>
 
             <!-- Canvas for Chart.js -->
             <h2>Exercise Summary</h2>
@@ -165,6 +147,8 @@ function showExerciseLog() {
         loadSavedProfiles();
     });
 
+    generateCalendar(); // Call the function to generate the calendar
+    renderExerciseGraph(); // Call the function to render the graph
     loadSavedProfiles();
 }
 
@@ -189,7 +173,7 @@ function renderExerciseGraph() {
     const canvas = document.getElementById('exerciseChart');
     const ctx = canvas.getContext('2d');
     const data = JSON.parse(localStorage.getItem('exerciseData')) || [];
-    const labels = data.map((_, index) => index + 1);
+    const labels = data.map((_, index) => `Day ${index + 1}`);
     const values = data.map(entry => entry.duration);
 
     new Chart(ctx, {
