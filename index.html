@@ -72,17 +72,37 @@
                 <label for="exerciseLocation">Location (optional):</label>
                 <input type="text" id="exerciseLocation" placeholder="e.g., Park">
 
+                <!-- Exercise Calendar -->
+                <div id="exerciseCalendar">
+                    <h2>Exercise Calendar</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Sunday</th>
+                                <th>Monday</th>
+                                <th>Tuesday</th>
+                                <th>Wednesday</th>
+                                <th>Thursday</th>
+                                <th>Friday</th>
+                                <th>Saturday</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Calendar rows will be dynamically inserted here by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Canvas for Chart.js -->
+                <h2>Exercise Summary</h2>
+                <canvas id="exerciseChart"></canvas>
+
                 <button type="submit">Add Exercise</button>
             </form>
 
             <h2>Exercise Logs</h2>
             <ul id="logList"></ul>
         </div>
-    </div>
-    
-            <!-- Canvas for Chart.js -->
-        <h2>Exercise Summary</h2>
-        <canvas id="exerciseChart"></canvas>
     </div>
     
     <!-- Footer -->
@@ -96,5 +116,3 @@
     <script src="app.js"></script>
 </body>
 </html>
-
-    
