@@ -37,7 +37,7 @@ function showSignUp() {
         if (email && password) {
             localStorage.setItem('user', JSON.stringify({ email, password }));
             alert('Sign up successful!');
-            showExerciseLog();
+            showSignIn(); // Redirect to sign-in page after successful sign-up
         } else {
             alert('Please fill in all fields.');
         }
@@ -172,33 +172,57 @@ function showExerciseLog() {
 function generateCalendar() {
     const calendarDiv = document.getElementById('exerciseCalendar');
     calendarDiv.innerHTML = '';
-    const daysInMonth = 30; // Adjust for the number of days in the month
-    const calendarRow = document.createElement('div');
-    calendarRow.classList.add('calendar-row');
+    const daysInMonth = new Date().getMonth() % 2 === 0 ? 30 : 31; // Adjust for the number of days in the month
     for (let i = 1; i <= daysInMonth; i++) {
-        const day = document.createElement('div');
-        day.textContent = i;
-        day.classList.add('calendar-day');
-        const inputMinutes = document.createElement('input');
-        inputMinutes.type = 'number';
-        inputMinutes.placeholder = 'mins';
-        inputMinutes.classList.add('calendar-input');
-        day.appendChild(inputMinutes);
-        day.addEventListener('click', () => day.classList.toggle('marked'));
-        calendarRow.appendChild(day);
+        const dayDiv = document.createElement('div');
+        dayDiv.classList.add('calendar-day');
+        dayDiv.innerHTML = `<label>${i}</label><input type="checkbox" id="day${i}">`;
+        if (i % 10 === 0) {
+            calendarDiv.appendChild(document.createElement('br'));
+        }
+        calendarDiv.appendChild(dayDiv);
     }
-    calendarDiv.appendChild(calendarRow);
 }
 
 // Render Exercise Graph Placeholder
 function renderExerciseGraph() {
     const canvas = document.getElementById('exerciseChart');
     const ctx = canvas.getContext('2d');
-    ctx.beginPath();
-    ctx.moveTo(0, 100);
-    ctx.quadraticCurveTo(200, 50, 400, 100);
-    ctx.strokeStyle = "blue";
-    ctx.stroke();
+    const data = JSON.parse(localStorage.getItem('exerciseData')) || [];
+    const labels = data.map((_, index) => index + 1);
+    const values = data.map(entry => entry.duration);
+
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Exercise Duration',
+                data: values,
+                borderColor: 'blue',
+                fill: false
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                x: {
+                    display: true,
+                    title: {
+                        display: true,
+                        text: 'Days'
+                    }
+                },
+                y: {
+                    display: true,
+                    title: {
+                        display: true,
+                        text: 'Duration (min)'
+                    }
+                }
+            }
+        }
+    });
 }
 
 // Save Pet Profile
@@ -232,6 +256,7 @@ function handleProfileSave(event) {
     let profiles = JSON.parse(localStorage.getItem('petProfiles')) || [];
     profiles.push(newProfile);
     localStorage.setItem('petProfiles', JSON.stringify(profiles));
+    localStorage.setItem('exerciseData', JSON.stringify(profiles.map(profile => ({duration: profile.exerciseDuration})))); // Save exercise data for graph
 
     loadSavedProfiles();
 }
@@ -247,6 +272,15 @@ function loadSavedProfiles() {
         profileDiv.innerHTML = `
             <h3>${profile.petName}</h3>
             <p>${profile.petCharacteristics}</p>
+            <p>Type: ${profile.exerciseType}</p>
+            <p>Duration: ${profile.exerciseDuration} min</p>
+            <p>Date: ${profile.exerciseDate}</p>
+            <p>Scoring: ${profile.bodyconditionScoring}</p>
+            <p>Time: ${profile.exerciseTime}</p>
+            <p>Intensity: ${profile.exerciseIntensity}</p>
+            <p>Calories Burned: ${profile.caloriesBurned}</p>
+            <p>Notes: ${profile.exerciseNotes}</p>
+            <p>Location: ${profile.exerciseLocation}</p>
             <button onclick="deleteProfile(${index})">Delete</button>
             <button onclick="printProfile(${index})">Print</button>
             <button onclick="editProfile(${index})">Edit</button>
