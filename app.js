@@ -96,12 +96,12 @@ function showExerciseLog() {
             <input type="text" id="exerciseType" placeholder="e.g., Walking, Running" required>
 
             <label for="exerciseDuration">Duration (minutes):</label>
-            <input type="number" id="exerciseDuration" placeholder="e.g., 30" required>
+            <input type="text" id="exerciseDuration" placeholder="e.g., 30 minutes" required>
 
             <label for="exerciseDate">Date:</label>
             <input type="date" id="exerciseDate" required>
 
-            <label for="bodyconditionScoring">Scoring:</label>
+            <label for="bodyconditionScoring">Body Condition Scoring:</label>
             <input type="text" id="bodyconditionScoring" placeholder="e.g., Obese, Overweight, Lean" required>
 
             <label for="exerciseTime">Time:</label>
