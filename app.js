@@ -259,7 +259,7 @@ function loadSavedProfiles() {
             <p>Type: ${profile.exerciseType}</p>
             <p>Duration: ${profile.exerciseDuration} min</p>
             <p>Date: ${profile.exerciseDate}</p>
-            <p>Scoring: ${profile.bodyconditionScoring}</p>
+            <p>Body Condition Scoring: ${profile.bodyconditionScoring}</p>
             <p>Time: ${profile.exerciseTime}</p>
             <p>Intensity: ${profile.exerciseIntensity}</p>
             <p>Calories Burned: ${profile.caloriesBurned}</p>
@@ -288,6 +288,15 @@ function printProfile(index) {
     const printWindow = window.open('', '', 'width=600,height=400');
     printWindow.document.write(`<h1>${profile.petName}</h1>`);
     printWindow.document.write(`<p>${profile.petCharacteristics}</p>`);
+    printWindow.document.write(`<p>Type: ${profile.exerciseType}</p>`);
+    printWindow.document.write(`<p>Duration: ${profile.exerciseDuration} min</p>`);
+    printWindow.document.write(`<p>Date: ${profile.exerciseDate}</p>`);
+    printWindow.document.write(`<p>Body Condition Scoring: ${profile.bodyconditionScoring}</p>`);
+    printWindow.document.write(`<p>Time: ${profile.exerciseTime}</p>`);
+    printWindow.document.write(`<p>Intensity: ${profile.exerciseIntensity}</p>`);
+    printWindow.document.write(`<p>Calories Burned: ${profile.caloriesBurned}</p>`);
+    printWindow.document.write(`<p>Notes: ${profile.exerciseNotes}</p>`);
+    printWindow.document.write(`<p>Location: ${profile.exerciseLocation}</p>`);
     printWindow.document.write('<br><button onclick="window.print()">Print</button>');
 }
 
