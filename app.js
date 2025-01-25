@@ -16,8 +16,7 @@ function hashPassword(password) {
 // Sign-Up Page
 function showSignUp() {
     const signUpPage = `
-        <header>Pet Exercise Tracker</header>
-        <div id="content">
+        <div>
             <h1>Sign Up</h1>
             <form id="signUpForm">
                 <label for="signUpEmail">Email:</label>
@@ -50,8 +49,7 @@ function showSignUp() {
 // Sign-In Page
 function showSignIn() {
     const signInPage = `
-        <header>Pet Exercise Tracker</header>
-        <div id="content">
+        <div>
             <h1>Sign In</h1>
             <form id="signInForm">
                 <label for="signInEmail">Email:</label>
@@ -90,8 +88,7 @@ function showExerciseLog() {
     }
 
     const exerciseLogPage = `
-        <header>Pet Exercise Tracker</header>
-        <div id="content">
+        <div>
             <form id="exerciseForm">
                 <label for="petName">Pet Name:</label>
                 <input type="text" id="petName" required>
