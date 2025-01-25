@@ -88,7 +88,11 @@ function showExerciseLog() {
         <form id="exerciseForm">
             <label for="petName">Pet Name:</label>
             <input type="text" id="petName" required>
-            
+
+            <label for="petImage">Upload Pet Image:</label>
+            <input type="file" id="petImage" accept="image/*">
+            <img id="petImagePreview" style="max-width: 100px;" />
+
             <label for="petCharacteristics">Characteristics:</label>
             <textarea id="petCharacteristics" rows="3" placeholder="e.g., Gender, Age, Activity level, Temperament"></textarea>
 
@@ -132,10 +136,10 @@ function showExerciseLog() {
 
             <button type="submit">Add Exercise</button>
         </form>
-        
+
         <h1>Saved Pet Profiles</h1>
         <div id="savedProfiles"></div>
-        <button onclick="logout()">Logout</button>
+        <button id="logoutButton">Logout</button>
     `;
 
     showPage(exerciseLogPage);
@@ -147,9 +151,29 @@ function showExerciseLog() {
         loadSavedProfiles();
     });
 
+    // Attach event listener for logout button
+    document.getElementById('logoutButton').addEventListener('click', logout);
+
     generateCalendar(); // Call the function to generate the calendar
     renderExerciseGraph(); // Call the function to render the graph
     loadSavedProfiles();
+
+    // Preview pet image
+    const petImageInput = document.getElementById('petImage');
+    const petImagePreview = document.getElementById('petImagePreview');
+    
+    petImageInput.addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        const reader = new FileReader();
+    
+        reader.onload = function(e) {
+            petImagePreview.src = e.target.result;
+        }
+    
+        if (file) {
+            reader.readAsDataURL(file);
+        }
+    });
 }
 
 // Generate Exercise Calendar
@@ -213,6 +237,7 @@ function renderExerciseGraph() {
 function handleProfileSave(event) {
     event.preventDefault();
     const petName = document.getElementById('petName').value;
+    const petImage = document.getElementById('petImagePreview').src;
     const petCharacteristics = document.getElementById('petCharacteristics').value;
     const exerciseType = document.getElementById('exerciseType').value;
     const exerciseDuration = document.getElementById('exerciseDuration').value;
@@ -226,6 +251,7 @@ function handleProfileSave(event) {
 
     const newProfile = {
         petName, 
+        petImage,
         petCharacteristics, 
         exerciseType, 
         exerciseDuration, 
@@ -255,6 +281,7 @@ function loadSavedProfiles() {
         const profileDiv = document.createElement('div');
         profileDiv.innerHTML = `
             <h3>${profile.petName}</h3>
+            <img src="${profile.petImage}" alt="Pet Image" style="max-width: 100px;" />
             <p>${profile.petCharacteristics}</p>
             <p>Type: ${profile.exerciseType}</p>
             <p>Duration: ${profile.exerciseDuration} min</p>
@@ -287,6 +314,7 @@ function printProfile(index) {
     const profile = profiles[index];
     const printWindow = window.open('', '', 'width=600,height=400');
     printWindow.document.write(`<h1>${profile.petName}</h1>`);
+    printWindow.document.write(`<img src="${profile.petImage}" alt="Pet Image" style="max-width: 100px;" />`);
     printWindow.document.write(`<p>${profile.petCharacteristics}</p>`);
     printWindow.document.write(`<p>Type: ${profile.exerciseType}</p>`);
     printWindow.document.write(`<p>Duration: ${profile.exerciseDuration} min</p>`);
@@ -337,7 +365,7 @@ if (isLoggedIn()) {
     showSignIn();
 }
 
-//JavaScript Snippet to Check for Updates
+// JavaScript Snippet to Check for Updates
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
         navigator.serviceWorker.register('/service-worker.js')
