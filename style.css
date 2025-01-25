@@ -6,7 +6,7 @@ body {
     background-color: #f4f4f4; /* Light grey background for better contrast */
     color: #333;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
     align-items: center;
     min-height: 100vh; /* Full height */
 }
@@ -19,6 +19,17 @@ header {
     text-align: center;
     font-size: 1.5em;  /* Larger text for better readability */
     font-weight: bold;
+    width: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+}
+
+/* Content styling to ensure it doesn't get hidden behind the fixed header */
+#content {
+    margin-top: 60px; /* Adjust this value based on the header height */
 }
 
 /* Footer styling */
@@ -40,7 +51,7 @@ form {
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
     width: 100%;  /* Adjusted form width */
     max-width: 600px;  /* Limit max width */
-    margin: 0 auto;
+    margin: 1em auto;
     display: flex;
     flex-direction: column;
 }
@@ -81,15 +92,13 @@ button:hover {
 
 /* Logout button */
 #logoutButton {
-    position: fixed;
-    top: 20px;
-    right: 20px;
     background-color: #ff4500;
     color: white;
     padding: 10px 20px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
+    margin-bottom: 60px; /* Ensure enough space between button and footer */
 }
 
 /* Links */
@@ -160,7 +169,8 @@ a:hover {
 }
 
 /* --- Updates Added ---
-   - Aligned logout button to the right.
-   - Ensured visibility for calendar, graph, and saved pet log.
+   - Aligned logout button to the bottom, above the footer.
+   - Ensured enough space between logout button and footer.
+   - Made header fixed and ensured content is not hidden behind it.
    - Highlighted added or modified sections with comments.
 */
