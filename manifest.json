@@ -1,19 +1,19 @@
 {
   "name": "Pet Exercise Log",
-  "short_name": "PetExerciseLog",
+  "short_name": "Pet Exercise Log",
   "description": "A simple App that allows you to track your pet daily exercise effeciently",
-  "start_url": "https://drkimogad.github.io/Pet-Health-Tracker/index.html",
+  "start_url": "https://drkimogad.github.io/Pet-Exercise-Log/index.html",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#4CAF50",
   "icons": [
     {
-      "src": "/images/icon-192x192.png",
+      "src": "https://drkimogad.github.io/Pet-Exercise-Log/icons/icon-192x192.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "/images/icon-512x512.png",
+      "src": "https://drkimogad.github.io/Pet-Exercise-Log/icons/icon-512x512.png",
       "sizes": "512x512",
       "type": "image/png"
     }
