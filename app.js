@@ -16,15 +16,18 @@ function hashPassword(password) {
 // Sign-Up Page
 function showSignUp() {
     const signUpPage = `
-        <h1>Sign Up</h1>
-        <form id="signUpForm">
-            <label for="signUpEmail">Email:</label>
-            <input type="email" id="signUpEmail" required><br><br>
-            <label for="signUpPassword">Password:</label>
-            <input type="password" id="signUpPassword" required><br><br>
-            <button type="submit">Sign Up</button>
-        </form>
-        <p>Already have an account? <a href="#" onclick="showSignIn()">Sign In</a></p>
+        <header>Pet Exercise Tracker</header>
+        <div id="content">
+            <h1>Sign Up</h1>
+            <form id="signUpForm">
+                <label for="signUpEmail">Email:</label>
+                <input type="email" id="signUpEmail" required><br><br>
+                <label for="signUpPassword">Password:</label>
+                <input type="password" id="signUpPassword" required><br><br>
+                <button type="submit">Sign Up</button>
+            </form>
+            <p>Already have an account? <a href="#" onclick="showSignIn()">Sign In</a></p>
+        </div>
     `;
 
     showPage(signUpPage);
@@ -47,15 +50,18 @@ function showSignUp() {
 // Sign-In Page
 function showSignIn() {
     const signInPage = `
-        <h1>Sign In</h1>
-        <form id="signInForm">
-            <label for="signInEmail">Email:</label>
-            <input type="email" id="signInEmail" required><br><br>
-            <label for="signInPassword">Password:</label>
-            <input type="password" id="signInPassword" required><br><br>
-            <button type="submit">Sign In</button>
-        </form>
-        <p>Don't have an account? <a href="#" onclick="showSignUp()">Sign Up</a></p>
+        <header>Pet Exercise Tracker</header>
+        <div id="content">
+            <h1>Sign In</h1>
+            <form id="signInForm">
+                <label for="signInEmail">Email:</label>
+                <input type="email" id="signInEmail" required><br><br>
+                <label for="signInPassword">Password:</label>
+                <input type="password" id="signInPassword" required><br><br>
+                <button type="submit">Sign In</button>
+            </form>
+            <p>Don't have an account? <a href="#" onclick="showSignUp()">Sign Up</a></p>
+        </div>
     `;
 
     showPage(signInPage);
@@ -84,7 +90,7 @@ function showExerciseLog() {
     }
 
     const exerciseLogPage = `
-        <header>Create Pet Profile</header>
+        <header>Pet Exercise Tracker</header>
         <div id="content">
             <form id="exerciseForm">
                 <label for="petName">Pet Name:</label>
@@ -137,12 +143,12 @@ function showExerciseLog() {
 
                 <button type="submit">Add Exercise</button>
             </form>
+            <div id="savedProfilesContainer">
+                <h1>Saved Pet Profiles</h1>
+                <div id="savedProfiles"></div>
+            </div>
+            <button id="logoutButton">Logout</button>
         </div>
-        <div id="savedProfilesContainer">
-            <h1>Saved Pet Profiles</h1>
-            <div id="savedProfiles"></div>
-        </div>
-        <button id="logoutButton">Logout</button>
     `;
 
     showPage(exerciseLogPage);
