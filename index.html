@@ -9,103 +9,107 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- Placeholder Content -->
-    <div id="content">
-        <h1>Welcome to Pet Exercise Tracker</h1>
-        <p>Please sign in or sign up to start tracking your pet's activities.</p>
-    </div>
+<!-- Placeholder Content -->
+<div id="content">
+    <h1>Welcome to Pet Exercise Tracker</h1>
+    <p>Please sign in or sign up to start tracking your pet's activities.</p>
+</div>
 
-    <!-- Form Templates -->
-    <div id="templates" style="display: none;">
-        <!-- Sign-Up Form -->
-        <form id="signUpForm">
-            <h2>Sign Up</h2>
-            <label for="signUpUsername">Username:</label>
-            <input type="text" id="signUpUsername" required>
-            <button type="submit">Sign Up</button>
-        </form>
-        <!-- Sign-In Form -->
-        <form id="signInForm">
-            <h2>Sign In</h2>
-            <label for="signInUsername">Username:</label>
-            <input type="text" id="signInUsername" required>
-            <button type="submit">Sign In</button>
-        </form>
+<!-- Sign-Up Form -->
+<form id="signUpForm">
+    <h2>Sign Up</h2>
+    <label for="signUpUsername">Username:</label>
+    <input type="text" id="signUpUsername" required>
+    <button type="submit">Sign Up</button>
+</form>
 
-        <!-- Exercise Log -->
-        <div id="exerciseLog">
-            <h2>Log Exercise</h2>
-            <form id="exerciseForm">
-                <label for="petName">Pet Name:</label>
-                <input type="text" id="petName" required>
-                
-                <label for="petCharacteristics">Characteristics:</label>
-                <textarea id="petCharacteristics" rows="3" placeholder="e.g., Gender, Age, Activity level, Temperament"></textarea>
+<!-- Sign-In Form -->
+<form id="signInForm">
+    <h2>Sign In</h2>
+    <label for="signInUsername">Username:</label>
+    <input type="text" id="signInUsername" required>
+    <button type="submit">Sign In</button>
+</form>
 
-                <label for="exerciseType">Type of Exercise:</label>
-                <input type="text" id="exerciseType" placeholder="e.g., Walking, Running" required>
+<!-- Logout Button -->
+<button id="logoutButton" style="display: none;">Logout</button>
 
-                <label for="exerciseDuration">Duration (minutes):</label>
-                <input type="text" id="exerciseDuration" placeholder="e.g., 30 minutes" required>
+<!-- Exercise Log -->
+<div id="exerciseLog" style="display: none;">
+    <h2>Log Exercise</h2>
+    <form id="exerciseForm">
+        <label for="petName">Pet Name:</label>
+        <input type="text" id="petName" required>
 
-                <label for="exerciseDate">Date:</label>
-                <input type="date" id="exerciseDate" required>
+        <label for="petImage">Upload Pet Image:</label>
+        <input type="file" id="petImage" accept="image/*">
 
-                <label for="bodyconditionScoring">Body Condition Scoring:</label>
-                <input type="text" id="bodyconditionScoring" placeholder="e.g., Obese, Overweight, Lean" required>
+        <label for="petCharacteristics">Characteristics:</label>
+        <textarea id="petCharacteristics" rows="3" placeholder="e.g., Gender, Age, Activity level, Temperament"></textarea>
 
-                <label for="exerciseTime">Time:</label>
-                <input type="time" id="exerciseTime" required>
+        <label for="exerciseType">Type of Exercise:</label>
+        <input type="text" id="exerciseType" placeholder="e.g., Walking, Running" required>
 
-                <label for="exerciseIntensity">Intensity Level:</label>
-                <select id="exerciseIntensity" required>
-                    <option value="low">Low</option>
-                    <option value="medium">Medium</option>
-                    <option value="high">High</option>
-                </select>
+        <label for="exerciseDuration">Duration (minutes):</label>
+        <input type="text" id="exerciseDuration" placeholder="e.g., 30 minutes" required>
 
-                <label for="caloriesBurned">Calories Burned (optional):</label>
-                <input type="number" id="caloriesBurned" placeholder="e.g., 150 calories">
+        <label for="exerciseDate">Date:</label>
+        <input type="date" id="exerciseDate" required>
 
-                <label for="exerciseNotes">Notes/Comments:</label>
-                <textarea id="exerciseNotes" placeholder="Any observations or details"></textarea>
+        <label for="bodyconditionScoring">Body Condition Scoring:</label>
+        <input type="text" id="bodyconditionScoring" placeholder="e.g., Obese, Overweight, Lean" required>
 
-                <label for="exerciseLocation">Location (optional):</label>
-                <input type="text" id="exerciseLocation" placeholder="e.g., Park">
+        <label for="exerciseTime">Time:</label>
+        <input type="time" id="exerciseTime" required>
 
-                <!-- Exercise Calendar -->
-                <div id="exerciseCalendar"></div>
+        <label for="exerciseIntensity">Intensity Level:</label>
+        <select id="exerciseIntensity" required>
+            <option value="low">Low</option>
+            <option value="medium">Medium</option>
+            <option value="high">High</option>
+        </select>
 
-                <!-- Canvas for Chart.js -->
-                <h2>Exercise Summary</h2>
-                <canvas id="exerciseChart"></canvas>
+        <label for="caloriesBurned">Calories Burned (optional):</label>
+        <input type="number" id="caloriesBurned" placeholder="e.g., 150 calories">
 
-                <button type="submit">Add Exercise</button>
-            </form>
+        <label for="exerciseNotes">Notes/Comments:</label>
+        <textarea id="exerciseNotes" placeholder="Any observations or details"></textarea>
 
-            <h2>Exercise Logs</h2>
-            <ul id="logList"></ul>
-        </div>
-    </div>
-    
-    <!-- Footer -->
-    <footer>
-        <p>&copy; 2025 Pet Exercise Tracker. All Rights Reserved.</p>
-    </footer>
+        <label for="exerciseLocation">Location (optional):</label>
+        <input type="text" id="exerciseLocation" placeholder="e.g., Park">
 
-    <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', function() {
-                navigator.serviceWorker.register('service-worker.js').then(function(registration) {
-                    console.log('Service Worker registered with scope:', registration.scope);
-                }).catch(function(error) {
-                    console.log('Service Worker registration failed:', error);
-                });
+        <!-- Exercise Calendar -->
+        <div id="exerciseCalendar"></div>
+
+        <!-- Canvas for Chart.js -->
+        <h2>Exercise Summary</h2>
+        <canvas id="exerciseChart"></canvas>
+
+        <button type="submit">Add Exercise</button>
+    </form>
+
+    <h2>Exercise Logs</h2>
+    <ul id="logList"></ul>
+</div>
+
+<!-- Footer -->
+<footer>
+    <p>&copy; 2025 Pet Exercise Tracker. All Rights Reserved.</p>
+</footer>
+
+<script>
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function() {
+            navigator.serviceWorker.register('service-worker.js').then(function(registration) {
+                console.log('Service Worker registered with scope:', registration.scope);
+            }).catch(function(error) {
+                console.log('Service Worker registration failed:', error);
             });
-        }
-    </script>
-    <!-- Include Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        });
+    }
+</script>
+<!-- Include Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Main Script -->
     <script src="app.js"></script>
 </body>
