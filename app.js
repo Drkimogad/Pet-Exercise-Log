@@ -84,61 +84,64 @@ function showExerciseLog() {
     }
 
     const exerciseLogPage = `
-        <h1>Create Pet Profile</h1>
-        <form id="exerciseForm">
-            <label for="petName">Pet Name:</label>
-            <input type="text" id="petName" required>
+        <header>Create Pet Profile</header>
+        <div id="content">
+            <form id="exerciseForm">
+                <label for="petName">Pet Name:</label>
+                <input type="text" id="petName" required>
 
-            <label for="petImage">Upload Pet Image:</label>
-            <input type="file" id="petImage" accept="image/*">
-            <img id="petImagePreview" style="max-width: 100px;" />
+                <label for="petImage">Upload Pet Image:</label>
+                <input type="file" id="petImage" accept="image/*">
+                <img id="petImagePreview" style="max-width: 100px;" />
 
-            <label for="petCharacteristics">Characteristics:</label>
-            <textarea id="petCharacteristics" rows="3" placeholder="e.g., Gender, Age, Activity level, Temperament"></textarea>
+                <label for="petCharacteristics">Characteristics:</label>
+                <textarea id="petCharacteristics" rows="3" placeholder="e.g., Gender, Age, Activity level, Temperament"></textarea>
 
-            <label for="exerciseType">Type of Exercise:</label>
-            <input type="text" id="exerciseType" placeholder="e.g., Walking, Running" required>
+                <label for="exerciseType">Type of Exercise:</label>
+                <input type="text" id="exerciseType" placeholder="e.g., Walking, Running" required>
 
-            <label for="exerciseDuration">Duration (minutes):</label>
-            <input type="text" id="exerciseDuration" placeholder="e.g., 30 minutes" required>
+                <label for="exerciseDuration">Duration (minutes):</label>
+                <input type="text" id="exerciseDuration" placeholder="e.g., 30 minutes" required>
 
-            <label for="exerciseDate">Date:</label>
-            <input type="date" id="exerciseDate" required>
+                <label for="exerciseDate">Date:</label>
+                <input type="date" id="exerciseDate" required>
 
-            <label for="bodyconditionScoring">Body Condition Scoring:</label>
-            <input type="text" id="bodyconditionScoring" placeholder="e.g., Obese, Overweight, Lean" required>
+                <label for="bodyconditionScoring">Body Condition Scoring:</label>
+                <input type="text" id="bodyconditionScoring" placeholder="e.g., Obese, Overweight, Lean" required>
 
-            <label for="exerciseTime">Time:</label>
-            <input type="time" id="exerciseTime" required>
+                <label for="exerciseTime">Time:</label>
+                <input type="time" id="exerciseTime" required>
 
-            <label for="exerciseIntensity">Intensity Level:</label>
-            <select id="exerciseIntensity" required>
-                <option value="low">Low</option>
-                <option value="medium">Medium</option>
-                <option value="high">High</option>
-            </select>
+                <label for="exerciseIntensity">Intensity Level:</label>
+                <select id="exerciseIntensity" required>
+                    <option value="low">Low</option>
+                    <option value="medium">Medium</option>
+                    <option value="high">High</option>
+                </select>
 
-            <label for="caloriesBurned">Calories Burned (optional):</label>
-            <input type="number" id="caloriesBurned" placeholder="e.g., 150 calories">
+                <label for="caloriesBurned">Calories Burned (optional):</label>
+                <input type="number" id="caloriesBurned" placeholder="e.g., 150 calories">
 
-            <label for="exerciseNotes">Notes/Comments:</label>
-            <textarea id="exerciseNotes" placeholder="Any observations or details"></textarea>
+                <label for="exerciseNotes">Notes/Comments:</label>
+                <textarea id="exerciseNotes" placeholder="Any observations or details"></textarea>
 
-            <label for="exerciseLocation">Location (optional):</label>
-            <input type="text" id="exerciseLocation" placeholder="e.g., Park">
+                <label for="exerciseLocation">Location (optional):</label>
+                <input type="text" id="exerciseLocation" placeholder="e.g., Park">
 
-            <!-- Exercise Calendar -->
-            <div id="exerciseCalendar"></div>
+                <!-- Exercise Calendar -->
+                <div id="exerciseCalendar"></div>
 
-            <!-- Canvas for Chart.js -->
-            <h2>Exercise Summary</h2>
-            <canvas id="exerciseChart"></canvas>
+                <!-- Canvas for Chart.js -->
+                <h2>Exercise Summary</h2>
+                <canvas id="exerciseChart"></canvas>
 
-            <button type="submit">Add Exercise</button>
-        </form>
-
-        <h1>Saved Pet Profiles</h1>
-        <div id="savedProfiles"></div>
+                <button type="submit">Add Exercise</button>
+            </form>
+        </div>
+        <div id="savedProfilesContainer">
+            <h1>Saved Pet Profiles</h1>
+            <div id="savedProfiles"></div>
+        </div>
         <button id="logoutButton">Logout</button>
     `;
 
