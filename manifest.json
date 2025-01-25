@@ -1,7 +1,8 @@
 {
   "name": "Pet Exercise Log",
-  "short_name": "PetLog",
-  "start_url": "/index.html",
+  "short_name": "PetExerciseLog",
+  "description": "A simple App that allows you to track your pet daily exercise effeciently",
+  "start_url": "https://drkimogad.github.io/Pet-Health-Tracker/index.html",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#4CAF50",
