@@ -51,7 +51,6 @@ function showSignUp() {
     });
 }
 
-// Sign-In Page
 function showSignIn() {
     const signInPage = `
         <header>Pet Exercise Tracker</header>
