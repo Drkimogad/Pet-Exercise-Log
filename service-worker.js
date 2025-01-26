@@ -30,7 +30,10 @@ self.addEventListener('install', (event) => {
                 })
                 .catch((err) => {
                     console.error('Error caching assets:', err);
+                    console.error('Failed URLs:', urlsToCache);
                 });
+        }).catch((err) => {
+            console.error('Error opening cache:', err);
         })
     );
 });
