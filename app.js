@@ -51,11 +51,11 @@ document.addEventListener('DOMContentLoaded', function() {
         const signInPage = `
             <div id="loginForm">
                 <h2>Login</h2>
-                <form id="loginFormUnique">
-                    <label for="loginEmailUnique">Email:</label>
-                    <input type="email" id="loginEmailUnique" name="email" required autocomplete="email"><br><br>
-                    <label for="loginPasswordUnique">Password:</label>
-                    <input type="password" id="loginPasswordUnique" name="password" required autocomplete="current-password"><br><br>
+                <form id="loginFormUnique1">
+                    <label for="loginEmailUnique1">Email:</label>
+                    <input type="email" id="loginEmailUnique1" name="email" required autocomplete="email"><br><br>
+                    <label for="loginPasswordUnique1">Password:</label>
+                    <input type="password" id="loginPasswordUnique1" name="password" required autocomplete="current-password"><br><br>
                     <button type="submit">Login</button>
                 </form>
             </div>
@@ -63,10 +63,10 @@ document.addEventListener('DOMContentLoaded', function() {
         `;
         showPage(signInPage);
 
-        document.getElementById('loginFormUnique').addEventListener('submit', function(event) {
+        document.getElementById('loginFormUnique1').addEventListener('submit', function(event) {
             event.preventDefault();
-            const email = document.getElementById('loginEmailUnique').value;
-            const password = hashPassword(document.getElementById('loginPasswordUnique').value);
+            const email = document.getElementById('loginEmailUnique1').value;
+            const password = hashPassword(document.getElementById('loginPasswordUnique1').value);
             const user = JSON.parse(localStorage.getItem('user'));
 
             if (user && user.email === email && user.password === password) {
