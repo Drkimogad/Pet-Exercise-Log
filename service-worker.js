@@ -1,14 +1,14 @@
 const CACHE_NAME = 'Pet-Exercise-Log-cache-v1'; // Update cache version
 const urlsToCache = [
-    'https://drkimogad.github.io/Pet-Exercise-Log/',                // Main page URL
-    'https://drkimogad.github.io/Pet-Exercise-Log/index.html',      // Ensure main HTML page is cached
+    'https://drkimogad.github.io/Pet-Exercise-Log/',
+    'https://drkimogad.github.io/Pet-Exercise-Log/index.html',
     'https://drkimogad.github.io/Pet-Exercise-Log/styles.css',
     'https://drkimogad.github.io/Pet-Exercise-Log/script.js',
     'https://drkimogad.github.io/Pet-Exercise-Log/manifest.json',
     'https://drkimogad.github.io/Pet-Exercise-Log/icons/icon-192x192.png',
     'https://drkimogad.github.io/Pet-Exercise-Log/icons/icon-512x512.png',
     'https://drkimogad.github.io/Pet-Exercise-Log/favicon.ico',
-    'https://drkimogad.github.io/Pet-Exercise-Log/offline.html'     // Ensure offline page is cached
+    'https://drkimogad.github.io/Pet-Exercise-Log/offline.html'
 ];
 
 // Install event: Cache necessary assets
@@ -30,7 +30,15 @@ self.addEventListener('install', (event) => {
                 })
                 .catch((err) => {
                     console.error('Error caching assets:', err);
-                    console.error('Failed URLs:', urlsToCache);
+                    urlsToCache.forEach((url) => {
+                        fetch(url).then(response => {
+                            if (!response.ok) {
+                                console.error('Failed to fetch URL:', url, response.status);
+                            }
+                        }).catch(fetchErr => {
+                            console.error('Error fetching URL:', url, fetchErr);
+                        });
+                    });
                 });
         }).catch((err) => {
             console.error('Error opening cache:', err);
