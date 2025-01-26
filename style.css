@@ -11,6 +11,15 @@ body {
     min-height: 100vh; /* Full height */
 }
 
+/* Add this CSS to your stylesheet */
+#content {
+    position: absolute;
+    top: 40%;
+    width: 100%;
+    transform: translateY(-40%);
+    text-align: center;
+}
+
 /* Header styling */
 header {
     background-color: #36454F; /* Charcoal color */
