@@ -20,8 +20,8 @@ function showSignUp() {
         <div id="content">
             <h1>Sign Up</h1>
             <form id="signUpForm">
-                <label for="signUpEmail">Email:</label>
-                <input type="email" id="signUpEmail" required><br><br>
+                <label for="signUpUsername">Username:</label>
+                <input type="username" id="signUpUsername" required><br><br>
                 <label for="signUpPassword">Password:</label>
                 <input type="password" id="signUpPassword" required><br><br>
                 <button type="submit">Sign Up</button>
@@ -34,11 +34,11 @@ function showSignUp() {
 
     document.getElementById('signUpForm').addEventListener('submit', function (event) {
         event.preventDefault();
-        const email = document.getElementById('signUpEmail').value;
+        const username = document.getElementById('signUpUsername').value;
         const password = hashPassword(document.getElementById('signUpPassword').value);
 
-        if (email && password) {
-            localStorage.setItem('user', JSON.stringify({ email, password }));
+        if (username && password) {
+            localStorage.setItem('user', JSON.stringify({ username, password }));
             alert('Sign up successful!');
             showSignIn(); // Redirect to sign-in page after successful sign-up
         } else {
@@ -54,8 +54,8 @@ function showSignIn() {
         <div id="content">
             <h1>Sign In</h1>
             <form id="signInForm">
-                <label for="signInEmail">Email:</label>
-                <input type="email" id="signInEmail" required><br><br>
+                <label for="signInUsername">Username:</label>
+                <input type="username" id="signInUsername" required><br><br>
                 <label for="signInPassword">Password:</label>
                 <input type="password" id="signInPassword" required><br><br>
                 <button type="submit">Sign In</button>
@@ -68,11 +68,11 @@ function showSignIn() {
 
     document.getElementById('signInForm').addEventListener('submit', function (event) {
         event.preventDefault();
-        const email = document.getElementById('signInEmail').value;
+        const username = document.getElementById('signInUsername').value;
         const password = hashPassword(document.getElementById('signInPassword').value);
         const user = JSON.parse(localStorage.getItem('user'));
 
-        if (user && user.email === email && user.password === password) {
+        if (user && user.username === username && user.password === password) {
             alert('Sign in successful!');
             showExerciseLog();
         } else {
