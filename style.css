@@ -11,15 +11,6 @@ body {
     min-height: 100vh; /* Full height */
 }
 
-/* Add this CSS to your stylesheet */
-#content {
-    position: absolute;
-    top: 40%;
-    width: 100%;
-    transform: translateY(-40%);
-    text-align: center;
-}
-
 /* Header styling */
 header {
     background-color: #36454F; /* Charcoal color */
@@ -39,20 +30,23 @@ header {
 /* Content styling to ensure it doesn't get hidden behind the fixed header */
 #content {
     margin-top: 60px; /* Adjust this value based on the header height */
-}
-
-/* Footer styling */
-footer {
-    background-color: #36454F; /* Charcoal color */
-    color: white;
-    padding: 1em;
+    height: 40vh; /* Occupies 40% of the viewport height */
     text-align: center;
-    position: fixed;
-    width: 100%;
-    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Center the content vertically */
 }
 
 /* Form container */
+#formContainer {
+    margin-top: 20px; /* Space between content and form */
+    width: 100%;
+    max-width: 600px; /* Limit max width */
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center the form horizontally */
+}
+
 form {
     background-color: #fff;
     padding: 2.5em;  /* Increased padding */
