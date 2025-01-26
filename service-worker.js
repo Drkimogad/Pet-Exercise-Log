@@ -2,7 +2,7 @@ const CACHE_NAME = 'Pet-Exercise-Log-cache-v1'; // Update cache version
 const urlsToCache = [
     'https://drkimogad.github.io/Pet-Exercise-Log/',
     'https://drkimogad.github.io/Pet-Exercise-Log/index.html',
-    'https://drkimogad.github.io/Pet-Exercise-Log/styles.css',
+    'https://drkimogad.github.io/Pet-Exercise-Log/style.css',
     'https://drkimogad.github.io/Pet-Exercise-Log/app.js',
     'https://drkimogad.github.io/Pet-Exercise-Log/manifest.json',
     'https://drkimogad.github.io/Pet-Exercise-Log/icons/icon-192x192.png',
