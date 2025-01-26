@@ -51,11 +51,11 @@ document.addEventListener('DOMContentLoaded', function() {
         const signInPage = `
             <div id="loginForm">
                 <h2>Login</h2>
-                <form id="login">
-                    <label for="loginEmail">Email:</label>
-                    <input type="email" id="loginEmail" name="email" required autocomplete="email"><br><br>
-                    <label for="loginPassword">Password:</label>
-                    <input type="password" id="loginPassword" name="password" required autocomplete="current-password"><br><br>
+                <form id="loginFormUnique">
+                    <label for="loginEmailUnique">Email:</label>
+                    <input type="email" id="loginEmailUnique" name="email" required autocomplete="email"><br><br>
+                    <label for="loginPasswordUnique">Password:</label>
+                    <input type="password" id="loginPasswordUnique" name="password" required autocomplete="current-password"><br><br>
                     <button type="submit">Login</button>
                 </form>
             </div>
@@ -63,10 +63,10 @@ document.addEventListener('DOMContentLoaded', function() {
         `;
         showPage(signInPage);
 
-        document.getElementById('login').addEventListener('submit', function(event) {
+        document.getElementById('loginFormUnique').addEventListener('submit', function(event) {
             event.preventDefault();
-            const email = document.getElementById('loginEmail').value;
-            const password = hashPassword(document.getElementById('loginPassword').value);
+            const email = document.getElementById('loginEmailUnique').value;
+            const password = hashPassword(document.getElementById('loginPasswordUnique').value);
             const user = JSON.parse(localStorage.getItem('user'));
 
             if (user && user.email === email && user.password === password) {
@@ -398,3 +398,31 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+// JavaScript Snippet to Check for Updates
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/service-worker.js')
+            .then((registration) => {
+                console.log('Service Worker registered with scope:', registration.scope);
+                // Check for service worker updates
+                registration.update();
+
+                // Listen for when a new service worker is available and update it
+                registration.addEventListener('updatefound', () => {
+                    const installingWorker = registration.installing;
+                    installingWorker.addEventListener('statechange', () => {
+                        if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                            // New version available, notify user and skip waiting
+                            if (confirm('A new version of the app is available. Would you like to update?')) {
+                                installingWorker.postMessage({ action: 'skipWaiting' });
+                            }
+                        }
+                    });
+                });
+            })
+            .catch((error) => {
+                console.error('Error registering service worker:', error);
+            });
+    });
+}
