@@ -29,10 +29,10 @@ header {
 
 /* Content styling to ensure it doesn't get hidden behind the fixed header */
 #content {
-    margin-top: 150px; /* Adjust this value based on the header height */
+    margin-top: 80px; /* Adjust this value based on the header height */
     width: 80%;
     margin: 20px auto; /* Center the content */
-    margin-bottom: 150px;
+    margin-bottom: 100px;
 }
 
 /* Form container styling */
