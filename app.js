@@ -20,6 +20,9 @@ function showSignUp() {
         <div id="content">
             <h1>Welcome to Pet Exercise Tracker</h1>
             <p>Please sign in or sign up to start tracking your pet's activities.</p>
+            </p>Regular exercise is crucial for pets as it helps maintain a healthy weight, supports cardiovascular health, 
+                and improves joint flexibility. It also enhances their mental well-being by reducing stress, anxiety, and destructive behaviors. 
+                Lack of exercise can lead to obesity, muscle loss, and chronic conditions like diabetes and arthritis.</p>
         </div>
         <div id="formContainer">
             <h1>Sign Up</h1>
@@ -58,6 +61,9 @@ function showSignIn() {
         <div id="content">
             <h1>Welcome to Pet Exercise Tracker</h1>
             <p>Please sign in or sign up to start tracking your pet's activities.</p>
+            </p>Regular exercise is crucial for pets as it helps maintain a healthy weight, supports cardiovascular health, 
+                and improves joint flexibility. It also enhances their mental well-being by reducing stress, anxiety, and destructive behaviors. 
+                Lack of exercise can lead to obesity, muscle loss, and chronic conditions like diabetes and arthritis.</p>
         </div>
         <div id="formContainer">
             <h1>Sign In</h1>
