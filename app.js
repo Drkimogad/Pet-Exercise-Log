@@ -51,6 +51,7 @@ function showSignUp() {
     });
 }
 
+// Sign-In Page
 function showSignIn() {
     const signInPage = `
         <header>Pet Exercise Tracker</header>
@@ -177,15 +178,15 @@ function showExerciseLog() {
     // Preview pet image
     const petImageInput = document.getElementById('petImage');
     const petImagePreview = document.getElementById('petImagePreview');
-
+    
     petImageInput.addEventListener('change', function(event) {
         const file = event.target.files[0];
         const reader = new FileReader();
-
+    
         reader.onload = function(e) {
             petImagePreview.src = e.target.result;
         }
-
+    
         if (file) {
             reader.readAsDataURL(file);
         }
@@ -193,23 +194,18 @@ function showExerciseLog() {
 }
 
 // Generate Exercise Calendar
-// Updated function to display 12 months
 function generateCalendar() {
     const calendarDiv = document.getElementById('exerciseCalendar');
-    calendarDiv.innerHTML = ''; // Clear existing content
-    for (let month = 0; month < 12; month++) {
-        const monthDiv = document.createElement('div');
-        monthDiv.classList.add('calendar-month');
-        const monthName = new Date(0, month).toLocaleString('default', { month: 'long' });
-        monthDiv.innerHTML = `<h3>${monthName}</h3>`;
-        const daysInMonth = new Date(2025, month + 1, 0).getDate();
-        for (let day = 1; day <= daysInMonth; day++) {
-            const dayDiv = document.createElement('div');
-            dayDiv.classList.add('calendar-day');
-            dayDiv.innerHTML = `<label>${day}</label><input type="checkbox" id="day${month + 1}-${day}">`;
-            monthDiv.appendChild(dayDiv);
+    calendarDiv.innerHTML = '';
+    const daysInMonth = new Date().getMonth() % 2 === 0 ? 30 : 31; // Adjust for the number of days in the month
+    for (let i = 1; i <= daysInMonth; i++) {
+        const dayDiv = document.createElement('div');
+        dayDiv.classList.add('calendar-day');
+        dayDiv.innerHTML = `<label>${i}</label><input type="checkbox" id="day${i}">`;
+        if (i % 10 === 0) {
+            calendarDiv.appendChild(document.createElement('br'));
         }
-        calendarDiv.appendChild(monthDiv);
+        calendarDiv.appendChild(dayDiv);
     }
 }
 
@@ -412,36 +408,4 @@ if ('serviceWorker' in navigator) {
                 console.error('Error registering service worker:', error);
             });
     });
-}
-
-// Highlighted Updates
-
-// Added event listener for 'add exercise' button to show saved pet profile
-document.getElementById('addExerciseButton').addEventListener('click', function() {
-    const profiles = JSON.parse(localStorage.getItem('petProfiles')) || [];
-    if (profiles.length > 0) {
-        alert('Saved Pet Profile: ' + JSON.stringify(profiles[0])); // Display the first saved profile as an example
-    } else {
-        alert('No saved profiles found.');
-    }
-});
-
-// Updated generateCalendar function to display 12 months
-function generateCalendar() {
-    const calendarDiv = document.getElementById('exerciseCalendar');
-    calendarDiv.innerHTML = ''; // Clear existing content
-    for (let month = 0; month < 12; month++) {
-        const monthDiv = document.createElement('div');
-        monthDiv.classList.add('calendar-month');
-        const monthName = new Date(0, month).toLocaleString('default', { month: 'long' });
-        monthDiv.innerHTML = `<h3>${monthName}</h3>`;
-        const daysInMonth = new Date(2025, month + 1, 0).getDate();
-        for (let day = 1; day <= daysInMonth; day++) {
-            const dayDiv = document.createElement('div');
-            dayDiv.classList.add('calendar-day');
-            dayDiv.innerHTML = `<label>${day}</label><input type="checkbox" id="day${month + 1}-${day}">`;
-            monthDiv.appendChild(dayDiv);
-        }
-        calendarDiv.appendChild(monthDiv);
-    }
 }
