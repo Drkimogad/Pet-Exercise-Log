@@ -140,6 +140,16 @@ a:hover {
     border-radius: 10px;
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
 } /* --- Ensures visibility of graph and saved pet log --- */
+/* Footer styling */
+footer {
+    background-color: #36454F; /* Charcoal color */
+    color: white;
+    padding: 1em;
+    text-align: center;
+    position: fixed;
+    width: 100%;
+    bottom: 0;
+}
 
 /* Responsive styling */
 @media (max-width: 768px) {
