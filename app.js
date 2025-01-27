@@ -18,22 +18,17 @@ function showSignUp() {
     const signUpPage = `
         <header>Pet Exercise Log</header>
         <div id="content">
-
-
             <h1>Pet Exercise Log</h1>
-
             <p>Regular exercise is crucial for pets as it helps maintain a healthy weight, supports cardiovascular health, 
                 and improves joint flexibility. It also enhances their mental well-being by reducing stress, anxiety, and destructive behaviors. 
                 Lack of exercise can lead to obesity, muscle loss, and chronic conditions like diabetes and arthritis.</p>
-
-                
-            <h3>Please sign in or sign up to start tracking your pet's activities.<h3>
+            <h3>Please sign in or sign up to start tracking your pet's activities.</h3>
         </div>
         <div id="formContainer">
             <h1>Sign Up</h1>
             <form id="signUpForm">
                 <label for="signUpUsername">Username:</label>
-                <input type="username" id="signUpUsername" required><br><br>
+                <input type="text" id="signUpUsername" required><br><br>
                 <label for="signUpPassword">Password:</label>
                 <input type="password" id="signUpPassword" required><br><br>
                 <button type="submit">Sign Up</button>
@@ -64,24 +59,17 @@ function showSignIn() {
     const signInPage = `
         <header>Pet Exercise Log</header>
         <div id="content">
-        
-
-
             <h1>Pet Exercise Log</h1>
-           
             <p>Regular exercise is crucial for pets as it helps maintain a healthy weight, supports cardiovascular health, 
                 and improves joint flexibility. It also enhances their mental well-being by reducing stress, anxiety, and destructive behaviors. 
                 Lack of exercise can lead to obesity, muscle loss, and chronic conditions like diabetes and arthritis.</p>
-
-
-            <h3>Please sign in or sign up to start tracking your pet's activities.<h3>
-            
+            <h3>Please sign in or sign up to start tracking your pet's activities.</h3>
         </div>
         <div id="formContainer">
             <h1>Sign In</h1>
             <form id="signInForm">
                 <label for="signInUsername">Username:</label>
-                <input type="username" id="signInUsername" required><br><br>
+                <input type="text" id="signInUsername" required><br><br>
                 <label for="signInPassword">Password:</label>
                 <input type="password" id="signInPassword" required><br><br>
                 <button type="submit">Sign In</button>
