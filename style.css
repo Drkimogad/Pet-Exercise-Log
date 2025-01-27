@@ -30,13 +30,13 @@ header {
 /* Content styling to ensure it doesn't get hidden behind the fixed header */
 #content {
     margin-top: 60px; /* Adjust this value based on the header height */
-    width: 40%;
-    margin: 60px auto; /* Center the content */
+    width: 80%;
+    margin: 20px auto; /* Center the content */
 }
 
 /* Form container styling */
 #formContainer {
-    width: 50%;
+    width: 80%;
     margin: 20px auto; /* Center the form container */
 }
 
