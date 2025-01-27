@@ -30,9 +30,17 @@ header {
 /* Content styling to ensure it doesn't get hidden behind the fixed header */
 #content {
     margin-top: 60px; /* Adjust this value based on the header height */
+    width: 40%;
+    margin: 60px auto; /* Center the content */
 }
 
-/* Footer styling */
+/* Form container styling */
+#formContainer {
+    width: 50%;
+    margin: 20px auto; /* Center the form container */
+}
+
+/* Ensure footer is visible */
 footer {
     background-color: #36454F; /* Charcoal color */
     color: white;
@@ -41,19 +49,7 @@ footer {
     position: fixed;
     width: 100%;
     bottom: 0;
-}
-
-/* Form container */
-form {
-    background-color: #fff;
-    padding: 2.5em;  /* Increased padding */
-    border-radius: 12px;  /* Smoother border */
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-    width: 100%;  /* Adjusted form width */
-    max-width: 600px;  /* Limit max width */
-    margin: 1em auto;
-    display: flex;
-    flex-direction: column;
+    z-index: 1000; /* Ensures it stays above other content */
 }
 
 /* Form inputs */
