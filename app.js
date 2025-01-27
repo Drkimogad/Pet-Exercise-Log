@@ -18,6 +18,10 @@ function showSignUp() {
     const signUpPage = `
         <header>Pet Exercise Tracker</header>
         <div id="content">
+            <h1>Welcome to Pet Exercise Tracker</h1>
+            <p>Please sign in or sign up to start tracking your pet's activities.</p>
+        </div>
+        <div id="formContainer">
             <h1>Sign Up</h1>
             <form id="signUpForm">
                 <label for="signUpUsername">Username:</label>
@@ -52,6 +56,10 @@ function showSignIn() {
     const signInPage = `
         <header>Pet Exercise Tracker</header>
         <div id="content">
+            <h1>Welcome to Pet Exercise Tracker</h1>
+            <p>Please sign in or sign up to start tracking your pet's activities.</p>
+        </div>
+        <div id="formContainer">
             <h1>Sign In</h1>
             <form id="signInForm">
                 <label for="signInUsername">Username:</label>
