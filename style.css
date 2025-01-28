@@ -2,7 +2,7 @@
 body {
     font-family: Arial, sans-serif;
     margin: 0;
-    padding: 100px 0 0 0; /* Increase padding to match the new header height */
+    padding: 100px 0 0 0; /* Padding to match the header height */
     background-color: #f4f4f4; /* Light grey background for better contrast */
     color: #333;
     display: flex;
@@ -15,7 +15,7 @@ body {
 header {
     color: #301934;
     text-align: center;
-    font-size: 2em;  /* Increase the font size */
+    font-size: 2.5em;  /* Increase the font size */
     font-weight: bold;
     width: 100%;
     position: fixed;
@@ -23,13 +23,13 @@ header {
     left: 0;
     z-index: 1000;
     background-color: #00FFFFFF; /* Add background color to the header */
-    padding: 20px 0;
-    height: 100px; /* Adjust the height to fit the larger font */
+    padding: 30px 0; /* Ensure padding centers the content vertically */
+    height: 100px; /* Ensure height fits the largest font size */
 }
 
 /* Content styling to ensure it doesn't get hidden behind the fixed header */
 #content, #signup, #signin, #dashboard, #exerciseLog {
-    margin-top: 160px; /* Increase this value to ensure content is not hidden behind the header */
+    margin-top: 160px; /* Ensure content is not hidden behind the header */
     width: 80%;
     margin: 20px auto; /* Center the content */
     margin-bottom: 100px;
