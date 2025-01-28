@@ -18,7 +18,7 @@ function showSignUp() {
     const signUpPage = `
         <header>Pet Exercise Log</header>
         <div id="content">
-            <h1>Pet Exercise Log</h1>
+           
             <p>Regular exercise is crucial for pets as it helps maintain a healthy weight, supports cardiovascular health, 
                 and improves joint flexibility. It also enhances their mental well-being by reducing stress, anxiety, and destructive behaviors. 
                 Lack of exercise can lead to obesity, muscle loss, and chronic conditions like diabetes and arthritis.</p>
@@ -59,7 +59,7 @@ function showSignIn() {
     const signInPage = `
         <header>Pet Exercise Log</header>
         <div id="content">
-            <h1>Pet Exercise Log</h1>
+            
             <p>Regular exercise is crucial for pets as it helps maintain a healthy weight, supports cardiovascular health, 
                 and improves joint flexibility. It also enhances their mental well-being by reducing stress, anxiety, and destructive behaviors. 
                 Lack of exercise can lead to obesity, muscle loss, and chronic conditions like diabetes and arthritis.</p>
