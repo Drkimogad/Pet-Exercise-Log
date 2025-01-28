@@ -22,13 +22,13 @@ header {
     top: 0;
     left: 0;
     z-index: 1000;
-    background-color: #BA8E23; /* Add background color to the header */
+    background-color: #808000; /* Add background color to the header */
     padding: 20px 0;
 }
 
 /* Content styling to ensure it doesn't get hidden behind the fixed header */
 #content {
-    margin-top: 200px; /* Adjust this value to ensure content is not hidden behind the header */
+    margin-top: 400px; /* Adjust this value to ensure content is not hidden behind the header */
     width: 80%;
     margin: 20px auto; /* Center the content */
     margin-bottom: 100px;
@@ -42,7 +42,7 @@ header {
 
 /* Ensure exercise log has enough space */
 #exerciseLog {
-    margin-top: 200px; /* Ensure it has enough space below the header */
+    margin-top: 400px; /* Ensure it has enough space below the header */
 }
 
 /* Ensure footer is visible */
