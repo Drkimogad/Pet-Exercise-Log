@@ -28,7 +28,7 @@ header {
 
 /* Content styling to ensure it doesn't get hidden behind the fixed header */
 #content {
-    margin-top: 400px; /* Adjust this value to ensure content is not hidden behind the header */
+    margin-top: calc(20px + 1.5em + 20px); /* Adjust this value to ensure content is not hidden behind the header */
     width: 80%;
     margin: 20px auto; /* Center the content */
     margin-bottom: 100px;
@@ -42,7 +42,7 @@ header {
 
 /* Ensure exercise log has enough space */
 #exerciseLog {
-    margin-top: 400px; /* Ensure it has enough space below the header */
+    margin-top: calc(20px + 1.5em + 20px); /* Adjust this value to ensure it has enough space below the header */
 }
 
 /* Ensure footer is visible */
