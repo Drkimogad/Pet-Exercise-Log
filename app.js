@@ -10,13 +10,13 @@ function isLoggedIn() {
 
 // Secure password storage using Base64 encoding (replace with hashing in production)
 function hashPassword(password) {
-    return btoa(password); // Replace with a proper hashing function for production
+    return btoa(password);  // Replace with a proper hashing function for production
 }
 
 // Sign-Up Page
 function showSignUp() {
     const signUpPage = `
-        <header style="background-color: #ADD8E6;">Pet Exercise Log</header>
+        <header>Pet Exercise Log</header>
         <div id="content">
             <blockquote>
                 <p>Regular exercise is crucial for pets as it helps maintain a healthy weight, supports cardiovascular health, 
@@ -58,7 +58,7 @@ function showSignUp() {
 // Sign-In Page
 function showSignIn() {
     const signInPage = `
-        <header style="background-color: #ADD8E6;">Pet Exercise Log</header>
+        <header>Pet Exercise Log</header>
         <div id="content">
             <blockquote>
                 <p>Regular exercise is crucial for pets as it helps maintain a healthy weight, supports cardiovascular health, 
@@ -106,7 +106,7 @@ function showExerciseLog() {
     }
 
     const exerciseLogPage = `
-        <header style="background-color: #ADD8E6;">Pet Exercise Tracker</header>
+        <header>Pet Exercise Tracker</header>
         <div id="content">
             <form id="exerciseForm">
                 <label for="petName">Pet Name:</label>
@@ -165,7 +165,6 @@ function showExerciseLog() {
             </div>
             <button id="logoutButton">Logout</button>
         </div>
-        <footer style="background-color: #D3D3D3;">&copy; 2025 Pet Exercise Log</footer>
     `;
 
     showPage(exerciseLogPage);
