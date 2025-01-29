@@ -27,6 +27,18 @@ header {
     height: 100px; /* Adjust the height to fit the larger font */
 }
 
+blockquote {
+    padding: 20px;
+    margin: 20px 0;
+    background-color: #f9f9f9; /* Light grey background */
+    border-left: 10px solid #007bff; /* Blue left border */
+    border-radius: 5px; /* Rounded corners */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+}
+blockquote p {
+    margin: 0;
+}
+
 /* Content styling to ensure it doesn't get hidden behind the fixed header */
 #content, #signup, #signin, #dashboard, #exerciseLog {
     margin-top: 160px; /* Increase this value to ensure content is not hidden behind the header */
