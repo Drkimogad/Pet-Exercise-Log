@@ -10,18 +10,19 @@ function isLoggedIn() {
 
 // Secure password storage using Base64 encoding (replace with hashing in production)
 function hashPassword(password) {
-    return btoa(password);  // Replace with a proper hashing function for production
+    return btoa(password); // Replace with a proper hashing function for production
 }
 
 // Sign-Up Page
 function showSignUp() {
     const signUpPage = `
-        <header>Pet Exercise Log</header>
+        <header style="background-color: #ADD8E6;">Pet Exercise Log</header>
         <div id="content">
-           
-            <p>Regular exercise is crucial for pets as it helps maintain a healthy weight, supports cardiovascular health, 
+            <blockquote>
+                <p>Regular exercise is crucial for pets as it helps maintain a healthy weight, supports cardiovascular health, 
                 and improves joint flexibility. It also enhances their mental well-being by reducing stress, anxiety, and destructive behaviors. 
                 Lack of exercise can lead to obesity, muscle loss, and chronic conditions like diabetes and arthritis.</p>
+            </blockquote>
             <h3>Please sign in or sign up to start tracking your pet's activities.</h3>
         </div>
         <div id="formContainer">
@@ -57,12 +58,13 @@ function showSignUp() {
 // Sign-In Page
 function showSignIn() {
     const signInPage = `
-        <header>Pet Exercise Log</header>
+        <header style="background-color: #ADD8E6;">Pet Exercise Log</header>
         <div id="content">
-            
-            <p>Regular exercise is crucial for pets as it helps maintain a healthy weight, supports cardiovascular health, 
+            <blockquote>
+                <p>Regular exercise is crucial for pets as it helps maintain a healthy weight, supports cardiovascular health, 
                 and improves joint flexibility. It also enhances their mental well-being by reducing stress, anxiety, and destructive behaviors. 
                 Lack of exercise can lead to obesity, muscle loss, and chronic conditions like diabetes and arthritis.</p>
+            </blockquote>
             <h3>Please sign in or sign up to start tracking your pet's activities.</h3>
         </div>
         <div id="formContainer">
@@ -104,7 +106,7 @@ function showExerciseLog() {
     }
 
     const exerciseLogPage = `
-        <header>Pet Exercise Tracker</header>
+        <header style="background-color: #ADD8E6;">Pet Exercise Tracker</header>
         <div id="content">
             <form id="exerciseForm">
                 <label for="petName">Pet Name:</label>
@@ -163,6 +165,7 @@ function showExerciseLog() {
             </div>
             <button id="logoutButton">Logout</button>
         </div>
+        <footer style="background-color: #D3D3D3;">&copy; 2025 Pet Exercise Log</footer>
     `;
 
     showPage(exerciseLogPage);
