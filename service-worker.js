@@ -8,6 +8,7 @@ const urlsToCache = [
     'https://drkimogad.github.io/Pet-Exercise-Log/icons/icon-192x192.png',
     'https://drkimogad.github.io/Pet-Exercise-Log/icons/icon-512x512.png',
     'https://drkimogad.github.io/Pet-Exercise-Log/favicon.ico',
+    'https://cdn.jsdelivr.net/npm/chart.js',
     'https://drkimogad.github.io/Pet-Exercise-Log/offline.html'     // Ensure offline page is cached
 ];
 
