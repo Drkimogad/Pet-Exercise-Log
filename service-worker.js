@@ -6,7 +6,6 @@ const urlsToCache = [
     'https://drkimogad.github.io/Pet-Exercise-Log/app.js',
     'https://drkimogad.github.io/Pet-Exercise-Log/manifest.json',
     'https://drkimogad.github.io/Pet-Exercise-Log/icons/icon-192x192.png',
-    'https://drkimogad.github.io/Pet-Exercise-Log/icons/icon-512x512.png',
     'https://drkimogad.github.io/Pet-Exercise-Log/favicon.ico',
     'https://cdn.jsdelivr.net/npm/chart.js',
     'https://drkimogad.github.io/Pet-Exercise-Log/offline.html'     // Ensure offline page is cached
@@ -49,18 +48,18 @@ self.addEventListener('fetch', (event) => {
 
             // If the request is for an HTML file (navigation), return the offline page
             if (event.request.mode === 'navigate') {
-                return caches.match('/Pet-Exercise-Log/offline.html');  // Ensure offline.html is cached
+                return caches.match('/offline.html');  // Ensure offline.html is cached
             }
 
             console.log('Fetching from network:', event.request.url);
             return fetch(event.request).catch(() => {
                 // Offline fallback if fetch fails (e.g., user is offline)
-                return caches.match('/Pet-Exercise-Log/offline.html');  // Ensure offline.html is cached
+                return caches.match('/offline.html');  // Ensure offline.html is cached
             });
         }).catch((err) => {
             console.error('Error fetching:', err);
             // In case of any unexpected errors, fallback to offline.html
-            return caches.match('/Pet-Exercise-Log/offline.html');
+            return caches.match('/offline.html');
         })
     );
 });
