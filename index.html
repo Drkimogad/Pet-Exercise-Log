@@ -14,9 +14,10 @@
     <div id="content">
         <h1>Pet Exercise Log</h1>
         <blockquote>
-            <p>Regular exercise is crucial for pets as it helps maintain a healthy weight, supports cardiovascular health, 
-                and improves joint flexibility. It also enhances their mental well-being by reducing stress, anxiety, and destructive behaviors. 
-                Lack of exercise can lead to obesity, muscle loss, and chronic conditions like diabetes and arthritis.</p>
+            <p>Regular exercise is vital for your pet's health, helping to maintain a healthy weight and support cardiovascular health. 
+               It also enhances joint flexibility and improves mental well-being by reducing stress and anxiety. 
+               Conversely, a lack of exercise can lead to obesity and chronic conditions like diabetes and arthritis. 
+               Prioritizing physical activity is essential for your pet's happiness and longevity.</p>
         </blockquote>
         <h3>Please sign in or sign up to start tracking your pet's activities.</h3>
     </div>
@@ -97,7 +98,7 @@
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', function() {
-                navigator.serviceWorker.register('/Pet-Exercise-Log/service-worker.js').then(function(registration) {
+                navigator.serviceWorker.register('https://github.com/Drkimogad/Pet-Exercise-Log/service-worker.js').then(function(registration) {
                     console.log('Service Worker registered with scope:', registration.scope);
                 }).catch(function(error) {
                     console.log('Service Worker registration failed:', error);
