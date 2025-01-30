@@ -430,5 +430,5 @@ window.addEventListener('online', () => {
 window.addEventListener('offline', () => {
   console.log('You are offline');
   // Optionally, you can show a message to the user
-  alert('It seems like you're not connected to the internet. Please check your connection');
+  alert('It seems like you\'re not connected to the internet. Please check your connection');
 });
