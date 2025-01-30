@@ -49,18 +49,20 @@ self.addEventListener('fetch', (event) => {
 
             // If the request is for an HTML file (navigation), return the offline page
             if (event.request.mode === 'navigate') {
-                return caches.match('https://drkimogad.github.io/Pet-Exercise-Log/offline.html');  // Ensure offline.html is cached
+                return fetch(event.request).catch(() => 
+                    caches.match(OFFLINE_URL)
+                );
             }
 
             console.log('Fetching from network:', event.request.url);
             return fetch(event.request).catch(() => {
                 // Offline fallback if fetch fails (e.g., user is offline)
-                return caches.match('https://drkimogad.github.io/Pet-Exercise-Log/offline.html');  // Ensure offline.html is cached
+                return caches.match(OFFLINE_URL);
             });
         }).catch((err) => {
             console.error('Error fetching:', err);
             // In case of any unexpected errors, fallback to offline.html
-            return caches.match('https://drkimogad.github.io/Pet-Exercise-Log/offline.html');
+            return caches.match(OFFLINE_URL);
         })
     );
 });
