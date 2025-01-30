@@ -420,3 +420,15 @@ if ('serviceWorker' in navigator) {
             });
     });
 }
+
+window.addEventListener('online', () => {
+  // Refresh the page or fetch live data
+  console.log('You are online');
+  location.reload();
+});
+
+window.addEventListener('offline', () => {
+  console.log('You are offline');
+  // Optionally, you can show a message to the user
+  alert('You are offline. Some features may not be available.');
+});
