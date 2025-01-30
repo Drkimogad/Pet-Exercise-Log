@@ -177,9 +177,17 @@ a:hover {
     }
 }
 
+/* Media query for desktop screens to handle fixed header and footer */
+@media (min-width: 1024px) {
+    header, footer {
+        position: static;
+    }
+}
+
 /* --- Updates Added ---
    - Aligned logout button to the bottom, above the footer.
    - Ensured enough space between logout button and footer.
    - Made header fixed and ensured content is not hidden behind it.
    - Highlighted added or modified sections with comments.
+   - Added media query for desktop screens to handle fixed header and footer.
 */
