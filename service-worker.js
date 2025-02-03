@@ -49,20 +49,18 @@ self.addEventListener('fetch', (event) => {
 
             // If the request is for an HTML file (navigation), return the offline page
             if (event.request.mode === 'navigate') {
-                return fetch(event.request).catch(() => 
-                    caches.match('/offline.html')
-                );
+                return caches.match('https://drkimogad.github.io/Pet-Exercise-Log/offline.html');  // Ensure offline.html is cached
             }
 
             console.log('Fetching from network:', event.request.url);
             return fetch(event.request).catch(() => {
                 // Offline fallback if fetch fails (e.g., user is offline)
-                return caches.match('/offline.html');
+                return caches.match('https://drkimogad.github.io/Pet-Exercise-Log/offline.html');  // Ensure offline.html is cached
             });
         }).catch((err) => {
             console.error('Error fetching:', err);
             // In case of any unexpected errors, fallback to offline.html
-            return caches.match('/offline.html');
+            return caches.match('https://drkimogad.github.io/Pet-Exercise-Log/offline.html');
         })
     );
 });
@@ -87,6 +85,7 @@ self.addEventListener('activate', (event) => {
         })
     );
 });
+
 
 // NEW: Check for updates and fetch new service worker
 self.addEventListener('message', (event) => {
