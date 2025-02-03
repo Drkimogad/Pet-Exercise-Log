@@ -396,7 +396,7 @@ if (isLoggedIn()) {
 // JavaScript Snippet to Check for Updates
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/service-worker.js')
+        navigator.serviceWorker.register('https://drkimogad.github.io/Pet-Exercise-Log/service-worker.js')
             .then((registration) => {
                 console.log('Service Worker registered with scope:', registration.scope);
                 // Check for service worker updates
