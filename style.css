@@ -208,8 +208,8 @@ a:hover {
         padding: 15px 0;
     }
 
-    /* Adjust content width for desktop */
+    /* Adjust content width for desktop (80% reduced) */
     #content, #signup, #signin, #exerciseLog, #formContainer {
-        width: 60%;
+        width: 60%; /* Reduced width to 60% on desktop */
     }
 }
