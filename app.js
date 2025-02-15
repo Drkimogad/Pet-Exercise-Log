@@ -96,11 +96,8 @@ function getAllProfiles() {
 
 // Basic function to swap pages by updating the main container's innerHTML
 function showPage(pageHTML) {
-  document.getElementById('app').innerHTML = pageHTML;
-}
-
-function isLoggedIn() {
-  return sessionStorage.getItem('user') !== null;
+    console.log("Rendering page:", pageHTML); // Log the content being rendered
+    document.getElementById('app').innerHTML = pageHTML;
 }
 
 function showSignUp() {
@@ -108,7 +105,7 @@ function showSignUp() {
     <header style="background-color: #ADD8E6;">Pet Exercise Log</header>
     <div id="content">
       <blockquote>
-        <p>Regular exercise is vital for your pet's health, supporting a healthy weight, flexibility, and mental well-being.</p>
+        <p>Regular exercise is vital for your pet's health...</p>
       </blockquote>
       <h3>Please sign in or sign up to start tracking your pet's activities.</h3>
     </div>
@@ -141,10 +138,53 @@ function showSignUp() {
     }
   });
 
-  // Go to Sign In page
   document.getElementById('goToSignIn').addEventListener('click', (e) => {
     e.preventDefault();
     showSignIn();
+  });
+}
+
+function showSignIn() {
+  const signInPage = `
+    <header style="background-color: #ADD8E6;">Pet Exercise Log</header>
+    <div id="content">
+      <blockquote>
+        <p>Regular exercise is vital for your pet's health...</p>
+      </blockquote>
+      <h3>Please sign in or sign up to start tracking your pet's activities.</h3>
+    </div>
+    <div id="formContainer">
+      <h1>Sign In</h1>
+      <form id="signInForm">
+        <label for="signInUsername">Username:</label>
+        <input type="text" id="signInUsername" required><br><br>
+        <label for="signInPassword">Password:</label>
+        <input type="password" id="signInPassword" required><br><br>
+        <button type="submit">Sign In</button>
+      </form>
+      <p>Don't have an account? <a href="#" id="goToSignUp">Sign Up</a></p>
+    </div>
+  `;
+  showPage(signInPage);
+
+  document.getElementById('signInForm').addEventListener('submit', async function (event) {
+    event.preventDefault();
+    const username = sanitize(document.getElementById('signInUsername').value);
+    const passwordRaw = document.getElementById('signInPassword').value;
+    const password = await hashPassword(passwordRaw);
+    const user = JSON.parse(sessionStorage.getItem('user'));
+
+    if (user && user.username === username && user.password === password) {
+      alert('Sign in successful!');
+      showExerciseLog();
+    } else {
+      alert('Invalid credentials, please try again.');
+    }
+  });
+
+  document.getElementById('goToSignUp').addEventListener('click', (e) => {
+    e.preventDefault();
+    showSignUp();
   });
 }
 
