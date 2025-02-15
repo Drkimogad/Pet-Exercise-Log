@@ -192,6 +192,108 @@ function showSignIn() {
 }
 
 /* =======================================
+   Section: Notification System
+   ======================================= */
+
+// Function to show a notification
+function showNotification(message, type = 'success') {
+    const notification = document.createElement('div');
+    notification.id = 'notification';
+    notification.classList.add(type); // Adds 'success' or 'error'
+    notification.innerHTML = message;
+
+    // Append the notification to the body
+    document.body.appendChild(notification);
+
+    // Display the notification with fade-in effect
+    setTimeout(() => {
+        notification.style.display = 'block';
+        notification.style.opacity = 1;
+    }, 0);
+
+    // Hide the notification after 3 seconds
+    setTimeout(() => {
+        notification.style.opacity = 0;
+        // Remove the notification from the DOM after fade-out
+        setTimeout(() => {
+            notification.remove();
+        }, 500); // 500ms delay to match the fade-out duration
+    }, 3000);
+}
+
+/* =======================================
+   Section: Update App Logic (Example: Show Notifications)
+   ======================================= */
+
+// Example usage after successful sign-in
+function showSignIn() {
+    const signInPage = `
+        <header style="background-color: #ADD8E6;">Pet Exercise Log</header>
+        <div id="content">
+            <blockquote>
+                <p>Regular exercise is vital for your pet's health...</p>
+            </blockquote>
+            <h3>Please sign in or sign up to start tracking your pet's activities.</h3>
+        </div>
+        <div id="formContainer">
+            <h1>Sign In</h1>
+            <form id="signInForm">
+                <label for="signInUsername">Username:</label>
+                <input type="text" id="signInUsername" required><br><br>
+                <label for="signInPassword">Password:</label>
+                <input type="password" id="signInPassword" required><br><br>
+                <button type="submit">Sign In</button>
+            </form>
+            <p>Don't have an account? <a href="#" id="goToSignUp">Sign Up</a></p>
+        </div>
+    `;
+    showPage(signInPage);
+
+    document.getElementById('signInForm').addEventListener('submit', async function (event) {
+        event.preventDefault();
+        const username = sanitize(document.getElementById('signInUsername').value);
+        const passwordRaw = document.getElementById('signInPassword').value;
+        const password = await hashPassword(passwordRaw);
+        const user = JSON.parse(sessionStorage.getItem('user'));
+
+        if (user && user.username === username && user.password === password) {
+            showNotification('Sign in successful!', 'success'); // Show success notification
+            showExerciseLog(); // Load the exercise log page
+        } else {
+            showNotification('Invalid credentials, please try again.', 'error'); // Show error notification
+        }
+    });
+
+    document.getElementById('goToSignUp').addEventListener('click', (e) => {
+        e.preventDefault();
+        showSignUp();
+    });
+}
+
+// Example usage after adding a pet exercise entry
+async function handleProfileSave(event) {
+    event.preventDefault();
+    const petName = sanitize(document.getElementById('petName').value);
+    const petImage = document.getElementById('petImagePreview').src || '';
+    const petCharacteristics = sanitize(document.getElementById('petCharacteristics').value);
+
+    // Create new profile object and save it
+    const newProfile = {
+        petName,
+        petImage,
+        petCharacteristics,
+        // other fields...
+    };
+
+    try {
+        await addPetProfile(newProfile);
+        showNotification('Exercise added successfully!', 'success'); // Show success notification
+    } catch (error) {
+        showNotification('Failed to add exercise. Please try again.', 'error'); // Show error notification
+    }
+}
+
+/* =======================================
    Section: Calendar Generation
    ======================================= */
 
