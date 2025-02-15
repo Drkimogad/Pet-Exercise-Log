@@ -23,22 +23,22 @@ header {
     left: 0;
     z-index: 1000;
     background-color: #00FFFFFF; /* Add background color to the header */
-    padding: 15px 0; /* Reduced padding */
+    padding: 10px 0; /* Reduced padding */
     height: auto; /* Adjust header height based on content */
     box-sizing: border-box;
 }
 
 /* Content styling to ensure it doesn't get hidden behind the fixed header */
 #content, #signup, #signin, #dashboard, #exerciseLog {
-    margin-top: 130px; /* Adjusted for header height */
-    width: 100%;
+    margin-top: 120px; /* Reduced this value to ensure content is not hidden behind header */
+    width: 90%;  /* Make the content area smaller for better readability */
     margin: 20px auto; /* Center the content */
     margin-bottom: 100px;
 }
 
 /* Form container styling */
 #formContainer {
-    width: 80%;
+    width: 90%;  /* Reduce form container width for compactness */
     margin: 20px auto; /* Center the form container */
 }
 
@@ -197,6 +197,12 @@ a:hover {
         position: static;
     }
 
+    /* Desktop scaling similar to tablet (adjusted to be 60% of original size) */
+    #content, #signup, #signin, #exerciseLog, #formContainer {
+        width: 80%; /* Adjusted scaling for desktop to 80% width */
+        margin: 20px auto;
+    }
+
     /* Header layout on large screens */
     header {
         font-size: 2.5em;  /* Larger font on desktop */
@@ -206,11 +212,5 @@ a:hover {
     /* Footer layout on large screens */
     footer {
         padding: 15px 0;
-    }
-
-    /* Reduce content width for desktop (scaled to 60%) */
-    #content, #signup, #signin, #exerciseLog, #formContainer {
-        width: 60%; /* Reduced width for better scaling on desktop */
-        margin: 20px auto;
     }
 }
