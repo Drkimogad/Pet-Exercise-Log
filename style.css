@@ -2,7 +2,7 @@
 body {
     font-family: Arial, sans-serif;
     margin: 0;
-    padding: 100px 0 0 0; /* Increase padding to match the new header height */
+    padding: 0; /* Removed extra padding from body */
     background-color: #f4f4f4; /* Light grey background for better contrast */
     color: #333;
     display: flex;
@@ -15,7 +15,7 @@ body {
 header {
     color: #301934;
     text-align: center;
-    font-size: 2em;  /* Increase the font size */
+    font-size: 2em;  /* Increased font size */
     font-weight: bold;
     width: 100%;
     position: fixed;
@@ -23,25 +23,14 @@ header {
     left: 0;
     z-index: 1000;
     background-color: #00FFFFFF; /* Add background color to the header */
-    padding: 20px 0;
-    height: 100px; /* Adjust the height to fit the larger font */
-}
-
-blockquote {
-    padding: 20px;
-    margin: 20px 0;
-    background-color: #f9f9f9; /* Light grey background */
-    border-left: 10px solid #007bff; /* Blue left border */
-    border-radius: 5px; /* Rounded corners */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
-}
-blockquote p {
-    margin: 0;
+    padding: 15px 0; /* Reduced padding */
+    height: auto; /* Adjust header height based on content */
+    box-sizing: border-box;
 }
 
 /* Content styling to ensure it doesn't get hidden behind the fixed header */
 #content, #signup, #signin, #dashboard, #exerciseLog {
-    margin-top: 160px; /* Increase this value to ensure content is not hidden behind the header */
+    margin-top: 130px; /* Reduced this value */
     width: 80%;
     margin: 20px auto; /* Center the content */
     margin-bottom: 100px;
@@ -57,12 +46,13 @@ blockquote p {
 footer {
     background-color: #36454F; /* Charcoal color */
     color: white;
-    padding: 1em;
+    padding: 10px 0; /* Reduced padding */
     text-align: center;
     position: fixed;
     width: 100%;
     bottom: 0;
-    z-index: 1000; /* Ensures it stays above other content */
+    z-index: 1000;
+    box-sizing: border-box;
 }
 
 /* Form inputs */
@@ -133,7 +123,7 @@ a:hover {
     border-radius: 10px;
     display: block; /* Ensures visibility */
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
-} /* --- Ensures visibility of calendar --- */
+}
 
 /* Graph and pet log containers */
 #graph, #pet-log {
@@ -145,46 +135,9 @@ a:hover {
     background: #fff;
     border-radius: 10px;
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
-} /* --- Ensures visibility of graph and saved pet log --- */
-
-/* Responsive styling */
-@media (max-width: 768px) {
-    form {
-        width: 80%;
-    }
-
-    button {
-        font-size: 1em;
-        padding: 0.8em;
-    }
-
-    #calendar, #graph, #pet-log {
-        display: block; /* Ensures visibility on small screens */
-    } /* --- Added to ensure visibility --- */
 }
 
-@media (max-width: 480px) {
-    form {
-        width: 95%;
-    }
-
-    input, textarea {
-        font-size: 0.9em;
-    }
-
-    button {
-        font-size: 0.9em;
-    }
-}
-
-/* Media query for desktop screens to handle fixed header and footer */
-@media (min-width: 1024px) {
-    header, footer {
-        position: static;
-    }
-}
-
-/* --- Notification Styles --- */
+/* Notification Styles */
 #notification {
     position: fixed;
     top: 20px;
@@ -206,4 +159,57 @@ a:hover {
 
 #notification.success {
     background-color: #4CAF50; /* Green for success */
+}
+
+/* Responsive styling */
+@media (max-width: 768px) {
+    form {
+        width: 90%;
+    }
+
+    button {
+        font-size: 1em;
+        padding: 0.8em;
+    }
+
+    #calendar, #graph, #pet-log {
+        display: block; /* Ensures visibility on small screens */
+    }
+}
+
+@media (max-width: 480px) {
+    form {
+        width: 95%;
+    }
+
+    input, textarea {
+        font-size: 0.9em;
+    }
+
+    button {
+        font-size: 0.9em;
+    }
+}
+
+/* Media query for desktop screens */
+@media (min-width: 1024px) {
+    header, footer {
+        position: static;
+    }
+
+    /* Header layout on large screens */
+    header {
+        font-size: 2.5em;  /* Larger font on desktop */
+        padding: 20px 0;
+    }
+
+    /* Footer layout on large screens */
+    footer {
+        padding: 15px 0;
+    }
+
+    /* Adjust content width for desktop */
+    #content, #signup, #signin, #exerciseLog, #formContainer {
+        width: 60%;
+    }
 }
