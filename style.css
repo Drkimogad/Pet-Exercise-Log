@@ -184,10 +184,26 @@ a:hover {
     }
 }
 
-/* --- Updates Added ---
-   - Aligned logout button to the bottom, above the footer.
-   - Ensured enough space between logout button and footer.
-   - Made header fixed and ensured content is not hidden behind it.
-   - Highlighted added or modified sections with comments.
-   - Added media query for desktop screens to handle fixed header and footer.
-*/
+/* --- Notification Styles --- */
+#notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: #4CAF50; /* Green for success */
+    color: white;
+    padding: 15px;
+    border-radius: 5px;
+    font-size: 16px;
+    display: none; /* Hidden by default */
+    opacity: 0;
+    transition: opacity 0.5s ease-out;
+    z-index: 1000;
+}
+
+#notification.error {
+    background-color: #f44336; /* Red for errors */
+}
+
+#notification.success {
+    background-color: #4CAF50; /* Green for success */
+}
