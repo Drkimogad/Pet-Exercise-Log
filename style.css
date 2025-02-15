@@ -2,7 +2,7 @@
 body {
     font-family: Arial, sans-serif;
     margin: 0;
-    padding: 0; /* Removed extra padding from body */
+    padding: 0;
     background-color: #f4f4f4; /* Light grey background for better contrast */
     color: #333;
     display: flex;
@@ -22,24 +22,28 @@ header {
     top: 0;
     left: 0;
     z-index: 1000;
-    background-color: #00FFFFFF; /* Add background color to the header */
-    padding: 10px 0; /* Reduced padding */
-    height: auto; /* Adjust header height based on content */
+    background-color: #ADD8E6; /* Light blue header */
+    padding: 15px 0;
+    height: auto;
     box-sizing: border-box;
 }
 
 /* Content styling to ensure it doesn't get hidden behind the fixed header */
 #content, #signup, #signin, #dashboard, #exerciseLog {
-    margin-top: 120px; /* Reduced this value to ensure content is not hidden behind header */
+    margin-top: 120px; /* Adjusted margin-top to ensure visibility under header */
     width: 90%;  /* Make the content area smaller for better readability */
-    margin: 20px auto; /* Center the content */
+    margin: 20px auto;
     margin-bottom: 100px;
 }
 
 /* Form container styling */
 #formContainer {
-    width: 90%;  /* Reduce form container width for compactness */
+    width: 90%;  /* Ensure form container is centered and not too wide */
     margin: 20px auto; /* Center the form container */
+    background: white; /* White background for better form visibility */
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 /* Ensure footer is visible */
@@ -89,17 +93,6 @@ button:hover {
     background-color: #E5C148; /* Darker mustard */
 }
 
-/* Logout button */
-#logoutButton {
-    background-color: #ff4500;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-bottom: 60px; /* Ensure enough space between button and footer */
-}
-
 /* Links */
 a {
     color: #FFDB58; /* Mustard orange */
@@ -113,54 +106,6 @@ a:hover {
     text-decoration: underline;
 }
 
-/* Calendar container */
-#calendar {
-    width: 100%;
-    max-width: 800px;
-    margin: 2em auto;
-    background: #fff;
-    padding: 2em;
-    border-radius: 10px;
-    display: block; /* Ensures visibility */
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
-}
-
-/* Graph and pet log containers */
-#graph, #pet-log {
-    display: block; /* Ensures visibility */
-    width: 100%;
-    max-width: 800px;
-    margin: 2em auto;
-    padding: 2em;
-    background: #fff;
-    border-radius: 10px;
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
-}
-
-/* Notification Styles */
-#notification {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    background-color: #4CAF50; /* Green for success */
-    color: white;
-    padding: 15px;
-    border-radius: 5px;
-    font-size: 16px;
-    display: none; /* Hidden by default */
-    opacity: 0;
-    transition: opacity 0.5s ease-out;
-    z-index: 1000;
-}
-
-#notification.error {
-    background-color: #f44336; /* Red for errors */
-}
-
-#notification.success {
-    background-color: #4CAF50; /* Green for success */
-}
-
 /* Responsive styling */
 @media (max-width: 768px) {
     form {
@@ -171,12 +116,9 @@ a:hover {
         font-size: 1em;
         padding: 0.8em;
     }
-
-    #calendar, #graph, #pet-log {
-        display: block; /* Ensures visibility on small screens */
-    }
 }
 
+/* Ensure everything fits well in smaller screens */
 @media (max-width: 480px) {
     form {
         width: 95%;
@@ -188,29 +130,5 @@ a:hover {
 
     button {
         font-size: 0.9em;
-    }
-}
-
-/* Media query for desktop screens */
-@media (min-width: 1024px) {
-    header, footer {
-        position: static;
-    }
-
-    /* Desktop scaling similar to tablet (adjusted to be 60% of original size) */
-    #content, #signup, #signin, #exerciseLog, #formContainer {
-        width: 80%; /* Adjusted scaling for desktop to 80% width */
-        margin: 20px auto;
-    }
-
-    /* Header layout on large screens */
-    header {
-        font-size: 2.5em;  /* Larger font on desktop */
-        padding: 20px 0;
-    }
-
-    /* Footer layout on large screens */
-    footer {
-        padding: 15px 0;
     }
 }
