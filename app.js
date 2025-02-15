@@ -1,16 +1,23 @@
+// Global variable to track editing mode (null means adding new)
+let editingProfileIndex = null;
+
 // Helper function to show different pages
 function showPage(page) {
     document.getElementById('content').innerHTML = page;
 }
 
-// Check if the user is logged in
+// Check if the user is logged in (using sessionStorage for auth)
 function isLoggedIn() {
-    return localStorage.getItem('user') !== null;
+    return sessionStorage.getItem('user') !== null;
 }
 
-// Secure password storage using Base64 encoding (replace with hashing in production)
-function hashPassword(password) {
-    return btoa(password); // Replace with a proper hashing function for production
+// Secure password storage using SHA-256 via Web Crypto API
+async function hashPassword(password) {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(password);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(byte => byte.toString(16).padStart(2, '0')).join('');
 }
 
 // Sign-Up Page
@@ -41,13 +48,15 @@ function showSignUp() {
 
     showPage(signUpPage);
 
-    document.getElementById('signUpForm').addEventListener('submit', function (event) {
+    document.getElementById('signUpForm').addEventListener('submit', async function (event) {
         event.preventDefault();
         const username = document.getElementById('signUpUsername').value;
-        const password = hashPassword(document.getElementById('signUpPassword').value);
+        const passwordRaw = document.getElementById('signUpPassword').value;
+        const password = await hashPassword(passwordRaw);
 
         if (username && password) {
-            localStorage.setItem('user', JSON.stringify({ username, password }));
+            // Store user credentials in sessionStorage (not persistent after closing the browser)
+            sessionStorage.setItem('user', JSON.stringify({ username, password }));
             alert('Sign up successful!');
             showSignIn(); // Redirect to sign-in page after successful sign-up
         } else {
@@ -84,11 +93,12 @@ function showSignIn() {
 
     showPage(signInPage);
 
-    document.getElementById('signInForm').addEventListener('submit', function (event) {
+    document.getElementById('signInForm').addEventListener('submit', async function (event) {
         event.preventDefault();
         const username = document.getElementById('signInUsername').value;
-        const password = hashPassword(document.getElementById('signInPassword').value);
-        const user = JSON.parse(localStorage.getItem('user'));
+        const passwordRaw = document.getElementById('signInPassword').value;
+        const password = await hashPassword(passwordRaw);
+        const user = JSON.parse(sessionStorage.getItem('user'));
 
         if (user && user.username === username && user.password === password) {
             alert('Sign in successful!');
@@ -152,7 +162,7 @@ function showExerciseLog() {
                 <label for="exerciseLocation">Location (optional):</label>
                 <input type="text" id="exerciseLocation" placeholder="e.g., Park">
 
-                <!-- Exercise Calendar -->
+                <!-- Dynamic Exercise Calendar -->
                 <div id="exerciseCalendar"></div>
 
                 <!-- Canvas for Chart.js -->
@@ -172,18 +182,17 @@ function showExerciseLog() {
 
     showPage(exerciseLogPage);
 
+    // Handle exercise add/update
     document.getElementById('exerciseForm').addEventListener('submit', function(event) {
-        event.preventDefault();
         handleProfileSave(event);
-        alert('Exercise added successfully!');
-        loadSavedProfiles();
+        alert(editingProfileIndex === null ? 'Exercise added successfully!' : 'Exercise updated successfully!');
     });
 
     // Attach event listener for logout button
     document.getElementById('logoutButton').addEventListener('click', logout);
 
-    generateCalendar(); // Call the function to generate the calendar
-    renderExerciseGraph(); // Call the function to render the graph
+    generateCalendar(); // Generate the calendar dynamically
+    renderExerciseGraph(); // Render the graph
     loadSavedProfiles();
 
     // Preview pet image
@@ -204,36 +213,47 @@ function showExerciseLog() {
     });
 }
 
-// Generate Exercise Calendar
+// Generate Exercise Calendar dynamically based on current month
 function generateCalendar() {
     const calendarDiv = document.getElementById('exerciseCalendar');
     calendarDiv.innerHTML = '';
-    const daysInMonth = new Date().getMonth() % 2 === 0 ? 30 : 31; // Adjust for the number of days in the month
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = now.getMonth(); // 0-indexed
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+
     for (let i = 1; i <= daysInMonth; i++) {
         const dayDiv = document.createElement('div');
         dayDiv.classList.add('calendar-day');
         dayDiv.innerHTML = `<label>${i}</label><input type="checkbox" id="day${i}">`;
-        if (i % 10 === 0) {
+        if (i % 7 === 0) { // new line every 7 days (week)
             calendarDiv.appendChild(document.createElement('br'));
         }
         calendarDiv.appendChild(dayDiv);
     }
 }
 
-// Render Exercise Graph Placeholder
+// Render Exercise Graph using Chart.js
 function renderExerciseGraph() {
     const canvas = document.getElementById('exerciseChart');
     const ctx = canvas.getContext('2d');
-    const data = JSON.parse(localStorage.getItem('exerciseData')) || [];
-    const labels = data.map((_, index) => `Day ${index + 1}`);
+    // Get exercise data from pet profiles
+    const profiles = JSON.parse(localStorage.getItem('petProfiles')) || [];
+    const data = profiles.map(profile => ({ duration: parseInt(profile.exerciseDuration, 10) || 0 }));
+    const labels = data.map((_, index) => `Entry ${index + 1}`);
     const values = data.map(entry => entry.duration);
 
-    new Chart(ctx, {
+    // Clear any previous chart instance (if needed)
+    if (window.exerciseChart instanceof Chart) {
+        window.exerciseChart.destroy();
+    }
+
+    window.exerciseChart = new Chart(ctx, {
         type: 'line',
         data: {
             labels: labels,
             datasets: [{
-                label: 'Exercise Duration',
+                label: 'Exercise Duration (min)',
                 data: values,
                 borderColor: 'blue',
                 fill: false
@@ -246,7 +266,7 @@ function renderExerciseGraph() {
                     display: true,
                     title: {
                         display: true,
-                        text: 'Days'
+                        text: 'Entries'
                     }
                 },
                 y: {
@@ -261,7 +281,7 @@ function renderExerciseGraph() {
     });
 }
 
-// Save Pet Profile
+// Save or update Pet Profile
 function handleProfileSave(event) {
     event.preventDefault();
     const petName = document.getElementById('petName').value;
@@ -292,14 +312,25 @@ function handleProfileSave(event) {
         exerciseLocation
     };
     let profiles = JSON.parse(localStorage.getItem('petProfiles')) || [];
-    profiles.push(newProfile);
+
+    // If in edit mode, update the existing profile; otherwise, add a new one.
+    if (editingProfileIndex !== null) {
+        profiles[editingProfileIndex] = newProfile;
+        editingProfileIndex = null;
+        document.getElementById('exerciseForm').querySelector('button[type="submit"]').textContent = "Add Exercise";
+    } else {
+        profiles.push(newProfile);
+    }
+
     localStorage.setItem('petProfiles', JSON.stringify(profiles));
     localStorage.setItem('exerciseData', JSON.stringify(profiles.map(profile => ({duration: profile.exerciseDuration})))); // Save exercise data for graph
 
     loadSavedProfiles();
+    renderExerciseGraph(); // Update the chart with the new data
+    event.target.reset(); // Clear the form after saving
 }
 
-// Load Saved Pet Profiles
+// Load Saved Pet Profiles and attach functional buttons
 function loadSavedProfiles() {
     const profiles = JSON.parse(localStorage.getItem('petProfiles')) || [];
     const savedProfilesDiv = document.getElementById('savedProfiles');
@@ -330,10 +361,11 @@ function loadSavedProfiles() {
 
 // Delete Profile
 function deleteProfile(index) {
-    const profiles = JSON.parse(localStorage.getItem('petProfiles')) || [];
+    let profiles = JSON.parse(localStorage.getItem('petProfiles')) || [];
     profiles.splice(index, 1);
     localStorage.setItem('petProfiles', JSON.stringify(profiles));
     loadSavedProfiles();
+    renderExerciseGraph();
 }
 
 // Print Profile
@@ -356,7 +388,7 @@ function printProfile(index) {
     printWindow.document.write('<br><button onclick="window.print()">Print</button>');
 }
 
-// Edit Profile
+// Edit Profile: populate the form for updating and set edit mode
 function editProfile(index) {
     const profiles = JSON.parse(localStorage.getItem('petProfiles')) || [];
     const profile = profiles[index];
@@ -372,42 +404,39 @@ function editProfile(index) {
     document.getElementById('caloriesBurned').value = profile.caloriesBurned;
     document.getElementById('exerciseNotes').value = profile.exerciseNotes;
     document.getElementById('exerciseLocation').value = profile.exerciseLocation;
-
-    profiles.splice(index, 1);
-    localStorage.setItem('petProfiles', JSON.stringify(profiles));
-
-    loadSavedProfiles();
+    
+    // Note: Setting a file input value programmatically is not supported.
+    // Optionally, you can display the current pet image in the preview.
+    
+    editingProfileIndex = index;
+    document.getElementById('exerciseForm').querySelector('button[type="submit"]').textContent = "Update Exercise";
 }
 
-// Logout function
+// Logout function: remove user credentials from sessionStorage
 function logout() {
-    localStorage.clear();
+    sessionStorage.removeItem('user');
     alert('You have been logged out.');
     showSignIn();
 }
 
-// Initial check
+// Initial check: load exercise log if user is logged in; otherwise, show sign-in
 if (isLoggedIn()) {
     showExerciseLog();
 } else {
     showSignIn();
 }
 
-// JavaScript Snippet to Check for Updates
+// JavaScript Snippet to Check for Updates via service worker (assuming you already have one)
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
         navigator.serviceWorker.register('https://drkimogad.github.io/Pet-Exercise-Log/service-worker.js')
             .then((registration) => {
                 console.log('Service Worker registered with scope:', registration.scope);
-                // Check for service worker updates
                 registration.update();
-
-                // Listen for when a new service worker is available and update it
                 registration.addEventListener('updatefound', () => {
                     const installingWorker = registration.installing;
                     installingWorker.addEventListener('statechange', () => {
                         if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                            // New version available, notify user and skip waiting
                             if (confirm('A new version of the app is available. Would you like to update?')) {
                                 installingWorker.postMessage({ action: 'skipWaiting' });
                             }
@@ -422,13 +451,11 @@ if ('serviceWorker' in navigator) {
 }
 
 window.addEventListener('online', () => {
-  // Refresh the page or fetch live data
   console.log('You are online');
   location.reload();
 });
 
 window.addEventListener('offline', () => {
   console.log('You are offline');
-  // Optionally, you can show a message to the user
   alert('It seems like you\'re not connected to the internet. Please check your connection');
 });
