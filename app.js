@@ -169,7 +169,7 @@ function showExerciseLog() {
                 <h2>Exercise Summary</h2>
                 <canvas id="exerciseChart"></canvas>
 
-                <button type="submit">Add Exercise</button>
+                <button type="submit">${editingProfileIndex === null ? "Add Exercise" : "Update Exercise"}</button>
             </form>
             <div id="savedProfilesContainer">
                 <h1>Saved Pet Profiles</h1>
@@ -182,36 +182,43 @@ function showExerciseLog() {
 
     showPage(exerciseLogPage);
 
-    // Handle exercise add/update
-    document.getElementById('exerciseForm').addEventListener('submit', function(event) {
-        handleProfileSave(event);
-        alert(editingProfileIndex === null ? 'Exercise added successfully!' : 'Exercise updated successfully!');
-    });
+    // Attach event listener for the exercise form submission (Add/Update Exercise)
+    const exerciseForm = document.getElementById('exerciseForm');
+    if (exerciseForm) {
+        exerciseForm.addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent default form submission behavior
+            console.log("Exercise form submitted"); // Debug logging
+            handleProfileSave(event);
+            alert(editingProfileIndex === null ? 'Exercise added successfully!' : 'Exercise updated successfully!');
+        });
+    } else {
+        console.error("exerciseForm not found in the DOM");
+    }
 
     // Attach event listener for logout button
     document.getElementById('logoutButton').addEventListener('click', logout);
 
-    generateCalendar(); // Generate the calendar dynamically
-    renderExerciseGraph(); // Render the graph
-    loadSavedProfiles();
+    generateCalendar(); // Generate calendar based on current month
+    renderExerciseGraph(); // Render the exercise graph
+    loadSavedProfiles(); // Load saved pet profiles
 
-    // Preview pet image
+    // Preview pet image functionality
     const petImageInput = document.getElementById('petImage');
     const petImagePreview = document.getElementById('petImagePreview');
-    
     petImageInput.addEventListener('change', function(event) {
         const file = event.target.files[0];
         const reader = new FileReader();
     
         reader.onload = function(e) {
             petImagePreview.src = e.target.result;
-        }
+        };
     
         if (file) {
             reader.readAsDataURL(file);
         }
     });
 }
+
 
 // Generate Exercise Calendar dynamically based on current month
 function generateCalendar() {
