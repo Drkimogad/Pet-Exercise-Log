@@ -30,8 +30,8 @@ header {
 
 /* Content styling to ensure it doesn't get hidden behind the fixed header */
 #content, #signup, #signin, #dashboard, #exerciseLog {
-    margin-top: 130px; /* Reduced this value */
-    width: 80%;
+    margin-top: 130px; /* Adjusted for header height */
+    width: 100%;
     margin: 20px auto; /* Center the content */
     margin-bottom: 100px;
 }
@@ -208,8 +208,9 @@ a:hover {
         padding: 15px 0;
     }
 
-    /* Adjust content width for desktop (80% reduced) */
+    /* Reduce content width for desktop (scaled to 60%) */
     #content, #signup, #signin, #exerciseLog, #formContainer {
-        width: 60%; /* Reduced width to 60% on desktop */
+        width: 60%; /* Reduced width for better scaling on desktop */
+        margin: 20px auto;
     }
 }
