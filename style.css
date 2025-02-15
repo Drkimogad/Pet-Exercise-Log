@@ -3,82 +3,74 @@ body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #f4f4f4; /* Light grey background for better contrast */
+    background-color: #f4f4f4;
     color: #333;
     display: flex;
     flex-direction: column;
     align-items: center;
-    min-height: 100vh; /* Full height */
+    min-height: 100vh;
 }
 
 /* Header styling */
 header {
     color: #301934;
     text-align: center;
-    font-size: 2em;  /* Increased font size */
+    font-size: 2em;
     font-weight: bold;
     width: 100%;
     position: fixed;
     top: 0;
     left: 0;
     z-index: 1000;
-    background-color: #ADD8E6; /* Light blue header */
+    background-color: #ADD8E6;
     padding: 15px 0;
     height: auto;
-    box-sizing: border-box;
 }
 
-/* Content styling to ensure it doesn't get hidden behind the fixed header */
+/* Content styling */
 #content, #signup, #signin, #dashboard, #exerciseLog {
-    margin-top: 120px; /* Adjusted margin-top to ensure visibility under header */
-    width: 90%;  /* Make the content area smaller for better readability */
+    margin-top: 120px;
+    width: 90%;
     margin: 20px auto;
     margin-bottom: 100px;
+    text-align: center;
 }
 
 /* Form container styling */
 #formContainer {
-    width: 90%;  /* Ensure form container is centered and not too wide */
-    margin: 20px auto; /* Center the form container */
-    background: white; /* White background for better form visibility */
+    width: 90%;
+    margin: 20px auto;
+    background: white;
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* Ensure footer is visible */
+/* Footer styling */
 footer {
-    background-color: #36454F; /* Charcoal color */
+    background-color: #36454F;
     color: white;
-    padding: 10px 0; /* Reduced padding */
+    padding: 10px 0;
     text-align: center;
     position: fixed;
     width: 100%;
     bottom: 0;
     z-index: 1000;
-    box-sizing: border-box;
 }
 
 /* Form inputs */
 input, textarea {
     width: 100%;
-    padding: 1em;  /* Increased padding for better touch */
+    padding: 1em;
     margin: 0.6em 0;
     border: 1px solid #bbb;
-    border-radius: 8px;  /* Rounded borders */
+    border-radius: 8px;
     font-size: 1em;
-}
-
-/* Focus effect */
-input:focus, textarea:focus {
-    border-color: #FFDB58;  /* Mustard orange */
-    outline: none;
-    box-shadow: 0 0 5px rgba(255, 219, 88, 0.7);
 }
 
 /* Button styling */
 button {
-    background-color: #FFDB58; /* Mustard orange */
+    background-color: #FFDB58;
     color: white;
     border: solid black;
     padding: 1em;
@@ -90,12 +82,12 @@ button {
 }
 
 button:hover {
-    background-color: #E5C148; /* Darker mustard */
+    background-color: #E5C148;
 }
 
 /* Links */
 a {
-    color: #FFDB58; /* Mustard orange */
+    color: #FFDB58;
     text-decoration: none;
     margin-top: 1em;
     text-align: center;
@@ -106,7 +98,7 @@ a:hover {
     text-decoration: underline;
 }
 
-/* Responsive styling */
+/* Responsive adjustments */
 @media (max-width: 768px) {
     form {
         width: 90%;
@@ -118,7 +110,6 @@ a:hover {
     }
 }
 
-/* Ensure everything fits well in smaller screens */
 @media (max-width: 480px) {
     form {
         width: 95%;
