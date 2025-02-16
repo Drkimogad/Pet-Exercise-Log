@@ -207,6 +207,19 @@ function showSignIn() {
     showSignUp();
   });
 }
+function showExerciseLog() {
+  const dashboardHTML = `
+    <div id="dashboard">
+      <h1>Dashboard</h1>
+      <p>Welcome! Here you can view your pet's exercise logs and analytics.</p>
+      <canvas id="exerciseChart"></canvas>
+    </div>
+  `;
+  showPage(dashboardHTML);
+
+  // Optionally, initialize your chart if needed:
+  renderExerciseGraph();
+}
 
 /* =======================================
    Section: Calendar and Chart Rendering
