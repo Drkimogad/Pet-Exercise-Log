@@ -89,6 +89,28 @@ function getAllProfiles() {
     request.onerror = (event) => reject(event);
   });
 }
+// ... other IndexedDB operations ...
+
+function getAllProfiles() {
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction(['petProfiles'], 'readonly');
+    const store = transaction.objectStore('petProfiles');
+    const request = store.getAll();
+    request.onsuccess = (event) => resolve(event.target.result);
+    request.onerror = (event) => reject(event);
+  });
+}
+
+// Insert the getPetProfileByName function here
+async function getPetProfileByName(petName) {
+  try {
+    const profiles = await getAllProfiles();
+    return profiles.find(profile => profile.petName === petName);
+  } catch (error) {
+    console.error('Error retrieving pet profile by name:', error);
+    return null;
+  }
+}
 
 /* =======================================
    Section: Authentication (Sign Up / Sign In)
