@@ -1,21 +1,25 @@
 "use strict";
 
-// Global variable to track editing mode (null means adding new)
-let editingProfileIndex = null;
+/* ============================================================
+   GLOBAL VARIABLES & STATE MANAGEMENT
+============================================================ */
+let editingProfileIndex = null; // Tracks whether we're editing an existing profile
 
 /* ============================================================
-   Helper Functions & Authentication
+   HELPER FUNCTIONS & AUTHENTICATION
 ============================================================ */
 
-// Use the #app container for dynamic content
+// Inject dynamic content into the #app container
 function showPage(pageHTML) {
   document.getElementById('app').innerHTML = pageHTML;
 }
 
+// Check if the user is logged in (using sessionStorage for auth)
 function isLoggedIn() {
   return sessionStorage.getItem('user') !== null;
 }
 
+// Secure password storage using SHA-256 via Web Crypto API
 async function hashPassword(password) {
   const encoder = new TextEncoder();
   const data = encoder.encode(password);
@@ -25,7 +29,7 @@ async function hashPassword(password) {
 }
 
 /* ============================================================
-   Authentication Pages: Sign-Up & Sign-In
+   AUTHENTICATION PAGES: SIGN-UP & SIGN-IN
 ============================================================ */
 
 function showSignUp() {
@@ -113,7 +117,7 @@ function showSignIn() {
 }
 
 /* ============================================================
-   Dashboard / Exercise Log Page
+   DASHBOARD / EXERCISE LOG PAGE
 ============================================================ */
 
 function showExerciseLog() {
@@ -181,19 +185,21 @@ function showExerciseLog() {
         <h1>Saved Pet Profiles</h1>
         <div id="savedProfiles"></div>
       </div>
+      <button id="monthlyReportButton">Monthly Report</button>
       <button id="logoutButton">Logout</button>
     </div>
   `;
   showPage(exerciseLogPage);
 
-  // Event listener for exercise form submission
+  // Attach event listener for exercise form submission
   document.getElementById('exerciseForm').addEventListener('submit', (event) => {
     event.preventDefault();
     handleProfileSave(event);
     alert(editingProfileIndex === null ? 'Exercise added successfully!' : 'Exercise updated successfully!');
   });
 
-  // Logout button listener
+  // Attach listeners for monthly report and logout buttons
+  document.getElementById('monthlyReportButton').addEventListener('click', generateMonthlyReport);
   document.getElementById('logoutButton').addEventListener('click', logout);
 
   // Initialize dashboard components
@@ -215,9 +221,27 @@ function showExerciseLog() {
 }
 
 /* ============================================================
-   Calendar, Chart, and Profile Management
+   CALENDAR, CHART & PROFILE MANAGEMENT
 ============================================================ */
 
+// Save the calendar's checkbox state (which days are ticked)
+function saveCalendarState() {
+  let state = {};
+  const checkboxes = document.querySelectorAll('#exerciseCalendar input[type="checkbox"]');
+  checkboxes.forEach(cb => {
+    let day = cb.id.replace("day", "");
+    state[day] = cb.checked;
+  });
+  localStorage.setItem("currentCalendarState", JSON.stringify(state));
+}
+
+// Load the calendar state from storage
+function loadCalendarState() {
+  let state = JSON.parse(localStorage.getItem("currentCalendarState"));
+  return state || {};
+}
+
+// Generate calendar for the current month, loading saved tick state and updating charts on change
 function generateCalendar() {
   const calendarDiv = document.getElementById('exerciseCalendar');
   calendarDiv.innerHTML = '';
@@ -225,18 +249,31 @@ function generateCalendar() {
   const year = now.getFullYear();
   const month = now.getMonth();
   const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const savedState = loadCalendarState();
 
   for (let i = 1; i <= daysInMonth; i++) {
     const dayDiv = document.createElement('div');
     dayDiv.classList.add('calendar-day');
-    dayDiv.innerHTML = `<label>${i}</label><input type="checkbox" id="day${i}">`;
+    const isChecked = savedState[i] ? 'checked' : '';
+    dayDiv.innerHTML = `<label>${i}</label><input type="checkbox" id="day${i}" ${isChecked}>`;
     if (i % 7 === 0) {
       calendarDiv.appendChild(document.createElement('br'));
     }
     calendarDiv.appendChild(dayDiv);
   }
+  
+  // Update calendar state and (optionally) charts when any checkbox changes
+  const checkboxes = calendarDiv.querySelectorAll('input[type="checkbox"]');
+  checkboxes.forEach(cb => {
+    cb.addEventListener('change', () => {
+      saveCalendarState();
+      // Optionally update charts in real time
+      renderExerciseGraph();
+    });
+  });
 }
 
+// Render the exercise graph for the dashboard (based on all saved profiles)
 function renderExerciseGraph() {
   const canvas = document.getElementById('exerciseChart');
   const ctx = canvas.getContext('2d');
@@ -275,6 +312,7 @@ function renderExerciseGraph() {
   });
 }
 
+// Save or update a pet profile (exercise entry)
 function handleProfileSave(event) {
   event.preventDefault();
   const petName = document.getElementById('petName').value;
@@ -306,7 +344,6 @@ function handleProfileSave(event) {
   };
 
   let profiles = JSON.parse(localStorage.getItem('petProfiles')) || [];
-
   if (editingProfileIndex !== null) {
     profiles[editingProfileIndex] = newProfile;
     editingProfileIndex = null;
@@ -314,13 +351,13 @@ function handleProfileSave(event) {
   } else {
     profiles.push(newProfile);
   }
-
   localStorage.setItem('petProfiles', JSON.stringify(profiles));
   renderExerciseGraph();
   loadSavedProfiles();
   event.target.reset();
 }
 
+// Load saved pet profiles and attach delete, print, and edit actions
 function loadSavedProfiles() {
   const profiles = JSON.parse(localStorage.getItem('petProfiles')) || [];
   const savedProfilesDiv = document.getElementById('savedProfiles');
@@ -401,7 +438,244 @@ function logout() {
 }
 
 /* ============================================================
-   Service Worker Registration & Connectivity
+   MONTHLY REPORT & AUTO-EXPORT TRIGGER
+============================================================ */
+
+// Export monthly report as a JSON file
+function exportMonthlyReport(report) {
+  const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(report, null, 2));
+  const downloadAnchorNode = document.createElement('a');
+  downloadAnchorNode.setAttribute("href", dataStr);
+  downloadAnchorNode.setAttribute("download", `${report.monthName}_${report.year}_Monthly_Report.json`);
+  document.body.appendChild(downloadAnchorNode);
+  downloadAnchorNode.click();
+  downloadAnchorNode.remove();
+}
+
+// Render a read-only calendar for the report view
+function renderReportCalendar(daysInMonth, calendarState) {
+  const calendarDiv = document.getElementById('reportCalendar');
+  calendarDiv.innerHTML = '<h2>Calendar</h2>';
+  for (let i = 1; i <= daysInMonth; i++) {
+    const dayDiv = document.createElement('div');
+    dayDiv.classList.add('calendar-day-report');
+    const ticked = calendarState[i] ? '✔' : '';
+    dayDiv.innerHTML = `<span>${i}</span> <span>${ticked}</span>`;
+    calendarDiv.appendChild(dayDiv);
+  }
+}
+
+// Render two monthly charts: one for duration, one for calories burned.
+function renderMonthlyCharts(dailyDuration, dailyCalories, daysInMonth) {
+  // Duration Chart with fixed y-axis (9 grades, each 10 minutes, up to 90 minutes)
+  const durationCtx = document.getElementById('durationChart').getContext('2d');
+  if (window.durationChart instanceof Chart) window.durationChart.destroy();
+  window.durationChart = new Chart(durationCtx, {
+    type: 'line',
+    data: {
+      labels: Array.from({ length: daysInMonth }, (_, i) => i + 1),
+      datasets: [{
+        label: 'Exercise Duration (min)',
+        data: dailyDuration,
+        borderColor: 'green',
+        fill: false
+      }]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        x: {
+          title: { display: true, text: 'Day of Month' }
+        },
+        y: {
+          ticks: {
+            stepSize: 10,
+            max: 90,
+            callback: value => value + ' min'
+          },
+          title: { display: true, text: 'Duration (min)' }
+        }
+      }
+    }
+  });
+
+  // Calories Chart
+  const caloriesCtx = document.getElementById('caloriesChart').getContext('2d');
+  if (window.caloriesChart instanceof Chart) window.caloriesChart.destroy();
+  window.caloriesChart = new Chart(caloriesCtx, {
+    type: 'line',
+    data: {
+      labels: Array.from({ length: daysInMonth }, (_, i) => i + 1),
+      datasets: [{
+        label: 'Calories Burned',
+        data: dailyCalories,
+        borderColor: 'red',
+        fill: false
+      }]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        x: {
+          title: { display: true, text: 'Day of Month' }
+        },
+        y: {
+          title: { display: true, text: 'Calories' }
+        }
+      }
+    }
+  });
+}
+
+// Generate the monthly report view by aggregating current month's data and calendar state
+function generateMonthlyReport() {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = now.getMonth(); // 0-indexed
+  const monthName = now.toLocaleString('default', { month: 'long' });
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+  // Filter exercise entries for the current month
+  let profiles = JSON.parse(localStorage.getItem('petProfiles')) || [];
+  let monthProfiles = profiles.filter(profile => {
+    let date = new Date(profile.exerciseDate);
+    return date.getFullYear() === year && date.getMonth() === month;
+  });
+
+  // Aggregate daily totals for exercise duration and calories burned
+  let dailyDuration = Array(daysInMonth).fill(0);
+  let dailyCalories = Array(daysInMonth).fill(0);
+  monthProfiles.forEach(profile => {
+    let date = new Date(profile.exerciseDate);
+    let day = date.getDate();
+    dailyDuration[day - 1] += parseInt(profile.exerciseDuration, 10) || 0;
+    dailyCalories[day - 1] += parseInt(profile.caloriesBurned, 10) || 0;
+  });
+
+  // Get the current calendar state
+  let calendarState = loadCalendarState();
+
+  // Create a monthly report object
+  let monthlyReport = {
+    year,
+    month,
+    monthName,
+    dailyDuration,
+    dailyCalories,
+    calendarState,
+    generatedAt: new Date().toISOString()
+  };
+
+  // Archive the monthly report
+  let monthlyReports = JSON.parse(localStorage.getItem('monthlyReports')) || [];
+  monthlyReports.push(monthlyReport);
+  localStorage.setItem('monthlyReports', JSON.stringify(monthlyReports));
+
+  // Render the monthly report view
+  const reportHTML = `
+    <div id="monthlyReport">
+      <h1>${monthName} ${year} Monthly Report</h1>
+      <div id="reportCalendar"></div>
+      <div id="reportCharts">
+        <canvas id="durationChart"></canvas>
+        <canvas id="caloriesChart"></canvas>
+      </div>
+      <button id="exportReport">Export Report</button>
+      <button id="backToDashboard">Back to Dashboard</button>
+    </div>
+  `;
+  showPage(reportHTML);
+  renderReportCalendar(daysInMonth, calendarState);
+  renderMonthlyCharts(dailyDuration, dailyCalories, daysInMonth);
+
+  // Attach export and back button listeners
+  document.getElementById('exportReport').addEventListener('click', () => {
+    exportMonthlyReport(monthlyReport);
+  });
+  document.getElementById('backToDashboard').addEventListener('click', () => {
+    // Reset for the new month: clear calendar state and refresh dashboard
+    localStorage.removeItem("currentCalendarState");
+    showExerciseLog();
+  });
+}
+
+// Automatic monthly report trigger (export & reset) at midnight on the last day of the month
+function scheduleMonthlyReportTrigger() {
+  const now = new Date();
+  const currentYear = now.getFullYear();
+  const currentMonth = now.getMonth();
+  // Last day of current month
+  const lastDayOfMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+  // Trigger at midnight (00:00:00) of the day after the last day
+  const triggerTime = new Date(currentYear, currentMonth, lastDayOfMonth + 1, 0, 0, 0);
+  const timeUntilTrigger = triggerTime.getTime() - now.getTime();
+  
+  console.log(`Monthly report will auto-trigger in ${Math.round(timeUntilTrigger / 1000)} seconds.`);
+  
+  if (timeUntilTrigger > 0) {
+    setTimeout(() => {
+      exportAndResetMonthlyReport();
+    }, timeUntilTrigger);
+  }
+}
+
+// Export the current month's report and reset for the new month
+function exportAndResetMonthlyReport() {
+  const now = new Date();
+  const currentYear = now.getFullYear();
+  const currentMonth = now.getMonth();
+  const monthName = now.toLocaleString('default', { month: 'long' });
+  const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+
+  // Filter exercise entries for the current month
+  let profiles = JSON.parse(localStorage.getItem('petProfiles')) || [];
+  let monthProfiles = profiles.filter(profile => {
+    const entryDate = new Date(profile.exerciseDate);
+    return entryDate.getFullYear() === currentYear && entryDate.getMonth() === currentMonth;
+  });
+
+  // Aggregate daily totals
+  let dailyDuration = Array(daysInMonth).fill(0);
+  let dailyCalories = Array(daysInMonth).fill(0);
+  monthProfiles.forEach(profile => {
+    const entryDate = new Date(profile.exerciseDate);
+    const day = entryDate.getDate();
+    dailyDuration[day - 1] += parseInt(profile.exerciseDuration, 10) || 0;
+    dailyCalories[day - 1] += parseInt(profile.caloriesBurned, 10) || 0;
+  });
+
+  // Load calendar state
+  const calendarState = loadCalendarState();
+
+  // Create report object
+  const monthlyReport = {
+    year: currentYear,
+    month: currentMonth,
+    monthName,
+    dailyDuration,
+    dailyCalories,
+    calendarState,
+    generatedAt: new Date().toISOString()
+  };
+
+  // Archive the report
+  let monthlyReports = JSON.parse(localStorage.getItem('monthlyReports')) || [];
+  monthlyReports.push(monthlyReport);
+  localStorage.setItem('monthlyReports', JSON.stringify(monthlyReports));
+
+  // Auto-export the report
+  exportMonthlyReport(monthlyReport);
+
+  // Reset calendar state for new month
+  localStorage.removeItem("currentCalendarState");
+  showExerciseLog();
+
+  // Reschedule for next month
+  scheduleMonthlyReportTrigger();
+}
+
+/* ============================================================
+   SERVICE WORKER & CONNECTIVITY
 ============================================================ */
 
 if ('serviceWorker' in navigator) {
@@ -438,7 +712,7 @@ window.addEventListener('offline', () => {
 });
 
 /* ============================================================
-   Initialization on DOMContentLoaded
+   INITIALIZATION ON DOMCONTENTLOADED
 ============================================================ */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -447,4 +721,6 @@ document.addEventListener('DOMContentLoaded', () => {
   } else {
     showSignIn();
   }
+  // Schedule the automatic monthly report trigger
+  scheduleMonthlyReportTrigger();
 });
