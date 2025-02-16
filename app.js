@@ -262,12 +262,11 @@ function generateCalendar() {
     calendarDiv.appendChild(dayDiv);
   }
   
-  // Update calendar state and (optionally) charts when any checkbox changes
+  // Update calendar state and charts when any checkbox changes
   const checkboxes = calendarDiv.querySelectorAll('input[type="checkbox"]');
   checkboxes.forEach(cb => {
     cb.addEventListener('change', () => {
       saveCalendarState();
-      // Optionally update charts in real time
       renderExerciseGraph();
     });
   });
@@ -312,49 +311,65 @@ function renderExerciseGraph() {
   });
 }
 
-// Save or update a pet profile (exercise entry)
+// Save or update a pet profile (exercise entry) with partial update support
 function handleProfileSave(event) {
   event.preventDefault();
+  
+  // Get updated fields for partial update in edit mode
+  const updatedDuration = document.getElementById('exerciseDuration').value;
+  const updatedCalories = document.getElementById('caloriesBurned').value;
+  const updatedDate = document.getElementById('exerciseDate').value;
+  
+  // Get other fields from the form
   const petName = document.getElementById('petName').value;
   const petImage = document.getElementById('petImagePreview').src;
   const petCharacteristics = document.getElementById('petCharacteristics').value;
   const exerciseType = document.getElementById('exerciseType').value;
-  const exerciseDuration = document.getElementById('exerciseDuration').value;
-  const exerciseDate = document.getElementById('exerciseDate').value;
   const bodyconditionScoring = document.getElementById('bodyconditionScoring').value;
   const exerciseTime = document.getElementById('exerciseTime').value;
   const exerciseIntensity = document.getElementById('exerciseIntensity').value;
-  const caloriesBurned = document.getElementById('caloriesBurned').value;
   const exerciseNotes = document.getElementById('exerciseNotes').value;
   const exerciseLocation = document.getElementById('exerciseLocation').value;
-
-  const newProfile = {
-    petName,
-    petImage,
-    petCharacteristics,
-    exerciseType,
-    exerciseDuration,
-    exerciseDate,
-    bodyconditionScoring,
-    exerciseTime,
-    exerciseIntensity,
-    caloriesBurned,
-    exerciseNotes,
-    exerciseLocation
-  };
-
+  
   let profiles = JSON.parse(localStorage.getItem('petProfiles')) || [];
+  
   if (editingProfileIndex !== null) {
-    profiles[editingProfileIndex] = newProfile;
+    // In edit mode, update only duration, calories, and date (preserving other fields)
+    let existingProfile = profiles[editingProfileIndex];
+    existingProfile.exerciseDuration = updatedDuration || existingProfile.exerciseDuration;
+    existingProfile.caloriesBurned = updatedCalories || existingProfile.caloriesBurned;
+    existingProfile.exerciseDate = updatedDate || existingProfile.exerciseDate;
+    profiles[editingProfileIndex] = existingProfile;
     editingProfileIndex = null;
     document.getElementById('exerciseForm').querySelector('button[type="submit"]').textContent = "Add Exercise";
   } else {
+    // New entry – require all fields
+    const newProfile = {
+      petName,
+      petImage,
+      petCharacteristics,
+      exerciseType,
+      exerciseDuration: updatedDuration,
+      exerciseDate: updatedDate,
+      bodyconditionScoring,
+      exerciseTime,
+      exerciseIntensity,
+      caloriesBurned: updatedCalories,
+      exerciseNotes,
+      exerciseLocation
+    };
     profiles.push(newProfile);
   }
+  
   localStorage.setItem('petProfiles', JSON.stringify(profiles));
   renderExerciseGraph();
   loadSavedProfiles();
+  
+  // Preserve the current calendar state before resetting the form
+  const savedCalendarState = loadCalendarState();
   event.target.reset();
+  localStorage.setItem("currentCalendarState", JSON.stringify(savedCalendarState));
+  generateCalendar();
 }
 
 // Load saved pet profiles and attach delete, print, and edit actions
