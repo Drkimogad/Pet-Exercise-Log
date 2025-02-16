@@ -1,4 +1,6 @@
-/* General styling */
+/* ============================================================
+   GENERAL STYLING
+============================================================ */
 body {
     font-family: Arial, sans-serif;
     margin: 0;
@@ -16,7 +18,9 @@ body {
   width: 100%;
 }
 
-/* Header styling */
+/* ============================================================
+   HEADER STYLING
+============================================================ */
 header {
     color: #301934;
     text-align: center;
@@ -32,7 +36,9 @@ header {
     height: auto;
 }
 
-/* Content styling */
+/* ============================================================
+   CONTENT & FORM STYLING
+============================================================ */
 #content, #signup, #signin, #dashboard, #exerciseLog {
     margin-top: 120px;
     width: 90%;
@@ -41,7 +47,6 @@ header {
     text-align: center;
 }
 
-/* Form container styling */
 #formContainer {
     width: 90%;
     margin: 20px auto;
@@ -51,7 +56,9 @@ header {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* Footer styling */
+/* ============================================================
+   FOOTER STYLING
+============================================================ */
 footer {
     background-color: #36454F;
     color: white;
@@ -63,7 +70,9 @@ footer {
     z-index: 1000;
 }
 
-/* Form inputs */
+/* ============================================================
+   FORM INPUTS & BUTTONS
+============================================================ */
 input, textarea {
     width: 100%;
     padding: 1em;
@@ -73,7 +82,6 @@ input, textarea {
     font-size: 1em;
 }
 
-/* Button styling */
 button {
     background-color: #FFDB58;
     color: white;
@@ -90,7 +98,6 @@ button:hover {
     background-color: #E5C148;
 }
 
-/* Links */
 a {
     color: #FFDB58;
     text-decoration: none;
@@ -103,13 +110,79 @@ a:hover {
     text-decoration: underline;
 }
 
+/* ============================================================
+   CALENDAR STYLING
+============================================================ */
+.calendar-day {
+  display: inline-block;
+  width: 60px;
+  padding: 5px;
+  margin: 2px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  text-align: center;
+  background: #fff;
+}
 
-/* Responsive adjustments */
+.calendar-day input[type="checkbox"] {
+  margin-top: 5px;
+}
+
+/* Read-only calendar for the monthly report */
+.calendar-day-report {
+  display: inline-block;
+  width: 60px;
+  padding: 5px;
+  margin: 2px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  text-align: center;
+  background: #e0e0e0;
+}
+
+/* ============================================================
+   MONTHLY REPORT VIEW STYLING
+============================================================ */
+#monthlyReport {
+  width: 90%;
+  margin: 20px auto;
+  text-align: center;
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+#reportCalendar {
+  margin: 20px 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+#reportCalendar .calendar-day-report {
+  margin: 5px;
+}
+
+#reportCharts {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  margin: 20px 0;
+}
+
+#reportCharts canvas {
+  max-width: 45%;
+  margin: 10px;
+}
+
+/* ============================================================
+   RESPONSIVE ADJUSTMENTS
+============================================================ */
 @media (max-width: 768px) {
     form {
         width: 90%;
     }
-
     button {
         font-size: 1em;
         padding: 0.8em;
@@ -120,16 +193,17 @@ a:hover {
     form {
         width: 95%;
     }
-
     input, textarea {
         font-size: 0.9em;
     }
-
     button {
         font-size: 0.9em;
     }
 }
 
+/* ============================================================
+   DESKTOP SCALING
+============================================================ */
 @media (min-width: 1024px) {
   body {
     transform: scale(0.6);
