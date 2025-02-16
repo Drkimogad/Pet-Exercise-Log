@@ -11,6 +11,11 @@ body {
     min-height: 100vh;
 }
 
+#app {
+  margin-top: 80px; /* Adjust if necessary to clear the fixed header */
+  width: 100%;
+}
+
 /* Header styling */
 header {
     color: #301934;
