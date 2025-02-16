@@ -103,6 +103,7 @@ a:hover {
     text-decoration: underline;
 }
 
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
     form {
@@ -127,4 +128,11 @@ a:hover {
     button {
         font-size: 0.9em;
     }
+}
+
+@media (min-width: 1024px) {
+  body {
+    transform: scale(0.6);
+    transform-origin: top center;
+  }
 }
