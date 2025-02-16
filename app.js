@@ -299,3 +299,19 @@ function generateMonthlyReport() {
   // Monthly report logic based on pet exercise data
   // Generate monthly report and display it
 }
+
+// All your functions and variable declarations
+// ...
+
+
+// At the bottom of your app.js file, add:
+document.addEventListener('DOMContentLoaded', async () => { 
+  try {
+    await initDB();
+    console.log('DB initialized');
+    showSignUp(); // or showSignIn(), depending on your intended default view
+    console.log('Authentication page rendered');
+  } catch (error) {
+    console.error('Initialization error:', error);
+  }
+});
