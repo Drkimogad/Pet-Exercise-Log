@@ -124,7 +124,6 @@ function showPage(pageHTML) {
 
 function showSignUp() {
   const signUpPage = `
-    <header style="background-color: #ADD8E6;">Pet Exercise Log</header>
     <div id="content">
       <blockquote>
         <p>Regular exercise is vital for your pet's health...</p>
@@ -168,7 +167,6 @@ function showSignUp() {
 
 function showSignIn() {
   const signInPage = `
-    <header style="background-color: #ADD8E6;">Pet Exercise Log</header>
     <div id="content">
       <blockquote>
         <p>Regular exercise is vital for your pet's health...</p>
@@ -209,7 +207,6 @@ function showSignIn() {
     showSignUp();
   });
 }
-
 
 /* =======================================
    Section: Calendar and Chart Rendering
