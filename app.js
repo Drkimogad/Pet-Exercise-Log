@@ -31,6 +31,9 @@ async function hashPassword(password) {
 /* ============================================================
    AUTHENTICATION PAGES: SIGN-UP & SIGN-IN
 ============================================================ */
+window.onload = function() {
+  showSignIn();
+};
 
 function showSignUp() {
   const signUpPage = `
