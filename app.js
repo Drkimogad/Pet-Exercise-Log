@@ -596,37 +596,57 @@ function renderMonthlyCharts(dailyDuration, dailyCalories, daysInMonth) {
 }
 
 // Generate the monthly report view by aggregating current month's data and calendar state
-function generateMonthlyReport() {
+// Automatic monthly report trigger (export & reset) at midnight on the last day of the month
+function scheduleMonthlyReportTrigger() {
   const now = new Date();
-  const year = now.getFullYear();
-  const month = now.getMonth(); // 0-indexed
+  const currentYear = now.getFullYear();
+  const currentMonth = now.getMonth();
+  // Last day of current month
+  const lastDayOfMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+  // Trigger at midnight (00:00:00) of the day after the last day
+  const triggerTime = new Date(currentYear, currentMonth, lastDayOfMonth + 1, 0, 0, 0);
+  const timeUntilTrigger = triggerTime.getTime() - now.getTime();
+  
+  console.log(`Monthly report will auto-trigger in ${Math.round(timeUntilTrigger / 1000)} seconds.`);
+  
+  if (timeUntilTrigger > 0) {
+    setTimeout(() => {
+      exportAndResetMonthlyReport();
+    }, timeUntilTrigger);
+  }
+}
+
+function exportAndResetMonthlyReport() {
+  const now = new Date();
+  const currentYear = now.getFullYear();
+  const currentMonth = now.getMonth();
   const monthName = now.toLocaleString('default', { month: 'long' });
-  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
 
   // Filter exercise entries for the current month
   let profiles = JSON.parse(localStorage.getItem('petProfiles')) || [];
   let monthProfiles = profiles.filter(profile => {
-    let date = new Date(profile.exerciseDate);
-    return date.getFullYear() === year && date.getMonth() === month;
+    const entryDate = new Date(profile.exerciseDate);
+    return entryDate.getFullYear() === currentYear && entryDate.getMonth() === currentMonth;
   });
 
-  // Aggregate daily totals for exercise duration and calories burned
+  // Aggregate daily totals
   let dailyDuration = Array(daysInMonth).fill(0);
   let dailyCalories = Array(daysInMonth).fill(0);
   monthProfiles.forEach(profile => {
-    let date = new Date(profile.exerciseDate);
-    let day = date.getDate();
+    const entryDate = new Date(profile.exerciseDate);
+    const day = entryDate.getDate();
     dailyDuration[day - 1] += parseInt(profile.exerciseDuration, 10) || 0;
     dailyCalories[day - 1] += parseInt(profile.caloriesBurned, 10) || 0;
   });
 
-  // Get the current calendar state
-  let calendarState = loadCalendarState();
+  // Load calendar state
+  const calendarState = loadCalendarState();
 
-  // Create a monthly report object
-  let monthlyReport = {
-    year,
-    month,
+  // Create report object
+  const monthlyReport = {
+    year: currentYear,
+    month: currentMonth,
     monthName,
     dailyDuration,
     dailyCalories,
@@ -634,30 +654,18 @@ function generateMonthlyReport() {
     generatedAt: new Date().toISOString()
   };
 
-  // Archive the monthly report
+  // Archive the report
   let monthlyReports = JSON.parse(localStorage.getItem('monthlyReports')) || [];
   monthlyReports.push(monthlyReport);
   localStorage.setItem('monthlyReports', JSON.stringify(monthlyReports));
 
-  // Render the monthly report view
-  const reportHTML = `
-    <div id="monthlyReport">
-      <h1>${monthName} ${year} Monthly Report</h1>
-      <div id="reportCalendar"></div>
-      <div id="reportCharts">
-        <canvas id="durationChart"></canvas>
-        <canvas id="caloriesChart"></canvas>
-      </div>
-      <button id="exportReport">Export Report</button>
-      <button id="backToDashboard">Back to Dashboard</button>
-    </div>
-  `;
-  showPage(reportHTML);
-  renderReportCalendar(daysInMonth, calendarState);
-  renderMonthlyCharts(dailyDuration, dailyCalories, daysInMonth);
+  // Auto-export the report
+  exportMonthlyReport(monthlyReport);
 
-  // Attach export and back button listeners
-  document.getElementById('exportReport').addEventListener('click', () => {
-    exportMonthlyReport(monthlyReport);
-  });
-  document.getElementById('
+  // Reset calendar state for new month
+  localStorage.removeItem("currentCalendarState");
+  showExerciseLog();
+
+  // Reschedule for next month
+  scheduleMonthlyReportTrigger();
+}
