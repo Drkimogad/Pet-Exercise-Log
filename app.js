@@ -8,6 +8,10 @@ let editingProfileIndex = null; // Tracks whether we're editing an existing prof
 /* ============================================================
    USER AUTHENTICATION (Persistent using localStorage)
 ============================================================ */
+window.onload = function() {
+  showSignIn();
+};
+
 function isLoggedIn() {
   return localStorage.getItem('user') !== null;
 }
