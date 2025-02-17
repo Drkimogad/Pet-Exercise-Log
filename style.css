@@ -201,12 +201,3 @@ a:hover {
     }
 }
 
-/* ============================================================
-   DESKTOP SCALING
-============================================================ */
-@media (min-width: 1024px) {
-  body {
-    transform: scale(0.6);
-    transform-origin: top center;
-  }
-}
