@@ -8,12 +8,18 @@ let editingProfileIndex = null; // Tracks whether we're editing an existing prof
 /* ============================================================
    USER AUTHENTICATION (Persistent using localStorage)
 ============================================================ */
-window.onload = function() {
-  showSignIn();
-};
-
+// Updated isLoggedIn function checks for a valid user object
 function isLoggedIn() {
-  return localStorage.getItem('user') !== null;
+  const userStr = localStorage.getItem('user');
+  if (userStr) {
+    try {
+      const user = JSON.parse(userStr);
+      return !!(user.username && user.password);
+    } catch (e) {
+      return false;
+    }
+  }
+  return false;
 }
 
 async function hashPassword(password) {
@@ -747,6 +753,7 @@ window.addEventListener('offline', () => {
    INITIALIZATION ON DOMCONTENTLOADED
 ============================================================ */
 document.addEventListener('DOMContentLoaded', () => {
+  console.log("isLoggedIn:", isLoggedIn());
   if (isLoggedIn()) {
     showExerciseLog();
   } else {
