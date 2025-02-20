@@ -8,6 +8,9 @@ let editingProfileIndex = null;
 /* ============================================================
    USER AUTHENTICATION (Persistent using localStorage)
 ============================================================ */
+function showPage(content) {
+  document.body.innerHTML = content;
+}
 function isLoggedIn() {
   const userStr = localStorage.getItem('user');
   if (userStr) {
