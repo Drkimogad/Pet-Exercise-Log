@@ -127,6 +127,19 @@ function showSignIn() {
     showSignUp();
   });
 }
+//function scheduleMonthlyReportTrigger
+function scheduleMonthlyReportTrigger() {
+  const now = new Date();
+  const nextMonth = new Date(now.setMonth(now.getMonth() + 1));
+  // Schedule a task for the next month. For example:
+  console.log(`Next monthly report scheduled for: ${nextMonth.toDateString()}`);
+  
+  // You can use setTimeout or setInterval to run something in the future if needed
+  // For now, let's just print the next date:
+  setTimeout(() => {
+    alert('Monthly Report Triggered!');
+  }, nextMonth - Date.now());  // Trigger when the next month starts
+}
 
 /* ============================================================
    UPDATED DASHBOARD WITH COMPLETE FUNCTIONALITY
