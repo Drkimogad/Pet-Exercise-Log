@@ -19,25 +19,76 @@ body {
 }
 
 /* ============================================================
-   HEADER/FOOTER
+   FIXED HEADER/FOOTER ADJUSTMENT
 ============================================================ */
+body {
+    padding-top: 80px; /* Header height */
+    padding-bottom: 60px; /* Footer height */
+    box-sizing: border-box;
+}
+
 header {
-    background: var(--primary-color);
-    color: white;
-    padding: 1rem 2rem;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    height: 80px;
     position: fixed;
-    width: 100%;
     top: 0;
-    z-index: 1000;
+    left: 0;
+    right: 0;
 }
 
 footer {
-    background: var(--text-color);
-    color: white;
-    padding: 1rem;
-    margin-top: auto;
-    text-align: center;
+    height: 60px;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+/* ============================================================
+   MAIN CONTENT AREA
+============================================================ */
+#app {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    min-height: calc(100vh - 160px); /* Adjust for header/footer */
+}
+
+/* ============================================================
+   AUTHENTICATION FORM FIX
+============================================================ */
+#auth-forms {
+    width: 100%;
+    max-width: 400px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+/* ============================================================
+   RESPONSIVE ADJUSTMENTS
+============================================================ */
+@media (max-width: 768px) {
+    body {
+        padding-top: 60px;
+        padding-bottom: 50px;
+    }
+    
+    header {
+        height: 60px;
+        font-size: 1.5rem;
+    }
+    
+    footer {
+        height: 50px;
+        font-size: 0.9rem;
+    }
+    
+    #app {
+        min-height: calc(100vh - 140px);
+        padding: 15px;
+    }
 }
 
 /* ============================================================
@@ -192,34 +243,4 @@ canvas {
     display: flex;
     gap: 1rem;
     margin-top: 1rem;
-}
-
-/* ============================================================
-   RESPONSIVE ADJUSTMENTS
-============================================================ */
-@media (max-width: 768px) {
-    .exercise-form {
-        grid-template-columns: 1fr;
-        padding: 1rem;
-    }
-    
-    #auth-forms {
-        margin: 80px 1rem 2rem;
-        padding: 1.5rem;
-    }
-    
-    header {
-        padding: 0.8rem 1rem;
-        font-size: 1.2rem;
-    }
-}
-
-@media (max-width: 480px) {
-    .profile-card {
-        padding: 1rem;
-    }
-    
-    .chart-container {
-        padding: 1rem;
-    }
 }
