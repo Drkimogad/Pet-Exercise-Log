@@ -9,17 +9,14 @@ let editingProfileIndex = null; // Tracks whether we're editing an existing prof
    HELPER FUNCTIONS & AUTHENTICATION
 ============================================================ */
 
-// Inject dynamic content into the #app container
 function showPage(pageHTML) {
   document.getElementById('app').innerHTML = pageHTML;
 }
 
-// Check if the user is logged in (using sessionStorage for auth)
 function isLoggedIn() {
   return sessionStorage.getItem('user') !== null;
 }
 
-// Secure password storage using SHA-256 via Web Crypto API
 async function hashPassword(password) {
   const encoder = new TextEncoder();
   const data = encoder.encode(password);
@@ -117,6 +114,54 @@ function showSignIn() {
 }
 
 /* ============================================================
+   UNSAVED FORM DATA PERSISTENCE
+============================================================ */
+// Save current form data to sessionStorage
+function saveFormData() {
+  const form = document.getElementById('exerciseForm');
+  if (!form) return;
+  const formData = {
+    petName: form.petName.value,
+    petCharacteristics: form.petCharacteristics.value,
+    exerciseType: form.exerciseType.value,
+    exerciseDuration: form.exerciseDuration.value,
+    exerciseDate: form.exerciseDate.value,
+    bodyconditionScoring: form.bodyconditionScoring.value,
+    exerciseTime: form.exerciseTime.value,
+    exerciseIntensity: form.exerciseIntensity.value,
+    caloriesBurned: form.caloriesBurned.value,
+    exerciseNotes: form.exerciseNotes.value,
+    exerciseLocation: form.exerciseLocation.value
+  };
+  sessionStorage.setItem('unsavedFormData', JSON.stringify(formData));
+}
+
+// Load saved form data from sessionStorage into the form
+function loadFormData() {
+  const savedData = sessionStorage.getItem('unsavedFormData');
+  if (!savedData) return;
+  const data = JSON.parse(savedData);
+  const form = document.getElementById('exerciseForm');
+  if (!form) return;
+  form.petName.value = data.petName || "";
+  form.petCharacteristics.value = data.petCharacteristics || "";
+  form.exerciseType.value = data.exerciseType || "";
+  form.exerciseDuration.value = data.exerciseDuration || "";
+  form.exerciseDate.value = data.exerciseDate || "";
+  form.bodyconditionScoring.value = data.bodyconditionScoring || "";
+  form.exerciseTime.value = data.exerciseTime || "";
+  form.exerciseIntensity.value = data.exerciseIntensity || "";
+  form.caloriesBurned.value = data.caloriesBurned || "";
+  form.exerciseNotes.value = data.exerciseNotes || "";
+  form.exerciseLocation.value = data.exerciseLocation || "";
+}
+
+// Clear unsaved form data from sessionStorage
+function clearFormData() {
+  sessionStorage.removeItem('unsavedFormData');
+}
+
+/* ============================================================
    DASHBOARD / EXERCISE LOG PAGE
 ============================================================ */
 
@@ -127,64 +172,69 @@ function showExerciseLog() {
     return;
   }
 
-  // Dashboard page with pet entry form, saved profiles, monthly report button, and new "Add New Profile" button.
+  // Updated dashboard page with top-right buttons and entry container
   const exerciseLogPage = `
     <div id="exerciseLog">
-      <h1>Pet Exercise Tracker</h1>
-      <form id="exerciseForm">
-        <label for="petName">Pet Name:</label>
-        <input type="text" id="petName">
-        <br>
-        <label for="petImage">Upload Pet Image:</label>
-        <input type="file" id="petImage" accept="image/*">
-        <img id="petImagePreview" style="max-width: 100px;" alt="Pet Image Preview" />
-        <br>
-        <label for="petCharacteristics">Characteristics:</label>
-        <textarea id="petCharacteristics" rows="3" placeholder="e.g., Gender, Age, Activity level, Temperament"></textarea>
-        <br>
-        <label for="exerciseType">Type of Exercise:</label>
-        <input type="text" id="exerciseType" placeholder="e.g., Walking, Running">
-        <br>
-        <label for="exerciseDuration">Duration (minutes):</label>
-        <input type="text" id="exerciseDuration" placeholder="e.g., 30 minutes" required>
-        <br>
-        <label for="exerciseDate">Date:</label>
-        <input type="date" id="exerciseDate" required>
-        <br>
-        <label for="bodyconditionScoring">Body Condition Scoring:</label>
-        <input type="text" id="bodyconditionScoring" placeholder="e.g., Obese, Overweight, Lean">
-        <br>
-        <label for="exerciseTime">Time:</label>
-        <input type="time" id="exerciseTime">
-        <br>
-        <label for="exerciseIntensity">Intensity Level:</label>
-        <select id="exerciseIntensity">
-          <option value="low">Low</option>
-          <option value="medium">Medium</option>
-          <option value="high">High</option>
-        </select>
-        <br>
-        <label for="caloriesBurned">Calories Burned (optional):</label>
-        <input type="number" id="caloriesBurned" placeholder="e.g., 150 calories">
-        <br>
-        <label for="exerciseNotes">Notes/Comments:</label>
-        <textarea id="exerciseNotes" placeholder="Any observations or details"></textarea>
-        <br>
-        <label for="exerciseLocation">Location (optional):</label>
-        <input type="text" id="exerciseLocation" placeholder="e.g., Park">
-        <br>
-        <!-- Dynamic Calendar -->
-        <div id="exerciseCalendar"></div>
-        <br>
-        <!-- Dashboard Charts Section -->
-        <div id="dashboardCharts">
-          <h2>Dashboard Charts</h2>
-          <canvas id="durationChartDashboard"></canvas>
-          <canvas id="caloriesChartDashboard"></canvas>
-        </div>
-        <br>
-        <button type="submit">${editingProfileIndex === null ? "Add Exercise" : "Update Exercise"}</button>
-      </form>
+      <div id="topButtons" style="display: flex; justify-content: flex-end; gap: 10px; margin-bottom: 10px;">
+        <button id="addNewProfileButton">Add New Profile</button>
+        <button id="toggleModeButton">Toggle Mode</button>
+      </div>
+      <div id="entryContainer">
+        <form id="exerciseForm">
+          <label for="petName">Pet Name:</label>
+          <input type="text" id="petName">
+          <br>
+          <label for="petImage">Upload Pet Image:</label>
+          <input type="file" id="petImage" accept="image/*">
+          <img id="petImagePreview" style="max-width: 100px;" alt="Pet Image Preview" />
+          <br>
+          <label for="petCharacteristics">Characteristics:</label>
+          <textarea id="petCharacteristics" rows="3" placeholder="e.g., Gender, Age, Activity level, Temperament"></textarea>
+          <br>
+          <label for="exerciseType">Type of Exercise:</label>
+          <input type="text" id="exerciseType" placeholder="e.g., Walking, Running">
+          <br>
+          <label for="exerciseDuration">Duration (minutes):</label>
+          <input type="text" id="exerciseDuration" placeholder="e.g., 30 minutes" required>
+          <br>
+          <label for="exerciseDate">Date:</label>
+          <input type="date" id="exerciseDate" required>
+          <br>
+          <label for="bodyconditionScoring">Body Condition Scoring:</label>
+          <input type="text" id="bodyconditionScoring" placeholder="e.g., Obese, Overweight, Lean">
+          <br>
+          <label for="exerciseTime">Time:</label>
+          <input type="time" id="exerciseTime">
+          <br>
+          <label for="exerciseIntensity">Intensity Level:</label>
+          <select id="exerciseIntensity">
+            <option value="low">Low</option>
+            <option value="medium">Medium</option>
+            <option value="high">High</option>
+          </select>
+          <br>
+          <label for="caloriesBurned">Calories Burned (optional):</label>
+          <input type="number" id="caloriesBurned" placeholder="e.g., 150 calories">
+          <br>
+          <label for="exerciseNotes">Notes/Comments:</label>
+          <textarea id="exerciseNotes" placeholder="Any observations or details"></textarea>
+          <br>
+          <label for="exerciseLocation">Location (optional):</label>
+          <input type="text" id="exerciseLocation" placeholder="e.g., Park">
+          <br>
+          <!-- Dynamic Calendar -->
+          <div id="exerciseCalendar"></div>
+          <br>
+          <!-- Dashboard Charts Section -->
+          <div id="dashboardCharts">
+            <h2>Dashboard Charts</h2>
+            <canvas id="durationChartDashboard"></canvas>
+            <canvas id="caloriesChartDashboard"></canvas>
+          </div>
+          <br>
+          <button type="submit">${editingProfileIndex === null ? "Add Exercise" : "Update Exercise"}</button>
+        </form>
+      </div>
       <div id="savedProfilesContainer">
         <h1>Saved Pet Profiles</h1>
         <div id="savedProfiles"></div>
@@ -192,15 +242,22 @@ function showExerciseLog() {
       <button id="monthlyReportButton">Monthly Report</button>
       <button id="logoutButton">Logout</button>
     </div>
-    <!-- New fixed "Add New Profile" button at bottom right -->
-    <button id="addNewProfileButton" style="position: fixed; bottom: 20px; right: 20px; z-index: 1000;">Add New Profile</button>
   `;
   showPage(exerciseLogPage);
+
+  // Attach event listeners to form fields to persist unsaved data
+  const formElements = document.querySelectorAll('#exerciseForm input, #exerciseForm textarea, #exerciseForm select');
+  formElements.forEach(el => {
+    el.addEventListener('input', saveFormData);
+  });
+  // Load any unsaved form data from sessionStorage
+  loadFormData();
 
   // Event listener for form submission (add/update)
   document.getElementById('exerciseForm').addEventListener('submit', (event) => {
     event.preventDefault();
     handleProfileSave(event);
+    clearFormData(); // Clear unsaved data after a successful submission
     alert(editingProfileIndex === null ? 'Exercise added successfully!' : 'Exercise updated successfully!');
   });
 
@@ -223,9 +280,19 @@ function showExerciseLog() {
     }
   });
 
-  // Event listener for "Add New Profile" button to clear form (without affecting saved profiles)
+  // "Add New Profile" button: clear unsaved data and reset the form (without affecting saved profiles)
   document.getElementById('addNewProfileButton').addEventListener('click', () => {
+    clearFormData();
     document.getElementById('exerciseForm').reset();
+    // Optionally, reset calendar and re-render charts for the entry form
+    generateCalendar();
+    renderDashboardCharts();
+  });
+
+  // "Toggle Mode" button: toggle a class on the entry container for visual changes
+  document.getElementById('toggleModeButton').addEventListener('click', () => {
+    const entryContainer = document.getElementById('entryContainer');
+    entryContainer.classList.toggle('toggled-mode');
   });
 }
 
@@ -328,11 +395,11 @@ function renderDashboardCharts() {
           title: { display: true, text: 'Day of Month' }
         },
         y: {
-          min: 0, // UPDATED: Set minimum to 0
+          min: 0,
           ticks: {
             stepSize: 10,
             max: 90,
-            callback: value => value + ' m' // UPDATED: Display ticks as "m"
+            callback: value => value + ' m'
           },
           title: { display: true, text: 'Duration (min)' }
         }
@@ -545,11 +612,11 @@ function renderMonthlyCharts(dailyDuration, dailyCalories, daysInMonth) {
           title: { display: true, text: 'Day of Month' }
         },
         y: {
-          min: 0, // Set min to 0
+          min: 0,
           ticks: {
             stepSize: 10,
             max: 90,
-            callback: value => value + ' m' // Display as "m"
+            callback: value => value + ' m'
           },
           title: { display: true, text: 'Duration (min)' }
         }
@@ -627,7 +694,6 @@ function generateMonthlyReport() {
   monthlyReports.push(monthlyReport);
   localStorage.setItem('monthlyReports', JSON.stringify(monthlyReports));
 
-  // UPDATED: Wrap buttons in a container with extra bottom spacing.
   const reportHTML = `
     <div id="monthlyReport">
       <h1>${monthName} ${year} Monthly Report</h1>
@@ -681,7 +747,7 @@ function generateMonthlyReport() {
     exportMonthlyReport(monthlyReport);
   });
   document.getElementById('backToDashboard').addEventListener('click', () => {
-    // Return to dashboard without clearing saved profiles or calendar state.
+    // When returning, do not clear unsaved form data.
     showExerciseLog();
   });
 }
