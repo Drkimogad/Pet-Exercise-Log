@@ -194,7 +194,6 @@ function showExerciseLog() {
   }
 
   const currentPetId = getCurrentPetId();
-  // Optional: display current pet name
   const petHeader = `<h2>Current Pet: ${currentPetId}</h2>`;
 
   const exerciseLogPage = `
@@ -270,19 +269,17 @@ function showExerciseLog() {
   `;
   showPage(exerciseLogPage);
 
-  // Attach event listeners to form elements to persist unsaved data
+  // Persist unsaved form data as user types.
   const formElements = document.querySelectorAll('#exerciseForm input, #exerciseForm textarea, #exerciseForm select');
   formElements.forEach(el => {
     el.addEventListener('input', saveFormData);
   });
-  // Load any unsaved form data
   loadFormData();
 
-  // Event listener for form submission
   document.getElementById('exerciseForm').addEventListener('submit', (event) => {
     event.preventDefault();
     handleProfileSave(event);
-    clearFormData(); // Clear unsaved data on successful save
+    clearFormData(); // Clear unsaved data after saving.
     alert(editingProfileIndex === null ? 'Exercise added successfully!' : 'Exercise updated successfully!');
   });
 
@@ -293,7 +290,6 @@ function showExerciseLog() {
   renderDashboardCharts();
   loadSavedProfiles();
 
-  // Image preview handler
   document.getElementById('petImage').addEventListener('change', (event) => {
     const file = event.target.files[0];
     const reader = new FileReader();
@@ -305,26 +301,24 @@ function showExerciseLog() {
     }
   });
 
-  // "Add New Profile" button: create a new pet profile (new database) and clear the form
+  // "Add New Profile" button: Prompt for a new pet name, set it as current, and reinitialize the form.
   document.getElementById('addNewProfileButton').addEventListener('click', () => {
     const newPetName = prompt("Enter new pet name:");
     if (newPetName) {
-      // Use the pet name as the new pet ID (or you can generate a unique ID)
       sessionStorage.setItem('currentPetId', newPetName);
       let data = getPetProfilesData();
-      data[newPetName] = []; // create a new empty array for the new pet
+      data[newPetName] = [];
       savePetProfilesData(data);
       clearFormData();
       document.getElementById('exerciseForm').reset();
       generateCalendar();
       renderDashboardCharts();
       loadSavedProfiles();
-      // Optionally, re-render the dashboard to show the new current pet name
       showExerciseLog();
     }
   });
 
-  // "Toggle Mode" button: toggle a visual CSS class on the entry container
+  // "Toggle Mode" button: Toggle a CSS class on the entry container for visual changes.
   document.getElementById('toggleModeButton').addEventListener('click', () => {
     const entryContainer = document.getElementById('entryContainer');
     entryContainer.classList.toggle('toggled-mode');
@@ -427,16 +421,10 @@ function renderDashboardCharts() {
     options: {
       responsive: true,
       scales: {
-        x: {
-          title: { display: true, text: 'Day of Month' }
-        },
+        x: { title: { display: true, text: 'Day of Month' } },
         y: {
           min: 0,
-          ticks: {
-            stepSize: 10,
-            max: 90,
-            callback: value => value + ' m'
-          },
+          ticks: { stepSize: 10, max: 90, callback: value => value + ' m' },
           title: { display: true, text: 'Duration (min)' }
         }
       }
@@ -457,12 +445,8 @@ function renderDashboardCharts() {
     options: {
       responsive: true,
       scales: {
-        x: {
-          title: { display: true, text: 'Day of Month' }
-        },
-        y: {
-          title: { display: true, text: 'Calories' }
-        }
+        x: { title: { display: true, text: 'Day of Month' } },
+        y: { title: { display: true, text: 'Calories' } }
       }
     }
   });
@@ -516,10 +500,6 @@ function handleProfileSave(event) {
   savePetProfilesData(data);
   renderDashboardCharts();
   loadSavedProfiles();
-  
-  // We keep the unsaved form data (so the entry form persists) unless intentionally cleared.
-  // Optionally, you could clear the form here if desired.
-  // For now, we do not clear it automatically.
   generateCalendar();
 }
 
@@ -774,7 +754,6 @@ function generateMonthlyReport() {
     exportMonthlyReport(monthlyReport);
   });
   document.getElementById('backToDashboard').addEventListener('click', () => {
-    // Return to dashboard without clearing unsaved form data.
     showExerciseLog();
   });
 }
