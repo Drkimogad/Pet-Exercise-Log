@@ -11,6 +11,12 @@
   --white: #FFFFFF;                /* Pure white */
   --black: #000000;                /* Pure black */
   --off-white: #F7F7F7;            /* Slight off-white for subtle backgrounds */
+  /* Additional variables for borders and focus */
+  --border-focus: var(--dark-purple);
+  --input-bg: var(--white);
+  --input-border: var(--light-purple);
+  --container-bg: var(--white);
+  --container-border: var(--light-purple);
 }
 
 /* ============================================================
@@ -64,9 +70,10 @@ header {
 #formContainer {
     width: 90%;
     margin: 20px auto;
-    background: var(--white);
+    background: var(--container-bg);
     padding: 20px;
     border-radius: 8px;
+    border: 1px solid var(--container-border);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
@@ -91,25 +98,48 @@ input, textarea {
     width: 100%;
     padding: 1em;
     margin: 0.6em 0;
-    border: 1px solid var(--light-purple);
+    background: var(--input-bg);
+    border: 1px solid var(--input-border);
     border-radius: 8px;
     font-size: 1em;
+    color: var(--light-charcoal);
+    transition: border 0.3s ease-in-out;
 }
 
+input:focus, textarea:focus {
+    border-color: var(--border-focus);
+    outline: none;
+    box-shadow: 0 0 5px var(--border-focus);
+}
+
+/* Button styles: primary and secondary */
 button {
     background-color: var(--primary-mustard);
     color: var(--white);
-    border: 1px solid var(--black);
+    border: 1px solid var(--dark-purple);
     padding: 1em;
     border-radius: 8px;
     cursor: pointer;
     font-size: 1.1em;
     font-weight: bold;
-    transition: background-color 0.3s ease-in-out;
+    transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
 }
 
 button:hover {
     background-color: var(--primary-yellow);
+    color: var(--black);
+}
+
+/* Secondary button style if needed */
+.btn-secondary {
+    background-color: var(--light-purple);
+    color: var(--black);
+    border: 1px solid var(--dark-purple);
+}
+
+.btn-secondary:hover {
+    background-color: var(--primary-yellow);
+    color: var(--black);
 }
 
 a {
@@ -132,7 +162,7 @@ a:hover {
   width: 60px;
   padding: 5px;
   margin: 2px;
-  border: 1px solid var(--light-purple);
+  border: 1px solid var(--input-border);
   border-radius: 4px;
   text-align: center;
   background: var(--light-purple);
@@ -143,16 +173,20 @@ a:hover {
   margin-top: 5px;
 }
 
+.calendar-day:focus-within {
+    border-color: var(--border-focus);
+}
+
 /* Read-only calendar for the monthly report */
 .calendar-day-report {
   display: inline-block;
   width: 60px;
   padding: 5px;
   margin: 2px;
-  border: 1px solid var(--light-purple);
+  border: 1px solid var(--input-border);
   border-radius: 4px;
   text-align: center;
-  background: var(--light-charcoal);
+  background: var(--dark-charcoal);
   color: var(--white);
 }
 
@@ -163,9 +197,10 @@ a:hover {
   width: 90%;
   margin: 20px auto;
   text-align: center;
-  background: var(--white);
+  background: var(--container-bg);
   padding: 20px;
   border-radius: 8px;
+  border: 1px solid var(--container-border);
   box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 
