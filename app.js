@@ -266,21 +266,21 @@ function showExerciseLog() {
   `;
   showPage(exerciseLogPage);
 
-  // Attach event listeners to form elements to persist unsaved data.
+  // Attach event listeners to persist unsaved data.
   const formElements = document.querySelectorAll('#exerciseForm input, #exerciseForm textarea, #exerciseForm select');
   formElements.forEach(el => {
     el.addEventListener('input', saveFormData);
   });
   loadFormData();
 
-  // Attach submit event listener to the form.
+  // Attach submit event listener.
   const exerciseForm = document.getElementById('exerciseForm');
   if (exerciseForm) {
     exerciseForm.addEventListener('submit', (event) => {
       event.preventDefault();
       console.log("Submit event triggered");
       handleProfileSave(event);
-      clearFormData();
+      clearFormData(); // Clear unsaved data after successful submission.
       alert(editingProfileIndex === null ? 'Exercise added successfully!' : 'Exercise updated successfully!');
     });
   } else {
@@ -306,24 +306,24 @@ function showExerciseLog() {
     }
   });
 
-  // "Add New Profile" button: create a new pet profile and reinitialize the form.
+  // "Add New Profile" button: create a new pet profile if name doesn't already exist.
   document.getElementById('addNewProfileButton').addEventListener('click', () => {
     const newPetName = prompt("Enter new pet name:");
     if (newPetName) {
+      let data = JSON.parse(localStorage.getItem('petProfilesData')) || {};
+      if (data[newPetName]) {
+        alert("A profile with that name already exists. Please choose a different name.");
+        return;
+      }
       sessionStorage.setItem('currentPetId', newPetName);
-      let data = getPetProfilesData();
       data[newPetName] = [];
-      savePetProfilesData(data);
-      clearFormData();
-      document.getElementById('exerciseForm').reset();
-      generateCalendar();
-      renderDashboardCharts();
-      loadSavedProfiles();
+      localStorage.setItem('petProfilesData', JSON.stringify(data));
+      // Re-render the dashboard for the new profile.
       showExerciseLog();
     }
   });
 
-  // "Toggle Mode" button: toggle a CSS class on the entry container.
+  // "Toggle Mode" button: toggle a CSS class for visual changes.
   document.getElementById('toggleModeButton').addEventListener('click', () => {
     const entryContainer = document.getElementById('entryContainer');
     entryContainer.classList.toggle('toggled-mode');
@@ -761,6 +761,7 @@ function generateMonthlyReport() {
     exportMonthlyReport(monthlyReport);
   });
   document.getElementById('backToDashboard').addEventListener('click', () => {
+    // Returning to dashboard preserves unsaved form data (loaded via loadFormData).
     showExerciseLog();
   });
 }
@@ -854,41 +855,4 @@ if ('serviceWorker' in navigator) {
       .then((registration) => {
         console.log('Service Worker registered with scope:', registration.scope);
         registration.update();
-        registration.addEventListener('updatefound', () => {
-          const installingWorker = registration.installing;
-          installingWorker.addEventListener('statechange', () => {
-            if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
-              if (confirm('A new version of the app is available. Would you like to update?')) {
-                installingWorker.postMessage({ action: 'skipWaiting' });
-              }
-            }
-          });
-        });
-      })
-      .catch((error) => {
-        console.error('Error registering service worker:', error);
-      });
-  });
-}
-
-window.addEventListener('online', () => {
-  console.log('You are online');
-  location.reload();
-});
-
-window.addEventListener('offline', () => {
-  console.log('You are offline');
-  alert('It seems like you\'re not connected to the internet. Please check your connection');
-});
-
-/* ============================================================
-   INITIALIZATION ON DOMCONTENTLOADED
-============================================================ */
-document.addEventListener('DOMContentLoaded', () => {
-  if (isLoggedIn()) {
-    showExerciseLog();
-  } else {
-    showSignIn();
-  }
-  scheduleMonthlyReportTrigger();
-});
+        registration.addEventListener('upd
