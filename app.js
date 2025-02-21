@@ -138,7 +138,6 @@ function showSignIn() {
 /* ============================================================
    UNSAVED FORM DATA PERSISTENCE
 ============================================================ */
-// Save current form data to sessionStorage
 function saveFormData() {
   const form = document.getElementById('exerciseForm');
   if (!form) return;
@@ -158,7 +157,6 @@ function saveFormData() {
   sessionStorage.setItem('unsavedFormData', JSON.stringify(formData));
 }
 
-// Load saved form data from sessionStorage into the form
 function loadFormData() {
   const savedData = sessionStorage.getItem('unsavedFormData');
   if (!savedData) return;
@@ -178,7 +176,6 @@ function loadFormData() {
   form.exerciseLocation.value = data.exerciseLocation || "";
 }
 
-// Clear unsaved form data from sessionStorage
 function clearFormData() {
   sessionStorage.removeItem('unsavedFormData');
 }
@@ -269,19 +266,26 @@ function showExerciseLog() {
   `;
   showPage(exerciseLogPage);
 
-  // Persist unsaved form data as user types.
+  // Attach event listeners to form elements to persist unsaved data.
   const formElements = document.querySelectorAll('#exerciseForm input, #exerciseForm textarea, #exerciseForm select');
   formElements.forEach(el => {
     el.addEventListener('input', saveFormData);
   });
   loadFormData();
 
-  document.getElementById('exerciseForm').addEventListener('submit', (event) => {
-    event.preventDefault();
-    handleProfileSave(event);
-    clearFormData(); // Clear unsaved data after saving.
-    alert(editingProfileIndex === null ? 'Exercise added successfully!' : 'Exercise updated successfully!');
-  });
+  // Attach submit event listener to the form.
+  const exerciseForm = document.getElementById('exerciseForm');
+  if (exerciseForm) {
+    exerciseForm.addEventListener('submit', (event) => {
+      event.preventDefault();
+      console.log("Submit event triggered");
+      handleProfileSave(event);
+      clearFormData();
+      alert(editingProfileIndex === null ? 'Exercise added successfully!' : 'Exercise updated successfully!');
+    });
+  } else {
+    console.error("Exercise form not found!");
+  }
 
   document.getElementById('monthlyReportButton').addEventListener('click', generateMonthlyReport);
   document.getElementById('logoutButton').addEventListener('click', logout);
@@ -290,6 +294,7 @@ function showExerciseLog() {
   renderDashboardCharts();
   loadSavedProfiles();
 
+  // Image preview handler.
   document.getElementById('petImage').addEventListener('change', (event) => {
     const file = event.target.files[0];
     const reader = new FileReader();
@@ -301,7 +306,7 @@ function showExerciseLog() {
     }
   });
 
-  // "Add New Profile" button: Prompt for a new pet name, set it as current, and reinitialize the form.
+  // "Add New Profile" button: create a new pet profile and reinitialize the form.
   document.getElementById('addNewProfileButton').addEventListener('click', () => {
     const newPetName = prompt("Enter new pet name:");
     if (newPetName) {
@@ -318,7 +323,7 @@ function showExerciseLog() {
     }
   });
 
-  // "Toggle Mode" button: Toggle a CSS class on the entry container for visual changes.
+  // "Toggle Mode" button: toggle a CSS class on the entry container.
   document.getElementById('toggleModeButton').addEventListener('click', () => {
     const entryContainer = document.getElementById('entryContainer');
     entryContainer.classList.toggle('toggled-mode');
@@ -454,6 +459,7 @@ function renderDashboardCharts() {
 
 function handleProfileSave(event) {
   event.preventDefault();
+  console.log("handleProfileSave called");
   
   const updatedDuration = document.getElementById('exerciseDuration').value;
   const updatedCalories = document.getElementById('caloriesBurned').value;
@@ -501,6 +507,7 @@ function handleProfileSave(event) {
   renderDashboardCharts();
   loadSavedProfiles();
   generateCalendar();
+  console.log("New entry saved", newEntry);
 }
 
 function loadSavedProfiles() {
