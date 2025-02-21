@@ -127,7 +127,7 @@ function showExerciseLog() {
     return;
   }
 
-  // UPDATED: Removed inline HTML comment markers from the template literal.
+  // Dashboard page with pet entry form, saved profiles, monthly report button, and new "Add New Profile" button.
   const exerciseLogPage = `
     <div id="exerciseLog">
       <h1>Pet Exercise Tracker</h1>
@@ -192,9 +192,12 @@ function showExerciseLog() {
       <button id="monthlyReportButton">Monthly Report</button>
       <button id="logoutButton">Logout</button>
     </div>
+    <!-- New fixed "Add New Profile" button at bottom right -->
+    <button id="addNewProfileButton" style="position: fixed; bottom: 20px; right: 20px; z-index: 1000;">Add New Profile</button>
   `;
   showPage(exerciseLogPage);
 
+  // Event listener for form submission (add/update)
   document.getElementById('exerciseForm').addEventListener('submit', (event) => {
     event.preventDefault();
     handleProfileSave(event);
@@ -208,6 +211,7 @@ function showExerciseLog() {
   renderDashboardCharts();
   loadSavedProfiles();
 
+  // Pet image preview handler
   document.getElementById('petImage').addEventListener('change', (event) => {
     const file = event.target.files[0];
     const reader = new FileReader();
@@ -217,6 +221,11 @@ function showExerciseLog() {
     if (file) {
       reader.readAsDataURL(file);
     }
+  });
+
+  // Event listener for "Add New Profile" button to clear form (without affecting saved profiles)
+  document.getElementById('addNewProfileButton').addEventListener('click', () => {
+    document.getElementById('exerciseForm').reset();
   });
 }
 
@@ -319,10 +328,11 @@ function renderDashboardCharts() {
           title: { display: true, text: 'Day of Month' }
         },
         y: {
+          min: 0, // UPDATED: Set minimum to 0
           ticks: {
             stepSize: 10,
             max: 90,
-            callback: value => value + ' min'
+            callback: value => value + ' m' // UPDATED: Display ticks as "m"
           },
           title: { display: true, text: 'Duration (min)' }
         }
@@ -535,10 +545,11 @@ function renderMonthlyCharts(dailyDuration, dailyCalories, daysInMonth) {
           title: { display: true, text: 'Day of Month' }
         },
         y: {
+          min: 0, // Set min to 0
           ticks: {
             stepSize: 10,
             max: 90,
-            callback: value => value + ' min'
+            callback: value => value + ' m' // Display as "m"
           },
           title: { display: true, text: 'Duration (min)' }
         }
@@ -616,6 +627,7 @@ function generateMonthlyReport() {
   monthlyReports.push(monthlyReport);
   localStorage.setItem('monthlyReports', JSON.stringify(monthlyReports));
 
+  // UPDATED: Wrap buttons in a container with extra bottom spacing.
   const reportHTML = `
     <div id="monthlyReport">
       <h1>${monthName} ${year} Monthly Report</h1>
@@ -631,8 +643,10 @@ function generateMonthlyReport() {
       <div id="savedProfileDetails">
          <h2>Saved Profile Details</h2>
       </div>
-      <button id="exportReport">Export Report</button>
-      <button id="backToDashboard">Back to Dashboard</button>
+      <div class="report-buttons" style="margin-bottom: 50px;">
+         <button id="exportReport">Export Report</button>
+         <button id="backToDashboard">Back to Dashboard</button>
+      </div>
     </div>
   `;
   showPage(reportHTML);
@@ -667,6 +681,7 @@ function generateMonthlyReport() {
     exportMonthlyReport(monthlyReport);
   });
   document.getElementById('backToDashboard').addEventListener('click', () => {
+    // Return to dashboard without clearing saved profiles or calendar state.
     showExerciseLog();
   });
 }
@@ -739,6 +754,7 @@ function exportAndResetMonthlyReport() {
 
   exportMonthlyReport(monthlyReport);
 
+  // Clear pet profiles and calendar state for the new month.
   localStorage.removeItem("currentCalendarState");
   localStorage.removeItem("petProfiles");
   showExerciseLog();
