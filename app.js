@@ -465,4 +465,4 @@ function handleProfileSave(event) {
   const updatedDate = document.getElementById('exerciseDate').value;
   
   const petNameVal = document.getElementById('petName').value;
-  const petImage = document.getElementById('petImageP
+  const petImage = document.getElementById('petImage').value;
