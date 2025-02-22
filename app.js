@@ -466,3 +466,4 @@ function handleProfileSave(event) {
   
   const petNameVal = document.getElementById('petName').value;
   const petImage = document.getElementById('petImage').value;
+   }
