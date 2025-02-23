@@ -451,9 +451,11 @@ function renderDashboardCharts() {
   });
 }
 
-/* ============================================================
-   PET & EXERCISE MANAGEMENT FUNCTIONS
-============================================================ */
+
+// --------------------------------------------------
+// PET & EXERCISE MANAGEMENT FUNCTIONS (UPDATED)
+// --------------------------------------------------
+
 function handleProfileSave(event) {
   event.preventDefault();
 
@@ -473,14 +475,14 @@ function handleProfileSave(event) {
   const exerciseNotes = document.getElementById('exerciseNotes').value;
   const exerciseLocation = document.getElementById('exerciseLocation').value;
 
-  // Get current calendar state
-  saveCalendarState(); // This updates the active pet's calendarState
+  // Update calendar state for the active pet
+  saveCalendarState(); 
   const calendarState = loadCalendarState();
 
   let pets = getPets();
   let currentPet;
   if (activePetIndex === null) {
-    // If no active pet, create one (if under MAX_PETS)
+    // No active pet – create one if under MAX_PETS
     if (pets.length >= MAX_PETS) {
       alert("Maximum number of pet profiles reached.");
       return;
@@ -497,7 +499,7 @@ function handleProfileSave(event) {
     currentPet = getActivePet();
   }
   
-  // Update pet details (cumulative update; if already set, these can be edited)
+  // Update pet details (cumulative update)
   currentPet.petDetails = {
     name: name,
     image: image,
@@ -515,7 +517,7 @@ function handleProfileSave(event) {
     caloriesBurned,
     exerciseNotes,
     exerciseLocation,
-    calendarState: calendarState // store the calendar state along with this exercise
+    calendarState // store the calendar state along with this exercise
   };
   currentPet.exercises.push(newExercise);
 
@@ -523,11 +525,11 @@ function handleProfileSave(event) {
   pets[activePetIndex] = currentPet;
   setPets(pets);
 
-  alert(activePetIndex === null ? 'Exercise added successfully!' : 'Exercise updated successfully!');
-  
+  alert("Exercise entry added for pet!");
+
   // Reset the exercise part of the form (but keep pet details intact)
   document.getElementById('exerciseForm').reset();
-  // Reapply pet details to the form so they aren’t lost
+  // Reapply pet details so they aren’t lost
   document.getElementById('petName').value = currentPet.petDetails.name;
   document.getElementById('petCharacteristics').value = currentPet.petDetails.characteristics;
   if (currentPet.petDetails.image) {
@@ -538,70 +540,15 @@ function handleProfileSave(event) {
   loadSavedProfiles();
 }
 
-function loadSavedProfiles() {
-  const pets = getPets();
-  const savedProfilesDiv = document.getElementById('savedProfiles');
-  savedProfilesDiv.innerHTML = '';
-
-  pets.forEach((pet, index) => {
-    savedProfilesDiv.innerHTML += `
-      <div class="pet-profile">
-        <h3>${pet.petDetails.name || "Unnamed Pet"}</h3>
-        <img src="${pet.petDetails.image || ''}" alt="Pet Image" style="max-width: 100px;" />
-        <p>${pet.petDetails.characteristics || ""}</p>
-        <p>Exercise Entries: ${pet.exercises.length}</p>
-        <button id="delete_${index}">Delete</button>
-        <button id="print_${index}">Print</button>
-        <button id="edit_${index}">Edit</button>
-      </div>
-    `;
-    // Attach event listeners for each pet profile
-    document.getElementById(`delete_${index}`).addEventListener('click', () => deletePetProfile(index));
-    document.getElementById(`print_${index}`).addEventListener('click', () => printPetProfile(index));
-    document.getElementById(`edit_${index}`).addEventListener('click', () => editPetProfile(index));
-  });
-}
-
-function deletePetProfile(index) {
-  let pets = getPets();
-  if (confirm("Are you sure you want to delete this pet profile?")) {
-    pets.splice(index, 1);
-    setPets(pets);
-    // If we just deleted the active pet, clear the active index
-    if (activePetIndex === index) {
-      activePetIndex = null;
-    }
-    loadSavedProfiles();
-    renderDashboardCharts();
-  }
-}
-
-function printPetProfile(index) {
-  const pets = getPets();
-  const pet = pets[index];
-  const printWindow = window.open('', '', 'width=600,height=400');
-  printWindow.document.write(`<h1>${pet.petDetails.name || "Unnamed Pet"}</h1>`);
-  printWindow.document.write(`<img src="${pet.petDetails.image || ''}" alt="Pet Image" style="max-width: 100px;" />`);
-  printWindow.document.write(`<p>${pet.petDetails.characteristics || ""}</p>`);
-  printWindow.document.write(`<p>Number of Exercises: ${pet.exercises.length}</p>`);
-  printWindow.document.write('<br><button onclick="window.print()">Print</button>');
-}
-
+// Updated edit function: re-render the dashboard to refresh charts and calendar
 function editPetProfile(index) {
-  // Set activePetIndex to the selected pet so that its data loads in the form
   activePetIndex = index;
-  const pet = getPets()[index];
-  document.getElementById('petName').value = pet.petDetails.name || "";
-  document.getElementById('petCharacteristics').value = pet.petDetails.characteristics || "";
-  if (pet.petDetails.image) {
-    document.getElementById('petImagePreview').src = pet.petDetails.image;
-  } else {
-    document.getElementById('petImagePreview').src = "";
-  }
-  // The calendar and charts will update based on this pet's stored data
-  generateCalendar();
-  renderDashboardCharts();
+  // Re-render the entire dashboard so that the pet details, calendar,
+  // and charts load properly for editing.
+  showExerciseLog();
 }
+
+// ... (the rest of the code remains unchanged)
 
 /* ============================================================
    REPORT FUNCTIONS
