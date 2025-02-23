@@ -482,6 +482,12 @@ function handleProfileSave(event) {
     const characteristics = document.getElementById('petCharacteristics').value;
     const image = document.getElementById('petImagePreview').src;
     
+    // Check if the image is too large (for example, if the base64 string length is over 1,000,000 characters)
+    if (image && image.startsWith("data:image/") && image.length > 1000000) {
+      alert("The image is too large. Please choose a smaller image or compress it before saving.");
+      return;
+    }
+    
     const exerciseType = document.getElementById('exerciseType').value;
     const exerciseDuration = document.getElementById('exerciseDuration').value;
     const exerciseDate = document.getElementById('exerciseDate').value;
