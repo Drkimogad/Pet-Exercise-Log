@@ -238,7 +238,12 @@ function showExerciseLog() {
   document.getElementById('exerciseForm').addEventListener('submit', (event) => {
     event.preventDefault();
     console.log("handleProfileSave triggered");
-    handleProfileSave(event);
+    try {
+      handleProfileSave(event);
+    } catch (err) {
+      console.error("Error in handleProfileSave:", err);
+      alert("An error occurred: " + err.message);
+    }
   });
   document.getElementById('monthlyReportButton').addEventListener('click', generateMonthlyReport);
   document.getElementById('logoutButton').addEventListener('click', logout);
@@ -436,7 +441,6 @@ function updateCurrentMonthlyReport() {
   let dailyDuration = Array(daysInMonth).fill(0);
   let dailyCalories = Array(daysInMonth).fill(0);
   
-  // Filter exercises for current month
   const monthExercises = pet.exercises.filter(ex => {
     let date = new Date(ex.exerciseDate);
     return date.getFullYear() === year && date.getMonth() === month;
@@ -473,85 +477,91 @@ function handleProfileSave(event) {
   event.preventDefault();
   console.log("handleProfileSave triggered");
   
-  const name = document.getElementById('petName').value;
-  const characteristics = document.getElementById('petCharacteristics').value;
-  const image = document.getElementById('petImagePreview').src;
-  
-  const exerciseType = document.getElementById('exerciseType').value;
-  const exerciseDuration = document.getElementById('exerciseDuration').value;
-  const exerciseDate = document.getElementById('exerciseDate').value;
-  const bodyconditionScoring = document.getElementById('bodyconditionScoring').value;
-  const exerciseTime = document.getElementById('exerciseTime').value;
-  const exerciseIntensity = document.getElementById('exerciseIntensity').value;
-  const caloriesBurned = document.getElementById('caloriesBurned').value;
-  const exerciseNotes = document.getElementById('exerciseNotes').value;
-  const exerciseLocation = document.getElementById('exerciseLocation').value;
-  
-  // Update the calendar state for the pet
-  saveCalendarState();
-  const calendarState = loadCalendarState();
-  
-  let pets = getPets();
-  let currentPet;
-  if (activePetIndex === null) {
-    if (pets.length >= MAX_PETS) {
-      alert("Maximum number of pet profiles reached.");
-      return;
+  try {
+    const name = document.getElementById('petName').value;
+    const characteristics = document.getElementById('petCharacteristics').value;
+    const image = document.getElementById('petImagePreview').src;
+    
+    const exerciseType = document.getElementById('exerciseType').value;
+    const exerciseDuration = document.getElementById('exerciseDuration').value;
+    const exerciseDate = document.getElementById('exerciseDate').value;
+    const bodyconditionScoring = document.getElementById('bodyconditionScoring').value;
+    const exerciseTime = document.getElementById('exerciseTime').value;
+    const exerciseIntensity = document.getElementById('exerciseIntensity').value;
+    const caloriesBurned = document.getElementById('caloriesBurned').value;
+    const exerciseNotes = document.getElementById('exerciseNotes').value;
+    const exerciseLocation = document.getElementById('exerciseLocation').value;
+    
+    // Update the calendar state for the pet
+    saveCalendarState();
+    const calendarState = loadCalendarState();
+    
+    let pets = getPets();
+    let currentPet;
+    if (activePetIndex === null) {
+      if (pets.length >= MAX_PETS) {
+        alert("Maximum number of pet profiles reached.");
+        return;
+      }
+      currentPet = {
+        petDetails: {},
+        exercises: [],
+        calendarState: calendarState,
+        monthlyReports: [],
+        currentMonthlyReport: null
+      };
+      pets.push(currentPet);
+      activePetIndex = pets.length - 1;
+    } else {
+      currentPet = getActivePet();
     }
-    currentPet = {
-      petDetails: {},
-      exercises: [],
-      calendarState: calendarState,
-      monthlyReports: [],
-      currentMonthlyReport: null
+    
+    // Update pet details (cumulative update)
+    currentPet.petDetails = {
+      name: name,
+      image: image,
+      characteristics: characteristics
     };
-    pets.push(currentPet);
-    activePetIndex = pets.length - 1;
-  } else {
-    currentPet = getActivePet();
+    
+    // Add new exercise entry
+    const newExercise = {
+      exerciseType,
+      exerciseDuration,
+      exerciseDate,
+      bodyconditionScoring,
+      exerciseTime,
+      exerciseIntensity,
+      caloriesBurned,
+      exerciseNotes,
+      exerciseLocation,
+      calendarState
+    };
+    currentPet.exercises.push(newExercise);
+    
+    // Update current monthly report (cumulative)
+    updateCurrentMonthlyReport();
+    
+    pets[activePetIndex] = currentPet;
+    setPets(pets);
+    
+    console.log("Profile updated:", currentPet);
+    alert("Exercise entry added and profile updated!");
+    
+    // Reset exercise part of form; keep pet details intact
+    document.getElementById('exerciseForm').reset();
+    document.getElementById('petName').value = currentPet.petDetails.name;
+    document.getElementById('petCharacteristics').value = currentPet.petDetails.characteristics;
+    if (currentPet.petDetails.image) {
+      document.getElementById('petImagePreview').src = currentPet.petDetails.image;
+    }
+    
+    generateCalendar();
+    renderDashboardCharts();
+    loadSavedProfiles();
+  } catch (err) {
+    console.error("Error in handleProfileSave:", err);
+    alert("An error occurred: " + err.message);
   }
-  
-  // Update pet details (cumulative update)
-  currentPet.petDetails = {
-    name: name,
-    image: image,
-    characteristics: characteristics
-  };
-  
-  // Add new exercise entry
-  const newExercise = {
-    exerciseType,
-    exerciseDuration,
-    exerciseDate,
-    bodyconditionScoring,
-    exerciseTime,
-    exerciseIntensity,
-    caloriesBurned,
-    exerciseNotes,
-    exerciseLocation,
-    calendarState
-  };
-  currentPet.exercises.push(newExercise);
-  
-  // Update current monthly report (cumulative)
-  updateCurrentMonthlyReport();
-  
-  pets[activePetIndex] = currentPet;
-  setPets(pets);
-  
-  alert("Exercise entry added and profile updated!");
-  
-  // Reset exercise part of form; keep pet details intact
-  document.getElementById('exerciseForm').reset();
-  document.getElementById('petName').value = currentPet.petDetails.name;
-  document.getElementById('petCharacteristics').value = currentPet.petDetails.characteristics;
-  if (currentPet.petDetails.image) {
-    document.getElementById('petImagePreview').src = currentPet.petDetails.image;
-  }
-  
-  generateCalendar();
-  renderDashboardCharts();
-  loadSavedProfiles();
 }
 
 function loadSavedProfiles() {
