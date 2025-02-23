@@ -3,8 +3,6 @@
 /* ============================================================
    GLOBAL VARIABLES & STATE MANAGEMENT
 ============================================================ */
-// activePetIndex represents the currently loaded pet profile from the "pets" array.
-// A null value means no pet is selected.
 let activePetIndex = null;
 const MAX_PETS = 10;
 
@@ -25,7 +23,7 @@ function getActivePet() {
 }
 
 function updateActivePet(updatedPet) {
-  const pets = getPets();
+  let pets = getPets();
   if (activePetIndex !== null) {
     pets[activePetIndex] = updatedPet;
     setPets(pets);
@@ -71,7 +69,6 @@ function showSignUp() {
     </div>
   `;
   showPage(signUpPage);
-  // Sign Up event listener
   document.getElementById('signUpForm').addEventListener('submit', async (event) => {
     event.preventDefault();
     try {
@@ -89,7 +86,6 @@ function showSignUp() {
       console.error('Error during sign up:', err);
     }
   });
-  // Link to Sign In
   document.getElementById('goToSignIn').addEventListener('click', (e) => {
     e.preventDefault();
     showSignIn();
@@ -113,7 +109,6 @@ function showSignIn() {
     </div>
   `;
   showPage(signInPage);
-  // Sign In event listener
   document.getElementById('signInForm').addEventListener('submit', async (event) => {
     event.preventDefault();
     try {
@@ -131,7 +126,6 @@ function showSignIn() {
       console.error('Error during sign in:', err);
     }
   });
-  // Link to Sign Up
   document.getElementById('goToSignUp').addEventListener('click', (e) => {
     e.preventDefault();
     showSignUp();
@@ -147,13 +141,6 @@ function showExerciseLog() {
     showSignIn();
     return;
   }
-
-  // The dashboard form now includes:
-  // - Pet Details Section (name, image, characteristics)
-  // - Exercise Entry Section (exercise details)
-  // - Calendar & Chart Section
-  // - Action buttons for adding/updating exercise
-  // - Saved Pet Profiles section and additional control buttons
 
   const dashboardHTML = `
     <div id="exerciseLog">
@@ -235,9 +222,7 @@ function showExerciseLog() {
   `;
   showPage(dashboardHTML);
 
-  // ----------------------------
-  // Load current pet details if one is active
-  // ----------------------------
+  // Load pet details if editing an existing pet
   if (activePetIndex !== null) {
     const pet = getActivePet();
     if (pet && pet.petDetails) {
@@ -249,30 +234,20 @@ function showExerciseLog() {
     }
   }
 
-  // ----------------------------
-  // Attach event listeners for the exercise form
-  // ----------------------------
+  // Attach event listeners
   document.getElementById('exerciseForm').addEventListener('submit', (event) => {
     event.preventDefault();
     handleProfileSave(event);
   });
-
-  // ----------------------------
-  // Monthly Report and Logout Buttons
-  // ----------------------------
   document.getElementById('monthlyReportButton').addEventListener('click', generateMonthlyReport);
   document.getElementById('logoutButton').addEventListener('click', logout);
 
-  // ----------------------------
-  // Initialize Calendar & Dashboard Charts based on active pet data
-  // ----------------------------
+  // Initialize Calendar, Charts, and Saved Profiles
   generateCalendar();
   renderDashboardCharts();
   loadSavedProfiles();
 
-  // ----------------------------
   // Pet Image Preview Handler
-  // ----------------------------
   document.getElementById('petImage').addEventListener('change', (event) => {
     const file = event.target.files[0];
     const reader = new FileReader();
@@ -284,21 +259,19 @@ function showExerciseLog() {
     }
   });
 
-  // ----------------------------
-  // "Add New Profile" Button: Create a new pet record (if under MAX_PETS)
-  // ----------------------------
+  // "Add New Profile" Button Handler
   document.getElementById('addNewProfileButton').addEventListener('click', () => {
     let pets = getPets();
     if (pets.length >= MAX_PETS) {
       alert("Maximum number of pet profiles reached.");
       return;
     }
-    // Create a new pet object with empty details and arrays
     const newPet = {
       petDetails: { name: "", image: "", characteristics: "" },
       exercises: [],
-      calendarState: {}, // holds checkbox states for the current month
-      monthlyReports: []
+      calendarState: {},
+      monthlyReports: [],
+      currentMonthlyReport: null
     };
     pets.push(newPet);
     setPets(pets);
@@ -314,7 +287,6 @@ function showExerciseLog() {
 /* ============================================================
    CALENDAR MANAGEMENT FUNCTIONS
 ============================================================ */
-// The calendar state is now stored per pet in pet.calendarState.
 function saveCalendarState() {
   const state = {};
   const checkboxes = document.querySelectorAll('#exerciseCalendar input[type="checkbox"]');
@@ -322,15 +294,15 @@ function saveCalendarState() {
     const day = cb.id.replace("day", "");
     state[day] = cb.checked;
   });
-  if (activePetIndex !== null) {
-    const pet = getActivePet();
+  let pet = getActivePet();
+  if (pet) {
     pet.calendarState = state;
     updateActivePet(pet);
   }
 }
 
 function loadCalendarState() {
-  const pet = getActivePet();
+  let pet = getActivePet();
   return (pet && pet.calendarState) || {};
 }
 
@@ -342,7 +314,6 @@ function generateCalendar() {
   const month = now.getMonth();
   const daysInMonth = new Date(year, month + 1, 0).getDate();
   const savedState = loadCalendarState();
-
   for (let i = 1; i <= daysInMonth; i++) {
     const dayDiv = document.createElement('div');
     dayDiv.classList.add('calendar-day');
@@ -353,7 +324,6 @@ function generateCalendar() {
     }
     calendarDiv.appendChild(dayDiv);
   }
-
   const checkboxes = calendarDiv.querySelectorAll('input[type="checkbox"]');
   checkboxes.forEach(cb => {
     cb.addEventListener('change', () => {
@@ -382,8 +352,7 @@ function renderDashboardCharts() {
   
   let dailyDuration = Array(daysInMonth).fill(0);
   let dailyCalories = Array(daysInMonth).fill(0);
-
-  // Calculate daily totals from all exercise entries for this pet in the current month
+  
   pet.exercises.forEach(exercise => {
     let date = new Date(exercise.exerciseDate);
     if (date.getFullYear() === year && date.getMonth() === month) {
@@ -394,14 +363,14 @@ function renderDashboardCharts() {
   });
   
   const labels = Array.from({ length: daysInMonth }, (_, i) => i + 1);
-
+  
   if (window.durationChartDashboard instanceof Chart) {
     window.durationChartDashboard.destroy();
   }
   if (window.caloriesChartDashboard instanceof Chart) {
     window.caloriesChartDashboard.destroy();
   }
-
+  
   window.durationChartDashboard = new Chart(ctxDuration, {
     type: 'line',
     data: {
@@ -429,7 +398,7 @@ function renderDashboardCharts() {
       }
     }
   });
-
+  
   window.caloriesChartDashboard = new Chart(ctxCalories, {
     type: 'line',
     data: {
@@ -451,20 +420,61 @@ function renderDashboardCharts() {
   });
 }
 
-
-// --------------------------------------------------
-// PET & EXERCISE MANAGEMENT FUNCTIONS (UPDATED)
-// --------------------------------------------------
+/* ============================================================
+   PET & EXERCISE MANAGEMENT FUNCTIONS
+============================================================ */
+function updateCurrentMonthlyReport() {
+  const pet = getActivePet();
+  if (!pet) return;
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = now.getMonth();
+  const monthName = now.toLocaleString('default', { month: 'long' });
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  
+  let dailyDuration = Array(daysInMonth).fill(0);
+  let dailyCalories = Array(daysInMonth).fill(0);
+  
+  // Filter exercises for current month
+  const monthExercises = pet.exercises.filter(ex => {
+    let date = new Date(ex.exerciseDate);
+    return date.getFullYear() === year && date.getMonth() === month;
+  });
+  
+  monthExercises.forEach(exercise => {
+    let date = new Date(exercise.exerciseDate);
+    let day = date.getDate();
+    dailyDuration[day - 1] += parseInt(exercise.exerciseDuration, 10) || 0;
+    dailyCalories[day - 1] += parseInt(exercise.caloriesBurned, 10) || 0;
+  });
+  
+  const exercisedDays = dailyDuration.filter(d => d > 0).length;
+  const totalDuration = dailyDuration.reduce((acc, val) => acc + val, 0);
+  const totalCalories = dailyCalories.reduce((acc, val) => acc + val, 0);
+  
+  const monthlyReport = {
+    year,
+    month,
+    monthName,
+    dailyDuration,
+    dailyCalories,
+    calendarState: pet.calendarState,
+    exercises: monthExercises,
+    summaryComment: `This month, ${pet.petDetails.name || "the pet"} exercised on ${exercisedDays} days for a total duration of ${totalDuration} minutes and burned ${totalCalories} calories.`,
+    generatedAt: new Date().toISOString()
+  };
+  
+  pet.currentMonthlyReport = monthlyReport;
+  updateActivePet(pet);
+}
 
 function handleProfileSave(event) {
   event.preventDefault();
 
-  // Retrieve current pet details from the form
   const name = document.getElementById('petName').value;
   const characteristics = document.getElementById('petCharacteristics').value;
-  const image = document.getElementById('petImagePreview').src; // from preview
-
-  // Retrieve exercise details from the form
+  const image = document.getElementById('petImagePreview').src;
+  
   const exerciseType = document.getElementById('exerciseType').value;
   const exerciseDuration = document.getElementById('exerciseDuration').value;
   const exerciseDate = document.getElementById('exerciseDate').value;
@@ -474,15 +484,14 @@ function handleProfileSave(event) {
   const caloriesBurned = document.getElementById('caloriesBurned').value;
   const exerciseNotes = document.getElementById('exerciseNotes').value;
   const exerciseLocation = document.getElementById('exerciseLocation').value;
-
-  // Update calendar state for the active pet
-  saveCalendarState(); 
+  
+  // Update the calendar state for the pet
+  saveCalendarState();
   const calendarState = loadCalendarState();
-
+  
   let pets = getPets();
   let currentPet;
   if (activePetIndex === null) {
-    // No active pet – create one if under MAX_PETS
     if (pets.length >= MAX_PETS) {
       alert("Maximum number of pet profiles reached.");
       return;
@@ -491,7 +500,8 @@ function handleProfileSave(event) {
       petDetails: {},
       exercises: [],
       calendarState: calendarState,
-      monthlyReports: []
+      monthlyReports: [],
+      currentMonthlyReport: null
     };
     pets.push(currentPet);
     activePetIndex = pets.length - 1;
@@ -505,8 +515,8 @@ function handleProfileSave(event) {
     image: image,
     characteristics: characteristics
   };
-
-  // Add a new exercise entry with current details
+  
+  // Add new exercise entry
   const newExercise = {
     exerciseType,
     exerciseDuration,
@@ -517,38 +527,82 @@ function handleProfileSave(event) {
     caloriesBurned,
     exerciseNotes,
     exerciseLocation,
-    calendarState // store the calendar state along with this exercise
+    calendarState
   };
   currentPet.exercises.push(newExercise);
-
-  // Save changes
+  
+  // Update current monthly report (cumulative)
+  updateCurrentMonthlyReport();
+  
   pets[activePetIndex] = currentPet;
   setPets(pets);
-
-  alert("Exercise entry added for pet!");
-
-  // Reset the exercise part of the form (but keep pet details intact)
+  
+  alert("Exercise entry added and profile updated!");
+  
+  // Reset exercise part of form; keep pet details intact
   document.getElementById('exerciseForm').reset();
-  // Reapply pet details so they aren’t lost
   document.getElementById('petName').value = currentPet.petDetails.name;
   document.getElementById('petCharacteristics').value = currentPet.petDetails.characteristics;
   if (currentPet.petDetails.image) {
     document.getElementById('petImagePreview').src = currentPet.petDetails.image;
   }
+  
   generateCalendar();
   renderDashboardCharts();
   loadSavedProfiles();
 }
 
-// Updated edit function: re-render the dashboard to refresh charts and calendar
-function editPetProfile(index) {
-  activePetIndex = index;
-  // Re-render the entire dashboard so that the pet details, calendar,
-  // and charts load properly for editing.
-  showExerciseLog();
+function loadSavedProfiles() {
+  const pets = getPets();
+  const savedProfilesDiv = document.getElementById('savedProfiles');
+  savedProfilesDiv.innerHTML = '';
+  
+  pets.forEach((pet, index) => {
+    savedProfilesDiv.innerHTML += `
+      <div class="pet-profile">
+        <h3>${pet.petDetails.name || "Unnamed Pet"}</h3>
+        <img src="${pet.petDetails.image || ''}" alt="Pet Image" style="max-width: 100px;" />
+        <p>${pet.petDetails.characteristics || ""}</p>
+        <p>Exercise Entries: ${pet.exercises.length}</p>
+        <button id="delete_${index}">Delete</button>
+        <button id="print_${index}">Print</button>
+        <button id="edit_${index}">Edit</button>
+      </div>
+    `;
+    document.getElementById(`delete_${index}`).addEventListener('click', () => deletePetProfile(index));
+    document.getElementById(`print_${index}`).addEventListener('click', () => printPetProfile(index));
+    document.getElementById(`edit_${index}`).addEventListener('click', () => editPetProfile(index));
+  });
 }
 
-// ... (the rest of the code remains unchanged)
+function deletePetProfile(index) {
+  let pets = getPets();
+  if (confirm("Are you sure you want to delete this pet profile?")) {
+    pets.splice(index, 1);
+    setPets(pets);
+    if (activePetIndex === index) {
+      activePetIndex = null;
+    }
+    loadSavedProfiles();
+    renderDashboardCharts();
+  }
+}
+
+function printPetProfile(index) {
+  const pets = getPets();
+  const pet = pets[index];
+  const printWindow = window.open('', '', 'width=600,height=400');
+  printWindow.document.write(`<h1>${pet.petDetails.name || "Unnamed Pet"}</h1>`);
+  printWindow.document.write(`<img src="${pet.petDetails.image || ''}" alt="Pet Image" style="max-width: 100px;" />`);
+  printWindow.document.write(`<p>${pet.petDetails.characteristics || ""}</p>`);
+  printWindow.document.write(`<p>Number of Exercises: ${pet.exercises.length}</p>`);
+  printWindow.document.write('<br><button onclick="window.print()">Print</button>');
+}
+
+function editPetProfile(index) {
+  activePetIndex = index;
+  showExerciseLog();
+}
 
 /* ============================================================
    REPORT FUNCTIONS
@@ -595,7 +649,7 @@ function renderMonthlyCharts(dailyDuration, dailyCalories, daysInMonth) {
       }
     }
   });
-
+  
   const caloriesCtx = document.getElementById('caloriesChart').getContext('2d');
   if (window.caloriesChart instanceof Chart) window.caloriesChart.destroy();
   window.caloriesChart = new Chart(caloriesCtx, {
@@ -625,48 +679,17 @@ function generateMonthlyReport() {
     alert("No active pet selected.");
     return;
   }
+  // Ensure the current monthly report is updated
+  updateCurrentMonthlyReport();
+  
   const now = new Date();
   const year = now.getFullYear();
   const month = now.getMonth();
   const monthName = now.toLocaleString('default', { month: 'long' });
   const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-  // Filter this pet's exercises for the current month
-  const monthExercises = pet.exercises.filter(exercise => {
-    const date = new Date(exercise.exerciseDate);
-    return date.getFullYear() === year && date.getMonth() === month;
-  });
-
-  let dailyDuration = Array(daysInMonth).fill(0);
-  let dailyCalories = Array(daysInMonth).fill(0);
-  monthExercises.forEach(exercise => {
-    const date = new Date(exercise.exerciseDate);
-    const day = date.getDate();
-    dailyDuration[day - 1] += parseInt(exercise.exerciseDuration, 10) || 0;
-    dailyCalories[day - 1] += parseInt(exercise.caloriesBurned, 10) || 0;
-  });
   
-  const exercisedDays = dailyDuration.filter(d => d > 0).length;
-  const totalDuration = dailyDuration.reduce((acc, val) => acc + val, 0);
-  const totalCalories = dailyCalories.reduce((acc, val) => acc + val, 0);
-  const summaryComment = `This month, ${pet.petDetails.name || "the pet"} exercised on ${exercisedDays} days with a total duration of ${totalDuration} minutes and burned ${totalCalories} calories.`;
-
-  const monthlyReport = {
-    year,
-    month,
-    monthName,
-    dailyDuration,
-    dailyCalories,
-    calendarState: pet.calendarState,
-    exercises: monthExercises,
-    summaryComment,
-    generatedAt: new Date().toISOString()
-  };
-
-  // Save this report under the pet's monthlyReports array.
-  pet.monthlyReports.push(monthlyReport);
-  updateActivePet(pet);
-
+  const currentReport = pet.currentMonthlyReport;
+  
   const reportHTML = `
     <div id="monthlyReport">
       <h1>${monthName} ${year} Monthly Report for ${pet.petDetails.name || "Unnamed Pet"}</h1>
@@ -677,7 +700,7 @@ function generateMonthlyReport() {
       </div>
       <div id="reportSummary">
          <h2>Summary</h2>
-         <p>${summaryComment}</p>
+         <p>${currentReport.summaryComment}</p>
       </div>
       <div class="report-buttons" style="margin-bottom: 50px;">
          <button id="exportReport">Export Report</button>
@@ -686,18 +709,20 @@ function generateMonthlyReport() {
     </div>
   `;
   showPage(reportHTML);
-  renderReportCalendar(daysInMonth, monthlyReport.calendarState);
-  renderMonthlyCharts(dailyDuration, dailyCalories, daysInMonth);
-
+  renderReportCalendar(daysInMonth, currentReport.calendarState);
+  renderMonthlyCharts(currentReport.dailyDuration, currentReport.dailyCalories, daysInMonth);
+  
   document.getElementById('exportReport').addEventListener('click', () => {
-    exportMonthlyReport(monthlyReport, pet.petDetails.name || "Unnamed_Pet");
+    exportMonthlyReport(currentReport, pet.petDetails.name || "Unnamed_Pet");
   });
   document.getElementById('backToDashboard').addEventListener('click', () => {
-    // Return to dashboard without clearing pet data
     showExerciseLog();
   });
 }
 
+/* ============================================================
+   EXPORT REPORT FUNCTION
+============================================================ */
 function exportMonthlyReport(report, petName) {
   const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(report, null, 2));
   const downloadAnchorNode = document.createElement('a');
