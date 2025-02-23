@@ -3,23 +3,19 @@
 /* ============================================================
    GLOBAL VARIABLES & STATE MANAGEMENT
 ============================================================ */
-let editingProfileIndex = null; // Tracks whether we're editing an existing profile
+let activeProfileIndex = null; // null means we are creating a new pet profile
 
 /* ============================================================
-   HELPER FUNCTIONS & AUTHENTICATION
+   HELPER FUNCTIONS
 ============================================================ */
-
-// Inject dynamic content into the #app container
 function showPage(pageHTML) {
   document.getElementById('app').innerHTML = pageHTML;
 }
 
-// Check if the user is logged in (using sessionStorage for auth)
 function isLoggedIn() {
   return sessionStorage.getItem('user') !== null;
 }
 
-// Secure password storage using SHA-256 via Web Crypto API
 async function hashPassword(password) {
   const encoder = new TextEncoder();
   const data = encoder.encode(password);
@@ -29,9 +25,8 @@ async function hashPassword(password) {
 }
 
 /* ============================================================
-   AUTHENTICATION PAGES: SIGN-UP & SIGN-IN
+   AUTHENTICATION FUNCTIONS
 ============================================================ */
-
 function showSignUp() {
   const signUpPage = `
     <div id="signup">
@@ -49,7 +44,7 @@ function showSignUp() {
     </div>
   `;
   showPage(signUpPage);
-
+  // Sign Up event listener
   document.getElementById('signUpForm').addEventListener('submit', async (event) => {
     event.preventDefault();
     try {
@@ -67,7 +62,7 @@ function showSignUp() {
       console.error('Error during sign up:', err);
     }
   });
-
+  // Link to Sign In
   document.getElementById('goToSignIn').addEventListener('click', (e) => {
     e.preventDefault();
     showSignIn();
@@ -91,7 +86,7 @@ function showSignIn() {
     </div>
   `;
   showPage(signInPage);
-
+  // Sign In event listener
   document.getElementById('signInForm').addEventListener('submit', async (event) => {
     event.preventDefault();
     try {
@@ -109,7 +104,7 @@ function showSignIn() {
       console.error('Error during sign in:', err);
     }
   });
-
+  // Link to Sign Up
   document.getElementById('goToSignUp').addEventListener('click', (e) => {
     e.preventDefault();
     showSignUp();
@@ -117,101 +112,122 @@ function showSignIn() {
 }
 
 /* ============================================================
-   DASHBOARD / EXERCISE LOG PAGE
+   DASHBOARD / EXERCISE LOG PAGE & EVENT LISTENERS
 ============================================================ */
-
 function showExerciseLog() {
   if (!isLoggedIn()) {
     alert('Please sign in first.');
     showSignIn();
     return;
   }
-
-  // Dashboard page with pet entry form, saved profiles, monthly report button, and new "Add New Profile" button.
+  // Dashboard page markup
   const exerciseLogPage = `
     <div id="exerciseLog">
       <h1>Pet Exercise Tracker</h1>
       <form id="exerciseForm">
-        <label for="petName">Pet Name:</label>
-        <input type="text" id="petName">
-        <br>
-        <label for="petImage">Upload Pet Image:</label>
-        <input type="file" id="petImage" accept="image/*">
-        <img id="petImagePreview" style="max-width: 100px;" alt="Pet Image Preview" />
-        <br>
-        <label for="petCharacteristics">Characteristics:</label>
-        <textarea id="petCharacteristics" rows="3" placeholder="e.g., Gender, Age, Activity level, Temperament"></textarea>
-        <br>
-        <label for="exerciseType">Type of Exercise:</label>
-        <input type="text" id="exerciseType" placeholder="e.g., Walking, Running">
-        <br>
-        <label for="exerciseDuration">Duration (minutes):</label>
-        <input type="text" id="exerciseDuration" placeholder="e.g., 30 minutes" required>
-        <br>
-        <label for="exerciseDate">Date:</label>
-        <input type="date" id="exerciseDate" required>
-        <br>
-        <label for="bodyconditionScoring">Body Condition Scoring:</label>
-        <input type="text" id="bodyconditionScoring" placeholder="e.g., Obese, Overweight, Lean">
-        <br>
-        <label for="exerciseTime">Time:</label>
-        <input type="time" id="exerciseTime">
-        <br>
-        <label for="exerciseIntensity">Intensity Level:</label>
-        <select id="exerciseIntensity">
-          <option value="low">Low</option>
-          <option value="medium">Medium</option>
-          <option value="high">High</option>
-        </select>
-        <br>
-        <label for="caloriesBurned">Calories Burned (optional):</label>
-        <input type="number" id="caloriesBurned" placeholder="e.g., 150 calories">
-        <br>
-        <label for="exerciseNotes">Notes/Comments:</label>
-        <textarea id="exerciseNotes" placeholder="Any observations or details"></textarea>
-        <br>
-        <label for="exerciseLocation">Location (optional):</label>
-        <input type="text" id="exerciseLocation" placeholder="e.g., Park">
-        <br>
-        <!-- Dynamic Calendar -->
-        <div id="exerciseCalendar"></div>
-        <br>
-        <!-- Dashboard Charts Section -->
-        <div id="dashboardCharts">
-          <h2>Dashboard Charts</h2>
-          <canvas id="durationChartDashboard"></canvas>
-          <canvas id="caloriesChartDashboard"></canvas>
-        </div>
-        <br>
-        <button type="submit">${editingProfileIndex === null ? "Add Exercise" : "Update Exercise"}</button>
+        <!-- Pet Details Section -->
+        <fieldset>
+          <legend>Pet Details</legend>
+          <label for="petName">Pet Name:</label>
+          <input type="text" id="petName" required>
+          <br>
+          <label for="petImage">Upload Pet Image:</label>
+          <input type="file" id="petImage" accept="image/*">
+          <img id="petImagePreview" style="max-width: 100px;" alt="Pet Image Preview" />
+          <br>
+          <label for="petCharacteristics">Characteristics:</label>
+          <textarea id="petCharacteristics" rows="3" placeholder="e.g., Gender, Age, Activity level, Temperament"></textarea>
+        </fieldset>
+        <!-- Exercise Entry Section -->
+        <fieldset>
+          <legend>Exercise Entry</legend>
+          <label for="exerciseType">Type of Exercise:</label>
+          <input type="text" id="exerciseType" placeholder="e.g., Walking, Running">
+          <br>
+          <label for="exerciseDuration">Duration (minutes):</label>
+          <input type="number" id="exerciseDuration" placeholder="e.g., 30" required>
+          <br>
+          <label for="exerciseDate">Date:</label>
+          <input type="date" id="exerciseDate" required>
+          <br>
+          <label for="bodyconditionScoring">Body Condition Scoring:</label>
+          <input type="text" id="bodyconditionScoring" placeholder="e.g., Obese, Overweight, Lean">
+          <br>
+          <label for="exerciseTime">Time:</label>
+          <input type="time" id="exerciseTime">
+          <br>
+          <label for="exerciseIntensity">Intensity Level:</label>
+          <select id="exerciseIntensity">
+            <option value="low">Low</option>
+            <option value="medium">Medium</option>
+            <option value="high">High</option>
+          </select>
+          <br>
+          <label for="caloriesBurned">Calories Burned (optional):</label>
+          <input type="number" id="caloriesBurned" placeholder="e.g., 150">
+          <br>
+          <label for="exerciseNotes">Notes/Comments:</label>
+          <textarea id="exerciseNotes" placeholder="Any observations or details"></textarea>
+          <br>
+          <label for="exerciseLocation">Location (optional):</label>
+          <input type="text" id="exerciseLocation" placeholder="e.g., Park">
+        </fieldset>
+        <!-- Calendar & Charts Section -->
+        <fieldset>
+          <legend>Calendar & Dashboard</legend>
+          <div id="exerciseCalendar"></div>
+          <br>
+          <div id="dashboardCharts">
+            <h2>Dashboard Charts</h2>
+            <canvas id="durationChartDashboard"></canvas>
+            <canvas id="caloriesChartDashboard"></canvas>
+          </div>
+        </fieldset>
+        <!-- Action Button -->
+        <button type="submit">${activeProfileIndex === null ? "Add Exercise" : "Update Exercise"}</button>
       </form>
+      <!-- Saved Profiles Section -->
       <div id="savedProfilesContainer">
         <h1>Saved Pet Profiles</h1>
         <div id="savedProfiles"></div>
       </div>
+      <!-- Additional Action Buttons -->
       <button id="monthlyReportButton">Monthly Report</button>
       <button id="logoutButton">Logout</button>
     </div>
-    <!-- New fixed "Add New Profile" button at bottom right -->
+    <!-- Fixed "Add New Profile" Button -->
     <button id="addNewProfileButton" style="position: fixed; bottom: 20px; right: 20px; z-index: 1000;">Add New Profile</button>
   `;
   showPage(exerciseLogPage);
 
-  // Event listener for form submission (add/update)
+  // ----------------------------
+  // Event Listener: Exercise Form Submission
+  // ----------------------------
   document.getElementById('exerciseForm').addEventListener('submit', (event) => {
     event.preventDefault();
     handleProfileSave(event);
-    alert(editingProfileIndex === null ? 'Exercise added successfully!' : 'Exercise updated successfully!');
   });
 
+  // ----------------------------
+  // Event Listener: Monthly Report Button
+  // ----------------------------
   document.getElementById('monthlyReportButton').addEventListener('click', generateMonthlyReport);
+
+  // ----------------------------
+  // Event Listener: Logout Button
+  // ----------------------------
   document.getElementById('logoutButton').addEventListener('click', logout);
 
+  // ----------------------------
+  // Initialize Calendar & Dashboard Charts
+  // ----------------------------
   generateCalendar();
   renderDashboardCharts();
   loadSavedProfiles();
 
-  // Pet image preview handler
+  // ----------------------------
+  // Event Listener: Pet Image Preview
+  // ----------------------------
   document.getElementById('petImage').addEventListener('change', (event) => {
     const file = event.target.files[0];
     const reader = new FileReader();
@@ -223,28 +239,31 @@ function showExerciseLog() {
     }
   });
 
-  // Event listener for "Add New Profile" button to clear form (without affecting saved profiles)
+  // ----------------------------
+  // Event Listener: Add New Profile Button
+  // ----------------------------
   document.getElementById('addNewProfileButton').addEventListener('click', () => {
+    // Reset the form and clear the active profile index to ensure new entries go to a new array
+    activeProfileIndex = null;
     document.getElementById('exerciseForm').reset();
   });
 }
 
 /* ============================================================
-   CALENDAR, CHART & PROFILE MANAGEMENT
+   CALENDAR MANAGEMENT FUNCTIONS
 ============================================================ */
-
 function saveCalendarState() {
-  let state = {};
+  const state = {};
   const checkboxes = document.querySelectorAll('#exerciseCalendar input[type="checkbox"]');
   checkboxes.forEach(cb => {
-    let day = cb.id.replace("day", "");
+    const day = cb.id.replace("day", "");
     state[day] = cb.checked;
   });
   localStorage.setItem("currentCalendarState", JSON.stringify(state));
 }
 
 function loadCalendarState() {
-  let state = JSON.parse(localStorage.getItem("currentCalendarState"));
+  const state = JSON.parse(localStorage.getItem("currentCalendarState"));
   return state || {};
 }
 
@@ -277,25 +296,30 @@ function generateCalendar() {
   });
 }
 
+/* ============================================================
+   DASHBOARD CHART FUNCTIONS
+============================================================ */
 function renderDashboardCharts() {
   const canvasDuration = document.getElementById('durationChartDashboard');
   const ctxDuration = canvasDuration.getContext('2d');
   const canvasCalories = document.getElementById('caloriesChartDashboard');
   const ctxCalories = canvasCalories.getContext('2d');
 
+  // Retrieve saved profiles from localStorage; each profile is now separate.
   const profiles = JSON.parse(localStorage.getItem('petProfiles')) || [];
   const now = new Date();
   const year = now.getFullYear();
   const month = now.getMonth();
   const daysInMonth = new Date(year, month + 1, 0).getDate();
   
+  // Calculate daily totals based on profile exercise entries
   let dailyDuration = Array(daysInMonth).fill(0);
   let dailyCalories = Array(daysInMonth).fill(0);
   
   profiles.forEach(profile => {
-    let date = new Date(profile.exerciseDate);
+    const date = new Date(profile.exerciseDate);
     if (date.getFullYear() === year && date.getMonth() === month) {
-      let day = date.getDate();
+      const day = date.getDate();
       dailyDuration[day - 1] += parseInt(profile.exerciseDuration, 10) || 0;
       dailyCalories[day - 1] += parseInt(profile.caloriesBurned, 10) || 0;
     }
@@ -328,11 +352,11 @@ function renderDashboardCharts() {
           title: { display: true, text: 'Day of Month' }
         },
         y: {
-          min: 0, // UPDATED: Set minimum to 0
+          min: 0,
           ticks: {
             stepSize: 10,
             max: 90,
-            callback: value => value + ' m' // UPDATED: Display ticks as "m"
+            callback: value => value + ' m'
           },
           title: { display: true, text: 'Duration (min)' }
         }
@@ -365,67 +389,72 @@ function renderDashboardCharts() {
   });
 }
 
+/* ============================================================
+   PROFILE & EXERCISE MANAGEMENT FUNCTIONS
+============================================================ */
 function handleProfileSave(event) {
   event.preventDefault();
   
-  const updatedDuration = document.getElementById('exerciseDuration').value;
-  const updatedCalories = document.getElementById('caloriesBurned').value;
-  const updatedDate = document.getElementById('exerciseDate').value;
-  
+  // Gather pet details and exercise entry values
   const petName = document.getElementById('petName').value;
   const petImage = document.getElementById('petImagePreview').src;
   const petCharacteristics = document.getElementById('petCharacteristics').value;
   const exerciseType = document.getElementById('exerciseType').value;
+  const exerciseDuration = document.getElementById('exerciseDuration').value;
+  const exerciseDate = document.getElementById('exerciseDate').value;
   const bodyconditionScoring = document.getElementById('bodyconditionScoring').value;
   const exerciseTime = document.getElementById('exerciseTime').value;
   const exerciseIntensity = document.getElementById('exerciseIntensity').value;
+  const caloriesBurned = document.getElementById('caloriesBurned').value;
   const exerciseNotes = document.getElementById('exerciseNotes').value;
   const exerciseLocation = document.getElementById('exerciseLocation').value;
   
+  // Retrieve saved profiles (each profile is an independent record)
   let profiles = JSON.parse(localStorage.getItem('petProfiles')) || [];
   
-  if (editingProfileIndex !== null) {
-    let existingProfile = profiles[editingProfileIndex];
-    existingProfile.petName = petName;
-    existingProfile.petImage = petImage;
-    existingProfile.petCharacteristics = petCharacteristics;
-    existingProfile.exerciseType = exerciseType;
-    existingProfile.exerciseDuration = updatedDuration;
-    existingProfile.exerciseDate = updatedDate;
-    existingProfile.bodyconditionScoring = bodyconditionScoring;
-    existingProfile.exerciseTime = exerciseTime;
-    existingProfile.exerciseIntensity = exerciseIntensity;
-    existingProfile.caloriesBurned = updatedCalories;
-    existingProfile.exerciseNotes = exerciseNotes;
-    existingProfile.exerciseLocation = exerciseLocation;
-    profiles[editingProfileIndex] = existingProfile;
-    editingProfileIndex = null;
-    document.getElementById('exerciseForm').querySelector('button[type="submit"]').textContent = "Add Exercise";
-  } else {
+  if (activeProfileIndex === null) {
+    // Create a new profile record
     const newProfile = {
       petName,
       petImage,
       petCharacteristics,
       exerciseType,
-      exerciseDuration: updatedDuration,
-      exerciseDate: updatedDate,
+      exerciseDuration,
+      exerciseDate,
       bodyconditionScoring,
       exerciseTime,
       exerciseIntensity,
-      caloriesBurned: updatedCalories,
+      caloriesBurned,
       exerciseNotes,
       exerciseLocation
     };
     profiles.push(newProfile);
+    alert('Exercise added successfully!');
+  } else {
+    // Update the existing profile record
+    const updatedProfile = {
+      petName,
+      petImage,
+      petCharacteristics,
+      exerciseType,
+      exerciseDuration,
+      exerciseDate,
+      bodyconditionScoring,
+      exerciseTime,
+      exerciseIntensity,
+      caloriesBurned,
+      exerciseNotes,
+      exerciseLocation
+    };
+    profiles[activeProfileIndex] = updatedProfile;
+    alert('Exercise updated successfully!');
+    activeProfileIndex = null; // Reset after updating
   }
   
   localStorage.setItem('petProfiles', JSON.stringify(profiles));
   renderDashboardCharts();
   loadSavedProfiles();
-  
-  const savedCalendarState = loadCalendarState();
   event.target.reset();
-  localStorage.setItem("currentCalendarState", JSON.stringify(savedCalendarState));
   generateCalendar();
 }
 
@@ -433,7 +462,7 @@ function loadSavedProfiles() {
   const profiles = JSON.parse(localStorage.getItem('petProfiles')) || [];
   const savedProfilesDiv = document.getElementById('savedProfiles');
   savedProfilesDiv.innerHTML = '';
-
+  
   profiles.forEach((profile, index) => {
     const profileDiv = document.createElement('div');
     profileDiv.innerHTML = `
@@ -449,11 +478,16 @@ function loadSavedProfiles() {
       <p>Calories Burned: ${profile.caloriesBurned}</p>
       <p>Notes: ${profile.exerciseNotes}</p>
       <p>Location: ${profile.exerciseLocation}</p>
-      <button onclick="deleteProfile(${index})">Delete</button>
-      <button onclick="printProfile(${index})">Print</button>
-      <button onclick="editProfile(${index})">Edit</button>
+      <button id="delete_${index}">Delete</button>
+      <button id="print_${index}">Print</button>
+      <button id="edit_${index}">Edit</button>
     `;
     savedProfilesDiv.appendChild(profileDiv);
+    
+    // Attach event listeners for each button in this profile section
+    document.getElementById(`delete_${index}`).addEventListener('click', () => deleteProfile(index));
+    document.getElementById(`print_${index}`).addEventListener('click', () => printProfile(index));
+    document.getElementById(`edit_${index}`).addEventListener('click', () => editProfile(index));
   });
 }
 
@@ -487,6 +521,7 @@ function printProfile(index) {
 function editProfile(index) {
   const profiles = JSON.parse(localStorage.getItem('petProfiles')) || [];
   const profile = profiles[index];
+  // Populate the form with the profile's data for editing
   document.getElementById('petName').value = profile.petName;
   document.getElementById('petCharacteristics').value = profile.petCharacteristics;
   document.getElementById('exerciseType').value = profile.exerciseType;
@@ -498,20 +533,12 @@ function editProfile(index) {
   document.getElementById('caloriesBurned').value = profile.caloriesBurned;
   document.getElementById('exerciseNotes').value = profile.exerciseNotes;
   document.getElementById('exerciseLocation').value = profile.exerciseLocation;
-  editingProfileIndex = index;
-  document.getElementById('exerciseForm').querySelector('button[type="submit"]').textContent = "Update Exercise";
-}
-
-function logout() {
-  sessionStorage.removeItem('user');
-  alert('You have been logged out.');
-  showSignIn();
+  activeProfileIndex = index;
 }
 
 /* ============================================================
-   MONTHLY REPORT & AUTO-EXPORT TRIGGER
+   REPORT FUNCTIONS
 ============================================================ */
-
 function renderReportCalendar(daysInMonth, calendarState) {
   const calendarDiv = document.getElementById('reportCalendar');
   calendarDiv.innerHTML = '<h2>Calendar</h2>';
@@ -541,15 +568,13 @@ function renderMonthlyCharts(dailyDuration, dailyCalories, daysInMonth) {
     options: {
       responsive: true,
       scales: {
-        x: {
-          title: { display: true, text: 'Day of Month' }
-        },
+        x: { title: { display: true, text: 'Day of Month' } },
         y: {
-          min: 0, // Set min to 0
+          min: 0,
           ticks: {
             stepSize: 10,
             max: 90,
-            callback: value => value + ' m' // Display as "m"
+            callback: value => value + ' m'
           },
           title: { display: true, text: 'Duration (min)' }
         }
@@ -573,12 +598,8 @@ function renderMonthlyCharts(dailyDuration, dailyCalories, daysInMonth) {
     options: {
       responsive: true,
       scales: {
-        x: {
-          title: { display: true, text: 'Day of Month' }
-        },
-        y: {
-          title: { display: true, text: 'Calories' }
-        }
+        x: { title: { display: true, text: 'Day of Month' } },
+        y: { title: { display: true, text: 'Calories' } }
       }
     }
   });
@@ -591,17 +612,17 @@ function generateMonthlyReport() {
   const monthName = now.toLocaleString('default', { month: 'long' });
   const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-  let profiles = JSON.parse(localStorage.getItem('petProfiles')) || [];
-  let monthProfiles = profiles.filter(profile => {
-    let date = new Date(profile.exerciseDate);
+  const profiles = JSON.parse(localStorage.getItem('petProfiles')) || [];
+  const monthProfiles = profiles.filter(profile => {
+    const date = new Date(profile.exerciseDate);
     return date.getFullYear() === year && date.getMonth() === month;
   });
 
   let dailyDuration = Array(daysInMonth).fill(0);
   let dailyCalories = Array(daysInMonth).fill(0);
   monthProfiles.forEach(profile => {
-    let date = new Date(profile.exerciseDate);
-    let day = date.getDate();
+    const date = new Date(profile.exerciseDate);
+    const day = date.getDate();
     dailyDuration[day - 1] += parseInt(profile.exerciseDuration, 10) || 0;
     dailyCalories[day - 1] += parseInt(profile.caloriesBurned, 10) || 0;
   });
@@ -609,9 +630,9 @@ function generateMonthlyReport() {
   const exercisedDays = dailyDuration.filter(d => d > 0).length;
   const totalDuration = dailyDuration.reduce((acc, val) => acc + val, 0);
   const totalCalories = dailyCalories.reduce((acc, val) => acc + val, 0);
-  const summaryComment = `This month, the pet exercised on ${exercisedDays} days with a total duration of ${totalDuration} minutes and burned a total of ${totalCalories} calories. Great job!`;
+  const summaryComment = `This month, the pet exercised on ${exercisedDays} days with a total duration of ${totalDuration} minutes and burned ${totalCalories} calories. Great job!`;
 
-  let monthlyReport = {
+  const monthlyReport = {
     year,
     month,
     monthName,
@@ -627,7 +648,6 @@ function generateMonthlyReport() {
   monthlyReports.push(monthlyReport);
   localStorage.setItem('monthlyReports', JSON.stringify(monthlyReports));
 
-  // UPDATED: Wrap buttons in a container with extra bottom spacing.
   const reportHTML = `
     <div id="monthlyReport">
       <h1>${monthName} ${year} Monthly Report</h1>
@@ -681,7 +701,6 @@ function generateMonthlyReport() {
     exportMonthlyReport(monthlyReport);
   });
   document.getElementById('backToDashboard').addEventListener('click', () => {
-    // Return to dashboard without clearing saved profiles or calendar state.
     showExerciseLog();
   });
 }
@@ -720,8 +739,8 @@ function exportAndResetMonthlyReport() {
   const monthName = now.toLocaleString('default', { month: 'long' });
   const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
 
-  let profiles = JSON.parse(localStorage.getItem('petProfiles')) || [];
-  let monthProfiles = profiles.filter(profile => {
+  const profiles = JSON.parse(localStorage.getItem('petProfiles')) || [];
+  const monthProfiles = profiles.filter(profile => {
     const entryDate = new Date(profile.exerciseDate);
     return entryDate.getFullYear() === currentYear && entryDate.getMonth() === currentMonth;
   });
@@ -754,7 +773,7 @@ function exportAndResetMonthlyReport() {
 
   exportMonthlyReport(monthlyReport);
 
-  // Clear pet profiles and calendar state for the new month.
+  // Clear profiles and calendar state for new month
   localStorage.removeItem("currentCalendarState");
   localStorage.removeItem("petProfiles");
   showExerciseLog();
@@ -765,7 +784,6 @@ function exportAndResetMonthlyReport() {
 /* ============================================================
    SERVICE WORKER & CONNECTIVITY
 ============================================================ */
-
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('https://drkimogad.github.io/Pet-Exercise-Log/service-worker.js')
@@ -802,7 +820,6 @@ window.addEventListener('offline', () => {
 /* ============================================================
    INITIALIZATION ON DOMCONTENTLOADED
 ============================================================ */
-
 document.addEventListener('DOMContentLoaded', () => {
   if (isLoggedIn()) {
     showExerciseLog();
