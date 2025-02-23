@@ -217,7 +217,7 @@ function showExerciseLog() {
       <button id="monthlyReportButton">Monthly Report</button>
       <button id="logoutButton">Logout</button>
     </div>
-    <!-- Fixed "Add New Profile" Button with extra bottom spacing -->
+    <!-- Fixed "Add New Profile" Button with extra spacing from footer -->
     <button id="addNewProfileButton" style="position: fixed; bottom: 80px; right: 20px; z-index: 1000;">Add New Profile</button>
   `;
   showPage(dashboardHTML);
@@ -237,6 +237,7 @@ function showExerciseLog() {
   // Attach event listeners
   document.getElementById('exerciseForm').addEventListener('submit', (event) => {
     event.preventDefault();
+    console.log("handleProfileSave triggered");
     handleProfileSave(event);
   });
   document.getElementById('monthlyReportButton').addEventListener('click', generateMonthlyReport);
@@ -470,7 +471,8 @@ function updateCurrentMonthlyReport() {
 
 function handleProfileSave(event) {
   event.preventDefault();
-
+  console.log("handleProfileSave triggered");
+  
   const name = document.getElementById('petName').value;
   const characteristics = document.getElementById('petCharacteristics').value;
   const image = document.getElementById('petImagePreview').src;
