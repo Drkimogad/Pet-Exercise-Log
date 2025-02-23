@@ -217,8 +217,8 @@ function showExerciseLog() {
       <button id="monthlyReportButton">Monthly Report</button>
       <button id="logoutButton">Logout</button>
     </div>
-    <!-- Fixed "Add New Profile" Button -->
-    <button id="addNewProfileButton" style="position: fixed; bottom: 20px; right: 20px; z-index: 1000;">Add New Profile</button>
+    <!-- Fixed "Add New Profile" Button with extra bottom spacing -->
+    <button id="addNewProfileButton" style="position: fixed; bottom: 80px; right: 20px; z-index: 1000;">Add New Profile</button>
   `;
   showPage(dashboardHTML);
 
