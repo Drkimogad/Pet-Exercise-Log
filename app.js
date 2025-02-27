@@ -22,6 +22,11 @@ function getActivePet() {
   return activePetIndex !== null ? pets[activePetIndex] : null;
 }
 
+function hashPassword(password) {
+  // Simple hash function for demonstration purposes
+  return btoa(password);
+}
+
 /* ============================================================
    AUTHENTICATION FUNCTIONS (FIXED)
 ============================================================ */
@@ -77,7 +82,7 @@ function showSignIn() {
       password: await hashPassword(document.getElementById('signInPassword').value)
     };
     
-    if (storedUser && storedUser.password === inputUser.password) {
+    if (storedUser && storedUser.username === inputUser.username && storedUser.password === inputUser.password) {
       showExerciseLog();
     } else {
       alert('Invalid credentials');
@@ -111,6 +116,7 @@ function showExerciseLog() {
         <button type="submit">${pet ? 'Update' : 'Create'} Profile</button>
       </form>
       <div id="savedProfiles"></div>
+      <div id="exerciseCalendar"></div>
     </div>
   `;
   showPage(dashboardHTML);
@@ -123,11 +129,16 @@ function showExerciseLog() {
 
   // Handle image upload
   document.getElementById('petImage').addEventListener('change', function(e) {
-    const reader = new FileReader();
-    reader.onload = () => {
-      document.getElementById('petImagePreview').src = reader.result;
-    };
-    reader.readAsDataURL(e.target.files[0]);
+    const file = e.target.files[0];
+    if (file && file.size < 5000000 && file.type.startsWith('image/')) { // 5MB limit
+      const reader = new FileReader();
+      reader.onload = () => {
+        document.getElementById('petImagePreview').src = reader.result;
+      };
+      reader.readAsDataURL(file);
+    } else {
+      alert('File is too large or not an image.');
+    }
   });
 
   // Form submission
@@ -172,6 +183,8 @@ function savePetProfile() {
     }
     pets.push(pet);
     activePetIndex = pets.length - 1;
+  } else {
+    pets[activePetIndex] = pet;
   }
   setPets(pets);
   
@@ -221,6 +234,36 @@ if ('serviceWorker' in navigator) {
   });
 }
 
-// Remaining helper functions (hashPassword, loadSavedProfiles, etc.) 
-// should follow the same pattern with proper error handling
-// and DOM element existence checks
+/* ============================================================
+   HELPER FUNCTIONS
+============================================================ */
+function isLoggedIn() {
+  return sessionStorage.getItem('user') !== null;
+}
+
+function showPage(content) {
+  document.body.innerHTML = content;
+}
+
+function loadSavedProfiles() {
+  const pets = getPets();
+  const savedProfilesDiv = document.getElementById('savedProfiles');
+  savedProfilesDiv.innerHTML = '';
+
+  pets.forEach((pet, index) => {
+    const profileDiv = document.createElement('div');
+    profileDiv.className = 'profile';
+    profileDiv.innerHTML = `
+      <h2>${pet.petDetails.name}</h2>
+      <img src="${pet.petDetails.image}" alt="${pet.petDetails.name}">
+      <p>${pet.petDetails.characteristics}</p>
+      <button onclick="editPet(${index})">Edit</button>
+    `;
+    savedProfilesDiv.appendChild(profileDiv);
+  });
+}
+
+function editPet(index) {
+  activePetIndex = index;
+  showExerciseLog();
+}
