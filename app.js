@@ -27,12 +27,7 @@ function hashPassword(password) {
   return btoa(password);
 }
 
-/* ============================================================
-   AUTHENTICATION FUNCTIONS (FIXED)
-============================================================ */
-/* ============================================================
-   FIXED AUTHENTICATION FORMS WITH VISUAL ELEMENTS
-============================================================ */
+// Updated authentication functions
 function showSignUp() {
   const signUpHTML = `
     <div class="auth-container">
@@ -40,7 +35,7 @@ function showSignUp() {
         <h2 class="auth-title">Create Account</h2>
         <form id="signUpForm" class="auth-form">
           <div class="form-group">
-            <label for="signUpUsername">Username</label>
+            <label>Username</label>
             <input 
               type="text" 
               id="signUpUsername" 
@@ -50,7 +45,7 @@ function showSignUp() {
             >
           </div>
           <div class="form-group">
-            <label for="signUpPassword">Password</label>
+            <label>Password</label>
             <input 
               type="password" 
               id="signUpPassword" 
@@ -63,24 +58,17 @@ function showSignUp() {
         </form>
         <div class="auth-footer">
           Already have an account? 
-          <a href="#" id="switchToSignIn" class="auth-link">Sign In</a>
+          <a class="auth-link" id="switchToSignIn">Sign In</a>
         </div>
       </div>
     </div>
   `;
-  
+
   showPage(signUpHTML);
   
-  // Add event listeners
-  document.getElementById('signUpForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    // Sign up logic here
-  });
-
-  document.getElementById('switchToSignIn').addEventListener('click', (e) => {
-    e.preventDefault();
-    showSignIn();
-  });
+  // Event listeners
+  document.getElementById('signUpForm').addEventListener('submit', handleSignUp);
+  document.getElementById('switchToSignIn').addEventListener('click', showSignIn);
 }
 
 function showSignIn() {
@@ -90,7 +78,7 @@ function showSignIn() {
         <h2 class="auth-title">Welcome Back</h2>
         <form id="signInForm" class="auth-form">
           <div class="form-group">
-            <label for="signInUsername">Username</label>
+            <label>Username</label>
             <input 
               type="text" 
               id="signInUsername" 
@@ -100,7 +88,7 @@ function showSignIn() {
             >
           </div>
           <div class="form-group">
-            <label for="signInPassword">Password</label>
+            <label>Password</label>
             <input 
               type="password" 
               id="signInPassword" 
@@ -113,7 +101,7 @@ function showSignIn() {
         </form>
         <div class="auth-footer">
           Don't have an account? 
-          <a href="#" id="switchToSignUp" class="auth-link">Sign Up</a>
+          <a class="auth-link" id="switchToSignUp">Sign Up</a>
         </div>
       </div>
     </div>
@@ -121,17 +109,19 @@ function showSignIn() {
 
   showPage(signInHTML);
   
-  // Add event listeners
-  document.getElementById('signInForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    // Sign in logic here
-  });
-
-  document.getElementById('switchToSignUp').addEventListener('click', (e) => {
-    e.preventDefault();
-    showSignUp();
-  });
+  // Event listeners
+  document.getElementById('signInForm').addEventListener('submit', handleSignIn);
+  document.getElementById('switchToSignUp').addEventListener('click', showSignUp);
 }
+
+// Initialize the auth flow
+document.addEventListener('DOMContentLoaded', () => {
+  if (!isLoggedIn()) {
+    showSignUp(); // Or showSignIn based on your preference
+  } else {
+    showExerciseLog();
+  }
+});
 
 /* ============================================================
    PET FORM MANAGEMENT (FIXED)
