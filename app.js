@@ -114,27 +114,24 @@ const AuthModule = (function() {
    - Manages pet profiles, exercise entry, saved profiles,
      and "Add New Profile" functionality.
 ============================================= */
-const PetEntryModule = (function() {
+    
+ const PetEntryModule = (function() {
   let activePetIndex = null;
   const MAX_PETS = 10;
   
-  // Retrieve pet profiles from localStorage
   function getPets() {
     return JSON.parse(localStorage.getItem("pets")) || [];
   }
   
-  // Save pet profiles to localStorage
   function setPets(pets) {
     localStorage.setItem("pets", JSON.stringify(pets));
   }
   
-  // Get the active pet based on activePetIndex
   function getActivePet() {
     const pets = getPets();
     return activePetIndex !== null ? pets[activePetIndex] : null;
   }
   
-  // Update the active pet in localStorage
   function updateActivePet(updatedPet) {
     let pets = getPets();
     if (activePetIndex !== null) {
@@ -143,7 +140,6 @@ const PetEntryModule = (function() {
     }
   }
   
-  // Render the main dashboard (exercise log, pet details, saved profiles)
   function showExerciseLog() {
     const dashboardHTML = `
       <div id="entryContainer">
@@ -227,10 +223,10 @@ const PetEntryModule = (function() {
     `;
     AppHelper.showPage(dashboardHTML);
     
-    // Attach event listeners for form submission, monthly report, and logout
+    // Attach event listeners
     document.getElementById('exerciseForm').addEventListener('submit', (event) => {
       event.preventDefault();
-      handleProfileSave(event); // Updated to pass event
+      handleProfileSave(event);
     });
     document.getElementById('monthlyReportButton').addEventListener('click', ReportsModule.generateMonthlyReport);
     document.getElementById('logoutButton').addEventListener('click', AppHelper.logout);
@@ -247,7 +243,7 @@ const PetEntryModule = (function() {
       }
     });
     
-    // "Add New Profile" Button Handler: Clear form and hide saved profiles
+    // "Add New Profile" Button Handler: clear form and hide saved profiles
     document.getElementById('addNewProfileButton').addEventListener('click', () => {
       let pets = getPets();
       if (pets.length >= MAX_PETS) {
@@ -261,10 +257,10 @@ const PetEntryModule = (function() {
       console.log("New profile mode activated. Form cleared and saved profiles hidden.");
     });
     
-    // "Toggle Mode" Button Handler: Toggle a 'dark-mode' class on the body
+    // "Toggle Mode" Button Handler: toggle dark mode and save state to localStorage
     document.getElementById('toggleModeButton').addEventListener('click', () => {
       document.body.classList.toggle('dark-mode');
-      localStorage.setItem('darkMode', document.body.classList.contains('dark-mode')); // Persist state
+      localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
       console.log("Toggle mode activated. Dark mode is now", document.body.classList.contains('dark-mode') ? "ON" : "OFF");
     });
     
@@ -274,10 +270,9 @@ const PetEntryModule = (function() {
     loadSavedProfiles();
   }
   
-  // Handle saving pet profiles and exercise entries
   function handleProfileSave(event) {
     console.log("handleProfileSave triggered");
-    event.preventDefault(); // Ensure this is called
+    event.preventDefault();
     
     // Retrieve pet details
     const name = document.getElementById('petName').value.trim();
@@ -312,7 +307,7 @@ const PetEntryModule = (function() {
         alert("Maximum number of pet profiles reached.");
         return;
       }
-      // Create a new pet profile
+      // Create new pet profile
       currentPet = {
         petDetails: {
           name: name,
@@ -374,7 +369,6 @@ const PetEntryModule = (function() {
     console.log("Charts and saved profiles updated.");
   }
   
-  // Render saved pet profiles
   function loadSavedProfiles() {
     const pets = getPets();
     const savedProfilesDiv = document.getElementById('savedProfiles');
@@ -438,8 +432,7 @@ const PetEntryModule = (function() {
     updateActivePet
   };
 })();
-
-
+     
 
 /* =============================================
    MODULE: CalendarModule [Color: Orange]
@@ -454,3 +447,16 @@ const CalendarModule = (function() {
       state[day] = cb.checked;
     });
     let pet = PetEntryModule
+
+ document.addEventListener('DOMContentLoaded', () => {
+  ServiceWorkerModule.registerServiceWorker();
+  if (localStorage.getItem('darkMode') === 'true') {
+    document.body.classList.add('dark-mode');
+  }
+  if (sessionStorage.getItem('user')) {
+    PetEntryModule.showExerciseLog();
+  } else {
+    AuthModule.showSignIn();
+  }
+});
+    
