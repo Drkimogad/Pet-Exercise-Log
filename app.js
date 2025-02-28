@@ -209,7 +209,7 @@ function showExerciseLog() {
         <!-- Action Button -->
         <button type="submit">${activePetIndex === null ? "Add Exercise" : "Update & Add Exercise"}</button>
       </form>
-      <!-- Saved Pet Profiles Section (will be hidden in new profile mode) -->
+      <!-- Saved Pet Profiles Section -->
       <div id="savedProfilesContainer">
         <h1>Saved Pet Profiles</h1>
         <div id="savedProfiles"></div>
@@ -257,7 +257,7 @@ function showExerciseLog() {
       alert("Maximum number of pet profiles reached.");
       return;
     }
-    activePetIndex = null; // New profile mode
+    activePetIndex = null; // Switch to new profile mode
     // Clear the form fields
     document.getElementById('exerciseForm').reset();
     document.getElementById('petImagePreview').src = "";
@@ -581,4 +581,206 @@ function exportMonthlyReport(report, petName) {
 }
 
 /* ============================================================
-   PET &
+   PET & EXERCISE MANAGEMENT FUNCTIONS
+   (Focused modifications: “Add Exercise” and “Add New Profile”)
+============================================================ */
+function handleProfileSave(event) {
+  event && event.preventDefault();
+  
+  // Get pet details
+  const name = document.getElementById('petName').value.trim();
+  const characteristics = document.getElementById('petCharacteristics').value.trim();
+  const image = document.getElementById('petImagePreview').src;
+  
+  // Get exercise fields
+  const exerciseType = document.getElementById('exerciseType').value;
+  const exerciseDuration = document.getElementById('exerciseDuration').value;
+  const exerciseDate = document.getElementById('exerciseDate').value;
+  const bodyconditionScoring = document.getElementById('bodyconditionScoring').value;
+  const exerciseTime = document.getElementById('exerciseTime').value;
+  const exerciseIntensity = document.getElementById('exerciseIntensity').value;
+  const caloriesBurned = document.getElementById('caloriesBurned').value;
+  const exerciseNotes = document.getElementById('exerciseNotes').value;
+  const exerciseLocation = document.getElementById('exerciseLocation').value;
+  
+  // Validate required fields for daily exercise update
+  if (!exerciseDate || !exerciseDuration || !caloriesBurned) {
+    alert("Please provide Date, Exercise Duration, and Calories Burned for the exercise update.");
+    return;
+  }
+  
+  // Save calendar state
+  saveCalendarState();
+  const calendarState = loadCalendarState();
+  
+  let pets = getPets();
+  let currentPet;
+  if (activePetIndex === null) {
+    // New profile mode: create a new pet profile with full details
+    if (pets.length >= MAX_PETS) {
+      alert("Maximum number of pet profiles reached.");
+      return;
+    }
+    currentPet = {
+      petDetails: {
+        name: name,
+        image: image,
+        characteristics: characteristics
+      },
+      exercises: [],
+      calendarState: calendarState,
+      monthlyReports: [],
+      currentMonthlyReport: null
+    };
+    pets.push(currentPet);
+    activePetIndex = pets.length - 1;
+  } else {
+    currentPet = getActivePet();
+    // Update pet details only if provided
+    if (name) currentPet.petDetails.name = name;
+    if (image) currentPet.petDetails.image = image;
+    if (characteristics) currentPet.petDetails.characteristics = characteristics;
+  }
+  
+  // Add new exercise entry
+  const newExercise = {
+    exerciseType,
+    exerciseDuration,
+    exerciseDate,
+    bodyconditionScoring,
+    exerciseTime,
+    exerciseIntensity,
+    caloriesBurned,
+    exerciseNotes,
+    exerciseLocation,
+    calendarState
+  };
+  currentPet.exercises.push(newExercise);
+  
+  // Update current monthly report (cumulative)
+  updateCurrentMonthlyReport();
+  
+  pets[activePetIndex] = currentPet;
+  setPets(pets);
+  
+  alert("Exercise entry added and profile updated!");
+  
+  // Reset only the exercise part of the form; keep pet details intact
+  document.getElementById('exerciseForm').reset();
+  document.getElementById('petName').value = currentPet.petDetails.name;
+  document.getElementById('petCharacteristics').value = currentPet.petDetails.characteristics;
+  if (currentPet.petDetails.image) {
+    document.getElementById('petImagePreview').src = currentPet.petDetails.image;
+  }
+  
+  // When a new profile was being added, re-display saved profiles once saved
+  document.getElementById('savedProfilesContainer').style.display = 'block';
+  generateCalendar();
+  renderDashboardCharts();
+  loadSavedProfiles();
+}
+
+function loadSavedProfiles() {
+  const pets = getPets();
+  const savedProfilesDiv = document.getElementById('savedProfiles');
+  savedProfilesDiv.innerHTML = '';
+  
+  pets.forEach((pet, index) => {
+    savedProfilesDiv.innerHTML += `
+      <div class="pet-profile">
+        <h3>${pet.petDetails.name || "Unnamed Pet"}</h3>
+        <img src="${pet.petDetails.image || ''}" alt="Pet Image" style="max-width: 100px;" />
+        <p>${pet.petDetails.characteristics || ""}</p>
+        <p>Exercise Entries: ${pet.exercises.length}</p>
+        <button id="delete_${index}">Delete</button>
+        <button id="print_${index}">Print</button>
+        <button id="edit_${index}">Edit</button>
+      </div>
+    `;
+    document.getElementById(`delete_${index}`).addEventListener('click', () => deletePetProfile(index));
+    document.getElementById(`print_${index}`).addEventListener('click', () => printPetProfile(index));
+    document.getElementById(`edit_${index}`).addEventListener('click', () => editPetProfile(index));
+  });
+}
+
+function deletePetProfile(index) {
+  let pets = getPets();
+  if (confirm("Are you sure you want to delete this pet profile?")) {
+    pets.splice(index, 1);
+    setPets(pets);
+    if (activePetIndex === index) {
+      activePetIndex = null;
+    }
+    loadSavedProfiles();
+    renderDashboardCharts();
+  }
+}
+
+function printPetProfile(index) {
+  const pets = getPets();
+  const pet = pets[index];
+  const printWindow = window.open('', '', 'width=600,height=400');
+  printWindow.document.write(`<h1>${pet.petDetails.name || "Unnamed Pet"}</h1>`);
+  printWindow.document.write(`<img src="${pet.petDetails.image || ''}" alt="Pet Image" style="max-width: 100px;" />`);
+  printWindow.document.write(`<p>${pet.petDetails.characteristics || ""}</p>`);
+  printWindow.document.write(`<p>Number of Exercises: ${pet.exercises.length}</p>`);
+  printWindow.document.write('<br><button onclick="window.print()">Print</button>');
+}
+
+function editPetProfile(index) {
+  activePetIndex = index;
+  showExerciseLog();
+}
+
+/* ============================================================
+   SERVICE WORKER & CONNECTIVITY
+============================================================ */
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('https://drkimogad.github.io/Pet-Exercise-Log/service-worker.js')
+      .then((registration) => {
+        console.log('Service Worker registered with scope:', registration.scope);
+        registration.update();
+        registration.addEventListener('updatefound', () => {
+          const installingWorker = registration.installing;
+          installingWorker.addEventListener('statechange', () => {
+            if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
+              if (confirm('A new version of the app is available. Would you like to update?')) {
+                installingWorker.postMessage({ action: 'skipWaiting' });
+              }
+            }
+          });
+        });
+      })
+      .catch((error) => {
+        console.error('Error registering service worker:', error);
+      });
+  });
+}
+
+window.addEventListener('online', () => {
+  console.log('You are online');
+  location.reload();
+});
+
+window.addEventListener('offline', () => {
+  console.log('You are offline');
+  alert('It seems like you\'re not connected to the internet. Please check your connection');
+});
+
+/* ============================================================
+   LOGOUT & INITIALIZATION
+============================================================ */
+function logout() {
+  sessionStorage.removeItem('user');
+  alert('You have been logged out.');
+  showSignIn();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  if (isLoggedIn()) {
+    showExerciseLog();
+  } else {
+    showSignIn();
+  }
+});
