@@ -616,154 +616,75 @@ function exportMonthlyReport(report, petName) {
   downloadAnchorNode.remove();
 }
 
-/* ============================================================
-   PET & EXERCISE MANAGEMENT FUNCTIONS
-============================================================ */
-function handleProfileSave(event) {
-  event.preventDefault();
-  
-  // Get pet profile fields
-  const name = document.getElementById('petName').value;
-  const characteristics = document.getElementById('petCharacteristics').value;
-  const image = document.getElementById('petImagePreview').src;
-  
-  // Get exercise fields
-  const exerciseType = document.getElementById('exerciseType').value;
-  const exerciseDuration = document.getElementById('exerciseDuration').value;
-  const exerciseDate = document.getElementById('exerciseDate').value;
-  const bodyconditionScoring = document.getElementById('bodyconditionScoring').value;
-  const exerciseTime = document.getElementById('exerciseTime').value;
-  const exerciseIntensity = document.getElementById('exerciseIntensity').value;
-  const caloriesBurned = document.getElementById('caloriesBurned').value;
-  const exerciseNotes = document.getElementById('exerciseNotes').value;
-  const exerciseLocation = document.getElementById('exerciseLocation').value;
-  
-  // Validate required fields for daily exercise update
-  if (!exerciseDate || !exerciseDuration || !caloriesBurned) {
-    alert("Please provide Date, Exercise Duration, and Calories Burned for the exercise update.");
-    return;
-  }
-  
-  // Save calendar state
-  saveCalendarState();
-  const calendarState = loadCalendarState();
-  
-  // Update or create pet profile
-  let activePet = getActivePet();
-  if (!activePet) {
-    let profiles = getPetProfiles();
-    if (profiles.length >= MAX_PETS) {
-      alert("Maximum number of pet profiles reached.");
-      return;
+// ================= PET & EXERCISE MANAGEMENT FUNCTIONS =================
+
+function handleProfileSave() {
+    const petName = document.getElementById('petName').value.trim();
+    const petAge = document.getElementById('petAge').value.trim();
+    const petType = document.getElementById('petType').value.trim();
+    const petBreed = document.getElementById('petBreed').value.trim();
+    const petImage = document.getElementById('petImage').value.trim();
+
+    if (!petName || !petAge || !petType || !petBreed) {
+        alert('Please fill in all required fields before saving.');
+        return;
     }
-    activePet = {
-      id: Date.now(),
-      petDetails: {},
-      calendarState: calendarState,
-      monthlyReports: []
-    };
-    profiles.push(activePet);
-    setPetProfiles(profiles);
-    activePetId = activePet.id;
-  }
-  
-  // Update pet details if provided (optional update)
-  if(name) activePet.petDetails.name = name;
-  if(image) activePet.petDetails.image = image;
-  if(characteristics) activePet.petDetails.characteristics = characteristics;
-  
-  // Create new exercise entry with reference to the active pet
-  const newExercise = {
-    petId: activePet.id,
-    exerciseType,
-    exerciseDuration,
-    exerciseDate,
-    bodyconditionScoring,
-    exerciseTime,
-    exerciseIntensity,
-    caloriesBurned,
-    exerciseNotes,
-    exerciseLocation,
-    calendarState
-  };
-  const exercises = getExercises();
-  exercises.push(newExercise);
-  setExercises(exercises);
-  
-  // Update monthly report for the active pet
-  updateCurrentMonthlyReport();
-  updateActivePet(activePet);
-  
-  alert("Exercise entry added and profile updated!");
-  
-  // Reset only the exercise part of the form (retain pet details)
-  document.getElementById('exerciseForm').reset();
-  document.getElementById('petName').value = activePet.petDetails.name || "";
-  document.getElementById('petCharacteristics').value = activePet.petDetails.characteristics || "";
-  if (activePet.petDetails.image) {
-    document.getElementById('petImagePreview').src = activePet.petDetails.image;
-  }
-  
-  generateCalendar();
-  renderDashboardCharts();
-  loadSavedProfiles();
-}
 
-function loadSavedProfiles() {
-  const profiles = getPetProfiles();
-  const savedProfilesDiv = document.getElementById('savedProfiles');
-  savedProfilesDiv.innerHTML = '';
-  
-  profiles.forEach((profile) => {
-    savedProfilesDiv.innerHTML += `
-      <div class="pet-profile">
-        <h3>${profile.petDetails.name || "Unnamed Pet"}</h3>
-        <img src="${profile.petDetails.image || ''}" alt="Pet Image" style="max-width: 100px;" />
-        <p>${profile.petDetails.characteristics || ""}</p>
-        <p>Exercise Entries: ${getExercises().filter(ex => ex.petId === profile.id).length}</p>
-        <button id="delete_${profile.id}">Delete</button>
-        <button id="print_${profile.id}">Print</button>
-        <button id="edit_${profile.id}">Edit</button>
-      </div>
-    `;
-    document.getElementById(`delete_${profile.id}`).addEventListener('click', () => deletePetProfile(profile.id));
-    document.getElementById(`print_${profile.id}`).addEventListener('click', () => printPetProfile(profile.id));
-    document.getElementById(`edit_${profile.id}`).addEventListener('click', () => editPetProfile(profile.id));
-  });
-}
+    let petProfiles = JSON.parse(localStorage.getItem('petProfiles')) || [];
+    let existingPet = petProfiles.find(pet => pet.name === petName);
 
-function deletePetProfile(petId) {
-  let profiles = getPetProfiles();
-  if (confirm("Are you sure you want to delete this pet profile?")) {
-    profiles = profiles.filter(profile => profile.id !== petId);
-    setPetProfiles(profiles);
-    let exercises = getExercises();
-    exercises = exercises.filter(ex => ex.petId !== petId);
-    setExercises(exercises);
-    if (activePetId === petId) {
-      activePetId = null;
+    if (!existingPet) {
+        let newPet = {
+            name: petName,
+            age: petAge,
+            type: petType,
+            breed: petBreed,
+            image: petImage,
+            exercises: []
+        };
+        petProfiles.push(newPet);
     }
-    loadSavedProfiles();
-    renderDashboardCharts();
-  }
+
+    localStorage.setItem('petProfiles', JSON.stringify(petProfiles));
+    renderSavedProfiles();
 }
 
-function printPetProfile(petId) {
-  const profiles = getPetProfiles();
-  const profile = profiles.find(p => p.id === petId);
-  if (!profile) return;
-  const printWindow = window.open('', '', 'width=600,height=400');
-  printWindow.document.write(`<h1>${profile.petDetails.name || "Unnamed Pet"}</h1>`);
-  printWindow.document.write(`<img src="${profile.petDetails.image || ''}" alt="Pet Image" style="max-width: 100px;" />`);
-  printWindow.document.write(`<p>${profile.petDetails.characteristics || ""}</p>`);
-  printWindow.document.write(`<p>Number of Exercises: ${getExercises().filter(ex => ex.petId === petId).length}</p>`);
-  printWindow.document.write('<br><button onclick="window.print()">Print</button>');
+function handleAddExercise() {
+    const petName = document.getElementById('petName').value.trim();
+    const exerciseDate = document.getElementById('exerciseDate').value;
+    const exerciseDuration = document.getElementById('exerciseDuration').value;
+    const caloriesBurned = document.getElementById('caloriesBurned').value;
+
+    if (!petName || !exerciseDate || !exerciseDuration || !caloriesBurned) {
+        alert('Please fill in all fields before adding exercise.');
+        return;
+    }
+
+    let petProfiles = JSON.parse(localStorage.getItem('petProfiles')) || [];
+    let pet = petProfiles.find(p => p.name === petName);
+    if (pet) {
+        pet.exercises.push({ date: exerciseDate, duration: exerciseDuration, calories: caloriesBurned });
+    }
+
+    localStorage.setItem('petProfiles', JSON.stringify(petProfiles));
+    renderSavedProfiles();
 }
 
-function editPetProfile(petId) {
-  activePetId = petId;
-  showExerciseLog();
-}
+// ================= "ADD NEW PROFILE" EVENT HANDLER =================
+
+document.getElementById('addNewProfile').addEventListener('click', function () {
+    document.getElementById('savedPets').style.display = 'none';
+    document.getElementById('editForm').reset();
+    document.getElementById('editForm').style.display = 'block';
+});
+
+document.getElementById('saveProfile').addEventListener('click', function () {
+    handleProfileSave();
+    document.getElementById('savedPets').style.display = 'block';
+    document.getElementById('editForm').style.display = 'none';
+});
+
+    
 
 /* ============================================================
    SERVICE WORKER & CONNECTIVITY
