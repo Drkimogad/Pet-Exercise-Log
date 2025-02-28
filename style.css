@@ -253,11 +253,41 @@ a:hover {
 }
 
 /* ============================================================
-   DESKTOP SCALING
+   DESKTOP SCALING FOR LAPTOPS (Override for Testing)
+   Remove the scale transform for laptops so monthly report
+   and logout button are testable.
 ============================================================ */
-@media (min-width: 1024px) {
+@media (min-width: 1024px) and (max-width: 1440px) {
   body {
-    transform: scale(0.6);
-    transform-origin: top center;
+    transform: none;
   }
+}
+
+/* ============================================================
+   NEW BUTTON POSITIONS & STYLING
+============================================================ */
+
+/* Position the Add New Profile button at the top left, just under the header */
+#addNewProfileButton {
+  position: fixed;
+  top: 90px;
+  left: 20px;
+  z-index: 1100;
+}
+
+/* Add a Toggle Mode button positioned at the top right next to Add New Profile */
+#toggleModeButton {
+  position: fixed;
+  top: 90px;
+  right: 20px;
+  z-index: 1100;
+}
+
+/* Position the Logout button at the bottom right with extra spacing */
+#logoutButton {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1100;
+  margin-bottom: 20px;
 }
