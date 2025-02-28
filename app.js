@@ -134,6 +134,7 @@ function showSignIn() {
 
 /* ============================================================
    DASHBOARD / EXERCISE LOG PAGE & EVENT LISTENERS
+   (Everything wrapped in one container: entryContainer)
 ============================================================ */
 function showExerciseLog() {
   if (!isLoggedIn()) {
@@ -142,16 +143,15 @@ function showExerciseLog() {
     return;
   }
 
-  // Build the dashboard HTML with pet details, exercise entry, calendar, charts, etc.
+  // Build dashboard HTML; all entry sections are inside "entryContainer"
   const dashboardHTML = `
-    <div id="exerciseLog">
-      <h1>Pet Exercise Tracker</h1>
+    <div id="entryContainer">
       <form id="exerciseForm">
         <!-- Pet Details Section -->
         <fieldset>
           <legend>Pet Details</legend>
           <label for="petName">Pet Name:</label>
-          <input type="text" id="petName" value="${getActivePet() ? getActivePet().petDetails.name : ''}">
+          <input type="text" id="petName" value="${getActivePet() ? getActivePet().petDetails.name : ''}" required>
           <br>
           <label for="petImage">Upload Pet Image:</label>
           <input type="file" id="petImage" accept="image/*">
@@ -186,7 +186,7 @@ function showExerciseLog() {
             <option value="high">High</option>
           </select>
           <br>
-          <label for="caloriesBurned">Calories Burned (optional):</label>
+          <label for="caloriesBurned">Calories Burned (required):</label>
           <input type="number" id="caloriesBurned" placeholder="e.g., 150" required>
           <br>
           <label for="exerciseNotes">Notes/Comments:</label>
@@ -206,24 +206,26 @@ function showExerciseLog() {
             <canvas id="caloriesChartDashboard"></canvas>
           </div>
         </fieldset>
-        <!-- Action Button -->
+        <!-- Action Button to Save Everything -->
         <button type="submit">${activePetIndex === null ? "Add Exercise" : "Update & Add Exercise"}</button>
       </form>
-      <!-- Saved Pet Profiles Section -->
+      <!-- Saved Pet Profiles Section (visible once a profile is saved) -->
       <div id="savedProfilesContainer">
         <h1>Saved Pet Profiles</h1>
         <div id="savedProfiles"></div>
       </div>
-      <!-- Additional Action Buttons -->
-      <button id="monthlyReportButton">Monthly Report</button>
-      <button id="logoutButton">Logout</button>
+      <!-- Additional Buttons -->
+      <div id="miscButtons">
+        <button id="monthlyReportButton">Monthly Report</button>
+        <button id="logoutButton">Logout</button>
+      </div>
     </div>
     <!-- Fixed "Add New Profile" Button -->
     <button id="addNewProfileButton" style="position: fixed; bottom: 80px; right: 20px; z-index: 1000;">Add New Profile</button>
   `;
   showPage(dashboardHTML);
 
-  // Attach event listeners for form submission and other buttons
+  // Attach event listeners
   document.getElementById('exerciseForm').addEventListener('submit', (event) => {
     event.preventDefault();
     handleProfileSave();
@@ -249,8 +251,7 @@ function showExerciseLog() {
   });
 
   // "Add New Profile" Button Handler:
-  // Modified behavior: when clicked, clear the form and hide the saved profiles,
-  // so the user starts with a fresh profile.
+  // Clear the form and hide saved profiles to start fresh.
   document.getElementById('addNewProfileButton').addEventListener('click', () => {
     let pets = getPets();
     if (pets.length >= MAX_PETS) {
@@ -258,10 +259,8 @@ function showExerciseLog() {
       return;
     }
     activePetIndex = null; // Switch to new profile mode
-    // Clear the form fields
     document.getElementById('exerciseForm').reset();
     document.getElementById('petImagePreview').src = "";
-    // Hide the saved profiles section until the new profile is saved
     document.getElementById('savedProfilesContainer').style.display = 'none';
   });
 }
@@ -582,7 +581,7 @@ function exportMonthlyReport(report, petName) {
 
 /* ============================================================
    PET & EXERCISE MANAGEMENT FUNCTIONS
-   (Focused modifications: “Add Exercise” and “Add New Profile”)
+   (Focused modifications: Wrap all entries in one container & Save everything)
 ============================================================ */
 function handleProfileSave(event) {
   event && event.preventDefault();
@@ -665,7 +664,7 @@ function handleProfileSave(event) {
   
   alert("Exercise entry added and profile updated!");
   
-  // Reset only the exercise part of the form; keep pet details intact
+  // Reset only the exercise part of the form; pet details remain in the entry container
   document.getElementById('exerciseForm').reset();
   document.getElementById('petName').value = currentPet.petDetails.name;
   document.getElementById('petCharacteristics').value = currentPet.petDetails.characteristics;
