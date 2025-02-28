@@ -8,7 +8,6 @@ const AppHelper = (function() {
   function showPage(pageHTML) {
     document.getElementById('app').innerHTML = pageHTML;
   }
-  // We'll expose logout later via the Initialization module.
   return { showPage };
 })();
 
@@ -222,7 +221,7 @@ const PetEntryModule = (function() {
     `;
     AppHelper.showPage(dashboardHTML);
     
-    // Event Listeners:
+    // Event listeners for form actions
     document.getElementById('exerciseForm').addEventListener('submit', (event) => {
       event.preventDefault();
       handleProfileSave();
@@ -230,7 +229,7 @@ const PetEntryModule = (function() {
     document.getElementById('monthlyReportButton').addEventListener('click', ReportsModule.generateMonthlyReport);
     document.getElementById('logoutButton').addEventListener('click', AppHelper.logout);
     
-    // Pet Image Preview
+    // Pet Image Preview Handler
     document.getElementById('petImage').addEventListener('change', (event) => {
       const file = event.target.files[0];
       const reader = new FileReader();
@@ -242,17 +241,18 @@ const PetEntryModule = (function() {
       }
     });
     
-    // "Add New Profile" Button: Clear form and hide saved profiles
+    // "Add New Profile" Button Handler
     document.getElementById('addNewProfileButton').addEventListener('click', () => {
       let pets = getPets();
       if (pets.length >= MAX_PETS) {
         alert("Maximum number of pet profiles reached.");
         return;
       }
-      activePetIndex = null;
+      activePetIndex = null; // Switch to new profile mode
       document.getElementById('exerciseForm').reset();
       document.getElementById('petImagePreview').src = "";
       document.getElementById('savedProfilesContainer').style.display = 'none';
+      console.log("New profile mode activated. Form cleared and saved profiles hidden.");
     });
     
     // Initialize Calendar, Charts, and Saved Profiles
@@ -262,12 +262,15 @@ const PetEntryModule = (function() {
   }
   
   function handleProfileSave() {
-    // Get pet details
+    console.log("handleProfileSave triggered");
+    if (event) event.preventDefault();
+    
+    // Retrieve pet details
     const name = document.getElementById('petName').value.trim();
     const characteristics = document.getElementById('petCharacteristics').value.trim();
     const image = document.getElementById('petImagePreview').src;
     
-    // Get exercise fields
+    // Retrieve exercise details
     const exerciseType = document.getElementById('exerciseType').value;
     const exerciseDuration = document.getElementById('exerciseDuration').value;
     const exerciseDate = document.getElementById('exerciseDate').value;
@@ -278,11 +281,13 @@ const PetEntryModule = (function() {
     const exerciseNotes = document.getElementById('exerciseNotes').value;
     const exerciseLocation = document.getElementById('exerciseLocation').value;
     
+    console.log("Received exercise details: Date =", exerciseDate, ", Duration =", exerciseDuration, ", Calories =", caloriesBurned);
     if (!exerciseDate || !exerciseDuration || !caloriesBurned) {
       alert("Please provide Date, Exercise Duration, and Calories Burned for the exercise update.");
       return;
     }
     
+    // Save calendar state and retrieve it
     CalendarModule.saveCalendarState();
     const calendarState = CalendarModule.loadCalendarState();
     
@@ -293,6 +298,7 @@ const PetEntryModule = (function() {
         alert("Maximum number of pet profiles reached.");
         return;
       }
+      // Create new pet profile
       currentPet = {
         petDetails: {
           name: name,
@@ -306,13 +312,16 @@ const PetEntryModule = (function() {
       };
       pets.push(currentPet);
       activePetIndex = pets.length - 1;
+      console.log("New pet profile created. Active index:", activePetIndex);
     } else {
       currentPet = getActivePet();
       if (name) currentPet.petDetails.name = name;
       if (image) currentPet.petDetails.image = image;
       if (characteristics) currentPet.petDetails.characteristics = characteristics;
+      console.log("Updated existing pet profile:", currentPet.petDetails);
     }
     
+    // Create new exercise entry
     const newExercise = {
       exerciseType,
       exerciseDuration,
@@ -326,14 +335,18 @@ const PetEntryModule = (function() {
       calendarState
     };
     currentPet.exercises.push(newExercise);
+    console.log("New exercise added:", newExercise);
     
+    // Update monthly report and persist data
     ReportsModule.updateCurrentMonthlyReport();
     pets[activePetIndex] = currentPet;
     setPets(pets);
+    console.log("Pet profile saved to localStorage.");
     
+    // Update saved profiles display
     loadSavedProfiles();
     
-    // Reset only exercise fields, keep pet details
+    // Reset only exercise fields; retain pet details
     document.getElementById('exerciseForm').reset();
     document.getElementById('petName').value = currentPet.petDetails.name;
     document.getElementById('petCharacteristics').value = currentPet.petDetails.characteristics;
@@ -345,6 +358,7 @@ const PetEntryModule = (function() {
     CalendarModule.generateCalendar();
     ChartsModule.renderDashboardCharts();
     loadSavedProfiles();
+    console.log("Charts and saved profiles updated.");
   }
   
   function loadSavedProfiles() {
@@ -798,7 +812,6 @@ const ServiceWorkerModule = (function() {
     alert('You have been logged out.');
     AuthModule.showSignIn();
   }
-  // Expose logout for use in other modules:
   AppHelper.logout = logout;
   
   document.addEventListener('DOMContentLoaded', () => {
