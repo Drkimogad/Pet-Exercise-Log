@@ -1,5 +1,5 @@
 /* ============================================================
-   CSS VARIABLES: PALETTE DEFINITION
+    CSS VARIABLES: PALETTE DEFINITION
 ============================================================ */
 :root {
   --primary-yellow: #FFDB58;      /* Bright yellow accent */
@@ -20,7 +20,7 @@
 }
 
 /* ============================================================
-   GENERAL STYLING
+    GENERAL STYLING
 ============================================================ */
 body {
     font-family: Arial, sans-serif;
@@ -40,7 +40,7 @@ body {
 }
 
 /* ============================================================
-   HEADER STYLING
+    HEADER STYLING
 ============================================================ */
 header {
     background-color: var(--dark-purple);
@@ -57,7 +57,7 @@ header {
 }
 
 /* ============================================================
-   CONTENT & FORM STYLING
+    CONTENT & FORM STYLING
 ============================================================ */
 #content, #signup, #signin, #dashboard, #exerciseLog {
     margin-top: 120px;
@@ -78,7 +78,7 @@ header {
 }
 
 /* ============================================================
-   FOOTER STYLING
+    FOOTER STYLING
 ============================================================ */
 footer {
     background-color: var(--dark-charcoal);
@@ -92,7 +92,7 @@ footer {
 }
 
 /* ============================================================
-   FORM INPUTS & BUTTONS
+    FORM INPUTS & BUTTONS
 ============================================================ */
 input, textarea {
     width: 100%;
@@ -139,7 +139,7 @@ button:hover {
 
 .btn-secondary:hover {
     background-color: var(--primary-yellow);
-    color: var(--black);
+    color: var (--black);
 }
 
 a {
@@ -155,7 +155,7 @@ a:hover {
 }
 
 /* ============================================================
-   CALENDAR STYLING
+    CALENDAR STYLING
 ============================================================ */
 .calendar-day {
   display: inline-block;
@@ -191,7 +191,7 @@ a:hover {
 }
 
 /* ============================================================
-   MONTHLY REPORT VIEW STYLING
+    MONTHLY REPORT VIEW STYLING
 ============================================================ */
 #monthlyReport {
   width: 90%;
@@ -228,7 +228,7 @@ a:hover {
 }
 
 /* ============================================================
-   RESPONSIVE ADJUSTMENTS
+    RESPONSIVE ADJUSTMENTS
 ============================================================ */
 @media (max-width: 768px) {
     form {
@@ -253,9 +253,9 @@ a:hover {
 }
 
 /* ============================================================
-   DESKTOP SCALING FOR LAPTOPS (Override for Testing)
-   Remove the scale transform for laptops so monthly report
-   and logout button are testable.
+    DESKTOP SCALING FOR LAPTOPS (Override for Testing)
+    Remove the scale transform for laptops so monthly report
+    and logout button are testable.
 ============================================================ */
 @media (min-width: 1024px) and (max-width: 1440px) {
   body {
@@ -264,7 +264,7 @@ a:hover {
 }
 
 /* ============================================================
-   NEW BUTTON POSITIONS & STYLING
+    NEW BUTTON POSITIONS & STYLING
 ============================================================ */
 
 /* Position the Add New Profile button at the top left, just under the header */
@@ -273,6 +273,20 @@ a:hover {
   top: 90px;
   left: 20px;
   z-index: 1100;
+  background-color: var(--primary-mustard);
+  color: var(--white);
+  border: 1px solid var(--dark-purple);
+  padding: 1em;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1.1em;
+  font-weight: bold;
+  transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
+}
+
+#addNewProfileButton:hover {
+  background-color: var(--primary-yellow);
+  color: var(--black);
 }
 
 /* Add a Toggle Mode button positioned at the top right next to Add New Profile */
@@ -281,13 +295,34 @@ a:hover {
   top: 90px;
   right: 20px;
   z-index: 1100;
+  background-color: var(--primary-mustard);
+  color: var(--white);
+  border: 1px solid var(--dark-purple);
+  padding: 1em;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1.1em;
+  font-weight: bold;
+  transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
 }
 
-/* Position the Logout button at the bottom right with extra spacing */
+#toggleModeButton:hover {
+  background-color: var(--primary-yellow);
+  color: var(--black);
+}
+
+/* Style and position the Logout button */
 #logoutButton {
   position: fixed;
-  bottom: 20px;
+  bottom: 60px; /* Ensure enough space from the footer */
   right: 20px;
   z-index: 1100;
-  margin-bottom: 20px;
+  background-color: red; /* Style in red */
+  color: white;
+  border: none;
+  padding: 1em;
+  cursor: pointer;
+  font-size: 1.1em;
+  font-weight: bold;
+  transition: background-color 0.3s ease-in-out;
 }
