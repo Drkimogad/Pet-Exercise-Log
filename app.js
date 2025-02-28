@@ -118,19 +118,23 @@ const PetEntryModule = (function() {
   let activePetIndex = null;
   const MAX_PETS = 10;
   
+  // Retrieve pet profiles from localStorage
   function getPets() {
     return JSON.parse(localStorage.getItem("pets")) || [];
   }
   
+  // Save pet profiles to localStorage
   function setPets(pets) {
     localStorage.setItem("pets", JSON.stringify(pets));
   }
   
+  // Get the active pet based on activePetIndex
   function getActivePet() {
     const pets = getPets();
     return activePetIndex !== null ? pets[activePetIndex] : null;
   }
   
+  // Update the active pet in localStorage
   function updateActivePet(updatedPet) {
     let pets = getPets();
     if (activePetIndex !== null) {
@@ -139,6 +143,7 @@ const PetEntryModule = (function() {
     }
   }
   
+  // Render the main dashboard (exercise log, pet details, saved profiles)
   function showExerciseLog() {
     const dashboardHTML = `
       <div id="entryContainer">
@@ -216,12 +221,13 @@ const PetEntryModule = (function() {
           <button id="logoutButton">Logout</button>
         </div>
       </div>
-      <!-- Fixed "Add New Profile" Button -->
-      <button id="addNewProfileButton" style="position: fixed; bottom: 80px; right: 20px; z-index: 1000;">Add New Profile</button>
+      <!-- Fixed Buttons at the Top -->
+      <button id="addNewProfileButton">Add New Profile</button>
+      <button id="toggleModeButton">Toggle Mode</button>
     `;
     AppHelper.showPage(dashboardHTML);
     
-    // Event listeners for form actions
+    // Attach event listeners for form submission, monthly report, and logout
     document.getElementById('exerciseForm').addEventListener('submit', (event) => {
       event.preventDefault();
       handleProfileSave();
@@ -241,18 +247,24 @@ const PetEntryModule = (function() {
       }
     });
     
-    // "Add New Profile" Button Handler
+    // "Add New Profile" Button Handler: Clear form and hide saved profiles
     document.getElementById('addNewProfileButton').addEventListener('click', () => {
       let pets = getPets();
       if (pets.length >= MAX_PETS) {
         alert("Maximum number of pet profiles reached.");
         return;
       }
-      activePetIndex = null; // Switch to new profile mode
+      activePetIndex = null;
       document.getElementById('exerciseForm').reset();
       document.getElementById('petImagePreview').src = "";
       document.getElementById('savedProfilesContainer').style.display = 'none';
       console.log("New profile mode activated. Form cleared and saved profiles hidden.");
+    });
+    
+    // "Toggle Mode" Button Handler: Toggle a 'dark-mode' class on the body
+    document.getElementById('toggleModeButton').addEventListener('click', () => {
+      document.body.classList.toggle('dark-mode');
+      console.log("Toggle mode activated. Dark mode is now", document.body.classList.contains('dark-mode') ? "ON" : "OFF");
     });
     
     // Initialize Calendar, Charts, and Saved Profiles
@@ -261,6 +273,7 @@ const PetEntryModule = (function() {
     loadSavedProfiles();
   }
   
+  // Handle saving pet profiles and exercise entries
   function handleProfileSave() {
     console.log("handleProfileSave triggered");
     if (event) event.preventDefault();
@@ -298,7 +311,7 @@ const PetEntryModule = (function() {
         alert("Maximum number of pet profiles reached.");
         return;
       }
-      // Create new pet profile
+      // Create a new pet profile
       currentPet = {
         petDetails: {
           name: name,
@@ -312,13 +325,13 @@ const PetEntryModule = (function() {
       };
       pets.push(currentPet);
       activePetIndex = pets.length - 1;
-      console.log("New pet profile created. Active index:", activePetIndex);
+      console.log("New pet profile created. ActivePetIndex:", activePetIndex);
     } else {
       currentPet = getActivePet();
       if (name) currentPet.petDetails.name = name;
       if (image) currentPet.petDetails.image = image;
       if (characteristics) currentPet.petDetails.characteristics = characteristics;
-      console.log("Updated existing pet profile:", currentPet.petDetails);
+      console.log("Existing pet profile updated:", currentPet.petDetails);
     }
     
     // Create new exercise entry
@@ -337,16 +350,15 @@ const PetEntryModule = (function() {
     currentPet.exercises.push(newExercise);
     console.log("New exercise added:", newExercise);
     
-    // Update monthly report and persist data
+    // Update monthly report and save to localStorage
     ReportsModule.updateCurrentMonthlyReport();
     pets[activePetIndex] = currentPet;
     setPets(pets);
-    console.log("Pet profile saved to localStorage.");
+    console.log("LocalStorage updated with pet profiles.");
     
-    // Update saved profiles display
     loadSavedProfiles();
     
-    // Reset only exercise fields; retain pet details
+    // Reset only the exercise fields while preserving pet details
     document.getElementById('exerciseForm').reset();
     document.getElementById('petName').value = currentPet.petDetails.name;
     document.getElementById('petCharacteristics').value = currentPet.petDetails.characteristics;
@@ -361,6 +373,7 @@ const PetEntryModule = (function() {
     console.log("Charts and saved profiles updated.");
   }
   
+  // Render saved pet profiles
   function loadSavedProfiles() {
     const pets = getPets();
     const savedProfilesDiv = document.getElementById('savedProfiles');
@@ -424,6 +437,7 @@ const PetEntryModule = (function() {
     updateActivePet
   };
 })();
+
 
 
 /* =============================================
