@@ -27,6 +27,7 @@ const AuthModule = (function() {
     `;
     AppHelper.showPage(signUpPage);
 
+    // Event listener for sign-up form submission
     document.getElementById('signUpForm').addEventListener('submit', async (event) => {
       event.preventDefault();
       try {
@@ -45,32 +46,34 @@ const AuthModule = (function() {
       }
     });
 
+    // Event listener for Sign In link
     document.getElementById('goToSignIn').addEventListener('click', (e) => {
       e.preventDefault();
       showSignIn();
     });
   }
 
-function showSignIn() {
+  function showSignIn() {
     const signInHTML = `
-        <div id="signin">
-            <h2>Sign In</h2>
-            <form id="signInForm">
-                <input type="email" id="email" placeholder="Email" required />
-                <input type="password" id="password" placeholder="Password" required />
-                <button type="submit">Sign In</button>
-            </form>
-            <!-- Add the Sign Up link below the form -->
-            <p>Don't have an account? <a href="#" id="goToSignUp">Sign Up</a></p>
-        </div>
+      <div id="signin">
+        <h2>Sign In</h2>
+        <form id="signInForm">
+          <input type="email" id="email" placeholder="Email" required />
+          <input type="password" id="password" placeholder="Password" required />
+          <button type="submit">Sign In</button>
+        </form>
+        <!-- Add the Sign Up link below the form -->
+        <p>Don't have an account? <a href="#" id="goToSignUp">Sign Up</a></p>
+      </div>
     `;
     AppHelper.showPage(signInHTML);
-}
+
+    // Event listener for Sign In form submission
     document.getElementById('signInForm').addEventListener('submit', async (event) => {
       event.preventDefault();
       try {
-        const username = document.getElementById('signInUsername').value;
-        const passwordRaw = document.getElementById('signInPassword').value;
+        const username = document.getElementById('email').value;
+        const passwordRaw = document.getElementById('password').value;
         const password = await hashPassword(passwordRaw);
         const user = JSON.parse(sessionStorage.getItem('user'));
         if (user && user.username === username && user.password === password) {
@@ -84,6 +87,7 @@ function showSignIn() {
       }
     });
 
+    // Event listener for Sign Up link
     document.getElementById('goToSignUp').addEventListener('click', (e) => {
       e.preventDefault();
       showSignUp();
