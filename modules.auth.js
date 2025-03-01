@@ -1,0 +1,97 @@
+"use strict";
+
+const AuthModule = (function() {
+  async function hashPassword(password) {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(password);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(byte => byte.toString(16).padStart(2, '0')).join('');
+  }
+
+  function showSignUp() {
+    const signUpPage = `
+      <div id="signup">
+        <h1>Sign Up</h1>
+        <form id="signUpForm">
+          <label for="signUpUsername">Username:</label>
+          <input type="text" id="signUpUsername" required>
+          <br><br>
+          <label for="signUpPassword">Password:</label>
+          <input type="password" id="signUpPassword" required>
+          <br><br>
+          <button type="submit">Sign Up</button>
+        </form>
+        <p>Already have an account? <a href="#" id="goToSignIn">Sign In</a></p>
+      </div>
+    `;
+    AppHelper.showPage(signUpPage);
+
+    document.getElementById('signUpForm').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      try {
+        const username = document.getElementById('signUpUsername').value;
+        const passwordRaw = document.getElementById('signUpPassword').value;
+        const password = await hashPassword(passwordRaw);
+        if (username && password) {
+          sessionStorage.setItem('user', JSON.stringify({ username, password }));
+          alert('Sign up successful!');
+          showSignIn();
+        } else {
+          alert('Please fill in all fields.');
+        }
+      } catch (err) {
+        console.error('Error during sign up:', err);
+      }
+    });
+
+    document.getElementById('goToSignIn').addEventListener('click', (e) => {
+      e.preventDefault();
+      showSignIn();
+    });
+  }
+
+  function showSignIn() {
+    const signInPage = `
+      <div id="signin">
+        <h1>Sign In</h1>
+        <form id="signInForm">
+          <label for="signInUsername">Username:</label>
+          <input type="text" id="signInUsername" required>
+          <br><br>
+          <label for="signInPassword">Password:</label>
+          <input type="password" id="signInPassword" required>
+          <br><br>
+          <button type="submit">Sign In</button>
+        </form>
+        <p>Don't have an account? <a href="#" id="goToSignUp">Sign Up</a></p>
+      </div>
+    `;
+    AppHelper.showPage(signInPage);
+
+    document.getElementById('signInForm').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      try {
+        const username = document.getElementById('signInUsername').value;
+        const passwordRaw = document.getElementById('signInPassword').value;
+        const password = await hashPassword(passwordRaw);
+        const user = JSON.parse(sessionStorage.getItem('user'));
+        if (user && user.username === username && user.password === password) {
+          alert('Sign in successful!');
+          PetEntryModule.showExerciseLog();
+        } else {
+          alert('Invalid credentials, please try again.');
+        }
+      } catch (err) {
+        console.error('Error during sign in:', err);
+      }
+    });
+
+    document.getElementById('goToSignUp').addEventListener('click', (e) => {
+      e.preventDefault();
+      showSignUp();
+    });
+  }
+
+  return { hashPassword, showSignUp, showSignIn };
+})();
