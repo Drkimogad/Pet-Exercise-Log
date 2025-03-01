@@ -24,7 +24,7 @@ const AuthModule = (function() {
     const hashArray = Array.from(new Uint8Array(hashBuffer));
     return hashArray.map(byte => byte.toString(16).padStart(2, '0')).join('');
   }
-  
+
   function showSignUp() {
     const signUpPage = `
       <div id="signup">
@@ -64,7 +64,7 @@ const AuthModule = (function() {
       showSignIn();
     });
   }
-  
+
   function showSignIn() {
     const signInPage = `
       <div id="signin">
@@ -104,7 +104,7 @@ const AuthModule = (function() {
       showSignUp();
     });
   }
-  
+
   return { hashPassword, showSignUp, showSignIn };
 })();
 
@@ -114,24 +114,23 @@ const AuthModule = (function() {
    - Manages pet profiles, exercise entry, saved profiles,
      and "Add New Profile" functionality.
 ============================================= */
-    
- const PetEntryModule = (function() {
+const PetEntryModule = (function() {
   let activePetIndex = null;
   const MAX_PETS = 10;
-  
+
   function getPets() {
     return JSON.parse(localStorage.getItem("pets")) || [];
   }
-  
+
   function setPets(pets) {
     localStorage.setItem("pets", JSON.stringify(pets));
   }
-  
+
   function getActivePet() {
     const pets = getPets();
     return activePetIndex !== null ? pets[activePetIndex] : null;
   }
-  
+
   function updateActivePet(updatedPet) {
     let pets = getPets();
     if (activePetIndex !== null) {
@@ -139,7 +138,7 @@ const AuthModule = (function() {
       setPets(pets);
     }
   }
-  
+
   function showExerciseLog() {
     const dashboardHTML = `
       <div id="entryContainer">
@@ -222,7 +221,7 @@ const AuthModule = (function() {
       <button id="toggleModeButton">Toggle Mode</button>
     `;
     AppHelper.showPage(dashboardHTML);
-    
+
     // Attach event listeners
     document.getElementById('exerciseForm').addEventListener('submit', (event) => {
       event.preventDefault();
@@ -230,7 +229,7 @@ const AuthModule = (function() {
     });
     document.getElementById('monthlyReportButton').addEventListener('click', ReportsModule.generateMonthlyReport);
     document.getElementById('logoutButton').addEventListener('click', AppHelper.logout);
-    
+
     // Pet Image Preview Handler
     document.getElementById('petImage').addEventListener('change', (event) => {
       const file = event.target.files[0];
@@ -242,7 +241,7 @@ const AuthModule = (function() {
         reader.readAsDataURL(file);
       }
     });
-    
+
     // "Add New Profile" Button Handler: clear form and hide saved profiles
     document.getElementById('addNewProfileButton').addEventListener('click', () => {
       let pets = getPets();
@@ -256,174 +255,20 @@ const AuthModule = (function() {
       document.getElementById('savedProfilesContainer').style.display = 'none';
       console.log("New profile mode activated. Form cleared and saved profiles hidden.");
     });
-    
+
     // "Toggle Mode" Button Handler: toggle dark mode and save state to localStorage
     document.getElementById('toggleModeButton').addEventListener('click', () => {
       document.body.classList.toggle('dark-mode');
       localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
       console.log("Toggle mode activated. Dark mode is now", document.body.classList.contains('dark-mode') ? "ON" : "OFF");
     });
-    
+
     // Initialize Calendar, Charts, and Saved Profiles
     CalendarModule.generateCalendar();
     ChartsModule.renderDashboardCharts();
     loadSavedProfiles();
   }
-  
-  function handleProfileSave(event) {
-    console.log("handleProfileSave triggered");
-    event.preventDefault();
-    
-    // Retrieve pet details
-    const name = document.getElementById('petName').value.trim();
-    const characteristics = document.getElementById('petCharacteristics').value.trim();
-    const image = document.getElementById('petImagePreview').src;
-    
-    // Retrieve exercise details
-    const exerciseType = document.getElementById('exerciseType').value;
-    const exerciseDuration = document.getElementById('exerciseDuration').value;
-    const exerciseDate = document.getElementById('exerciseDate').value;
-    const bodyconditionScoring = document.getElementById('bodyconditionScoring').value;
-    const exerciseTime = document.getElementById('exerciseTime').value;
-    const exerciseIntensity = document.getElementById('exerciseIntensity').value;
-    const caloriesBurned = document.getElementById('caloriesBurned').value;
-    const exerciseNotes = document.getElementById('exerciseNotes').value;
-    const exerciseLocation = document.getElementById('exerciseLocation').value;
-    
-    console.log("Received exercise details: Date =", exerciseDate, ", Duration =", exerciseDuration, ", Calories =", caloriesBurned);
-    if (!exerciseDate || !exerciseDuration || !caloriesBurned) {
-      alert("Please provide Date, Exercise Duration, and Calories Burned for the exercise update.");
-      return;
-    }
-    
-    // Save calendar state and retrieve it
-    CalendarModule.saveCalendarState();
-    const calendarState = CalendarModule.loadCalendarState();
-    
-    let pets = getPets();
-    let currentPet;
-    if (activePetIndex === null) {
-      if (pets.length >= MAX_PETS) {
-        alert("Maximum number of pet profiles reached.");
-        return;
-      }
-      // Create new pet profile
-      currentPet = {
-        petDetails: {
-          name: name,
-          image: image,
-          characteristics: characteristics
-        },
-        exercises: [],
-        calendarState: calendarState,
-        monthlyReports: [],
-        currentMonthlyReport: null
-      };
-      pets.push(currentPet);
-      activePetIndex = pets.length - 1;
-      console.log("New pet profile created. ActivePetIndex:", activePetIndex);
-    } else {
-      currentPet = getActivePet();
-      if (name) currentPet.petDetails.name = name;
-      if (image) currentPet.petDetails.image = image;
-      if (characteristics) currentPet.petDetails.characteristics = characteristics;
-      console.log("Existing pet profile updated:", currentPet.petDetails);
-    }
-    
-    // Create new exercise entry
-    const newExercise = {
-      exerciseType,
-      exerciseDuration,
-      exerciseDate,
-      bodyconditionScoring,
-      exerciseTime,
-      exerciseIntensity,
-      caloriesBurned,
-      exerciseNotes,
-      exerciseLocation,
-      calendarState
-    };
-    currentPet.exercises.push(newExercise);
-    console.log("New exercise added:", newExercise);
-    
-    // Update monthly report and save to localStorage
-    ReportsModule.updateCurrentMonthlyReport();
-    pets[activePetIndex] = currentPet;
-    setPets(pets);
-    console.log("LocalStorage updated with pet profiles.");
-    
-    loadSavedProfiles();
-    
-    // Reset only the exercise fields while preserving pet details
-    document.getElementById('exerciseForm').reset();
-    document.getElementById('petName').value = currentPet.petDetails.name;
-    document.getElementById('petCharacteristics').value = currentPet.petDetails.characteristics;
-    if (currentPet.petDetails.image) {
-      document.getElementById('petImagePreview').src = currentPet.petDetails.image;
-    }
-    
-    document.getElementById('savedProfilesContainer').style.display = 'block';
-    CalendarModule.generateCalendar();
-    ChartsModule.renderDashboardCharts();
-    loadSavedProfiles();
-    console.log("Charts and saved profiles updated.");
-  }
-  
-  function loadSavedProfiles() {
-    const pets = getPets();
-    const savedProfilesDiv = document.getElementById('savedProfiles');
-    if (pets.length === 0) {
-      savedProfilesDiv.innerHTML = '<p style="font-weight:bold;">No pet profiles saved yet.</p>';
-      return;
-    }
-    savedProfilesDiv.innerHTML = `<h2>Saved Profiles (${pets.length})</h2>`;
-    pets.forEach((pet, index) => {
-      savedProfilesDiv.innerHTML += `
-        <div class="pet-profile">
-          <h3>${pet.petDetails.name || "Unnamed Pet"}</h3>
-          <img src="${pet.petDetails.image || ''}" alt="Pet Image" style="max-width: 100px;" />
-          <p>${pet.petDetails.characteristics || ""}</p>
-          <p>Exercise Entries: ${pet.exercises.length}</p>
-          <button id="delete_${index}">Delete</button>
-          <button id="print_${index}">Print</button>
-          <button id="edit_${index}">Edit</button>
-        </div>
-      `;
-      document.getElementById(`delete_${index}`).addEventListener('click', () => deletePetProfile(index));
-      document.getElementById(`print_${index}`).addEventListener('click', () => printPetProfile(index));
-      document.getElementById(`edit_${index}`).addEventListener('click', () => editPetProfile(index));
-    });
-  }
-  
-  function deletePetProfile(index) {
-    let pets = getPets();
-    if (confirm("Are you sure you want to delete this pet profile?")) {
-      pets.splice(index, 1);
-      setPets(pets);
-      if (activePetIndex === index) {
-        activePetIndex = null;
-      }
-      loadSavedProfiles();
-      ChartsModule.renderDashboardCharts();
-    }
-  }
-  
-  function printPetProfile(index) {
-    const pets = getPets();
-    const pet = pets[index];
-    const printWindow = window.open('', '', 'width=600,height=400');
-    printWindow.document.write(`<h1>${pet.petDetails.name || "Unnamed Pet"}</h1>`);
-    printWindow.document.write(`<img src="${pet.petDetails.image || ''}" alt="Pet Image" style="max-width: 100px;" />`);
-    printWindow.document.write(`<p>${pet.petDetails.characteristics || ""}</p>`);
-    printWindow.document.write(`<p>Number of Exercises: ${pet.exercises.length}</p>`);
-    printWindow.document.write('<br><button onclick="window.print()">Print</button>');
-  }
-  
-  function editPetProfile(index) {
-    activePetIndex = index;
-    showExerciseLog();
-  }
-  
+
   return {
     showExerciseLog,
     handleProfileSave,
@@ -432,23 +277,31 @@ const AuthModule = (function() {
     updateActivePet
   };
 })();
-     
+
 
 /* =============================================
-   MODULE: CalendarModule [Color: Orange]
-   - Manages saving, loading, and generating the calendar.
+   MODULE: ServiceWorkerModule [Color: Red]
+   - Registers the Service Worker.
 ============================================= */
-const CalendarModule = (function() {
-  function saveCalendarState() {
-    const state = {};
-    const checkboxes = document.querySelectorAll('#exerciseCalendar input[type="checkbox"]');
-    checkboxes.forEach(cb => {
-      const day = cb.id.replace("day", "");
-      state[day] = cb.checked;
-    });
-    let pet = PetEntryModule
+const ServiceWorkerModule = (function() {
+  function registerServiceWorker() {
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('service-worker.js').then((registration) => {
+        console.log('Service Worker registered with scope:', registration.scope);
+      }).catch((error) => {
+        console.log('Service Worker registration failed:', error);
+      });
+    }
+  }
 
- document.addEventListener('DOMContentLoaded', () => {
+  return { registerServiceWorker };
+})();
+
+
+/* =============================================
+   INITIALIZATION [Color: Yellow]
+============================================= */
+document.addEventListener('DOMContentLoaded', () => {
   ServiceWorkerModule.registerServiceWorker();
   if (localStorage.getItem('darkMode') === 'true') {
     document.body.classList.add('dark-mode');
@@ -459,4 +312,3 @@ const CalendarModule = (function() {
     AuthModule.showSignIn();
   }
 });
-    
