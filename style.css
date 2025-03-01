@@ -60,10 +60,10 @@ header {
     CONTENT & FORM STYLING
 ============================================================ */
 #content, #signup, #signin, #dashboard, #exerciseLog {
-    margin-top: 120px;
+    margin-top: 400px;
     width: 90%;
     margin: 20px auto;
-    margin-bottom: 200px;
+    margin-bottom: 400px;
     text-align: center;
 }
 
@@ -87,6 +87,7 @@ footer {
     text-align: center;
     position: fixed;
     width: 100%;
+    top: 40px;
     bottom: 0;
     z-index: 1000;
 }
