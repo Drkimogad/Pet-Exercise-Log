@@ -51,24 +51,21 @@ const AuthModule = (function() {
     });
   }
 
-  function showSignIn() {
-    const signInPage = `
-      <div id="signin">
-        <h1>Sign In</h1>
-        <form id="signInForm">
-          <label for="signInUsername">Username:</label>
-          <input type="text" id="signInUsername" required>
-          <br><br>
-          <label for="signInPassword">Password:</label>
-          <input type="password" id="signInPassword" required>
-          <br><br>
-          <button type="submit">Sign In</button>
-        </form>
-        <p>Don't have an account? <a href="#" id="goToSignUp">Sign Up</a></p>
-      </div>
+function showSignIn() {
+    const signInHTML = `
+        <div id="signin">
+            <h2>Sign In</h2>
+            <form id="signInForm">
+                <input type="email" id="email" placeholder="Email" required />
+                <input type="password" id="password" placeholder="Password" required />
+                <button type="submit">Sign In</button>
+            </form>
+            <!-- Add the Sign Up link below the form -->
+            <p>Don't have an account? <a href="#" id="goToSignUp">Sign Up</a></p>
+        </div>
     `;
-    AppHelper.showPage(signInPage);
-
+    AppHelper.showPage(signInHTML);
+}
     document.getElementById('signInForm').addEventListener('submit', async (event) => {
       event.preventDefault();
       try {
