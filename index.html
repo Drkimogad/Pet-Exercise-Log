@@ -22,22 +22,42 @@
     </footer>
 
     <!-- Service Worker Registration -->
-    <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', function() {
-                navigator.serviceWorker.register('https://drkimogad.github.io/Pet-Exercise-Log/service-worker.js').then(function(registration) {
-                    console.log('Service Worker registered with scope:', registration.scope);
-                }).catch(function(error) {
-                    console.log('Service Worker registration failed:', error);
-                });
-            });
-        }
-    </script>
-    
+    <script src="js/serviceWorkerModule.js"></script>
+
     <!-- Include Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
-    <!-- Main Script -->
-    <script src="app.js"></script>
+
+    <!-- Include Helper Module -->
+    <script src="js/appHelper.js"></script>
+
+    <!-- Include Authentication Module -->
+    <script src="js/authModule.js"></script>
+
+    <!-- Include Pet Entry Module -->
+    <script src="js/petEntryModule.js"></script>
+
+    <!-- Include Calendar Module -->
+    <script src="js/calendarModule.js"></script>
+
+    <!-- Include Charts Module -->
+    <script src="js/chartsModule.js"></script>
+
+    <!-- Initialize the application -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Register the Service Worker
+            ServiceWorkerModule.registerServiceWorker();
+
+            // Initialize the App based on user session
+            if (localStorage.getItem('darkMode') === 'true') {
+                document.body.classList.add('dark-mode');
+            }
+            if (sessionStorage.getItem('user')) {
+                PetEntryModule.showExerciseLog();
+            } else {
+                AuthModule.showSignIn();
+            }
+        });
+    </script>
 </body>
 </html>
