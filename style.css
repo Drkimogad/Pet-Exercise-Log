@@ -19,8 +19,8 @@
   --container-border: var(--light-purple);
 }
 
-/* ============================================================
-    GENERAL STYLING
+/* ============================================================ 
+    GENERAL STYLING WITH ROOT COLORS
 ============================================================ */
 body {
     font-family: Arial, sans-serif;
@@ -32,31 +32,36 @@ body {
     flex-direction: column;
     align-items: center;
     min-height: 100vh;
+    background-image: linear-gradient(135deg, var(--light-purple), var(--primary-yellow)); /* Subtle gradient */
+    background-size: cover;
 }
 
+/* The app container */
 #app {
-  margin-top: 80px; /* Adjust if necessary to clear the fixed header */
-  width: 100%;
+    margin-top: 120px;
+    width: 100%;
+    padding-bottom: 80px;
 }
 
-/* ============================================================
-    HEADER STYLING
+/* ============================================================ 
+    HEADER STYLING WITH ROOT COLORS
 ============================================================ */
 header {
     background-color: var(--dark-purple);
     color: var(--primary-yellow);
     text-align: center;
-    font-size: 2em;
+    font-size: 2.2em;
     font-weight: bold;
     width: 100%;
     position: fixed;
     top: 0;
     left: 0;
     z-index: 1000;
-    padding: 15px 0;
+    padding: 20px 0;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); /* Add shadow for depth */
 }
 
-/* ============================================================
+/* ============================================================ 
     CONTENT & FORM STYLING
 ============================================================ */
 #content, #signup, #signin, #dashboard, #exerciseLog {
@@ -65,35 +70,96 @@ header {
     margin: 20px auto;
     margin-bottom: 200px;
     text-align: center;
-}
-
-#formContainer {
-    width: 90%;
-    margin: 20px auto;
     background: var(--container-bg);
-    padding: 20px;
-    border-radius: 8px;
-    border: 1px solid var(--container-border);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease-in-out;
 }
 
-/* ============================================================
-    FOOTER STYLING
+/* Hover effect for forms to create a floating effect */
+#signup:hover, #signin:hover {
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+    transform: scale(1.02);
+}
+
+/* ============================================================ 
+    FOOTER STYLING WITH ROOT COLORS
 ============================================================ */
 footer {
     background-color: var(--dark-charcoal);
     color: var(--white);
-    padding: 10px 0;
+    padding: 15px 0;
     text-align: center;
     position: fixed;
     width: 100%;
-    top: 95%;
-    bottom: 20px;
+    bottom: 0;
     z-index: 1000;
+    left: 0;
+    font-size: 1.1em;
+    box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.2);
 }
 
-/* ============================================================
-    FORM INPUTS & BUTTONS
+/* ============================================================ 
+    BUTTON STYLING WITH ROOT COLORS
+============================================================ */
+
+/* Primary button with a gradient background */
+button {
+    background: linear-gradient(45deg, var(--primary-yellow), var(--primary-mustard)); /* Gradient effect */
+    color: var(--black);
+    border: none;
+    padding: 1em;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1.1em;
+    font-weight: bold;
+    transition: background 0.3s ease-in-out, transform 0.2s ease;
+}
+
+/* Button hover effect for a smooth transition */
+button:hover {
+    background: linear-gradient(45deg, var(--primary-mustard), var(--primary-yellow)); /* Reversed gradient */
+    transform: scale(1.05);
+}
+
+/* Secondary button with a more subtle look */
+.btn-secondary {
+    background-color: var(--light-purple);
+    color: var(--black);
+    border: 1px solid var(--dark-purple);
+    padding: 1em;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1.1em;
+    font-weight: bold;
+    transition: background-color 0.3s ease-in-out, transform 0.2s ease;
+}
+
+.btn-secondary:hover {
+    background-color: var(--primary-yellow);
+    color: var(--black);
+    transform: scale(1.05);
+}
+
+/* ============================================================ 
+    LINK STYLING WITH ROOT COLORS
+============================================================ */
+a {
+    color: var(--primary-yellow);
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.3s ease, transform 0.2s ease;
+}
+
+a:hover {
+    color: var(--primary-mustard);
+    text-decoration: underline;
+    transform: scale(1.05);
+}
+
+/* ============================================================ 
+    INPUT FIELDS STYLING WITH ROOT COLORS
 ============================================================ */
 input, textarea {
     width: 100%;
@@ -104,132 +170,109 @@ input, textarea {
     border-radius: 8px;
     font-size: 1em;
     color: var(--light-charcoal);
-    transition: border 0.3s ease-in-out;
+    transition: border 0.3s ease-in-out, box-shadow 0.2s ease-in-out;
 }
 
+/* Focus effect on inputs */
 input:focus, textarea:focus {
     border-color: var(--border-focus);
     outline: none;
     box-shadow: 0 0 5px var(--border-focus);
 }
 
-/* Button styles: primary and secondary */
-button {
-    background-color: var(--primary-mustard);
-    color: var(--white);
-    border: 1px solid var(--dark-purple);
+/* ============================================================ 
+    CALENDAR & DAY STYLING
+============================================================ */
+.calendar-day {
+    display: inline-block;
+    width: 60px;
+    padding: 5px;
+    margin: 2px;
+    border: 1px solid var(--input-border);
+    border-radius: 4px;
+    text-align: center;
+    background: var(--light-purple);
+    color: var(--dark-charcoal);
+    transition: all 0.3s ease;
+}
+
+.calendar-day:hover {
+    background: var(--primary-mustard);
+    color: var(--black);
+}
+
+/* ============================================================ 
+    PROFILE BUTTON STYLING WITH ROOT COLORS
+============================================================ */
+#addNewProfileButton {
+    position: fixed;
+    top: 100px;
+    left: 20px;
+    z-index: 1100;
+    background: var(--primary-yellow);
+    color: var(--black);
+    border: none;
     padding: 1em;
     border-radius: 8px;
     cursor: pointer;
     font-size: 1.1em;
     font-weight: bold;
-    transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    transition: background 0.3s ease-in-out, transform 0.2s ease;
 }
 
-button:hover {
-    background-color: var(--primary-yellow);
+#addNewProfileButton:hover {
+    background-color: var(--primary-mustard);
+    transform: scale(1.05);
+}
+
+/* Toggle Mode Button */
+#toggleModeButton {
+    position: fixed;
+    top: 100px;
+    right: 20px;
+    z-index: 1100;
+    background: var(--primary-mustard);
     color: var(--black);
-}
-
-/* Secondary button style if needed */
-.btn-secondary {
-    background-color: var(--light-purple);
-    color: var(--black);
-    border: 1px solid var(--dark-purple);
-}
-
-.btn-secondary:hover {
-    background-color: var(--primary-yellow);
-    color: var (--black);
-}
-
-a {
-    color: var(--primary-yellow);
-    text-decoration: none;
-    margin-top: 1em;
-    text-align: center;
+    border: none;
+    padding: 1em;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1.1em;
     font-weight: bold;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    transition: background 0.3s ease-in-out, transform 0.2s ease;
 }
 
-a:hover {
-    text-decoration: underline;
+#toggleModeButton:hover {
+    background-color: var(--primary-yellow);
+    transform: scale(1.05);
 }
 
-/* ============================================================
-    CALENDAR STYLING
-============================================================ */
-.calendar-day {
-  display: inline-block;
-  width: 60px;
-  padding: 5px;
-  margin: 2px;
-  border: 1px solid var(--input-border);
-  border-radius: 4px;
-  text-align: center;
-  background: var(--light-purple);
-  color: var(--dark-charcoal);
+/* Logout Button */
+#logoutButton {
+    position: fixed;
+    bottom: 80px;
+    right: 20px;
+    z-index: 1100;
+    background-color: var(--primary-mustard);
+    color: var(--black);
+    border: none;
+    padding: 1em;
+    cursor: pointer;
+    font-size: 1.1em;
+    font-weight: bold;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    transition: background 0.3s ease-in-out, transform 0.2s ease;
 }
 
-.calendar-day input[type="checkbox"] {
-  margin-top: 5px;
+#logoutButton:hover {
+    background-color: var(--primary-yellow);
+    transform: scale(1.05);
 }
 
-.calendar-day:focus-within {
-    border-color: var(--border-focus);
-}
-
-/* Read-only calendar for the monthly report */
-.calendar-day-report {
-  display: inline-block;
-  width: 60px;
-  padding: 5px;
-  margin: 2px;
-  border: 1px solid var(--input-border);
-  border-radius: 4px;
-  text-align: center;
-  background: var(--dark-charcoal);
-  color: var(--white);
-}
-
-/* ============================================================
-    MONTHLY REPORT VIEW STYLING
-============================================================ */
-#monthlyReport {
-  width: 90%;
-  margin: 20px auto;
-  text-align: center;
-  background: var(--container-bg);
-  padding: 20px;
-  border-radius: 8px;
-  border: 1px solid var(--container-border);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-}
-
-#reportCalendar {
-  margin: 20px 0;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-
-#reportCalendar .calendar-day-report {
-  margin: 5px;
-}
-
-#reportCharts {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-around;
-  margin: 20px 0;
-}
-
-#reportCharts canvas {
-  max-width: 45%;
-  margin: 10px;
-}
-
-/* ============================================================
-    RESPONSIVE ADJUSTMENTS
+/* ============================================================ 
+    RESPONSIVE STYLING FOR SMALLER SCREENS
 ============================================================ */
 @media (max-width: 768px) {
     form {
@@ -251,91 +294,4 @@ a:hover {
     button {
         font-size: 0.9em;
     }
-}
-
-/* ============================================================
-    DESKTOP SCALING FOR LAPTOPS (Override for Testing)
-    Remove the scale transform for laptops so monthly report
-    and logout button are testable.
-============================================================ */
-@media (min-width: 1024px) and (max-width: 1440px) {
-  body {
-    transform: none;
-  }
-}
-
-/* ============================================================
-    NEW BUTTON POSITIONS & STYLING
-============================================================ */
-
-/* Position the Add New Profile button at the top left, just under the header */
-#addNewProfileButton {
-  position: fixed;
-  top: 90px;
-  left: 20px;
-  z-index: 1100;
-  background-color: var(--primary-mustard);
-  color: var(--white);
-  border: 1px solid var(--dark-purple);
-  padding: 1em;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 1.1em;
-  font-weight: bold;
-  transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
-}
-
-#addNewProfileButton:hover {
-  background-color: var(--primary-yellow);
-  color: var(--black);
-}
-
-/* Add a Toggle Mode button positioned at the top right next to Add New Profile */
-#toggleModeButton {
-  position: fixed;
-  top: 90px;
-  right: 20px;
-  z-index: 1100;
-  background-color: var(--primary-mustard);
-  color: var(--white);
-  border: 1px solid var(--dark-purple);
-  padding: 1em;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 1.1em;
-  font-weight: bold;
-  transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
-}
-
-#toggleModeButton:hover {
-  background-color: var(--primary-yellow);
-  color: var(--black);
-}
-
-/* Style and position the Logout button */
-#logoutButton {
-  position: fixed;
-  bottom: 60px; /* Ensure enough space from the footer */
-  right: 20px;
-  z-index: 1100;
-  background-color: red; /* Style in red */
-  color: white;
-  border: none;
-  padding: 1em;
-  cursor: pointer;
-  font-size: 1.1em;
-  font-weight: bold;
-  transition: background-color 0.3s ease-in-out;
-}
-/* Add these styles to your CSS file or within a <style> tag in your HTML */
-
-#signup, #signin {
-  display: block; /* Ensure the containers are displayed */
-  margin: auto; /* Center the containers */
-  padding: 20px; /* Add some padding */
-  max-width: 400px; /* Limit the maximum width */
-  background-color: #fff; /* Set a background color */
-  border: 1px solid #ccc; /* Add a border */
-  border-radius: 8px; /* Round the corners */
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Add a subtle shadow */
 }
