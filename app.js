@@ -8,9 +8,9 @@ const AppHelper = (function() {
   function showPage(pageHTML) {
     document.getElementById('app').innerHTML = pageHTML;
   }
+
   return { showPage };
 })();
-
 
 /* =============================================
    MODULE: Authentication [Color: Blue]
@@ -107,7 +107,6 @@ const AuthModule = (function() {
 
   return { hashPassword, showSignUp, showSignIn };
 })();
-
 
 /* =============================================
    MODULE: PetEntryModule [Color: Green]
