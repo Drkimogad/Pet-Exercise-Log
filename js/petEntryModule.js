@@ -3,287 +3,259 @@
 const PetEntryModule = (function() {
   let activePetIndex = null;
   const MAX_PETS = 10;
-  let currentPetData = null;
+  const DEFAULT_IMAGE = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAgSURBVHgB7dEBAQAAAIIg/69uSEABAAAAAAAAAAAAAAAAAADgNhG4AAE0mNlCAAAAAElFTkSuQmCC';
 
-  // Data Structure Enhancements
-  const defaultPetProfile = {
-    petDetails: {
-      name: '',
-      image: '',
-      species: '',
-      breed: '',
-      age: '',
-      characteristics: ''
-    },
-    exerciseEntries: [],
-    healthMetrics: {}
-  };
+  // HTML Templates
+  const templates = {
+    dashboard: () => `
+      <div class="dashboard-container">
+        <header class="dashboard-header">
+          <button id="addNewProfileButton" class="icon-btn">＋ New Profile</button>
+          <button id="toggleModeButton" class="icon-btn">🌓 Toggle Mode</button>
+        </header>
 
-  // Unified Dashboard Initialization
-  function showExerciseLog() {
-    AppHelper.showPage(`
-      <div class="dashboard-layout">
-        <!-- Profile Section -->
-        <section class="profile-section" id="profileSection"></section>
-        
-        <!-- Entry Form -->
-        <section class="entry-form-section card" id="entryForm"></section>
-        
-        <!-- Calendar & Charts -->
-        <section class="data-section">
-          <div class="calendar-container card" id="calendarContainer"></div>
-          <div class="charts-container card" id="chartsContainer"></div>
-        </section>
-        
-        <!-- Saved Profiles -->
-        <aside class="saved-profiles card" id="savedProfiles"></aside>
+        <main class="dashboard-main">
+          <section class="form-section">
+            ${templates.petForm()}
+          </section>
+
+          <section class="data-section">
+            <div class="calendar-container" id="exerciseCalendar"></div>
+            <div class="charts-container">
+              <canvas id="durationChart"></canvas>
+              <canvas id="activityChart"></canvas>
+              <canvas id="caloriesChart"></canvas>
+            </div>
+          </section>
+        </main>
+
+        <aside class="saved-profiles" id="savedProfiles"></aside>
       </div>
-    `);
+    `,
 
-    this.initializeComponents();
-    this.loadSavedProfiles();
-    this.setupEventListeners();
-  }
-
-  function initializeComponents() {
-    // Render profile form
-    AppHelper.renderComponent('entryForm', this.renderPetForm());
-    
-    // Initialize other modules
-    CalendarModule.init('#calendarContainer');
-    ChartsModule.init('#chartsContainer');
-    
-    // Load initial data
-    this.loadEntries().then(data => {
-      currentPetData = data;
-      DashboardModule.refresh(data);
-    });
-  }
-
-  // Enhanced Form Rendering
-  function renderPetForm() {
-    const pet = this.getActivePet() || defaultPetProfile;
-    return `
-      <form id="exerciseForm" class="pet-form">
-        <div class="form-column">
-          <h3>${pet.petDetails.name || 'New Pet Profile'}</h3>
+    petForm: () => `
+      <form id="exerciseForm" class="pet-form card">
+        <fieldset class="pet-details">
+          <legend>Pet Profile</legend>
           <div class="form-group">
-            <label>Pet Image</label>
+            <label for="petName">Name</label>
+            <input type="text" id="petName" required>
+          </div>
+          <div class="form-group">
+            <label>Image</label>
             <div class="image-upload">
               <input type="file" id="petImage" accept="image/*">
-              <img id="petImagePreview" src="${pet.petDetails.image || 'placeholder.jpg'}" alt="Pet Image">
+              <img id="petImagePreview" src="${DEFAULT_IMAGE}" alt="Pet Preview">
             </div>
           </div>
-          
           <div class="form-group">
-            <label>Pet Name</label>
-            <input type="text" id="petName" value="${pet.petDetails.name}" required>
+            <label for="petCharacteristics">Description</label>
+            <textarea id="petCharacteristics" rows="3"></textarea>
           </div>
-        </div>
+        </fieldset>
 
-        <div class="form-column">
-          <div class="form-group">
-            <label>Exercise Details</label>
-            <input type="text" id="exerciseType" placeholder="Activity type" required>
-            <input type="number" id="exerciseDuration" placeholder="Duration (mins)" required>
-            <input type="date" id="exerciseDate" required>
+        <fieldset class="exercise-entry">
+          <legend>New Exercise</legend>
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="exerciseType">Type</label>
+              <select id="exerciseType" required>
+                <option value="walking">Walking</option>
+                <option value="running">Running</option>
+                <option value="swimming">Swimming</option>
+                <option value="playing">Playing</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="exerciseDuration">Duration (min)</label>
+              <input type="number" id="exerciseDuration" min="1" required>
+            </div>
+            <div class="form-group">
+              <label for="exerciseDate">Date</label>
+              <input type="date" id="exerciseDate" required>
+            </div>
+            <div class="form-group">
+              <label for="caloriesBurned">Calories</label>
+              <input type="number" id="caloriesBurned" min="1" required>
+            </div>
           </div>
-          
-          <div class="form-group">
-            <button type="submit" class="primary-btn">
-              ${activePetIndex === null ? 'Create Profile' : 'Update Profile'}
-            </button>
-          </div>
-        </div>
+          <button type="submit" class="primary-btn">
+            ${activePetIndex === null ? 'Create Profile' : 'Add Exercise'}
+          </button>
+        </fieldset>
       </form>
-    `;
+    `
+  };
+
+  // Core Functions
+  function showExerciseLog() {
+    AppHelper.showPage(templates.dashboard());
+    this.initializeModules();
+    this.setupEventListeners();
+    this.loadSavedProfiles();
+    this.loadActivePetData();
   }
 
-  // Data Handling Improvements
-  async function loadEntries() {
-    const pet = this.getActivePet();
-    return pet ? pet.exerciseEntries : [];
-  }
-
-  function handleProfileSave(event) {
-    event.preventDefault();
-    const formData = this.collectFormData();
-    
-    if (!this.validateForm(formData)) return;
-
-    const updatedPet = this.createPetProfile(formData);
-    this.savePetProfile(updatedPet);
-    
-    DashboardModule.refresh(updatedPet.exerciseEntries);
-    AppHelper.refreshComponent('entryForm');
-  }
-
-  function collectFormData() {
-    return {
-      petDetails: {
-        name: document.getElementById('petName').value,
-        image: document.getElementById('petImagePreview').src,
-        characteristics: document.getElementById('petCharacteristics').value
-      },
-      exerciseEntry: {
-        type: document.getElementById('exerciseType').value,
-        duration: document.getElementById('exerciseDuration').value,
-        date: document.getElementById('exerciseDate').value,
-        caloriesBurned: document.getElementById('caloriesBurned').value
-      }
-    };
-  }
-
-  function validateForm(formData) {
-    // Add comprehensive validation
-    if (!formData.petDetails.name) {
-      AppHelper.showError('Pet name is required');
-      return false;
-    }
-    if (!formData.exerciseEntry.type || !formData.exerciseEntry.duration) {
-      AppHelper.showError('Exercise details are incomplete');
-      return false;
-    }
-    return true;
-  }
-
-  function createPetProfile(formData) {
-    const existing = this.getActivePet() || {...defaultPetProfile};
-    return {
-      ...existing,
-      petDetails: {...existing.petDetails, ...formData.petDetails},
-      exerciseEntries: [...existing.exerciseEntries, formData.exerciseEntry]
-    };
-  }
-
-  function savePetProfile(updatedPet) {
-    let pets = this.getPets();
-    
-    if (activePetIndex === null) {
-      if (pets.length >= MAX_PETS) {
-        AppHelper.showError('Maximum profiles reached');
-        return;
-      }
-      pets.push(updatedPet);
-      activePetIndex = pets.length - 1;
-    } else {
-      pets[activePetIndex] = updatedPet;
-    }
-    
-    this.setPets(pets);
-    sessionStorage.setItem('currentPet', JSON.stringify(updatedPet));
-  }
-
-  // Enhanced Profile Switching
-  function loadSavedProfiles() {
-    const pets = this.getPets();
-    AppHelper.renderComponent('savedProfiles', `
-      <h3>Saved Profiles</h3>
-      <div class="profiles-grid">
-        ${pets.map((pet, index) => `
-          <div class="profile-card ${index === activePetIndex ? 'active' : ''}">
-            <img src="${pet.petDetails.image}">
-            <h4>${pet.petDetails.name}</h4>
-            <button class="select-profile" data-index="${index}">
-              ${index === activePetIndex ? 'Selected' : 'Select'}
-            </button>
-          </div>
-        `).join('')}
-      </div>
-    `);
+  function initializeModules() {
+    CalendarModule.init('#exerciseCalendar');
+    ChartsModule.init('.charts-container');
   }
 
   function setupEventListeners() {
-    // Unified event delegation
-    document.addEventListener('click', (e) => {
-      if (e.target.classList.contains('select-profile')) {
-        this.handleProfileSelect(e.target.dataset.index);
-      }
-      if (e.target.id === 'toggleModeButton') {
-        this.handleToggleMode();
-      }
-    });
-
-    document.getElementById('exerciseForm').addEventListener('submit', (e) => this.handleProfileSave(e));
-    document.getElementById('petImage').addEventListener('change', (e) => this.handleImageUpload(e));
+    document.getElementById('exerciseForm').addEventListener('submit', e => this.handleFormSubmit(e));
+    document.getElementById('petImage').addEventListener('change', e => this.handleImageUpload(e));
+    document.getElementById('toggleModeButton').addEventListener('click', this.toggleDarkMode);
+    document.getElementById('addNewProfileButton').addEventListener('click', this.resetForm);
   }
 
-  function handleProfileSelect(index) {
-    activePetIndex = parseInt(index, 10);
-    currentPetData = this.getActivePet().exerciseEntries;
-    DashboardModule.refresh(currentPetData);
-    AppHelper.refreshComponent('entryForm');
-    AppHelper.refreshComponent('savedProfiles');
-  }
+  // Data Handling
+  function handleFormSubmit(e) {
+    e.preventDefault();
+    
+    try {
+      const formData = this.validateFormData({
+        petName: document.getElementById('petName').value,
+        petImage: document.getElementById('petImagePreview').src,
+        characteristics: document.getElementById('petCharacteristics').value,
+        exerciseType: document.getElementById('exerciseType').value,
+        duration: document.getElementById('exerciseDuration').value,
+        date: document.getElementById('exerciseDate').value,
+        calories: document.getElementById('caloriesBurned').value
+      });
 
-  // Maintain existing image upload and toggle mode functions
-  // ...
+      const updatedPet = this.processPetData(formData);
+      this.savePetData(updatedPet);
+      this.updateDashboard(updatedPet);
 
-  return {
-    showExerciseLog,
-    loadEntries,
-    getActivePet,
-    updateActivePet: savePetProfile
-  };
-})(); mode activated. Form cleared and saved profiles hidden.");
-  }
-
-  // Handle image upload preview
-  function handleImageUpload(event) {
-    const file = event.target.files[0];
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      document.getElementById('petImagePreview').src = e.target.result;
-    };
-    if (file) {
-      reader.readAsDataURL(file);
+    } catch (error) {
+      AppHelper.showError(error.message);
     }
   }
 
-  // Handle dark mode toggle
-  function handleToggleMode() {
-    document.body.classList.toggle('dark-mode');
-    localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
-    console.log("Dark mode toggled.");
+  function validateFormData(data) {
+    const errors = [];
+    if (!data.petName.trim()) errors.push('Pet name is required');
+    if (data.duration < 1) errors.push('Duration must be at least 1 minute');
+    if (data.calories < 1) errors.push('Calories burned must be at least 1');
+    if (!data.date) errors.push('Date is required');
+
+    if (errors.length > 0) throw new Error(errors.join('\n'));
+    return data;
   }
 
-  // Load saved pet profiles and display them
+  function processPetData(formData) {
+    const currentPet = this.getActivePet() || {
+      petDetails: { name: '', image: DEFAULT_IMAGE, characteristics: '' },
+      exerciseEntries: []
+    };
+
+    return {
+      petDetails: {
+        ...currentPet.petDetails,
+        name: formData.petName,
+        image: formData.petImage,
+        characteristics: formData.characteristics
+      },
+      exerciseEntries: [
+        ...currentPet.exerciseEntries,
+        {
+          type: formData.exerciseType,
+          duration: Number(formData.duration),
+          date: formData.date,
+          caloriesBurned: Number(formData.calories)
+        }
+      ]
+    };
+  }
+
+  function savePetData(petData) {
+    const pets = this.getPets();
+    
+    if (activePetIndex === null) {
+      if (pets.length >= MAX_PETS) throw new Error('Maximum pet profiles reached');
+      pets.push(petData);
+      activePetIndex = pets.length - 1;
+    } else {
+      pets[activePetIndex] = petData;
+    }
+
+    localStorage.setItem('pets', JSON.stringify(pets));
+    sessionStorage.setItem('activePetIndex', activePetIndex);
+  }
+
+  // Dashboard Integration
+  function updateDashboard(petData) {
+    CalendarModule.refresh(petData.exerciseEntries);
+    ChartsModule.refresh(petData.exerciseEntries);
+    this.loadSavedProfiles();
+    AppHelper.refreshComponent('#petForm', templates.petForm());
+  }
+
+  function loadActivePetData() {
+    const savedIndex = sessionStorage.getItem('activePetIndex');
+    if (savedIndex !== null) {
+      activePetIndex = parseInt(savedIndex, 10);
+      const petData = this.getPets()[activePetIndex];
+      if (petData) this.updateDashboard(petData);
+    }
+  }
+
+  // Profile Management
   function loadSavedProfiles() {
-    const pets = getPets();
-    const savedProfilesContainer = document.getElementById('savedProfiles');
-    savedProfilesContainer.innerHTML = '';
+    const pets = this.getPets();
+    const profilesHTML = pets.map((pet, index) => `
+      <div class="profile-card ${index === activePetIndex ? 'active' : ''}">
+        <img src="${pet.petDetails.image || DEFAULT_IMAGE}" alt="${pet.petDetails.name}">
+        <h4>${pet.petDetails.name}</h4>
+        <button class="select-btn" data-index="${index}">
+          ${index === activePetIndex ? 'Selected' : 'Select'}
+        </button>
+      </div>
+    `).join('');
 
-    pets.forEach((pet, index) => {
-      const petDiv = document.createElement('div');
-      petDiv.classList.add('savedProfile');
-      petDiv.innerHTML = `
-        <img src="${pet.petDetails.image}" alt="${pet.petDetails.name}" style="width: 50px; height: 50px;">
-        <h3>${pet.petDetails.name}</h3>
-        <button class="selectPetButton" data-index="${index}">Select</button>
-      `;
-      savedProfilesContainer.appendChild(petDiv);
+    AppHelper.renderComponent('#savedProfiles', profilesHTML);
+    this.addProfileEventListeners();
+  }
 
-      // Attach event listeners for selecting a pet profile
-      petDiv.querySelector('.selectPetButton').addEventListener('click', function() {
-        activePetIndex = parseInt(this.dataset.index, 10);
-        showExerciseLog();
+  function addProfileEventListeners() {
+    document.querySelectorAll('.select-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        activePetIndex = parseInt(btn.dataset.index, 10);
+        this.loadActivePetData();
       });
     });
-
-    // Show saved profiles section
-    if (pets.length > 0) {
-      document.getElementById('savedProfilesContainer').style.display = 'block';
-    }
   }
 
-  // Handle logout
-  function logout() {
-    alert("Logging out...");
-    // Add logout logic if necessary (e.g., clear session or localStorage)
+  // Utility Functions
+  function resetForm() {
+    activePetIndex = null;
+    sessionStorage.removeItem('activePetIndex');
+    AppHelper.refreshComponent('#petForm', templates.petForm());
+    this.loadSavedProfiles();
   }
 
+  function toggleDarkMode() {
+    document.body.classList.toggle('dark-mode');
+    localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+    ChartsModule.updateColors();
+    CalendarModule.refresh();
+  }
+
+  function handleImageUpload(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      document.getElementById('petImagePreview').src = event.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  // Public API
   return {
     showExerciseLog,
-    updateActivePet
+    getPets: () => JSON.parse(localStorage.getItem("pets")) || [],
+    getActivePet: () => activePetIndex !== null ? this.getPets()[activePetIndex] : null
   };
 })();
