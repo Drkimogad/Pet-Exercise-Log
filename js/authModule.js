@@ -1,98 +1,170 @@
 "use strict";
 
 const AuthModule = (function() {
-  async function hashPassword(password) {
+  // Private state
+  let currentUser = null;
+  
+  // Enhanced password hashing with salt
+  async function hashPassword(password, salt) {
     const encoder = new TextEncoder();
-    const data = encoder.encode(password);
+    const saltedPass = salt ? password + salt : password;
+    const data = encoder.encode(saltedPass);
     const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    return hashArray.map(byte => byte.toString(16).padStart(2, '0')).join('');
+    return Array.from(new Uint8Array(hashBuffer))
+      .map(byte => byte.toString(16).padStart(2, '0')).join('');
   }
 
-  function showSignUp() {
-    const signUpPage = `
-      <div id="signup">
-        <h1>Sign Up</h1>
-        <form id="signUpForm">
-          <label for="signUpUsername">Username:</label>
-          <input type="text" id="signUpUsername" required>
-          <br><br>
-          <label for="signUpPassword">Password:</label>
-          <input type="password" id="signUpPassword" required>
-          <br><br>
-          <button type="submit">Sign Up</button>
-        </form>
-        <p>Already have an account? <a href="#" id="goToSignIn">Sign In</a></p>
+  // Unified auth form template
+  function authTemplate(isSignUp) {
+    return `
+      <div class="auth-container">
+        <div class="auth-card">
+          <h2>${isSignUp ? 'Create Account' : 'Welcome Back'}</h2>
+          <form id="authForm">
+            ${isSignUp ? `
+              <div class="form-group">
+                <label for="username">Pet Owner Name</label>
+                <input type="text" id="username" required>
+              </div>
+            ` : ''}
+            
+            <div class="form-group">
+              <label for="email">Email</label>
+              <input type="email" id="email" required>
+            </div>
+            
+            <div class="form-group">
+              <label for="password">Password</label>
+              <input type="password" id="password" required 
+                minlength="8" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}">
+              <div class="password-hints">
+                Must contain uppercase, lowercase, number, and ≥8 characters
+              </div>
+            </div>
+
+            ${isSignUp ? `
+              <div class="form-group">
+                <label for="confirmPassword">Confirm Password</label>
+                <input type="password" id="confirmPassword" required>
+              </div>
+            ` : ''}
+
+            <button type="submit" class="auth-btn">
+              ${isSignUp ? 'Sign Up' : 'Sign In'}
+            </button>
+          </form>
+
+          <div class="auth-switch">
+            ${isSignUp ? 'Already have an account?' : 'New user?'}
+            <a href="#" id="switchAuth">${isSignUp ? 'Sign In' : 'Create Account'}</a>
+          </div>
+        </div>
       </div>
     `;
-    AppHelper.showPage(signUpPage);
+  }
 
-    // Event listener for sign-up form submission
-    document.getElementById('signUpForm').addEventListener('submit', async (event) => {
-      event.preventDefault();
-      try {
-        const username = document.getElementById('signUpUsername').value;
-        const passwordRaw = document.getElementById('signUpPassword').value;
-        const password = await hashPassword(passwordRaw);
-        if (username && password) {
-          sessionStorage.setItem('user', JSON.stringify({ username, password }));
-          alert('Sign up successful!');
-          showSignIn();
-        } else {
-          alert('Please fill in all fields.');
-        }
-      } catch (err) {
-        console.error('Error during sign up:', err);
+  // Form validation
+  function validateForm(formData, isSignUp) {
+    const errors = [];
+    
+    if (isSignUp) {
+      if (!formData.username?.trim()) {
+        errors.push('Name is required');
       }
+    }
+
+    if (!/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(formData.email)) {
+      errors.push('Invalid email format');
+    }
+
+    if (!/(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}/.test(formData.password)) {
+      errors.push('Password does not meet requirements');
+    }
+
+    if (isSignUp && formData.password !== formData.confirmPassword) {
+      errors.push('Passwords do not match');
+    }
+
+    return errors;
+  }
+
+  // Handle auth success
+  function handleAuthSuccess(userData) {
+    currentUser = userData;
+    sessionStorage.setItem('user', JSON.stringify(userData));
+    DashboardModule.init();
+    PetEntryModule.loadEntries().then(data => DashboardModule.refresh(data));
+  }
+
+  // Unified auth handler
+  async function handleAuthSubmit(e, isSignUp) {
+    e.preventDefault();
+    
+    const formData = {
+      email: document.getElementById('email').value,
+      password: document.getElementById('password').value,
+      ...(isSignUp && {
+        username: document.getElementById('username').value,
+        confirmPassword: document.getElementById('confirmPassword')?.value
+      })
+    };
+
+    const errors = validateForm(formData, isSignUp);
+    if (errors.length > 0) {
+      AppHelper.showErrors(errors);
+      return;
+    }
+
+    try {
+      const salt = crypto.getRandomValues(new Uint8Array(16)).join('');
+      const hashedPassword = await hashPassword(formData.password, salt);
+      
+      const userData = {
+        ...(isSignUp && { username: formData.username }),
+        email: formData.email,
+        password: hashedPassword,
+        salt,
+        lastLogin: new Date().toISOString()
+      };
+
+      handleAuthSuccess(userData);
+    } catch (error) {
+      AppHelper.showError('Authentication failed. Please try again.');
+      console.error('Auth error:', error);
+    }
+  }
+
+  // Show auth view
+  function showAuth(isSignUp = false) {
+    AppHelper.showPage(authTemplate(isSignUp));
+
+    document.getElementById('authForm').addEventListener('submit', (e) => {
+      handleAuthSubmit(e, isSignUp);
     });
 
-    // Event listener for Sign In link
-    document.getElementById('goToSignIn').addEventListener('click', (e) => {
+    document.getElementById('switchAuth').addEventListener('click', (e) => {
       e.preventDefault();
-      showSignIn();
+      showAuth(!isSignUp);
     });
   }
 
-  function showSignIn() {
-    const signInHTML = `
-      <div id="signin">
-        <h2>Sign In</h2>
-        <form id="signInForm">
-          <input type="email" id="email" placeholder="Email" required />
-          <input type="password" id="password" placeholder="Password" required />
-          <button type="submit">Sign In</button>
-        </form>
-        <!-- Add the Sign Up link below the form -->
-        <p>Don't have an account? <a href="#" id="goToSignUp">Sign Up</a></p>
-      </div>
-    `;
-    AppHelper.showPage(signInHTML);
-
-    // Event listener for Sign In form submission
-    document.getElementById('signInForm').addEventListener('submit', async (event) => {
-      event.preventDefault();
-      try {
-        const username = document.getElementById('email').value;
-        const passwordRaw = document.getElementById('password').value;
-        const password = await hashPassword(passwordRaw);
-        const user = JSON.parse(sessionStorage.getItem('user'));
-        if (user && user.username === username && user.password === password) {
-          alert('Sign in successful!');
-          PetEntryModule.showExerciseLog();
-        } else {
-          alert('Invalid credentials, please try again.');
-        }
-      } catch (err) {
-        console.error('Error during sign in:', err);
-      }
-    });
-
-    // Event listener for Sign Up link
-    document.getElementById('goToSignUp').addEventListener('click', (e) => {
-      e.preventDefault();
-      showSignUp();
-    });
+  // Check auth status
+  function checkAuth() {
+    return sessionStorage.getItem('user') !== null;
   }
 
-  return { hashPassword, showSignUp, showSignIn };
+  // Logout
+  function logout() {
+    sessionStorage.removeItem('user');
+    currentUser = null;
+    AppHelper.showPage('<div class="logout-message">Successfully logged out</div>');
+    setTimeout(() => showAuth(false), 2000);
+  }
+
+  return {
+    showAuth,
+    checkAuth,
+    logout,
+    getCurrentUser: () => currentUser
+  };
 })();
