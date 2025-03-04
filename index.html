@@ -9,53 +9,38 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <header style="background-color: #ADD8E6;">Pet Exercise Log</header>
+    <header>
+        <h1>Pet Exercise Log</h1>
+        <div id="themeControls">
+            <button id="toggleModeButton">🌓 Toggle Mode</button>
+        </div>
+    </header>
     
-    <!-- Main Content Area -->
-    <div id="app">
-        <!-- Content will be dynamically injected by JavaScript -->
-    </div>
+    <main id="app">
+        <!-- Content injected by JavaScript -->
+    </main>
 
-    <!-- Footer -->
-    <footer style="background-color: #D3D3D3;">
+    <footer>
         <p>&copy; 2025 Pet Exercise Log. All Rights Reserved.</p>
     </footer>
 
-    <!-- Service Worker Registration -->
     <script src="js/serviceWorkerModule.js"></script>
-
-    <!-- Include Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-    <!-- Include Helper Module -->
     <script src="js/appHelper.js"></script>
-
-    <!-- Include Authentication Module -->
     <script src="js/authModule.js"></script>
-
-    <!-- Include Pet Entry Module -->
     <script src="js/petEntryModule.js"></script>
-
-    <!-- Include Calendar Module -->
     <script src="js/calendarModule.js"></script>
-
-    <!-- Include Charts Module -->
     <script src="js/chartsModule.js"></script>
-
-    <!-- Initialize the application -->
+    
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // Register the Service Worker
             ServiceWorkerModule.registerServiceWorker();
-
-            // Initialize the App based on user session
-            if (localStorage.getItem('darkMode') === 'true') {
-                document.body.classList.add('dark-mode');
-            }
+            document.body.classList.toggle('dark-mode', localStorage.getItem('darkMode') === 'true');
+            
             if (sessionStorage.getItem('user')) {
                 PetEntryModule.showExerciseLog();
             } else {
-                AuthModule.showSignIn();
+                AuthModule.showAuth();
             }
         });
     </script>
