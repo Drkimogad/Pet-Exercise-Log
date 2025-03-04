@@ -1,96 +1,159 @@
 "use strict";
 
 const CalendarModule = (function() {
-  // Function to generate the calendar and add event listeners
-  function generateCalendar() {
-    // Create the calendar structure (You can modify this based on your preferred design)
-    const calendarContainer = document.getElementById("exerciseCalendar");
-    if (!calendarContainer) {
-      console.error("Calendar container not found.");
+  let currentMonth = new Date().getMonth();
+  let currentYear = new Date().getFullYear();
+  let exerciseData = [];
+
+  function init(containerSelector) {
+    const container = document.querySelector(containerSelector);
+    if (!container) {
+      console.error("Calendar container not found");
       return;
     }
+    container.innerHTML = '<div class="calendar-container"></div>';
+    this.generateCalendar();
+  }
 
-    const currentMonth = new Date().getMonth();
-    const currentYear = new Date().getFullYear();
-
-    // Get the first and last date of the month
-    const firstDayOfMonth = new Date(currentYear, currentMonth, 1);
-    const lastDayOfMonth = new Date(currentYear, currentMonth + 1, 0);
+  function generateCalendar() {
+    const container = document.querySelector('.calendar-container');
+    const date = new Date(currentYear, currentMonth, 1);
     
-    const firstDay = firstDayOfMonth.getDay();  // Day of the week (0-6, Sunday-Saturday)
-    const totalDaysInMonth = lastDayOfMonth.getDate();
-
-    // Create the calendar HTML
-    let calendarHTML = `
-      <h2>${firstDayOfMonth.toLocaleString('default', { month: 'long' })} ${currentYear}</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Sun</th>
-            <th>Mon</th>
-            <th>Tue</th>
-            <th>Wed</th>
-            <th>Thu</th>
-            <th>Fri</th>
-            <th>Sat</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
+    const calendarHTML = `
+      <div class="calendar-header">
+        <button class="nav-btn prev-month">←</button>
+        <h2>${date.toLocaleString('default', { month: 'long' })} ${currentYear}</h2>
+        <button class="nav-btn next-month">→</button>
+      </div>
+      <div class="calendar-grid">
+        ${this.generateDayHeaders()}
+        ${this.generateCalendarDays()}
+      </div>
     `;
+    
+    container.innerHTML = calendarHTML;
+    this.addEventListeners();
+    this.highlightExerciseDays();
+  }
 
-    // Fill the calendar with empty cells until the first day of the month
-    for (let i = 0; i < firstDay; i++) {
-      calendarHTML += "<td></td>";
+  function generateDayHeaders() {
+    return ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+      .map(day => `<div class="calendar-header-day">${day}</div>`)
+      .join('');
+  }
+
+  function generateCalendarDays() {
+    const startDay = new Date(currentYear, currentMonth, 1).getDay();
+    const endDate = new Date(currentYear, currentMonth + 1, 0).getDate();
+    let daysHTML = '';
+    
+    // Empty days from previous month
+    for (let i = 0; i < startDay; i++) {
+      daysHTML += `<div class="calendar-day empty"></div>`;
     }
 
-    // Add the days of the month
-    for (let day = 1; day <= totalDaysInMonth; day++) {
-      const currentDate = new Date(currentYear, currentMonth, day);
-      const dayOfWeek = currentDate.getDay();
-
-      // Create a clickable day cell
-      calendarHTML += `<td class="calendar-day" data-date="${currentYear}-${currentMonth + 1}-${day}">${day}</td>`;
-
-      // Start a new row every Saturday
-      if (dayOfWeek === 6) {
-        calendarHTML += "</tr><tr>";
-      }
+    // Current month days
+    for (let day = 1; day <= endDate; day++) {
+      const dateString = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+      const exerciseCount = this.getExerciseCountForDate(dateString);
+      daysHTML += `
+        <div class="calendar-day" data-date="${dateString}">
+          ${day}
+          ${exerciseCount > 0 ? `<div class="exercise-indicator">${exerciseCount}</div>` : ''}
+        </div>
+      `;
     }
 
-    // Close the table and calendar container
-    calendarHTML += "</tr></tbody></table>";
+    return daysHTML;
+  }
 
-    calendarContainer.innerHTML = calendarHTML;
+  function getExerciseCountForDate(date) {
+    return exerciseData.filter(entry => entry.date === date).length;
+  }
 
-    // Attach event listeners to the day cells
-    const dayCells = document.querySelectorAll(".calendar-day");
-    dayCells.forEach(cell => {
-      cell.addEventListener("click", handleDayClick);
+  function highlightExerciseDays() {
+    document.querySelectorAll('.calendar-day:not(.empty)').forEach(day => {
+      const count = this.getExerciseCountForDate(day.dataset.date);
+      day.classList.toggle('has-exercise', count > 0);
     });
   }
 
-  // Function to handle clicking on a day in the calendar
-  function handleDayClick(event) {
-    const clickedDate = event.target.dataset.date;
-    console.log("Clicked date:", clickedDate);
+  function addEventListeners() {
+    document.querySelector('.prev-month').addEventListener('click', () => {
+      currentMonth--;
+      if (currentMonth < 0) {
+        currentMonth = 11;
+        currentYear--;
+      }
+      this.generateCalendar();
+    });
 
-    // Load the exercise entries for the selected date
-    loadExerciseForDate(clickedDate);
+    document.querySelector('.next-month').addEventListener('click', () => {
+      currentMonth++;
+      if (currentMonth > 11) {
+        currentMonth = 0;
+        currentYear++;
+      }
+      this.generateCalendar();
+    });
+
+    document.querySelector('.calendar-grid').addEventListener('click', (e) => {
+      const dayElement = e.target.closest('.calendar-day:not(.empty)');
+      if (dayElement) {
+        this.handleDayClick(dayElement.dataset.date);
+      }
+    });
   }
 
-  // Function to load exercise entries for a specific date (assuming exercise data is stored in localStorage)
-  function loadExerciseForDate(date) {
-    const exerciseData = JSON.parse(localStorage.getItem('exerciseData')) || [];
-    const exercisesForDate = exerciseData.filter(entry => entry.date === date);
-
-    if (exercisesForDate.length > 0) {
-      console.log("Exercises for this day:", exercisesForDate);
-      // You can render this data or update UI accordingly
-    } else {
-      console.log("No exercises found for this day.");
-    }
+  function handleDayClick(date) {
+    const entries = exerciseData.filter(entry => entry.date === date);
+    this.showDayModal(date, entries);
   }
 
-  return { generateCalendar };
+  function showDayModal(date, entries) {
+    const modalHTML = `
+      <div class="calendar-modal">
+        <div class="modal-content">
+          <h3>Exercises for ${date}</h3>
+          ${entries.length > 0 ? 
+            entries.map(entry => `
+              <div class="exercise-entry">
+                <span>${entry.exerciseType}</span>
+                <span>${entry.duration} mins</span>
+              </div>
+            `).join('') : 
+            '<p>No exercises recorded</p>'
+          }
+          <button class="add-exercise-btn" data-date="${date}">Add Exercise</button>
+          <button class="close-modal-btn">Close</button>
+        </div>
+      </div>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+    
+    document.querySelector('.add-exercise-btn').addEventListener('click', (e) => {
+      PetEntryModule.showEntryForm(e.target.dataset.date);
+      this.closeModal();
+    });
+
+    document.querySelector('.close-modal-btn').addEventListener('click', this.closeModal);
+  }
+
+  function closeModal() {
+    document.querySelector('.calendar-modal')?.remove();
+  }
+
+  function refresh(data) {
+    exerciseData = data;
+    this.generateCalendar();
+  }
+
+  return {
+    init,
+    generateCalendar,
+    refresh,
+    handleDayClick,
+    closeModal
+  };
 })();
