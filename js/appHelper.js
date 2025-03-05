@@ -55,12 +55,18 @@ const AppHelper = (function() {
     }, 5000);
   }
 
+  // Show errors
+  function showErrors(messages) {
+    messages.forEach(message => showError(message));
+  }
+
   return {
     showPage,
     renderComponent,
     updateSection,
     registerComponent,
     refreshComponent,
-    showError
+    showError,
+    showErrors
   };
 })();
