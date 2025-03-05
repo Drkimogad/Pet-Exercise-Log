@@ -89,12 +89,15 @@ const AuthModule = (function() {
   }
 
   // Handle auth success
-  function handleAuthSuccess(userData) {
+  function handleAuthSuccess(userData, isSignUp) {
     currentUser = userData;
     sessionStorage.setItem('user', JSON.stringify(userData));
-    DashboardModule.init();
-    PetEntryModule.loadEntries().then(data => DashboardModule.refresh(data));
-    showAuth(false); // Redirect to sign in after successful sign up
+    if (isSignUp) {
+      showAuth(false); // Redirect to sign in form after successful sign up
+    } else {
+      DashboardModule.init();
+      PetEntryModule.loadEntries().then(data => DashboardModule.refresh(data));
+    }
   }
 
   // Unified auth handler
@@ -128,7 +131,7 @@ const AuthModule = (function() {
         lastLogin: new Date().toISOString()
       };
 
-      handleAuthSuccess(userData);
+      handleAuthSuccess(userData, isSignUp);
     } catch (error) {
       AppHelper.showError('Authentication failed. Please try again.');
       console.error('Auth error:', error);
