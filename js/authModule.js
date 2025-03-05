@@ -94,6 +94,7 @@ const AuthModule = (function() {
     sessionStorage.setItem('user', JSON.stringify(userData));
     DashboardModule.init();
     PetEntryModule.loadEntries().then(data => DashboardModule.refresh(data));
+    showAuth(false); // Redirect to sign in after successful sign up
   }
 
   // Unified auth handler
