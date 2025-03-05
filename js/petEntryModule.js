@@ -88,13 +88,13 @@ const PetEntryModule = (function() {
   };
 
   // Core Functions
-  function showExerciseLog() {
-    AppHelper.showPage(templates.dashboard());
-    this.initializeModules();
-    this.setupEventListeners();
-    this.loadSavedProfiles();
-    this.loadActivePetData();
-  }
+function showExerciseLog() {
+  AppHelper.showPage(templates.dashboard());
+  initializeModules();
+  setupEventListeners();
+  loadSavedProfiles();
+  loadActivePetData();
+}
 
   function initializeModules() {
     CalendarModule.init('#exerciseCalendar');
