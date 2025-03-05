@@ -44,11 +44,23 @@ const AppHelper = (function() {
     }
   }
 
+  // Show error
+  function showError(message) {
+    const errorContainer = document.createElement('div');
+    errorContainer.className = 'error-message';
+    errorContainer.textContent = message;
+    appContainer.appendChild(errorContainer);
+    setTimeout(() => {
+      errorContainer.remove();
+    }, 5000);
+  }
+
   return {
     showPage,
     renderComponent,
     updateSection,
     registerComponent,
-    refreshComponent
+    refreshComponent,
+    showError
   };
 })();
