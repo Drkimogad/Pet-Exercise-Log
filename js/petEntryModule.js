@@ -15,17 +15,13 @@ const PetEntryModule = (function() {
         </header>
 
         <main class="dashboard-main">
-          <section class="form-section">
+          <section class="form-section" id="petFormContainer">
             ${templates.petForm()}
           </section>
 
           <section class="data-section">
             <div class="calendar-container" id="exerciseCalendar"></div>
-            <div class="charts-container">
-              <canvas id="durationChart"></canvas>
-              <canvas id="activityChart"></canvas>
-              <canvas id="caloriesChart"></canvas>
-            </div>
+            <div class="charts-container"></div>
           </section>
         </main>
 
@@ -88,13 +84,13 @@ const PetEntryModule = (function() {
   };
 
   // Core Functions
-function showExerciseLog() {
-  AppHelper.showPage(templates.dashboard());
-  initializeModules();
-  setupEventListeners();
-  loadSavedProfiles();
-  loadActivePetData();
-}
+  function showExerciseLog() {
+    AppHelper.showPage(templates.dashboard());
+    initializeModules();
+    setupEventListeners();
+    loadSavedProfiles();
+    loadActivePetData();
+  }
 
   function initializeModules() {
     CalendarModule.init('#exerciseCalendar');
@@ -102,10 +98,14 @@ function showExerciseLog() {
   }
 
   function setupEventListeners() {
-    document.getElementById('exerciseForm').addEventListener('submit', e => this.handleFormSubmit(e));
-    document.getElementById('petImage').addEventListener('change', e => this.handleImageUpload(e));
-    document.getElementById('toggleModeButton').addEventListener('click', this.toggleDarkMode);
-    document.getElementById('addNewProfileButton').addEventListener('click', this.resetForm);
+    document.getElementById('exerciseForm').addEventListener('submit', (e) => {
+      handleFormSubmit(e);
+    });
+    document.getElementById('petImage').addEventListener('change', (e) => {
+      handleImageUpload(e);
+    });
+    document.getElementById('toggleModeButton').addEventListener('click', toggleDarkMode);
+    document.getElementById('addNewProfileButton').addEventListener('click', resetForm);
   }
 
   // Data Handling
@@ -113,7 +113,7 @@ function showExerciseLog() {
     e.preventDefault();
     
     try {
-      const formData = this.validateFormData({
+      const formData = validateFormData({
         petName: document.getElementById('petName').value,
         petImage: document.getElementById('petImagePreview').src,
         characteristics: document.getElementById('petCharacteristics').value,
@@ -123,9 +123,9 @@ function showExerciseLog() {
         calories: document.getElementById('caloriesBurned').value
       });
 
-      const updatedPet = this.processPetData(formData);
-      this.savePetData(updatedPet);
-      this.updateDashboard(updatedPet);
+      const updatedPet = processPetData(formData);
+      savePetData(updatedPet);
+      updateDashboard(updatedPet);
 
     } catch (error) {
       AppHelper.showError(error.message);
@@ -144,7 +144,7 @@ function showExerciseLog() {
   }
 
   function processPetData(formData) {
-    const currentPet = this.getActivePet() || {
+    const currentPet = getActivePet() || {
       petDetails: { name: '', image: DEFAULT_IMAGE, characteristics: '' },
       exerciseEntries: []
     };
@@ -159,7 +159,7 @@ function showExerciseLog() {
       exerciseEntries: [
         ...currentPet.exerciseEntries,
         {
-          type: formData.exerciseType,
+          exerciseType: formData.exerciseType,
           duration: Number(formData.duration),
           date: formData.date,
           caloriesBurned: Number(formData.calories)
@@ -169,7 +169,7 @@ function showExerciseLog() {
   }
 
   function savePetData(petData) {
-    const pets = this.getPets();
+    const pets = getPets();
     
     if (activePetIndex === null) {
       if (pets.length >= MAX_PETS) throw new Error('Maximum pet profiles reached');
@@ -187,22 +187,23 @@ function showExerciseLog() {
   function updateDashboard(petData) {
     CalendarModule.refresh(petData.exerciseEntries);
     ChartsModule.refresh(petData.exerciseEntries);
-    this.loadSavedProfiles();
-    AppHelper.refreshComponent('#petForm', templates.petForm());
+    loadSavedProfiles();
+    // UPDATED: Refresh the pet form section using AppHelper helper.
+    AppHelper.refreshComponent('#petFormContainer', templates.petForm());
   }
 
   function loadActivePetData() {
     const savedIndex = sessionStorage.getItem('activePetIndex');
     if (savedIndex !== null) {
       activePetIndex = parseInt(savedIndex, 10);
-      const petData = this.getPets()[activePetIndex];
-      if (petData) this.updateDashboard(petData);
+      const petData = getPets()[activePetIndex];
+      if (petData) updateDashboard(petData);
     }
   }
 
   // Profile Management
   function loadSavedProfiles() {
-    const pets = this.getPets();
+    const pets = getPets();
     const profilesHTML = pets.map((pet, index) => `
       <div class="profile-card ${index === activePetIndex ? 'active' : ''}">
         <img src="${pet.petDetails.image || DEFAULT_IMAGE}" alt="${pet.petDetails.name}">
@@ -214,14 +215,14 @@ function showExerciseLog() {
     `).join('');
 
     AppHelper.renderComponent('#savedProfiles', profilesHTML);
-    this.addProfileEventListeners();
+    addProfileEventListeners();
   }
 
   function addProfileEventListeners() {
     document.querySelectorAll('.select-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         activePetIndex = parseInt(btn.dataset.index, 10);
-        this.loadActivePetData();
+        loadActivePetData();
       });
     });
   }
@@ -230,15 +231,15 @@ function showExerciseLog() {
   function resetForm() {
     activePetIndex = null;
     sessionStorage.removeItem('activePetIndex');
-    AppHelper.refreshComponent('#petForm', templates.petForm());
-    this.loadSavedProfiles();
+    AppHelper.refreshComponent('#petFormContainer', templates.petForm());
+    loadSavedProfiles();
   }
 
   function toggleDarkMode() {
     document.body.classList.toggle('dark-mode');
     localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
     ChartsModule.updateColors();
-    CalendarModule.refresh();
+    CalendarModule.refresh(CalendarModule && CalendarModule.refresh ? [] : []); // UPDATED: trigger a calendar refresh if needed.
   }
 
   function handleImageUpload(e) {
@@ -252,10 +253,19 @@ function showExerciseLog() {
     reader.readAsDataURL(file);
   }
 
+  // New function to allow showing the entry form from Calendar modal
+  function showEntryForm(date) {
+    // Pre-fill the exercise date field with the selected date from the calendar.
+    document.getElementById('exerciseDate').value = date;
+    // Optionally, you could scroll or focus the form.
+    document.getElementById('exerciseForm').scrollIntoView({ behavior: 'smooth' });
+  }
+
   // Public API
   return {
     showExerciseLog,
     getPets: () => JSON.parse(localStorage.getItem("pets")) || [],
-    getActivePet: () => activePetIndex !== null ? this.getPets()[activePetIndex] : null
+    getActivePet: () => activePetIndex !== null ? JSON.parse(localStorage.getItem("pets"))[activePetIndex] : null,
+    showEntryForm // Expose the new function for calendar integration
   };
 })();
