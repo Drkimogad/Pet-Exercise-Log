@@ -35,11 +35,8 @@ const AuthModule = (function() {
             
             <div class="form-group">
               <label for="password">Password</label>
-              <input type="password" id="password" required 
-                minlength="8" pattern="(?=.*\\d)(?=.*[a-z])(?=.*[A-Z]).{8,}">
-              <div class="password-hints">
-                Must contain uppercase, lowercase, number, and ≥8 characters
-              </div>
+              <!-- UPDATED: Removed pattern and hints -->
+              <input type="password" id="password" required minlength="8">
             </div>
 
             ${isSignUp ? `
@@ -77,8 +74,9 @@ const AuthModule = (function() {
       errors.push('Invalid email format');
     }
 
-    if (!/(?=.*\\d)(?=.*[a-z])(?=.*[A-Z]).{8,}/.test(formData.password)) {
-      errors.push('Password does not meet requirements');
+    // UPDATED: Removed uppercase, lowercase, and number restrictions
+    if (formData.password.length < 8) {
+      errors.push('Password must be at least 8 characters long');
     }
 
     if (isSignUp && formData.password !== formData.confirmPassword) {
