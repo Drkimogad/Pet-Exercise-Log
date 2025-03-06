@@ -4,6 +4,7 @@ const ChartsModule = (function() {
   let durationChart = null;
   let caloriesChart = null;
   let activityChart = null;
+  let currentExerciseData = []; // UPDATED: store current exercise data for re-rendering
   const chartConfig = {
     maintainAspectRatio: false,
     responsive: true,
@@ -11,7 +12,10 @@ const ChartsModule = (function() {
       legend: { position: 'top' },
       tooltip: { mode: 'index', intersect: false }
     },
-    scales: { y: { beginAtZero: true } }
+    scales: { 
+      x: { ticks: { color: '#374151' } }, // UPDATED: add x scale for tick color
+      y: { beginAtZero: true, ticks: { color: '#374151' } }
+    }
   };
 
   function init(containerSelector) {
@@ -37,17 +41,18 @@ const ChartsModule = (function() {
   }
 
   function refresh(exerciseData) {
-    this.destroyCharts();
-    this.processData(exerciseData);
-    this.createCharts();
+    currentExerciseData = exerciseData; // UPDATED: update current data
+    destroyCharts();
+    const processedData = processData(exerciseData);
+    createCharts(processedData);
   }
 
   function processData(data) {
     return {
       labels: [...new Set(data.map(entry => entry.date))].sort(),
-      duration: this.aggregateData(data, 'duration'),
-      calories: this.aggregateData(data, 'caloriesBurned'),
-      activities: this.groupByActivity(data)
+      duration: aggregateData(data, 'duration'),
+      calories: aggregateData(data, 'caloriesBurned'),
+      activities: groupByActivity(data)
     };
   }
 
@@ -66,7 +71,7 @@ const ChartsModule = (function() {
     }, {});
   }
 
-  function createCharts() {
+  function createCharts(processedData) {
     const ctxDuration = document.getElementById('durationChart');
     const ctxCalories = document.getElementById('caloriesChart');
     const ctxActivity = document.getElementById('activityChart');
@@ -137,7 +142,8 @@ const ChartsModule = (function() {
     chartConfig.scales.x.ticks.color = textColor;
     chartConfig.scales.y.ticks.color = textColor;
     
-    this.refresh(); // Re-render charts with new colors
+    // UPDATED: Re-render charts using the stored currentExerciseData.
+    refresh(currentExerciseData);
   }
 
   return {
