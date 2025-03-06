@@ -12,7 +12,7 @@ const CalendarModule = (function() {
       return;
     }
     container.innerHTML = '<div class="calendar-container"></div>';
-    this.generateCalendar();
+    generateCalendar(); // UPDATED: removed "this." prefix
   }
 
   function generateCalendar() {
@@ -26,14 +26,14 @@ const CalendarModule = (function() {
         <button class="nav-btn next-month">→</button>
       </div>
       <div class="calendar-grid">
-        ${this.generateDayHeaders()}
-        ${this.generateCalendarDays()}
+        ${generateDayHeaders()}
+        ${generateCalendarDays()}
       </div>
     `;
     
     container.innerHTML = calendarHTML;
-    this.addEventListeners();
-    this.highlightExerciseDays();
+    addEventListeners();
+    highlightExerciseDays();
   }
 
   function generateDayHeaders() {
@@ -55,7 +55,7 @@ const CalendarModule = (function() {
     // Current month days
     for (let day = 1; day <= endDate; day++) {
       const dateString = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-      const exerciseCount = this.getExerciseCountForDate(dateString);
+      const exerciseCount = getExerciseCountForDate(dateString);
       daysHTML += `
         <div class="calendar-day" data-date="${dateString}">
           ${day}
@@ -73,19 +73,20 @@ const CalendarModule = (function() {
 
   function highlightExerciseDays() {
     document.querySelectorAll('.calendar-day:not(.empty)').forEach(day => {
-      const count = this.getExerciseCountForDate(day.dataset.date);
+      const count = getExerciseCountForDate(day.dataset.date);
       day.classList.toggle('has-exercise', count > 0);
     });
   }
 
   function addEventListeners() {
+    // UPDATED: Use arrow functions so that the module context is maintained.
     document.querySelector('.prev-month').addEventListener('click', () => {
       currentMonth--;
       if (currentMonth < 0) {
         currentMonth = 11;
         currentYear--;
       }
-      this.generateCalendar();
+      generateCalendar();
     });
 
     document.querySelector('.next-month').addEventListener('click', () => {
@@ -94,20 +95,20 @@ const CalendarModule = (function() {
         currentMonth = 0;
         currentYear++;
       }
-      this.generateCalendar();
+      generateCalendar();
     });
 
     document.querySelector('.calendar-grid').addEventListener('click', (e) => {
       const dayElement = e.target.closest('.calendar-day:not(.empty)');
       if (dayElement) {
-        this.handleDayClick(dayElement.dataset.date);
+        handleDayClick(dayElement.dataset.date);
       }
     });
   }
 
   function handleDayClick(date) {
     const entries = exerciseData.filter(entry => entry.date === date);
-    this.showDayModal(date, entries);
+    showDayModal(date, entries);
   }
 
   function showDayModal(date, entries) {
@@ -133,11 +134,12 @@ const CalendarModule = (function() {
     document.body.insertAdjacentHTML('beforeend', modalHTML);
     
     document.querySelector('.add-exercise-btn').addEventListener('click', (e) => {
+      // UPDATED: Reference PetEntryModule directly.
       PetEntryModule.showEntryForm(e.target.dataset.date);
-      this.closeModal();
+      closeModal();
     });
 
-    document.querySelector('.close-modal-btn').addEventListener('click', this.closeModal);
+    document.querySelector('.close-modal-btn').addEventListener('click', closeModal);
   }
 
   function closeModal() {
@@ -146,7 +148,7 @@ const CalendarModule = (function() {
 
   function refresh(data) {
     exerciseData = data;
-    this.generateCalendar();
+    generateCalendar();
   }
 
   return {
