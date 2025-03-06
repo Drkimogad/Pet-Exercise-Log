@@ -95,8 +95,9 @@ const AuthModule = (function() {
     if (isSignUp) {
       showAuth(false); // Redirect to sign in form after successful sign up
     } else {
-      DashboardModule.init();
-      PetEntryModule.loadEntries().then(data => DashboardModule.refresh(data));
+      // If you add a DashboardModule later, you can call its init function here.
+      // For now, we use PetEntryModule directly.
+      PetEntryModule.showExerciseLog();
     }
   }
 
