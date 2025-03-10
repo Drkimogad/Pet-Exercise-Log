@@ -34,326 +34,145 @@ body {
     flex-direction: column;
 }
 
-header {
-    background: var(--dark-purple);
-    color: var(--primary-yellow);
-    padding: 1rem 2rem;
-    box-shadow: var(--shadow-md);
-    position: fixed;
-    width: 100%;
-    top: 0;
-    z-index: 1000;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-main#app {
+#app {
     flex: 1;
-    margin-top: 6rem;
     padding: 2rem;
-    width: 100%;
     max-width: 1400px;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-footer {
-    background: var(--dark-charcoal);
-    color: var(--white);
-    padding: 1.5rem;
-    text-align: center;
-    margin-top: auto;
+    margin: 6rem auto 0;
+    width: 100%;
 }
 
 /* ============================================================ 
-    DASHBOARD LAYOUT & COMPONENTS
+    DASHBOARD LAYOUT
 ============================================================ */
 .dashboard-container {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 2rem;
+    align-items: start;
+}
+
+.dashboard-main {
+    display: grid;
     gap: 2rem;
 }
 
-.dashboard-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.dashboard-grid {
+.data-section {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 2rem;
-    padding: 1rem;
 }
 
-.dashboard-card {
+/* ============================================================ 
+    COMPONENT STYLES
+============================================================ */
+.pet-form {
+    background: var(--container-bg);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--container-border);
+}
+
+.form-section {
+    display: grid;
+    gap: 1.5rem;
+}
+
+.image-upload {
+    position: relative;
+    display: inline-block;
+    width: 150px;
+    height: 150px;
+}
+
+#petImagePreview {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+/* ============================================================ 
+    VISUALIZATION CONTAINERS
+============================================================ */
+.calendar-container {
     background: var(--container-bg);
     border-radius: 12px;
     padding: 1.5rem;
     box-shadow: var(--shadow-sm);
-    border: 1px solid var(--container-border);
 }
 
-/* ============================================================ 
-    FORM ELEMENTS & AUTH CARDS
-============================================================ */
-.auth-card {
+.charts-container {
     background: var(--container-bg);
-    padding: 2rem;
     border-radius: 12px;
-    box-shadow: var(--shadow-md);
-    max-width: 400px;
-    margin: 2rem auto;
-}
-
-.form-grid {
+    padding: 1.5rem;
+    box-shadow: var(--shadow-sm);
     display: grid;
-    gap: 1.5rem;
-    margin: 1.5rem 0;
-}
-
-input, textarea, select {
-    width: 100%;
-    padding: 0.8rem;
-    border: 2px solid var(--input-border);
-    border-radius: 8px;
-    background: var(--input-bg);
-    transition: all 0.2s ease;
-}
-
-input:focus, textarea:focus, select:focus {
-    border-color: var(--border-focus);
-    box-shadow: 0 0 0 3px rgba(48,25,52,0.1);
+    gap: 2rem;
 }
 
 /* ============================================================ 
-    BUTTON STYLES
-============================================================ */
-.btn {
-    padding: 0.8rem 1.5rem;
-    border-radius: 8px;
-    border: none;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.btn-primary {
-    background: linear-gradient(45deg, var(--primary-yellow), var(--primary-mustard));
-    color: var(--black);
-}
-
-.btn-primary:hover {
-    transform: translateY(-1px);
-    box-shadow: var(--shadow-md);
-}
-
-.btn-icon {
-    position: fixed;
-    top: 6.5rem;
-    right: 2rem;
-    z-index: 1000;
-    padding: 0.8rem 1.2rem;
-}
-
-/* ============================================================ 
-    PET PROFILE & DASHBOARD SPECIFICS
+    SAVED PROFILES SIDEBAR
 ============================================================ */
 .saved-profiles {
-    display: flex;
+    display: grid;
     gap: 1rem;
-    flex-wrap: wrap;
-    justify-content: center;
-    padding: 1rem;
+    align-content: start;
 }
 
 .profile-card {
     background: var(--container-bg);
-    border: 1px solid var(--container-border);
+    border: 2px solid transparent;
     border-radius: 8px;
-    padding: 0.5rem;
-    box-shadow: var(--shadow-sm);
-    text-align: center;
-    width: 150px;
+    padding: 1rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
 }
 
 .profile-card.active {
-    border: 2px solid var(--border-focus);
-}
-
-.profile-card img {
-    width: 100%;
-    height: auto;
-    border-radius: 50%;
-}
-
-/* ============================================================ 
-    CALENDAR STYLES
-============================================================ */
-.calendar-container {
-    background: var(--container-bg);
-    border: 1px solid var(--container-border);
-    border-radius: 8px;
-    padding: 1rem;
-    box-shadow: var(--shadow-sm);
-}
-
-.calendar-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1rem;
-}
-
-.calendar-header h2 {
-    margin: 0;
-    font-size: 1.2rem;
-}
-
-.calendar-grid {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 0.5rem;
-}
-
-.calendar-header-day {
-    font-weight: bold;
-    text-align: center;
-}
-
-/* Calendar day cells */
-.calendar-day {
-    background: var(--off-white);
-    border: 1px solid var(--container-border);
-    border-radius: 4px;
-    padding: 0.5rem;
-    text-align: center;
-    cursor: pointer;
-    position: relative;
-}
-
-.calendar-day.empty {
-    background: transparent;
-    border: none;
-    cursor: default;
-}
-
-/* Exercise indicator on calendar days */
-.exercise-indicator {
-    background: var(--primary-mustard);
-    color: var(--black);
-    font-size: 0.8rem;
-    padding: 2px 4px;
-    border-radius: 4px;
-    position: absolute;
-    top: 4px;
-    right: 4px;
-}
-
-/* Calendar Modal Styles */
-/* UPDATED: Styles for the modal popup when a day is clicked */
-.calendar-modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 2000;
-}
-
-.calendar-modal .modal-content {
-    background: var(--container-bg);
-    padding: 2rem;
-    border-radius: 8px;
-    width: 90%;
-    max-width: 500px;
+    border-color: var(--border-focus);
     box-shadow: var(--shadow-md);
-}
-
-.calendar-modal h3 {
-    margin-top: 0;
-}
-
-.calendar-modal .exercise-entry {
-    display: flex;
-    justify-content: space-between;
-    padding: 0.5rem 0;
-    border-bottom: 1px solid var(--container-border);
-}
-
-/* ============================================================ 
-    CHARTS & DATA SECTION STYLES
-============================================================ */
-.charts-container {
-    background: var(--container-bg);
-    border: 1px solid var(--container-border);
-    border-radius: 8px;
-    padding: 1rem;
-    box-shadow: var(--shadow-sm);
 }
 
 /* ============================================================ 
     DARK MODE OVERRIDES
 ============================================================ */
 body.dark-mode {
-    background: #1e1e1e;
-    color: #e0e0e0;
+    background: var(--dark-charcoal);
+    color: var(--off-white);
 }
 
-body.dark-mode header {
-    background: #111111;
-    color: #ffdb58;
+body.dark-mode .dashboard-card,
+body.dark-mode .pet-form,
+body.dark-mode .calendar-container,
+body.dark-mode .charts-container {
+    background: var(--light-charcoal);
+    border-color: var(--dark-purple);
 }
 
-body.dark-mode footer {
-    background: #111111;
-    color: #ffffff;
-}
-
-body.dark-mode input, 
-body.dark-mode textarea, 
-body.dark-mode select {
-    background: #333333;
-    color: #e0e0e0;
-    border-color: #555555;
-}
-
-body.dark-mode .calendar-day {
-    background: #2a2a2a;
-    border-color: #444444;
-}
-
-body.dark-mode .calendar-header-day {
-    color: #e0e0e0;
+body.dark-mode input,
+body.dark-mode select,
+body.dark-mode textarea {
+    background: var(--dark-charcoal);
+    border-color: var(--light-purple);
+    color: var(--off-white);
 }
 
 /* ============================================================ 
-    RESPONSIVE DESIGN
+    RESPONSIVE ADJUSTMENTS
 ============================================================ */
 @media (max-width: 768px) {
-    .dashboard-grid {
+    .dashboard-container {
         grid-template-columns: 1fr;
     }
     
-    header {
-        padding: 1rem;
-        flex-direction: column;
-        gap: 1rem;
+    .saved-profiles {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
     }
     
-    main#app {
-        margin-top: 8rem;
+    #app {
         padding: 1rem;
-    }
-    
-    .btn-icon {
-        position: static;
-        margin: 0.5rem;
+        margin-top: 4rem;
     }
 }
