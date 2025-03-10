@@ -7,34 +7,31 @@
     <link rel="icon" href="https://drkimogad.github.io/Pet-Exercise-Log/favicon.ico" type="image/x-icon">
     <link rel="manifest" href="https://drkimogad.github.io/Pet-Exercise-Log/manifest.json">
     <link rel="stylesheet" href="styles.css">
+    <!-- Include Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-    <header>
-        <h1>Pet Exercise Log</h1>
-        <div id="themeControls">
-            <button id="toggleModeButton">🌓 Toggle Mode</button>
-        </div>
-    </header>
-    
-    <main id="app">
-        <!-- Content injected by JavaScript -->
-    </main>
+    <div id="app-container">
+        <!-- All content will be managed by app.js -->
+        <div id="app"></div>
 
-    <footer>
-        <p>&copy; 2025 Pet Exercise Log. All Rights Reserved.</p>
-    </footer>
+        <!-- Global notification container -->
+        <div id="notifications" class="notifications-container"></div>
+    </div>
 
     <script src="app.js"></script>
-    
     <script>
+        // Simplified initialization
         document.addEventListener('DOMContentLoaded', () => {
-            ServiceWorkerModule.registerServiceWorker();
-            document.body.classList.toggle('dark-mode', localStorage.getItem('darkMode') === 'true');
+            // Initialize dark mode from localStorage
+            if (localStorage.getItem('darkMode') === 'true') {
+                document.body.classList.add('dark-mode');
+            }
             
-            if (sessionStorage.getItem('user')) {
-                PetEntryModule.showExerciseLog();
-            } else {
-                AuthModule.showAuth();
+            // Service worker registration
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('service-worker.js')
+                    .catch(err => console.error('SW registration failed:', err));
             }
         });
     </script>
