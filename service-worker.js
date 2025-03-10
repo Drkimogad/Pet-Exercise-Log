@@ -1,15 +1,10 @@
-const CACHE_NAME = 'Pet-Exercise-Log-cache-v2'; // Update cache version
+const CACHE_NAME = 'Pet-Exercise-Log-cache-v3'; // Update cache version
 const OFFLINE_URL = 'https://drkimogad.github.io/Pet-Exercise-Log/offline.html';
 const urlsToCache = [
     'https://drkimogad.github.io/Pet-Exercise-Log/',                // Main page URL
     'https://drkimogad.github.io/Pet-Exercise-Log/index.html',      // Ensure main HTML page is cached
-    'https://drkimogad.github.io/Pet-Exercise-Log/style.css',
-    'https://drkimogad.github.io/Pet-Exercise-Log/js/appHelper.js', 
-    'https://drkimogad.github.io/Pet-Exercise-Log/js/authModule.js', 
-    'https://drkimogad.github.io/Pet-Exercise-Log/js/petEntryModule.js', 
-    'https://drkimogad.github.io/Pet-Exercise-Log/js/calendarModule.js', 
-    'https://drkimogad.github.io/Pet-Exercise-Log/js/chartsModule.js', 
-    'https://drkimogad.github.io/Pet-Exercise-Log/js/serviceWorkerModule.js',
+    'https://drkimogad.github.io/Pet-Exercise-Log/styles.css',
+    'https://drkimogad.github.io/Pet-Exercise-Log/script.js',
     'https://drkimogad.github.io/Pet-Exercise-Log/manifest.json',
     'https://drkimogad.github.io/Pet-Exercise-Log/icons/icon-192x192.png',
     'https://drkimogad.github.io/Pet-Exercise-Log/favicon.ico',
@@ -52,7 +47,7 @@ self.addEventListener('fetch', (event) => {
                 return cachedResponse; // Serve from cache
             }
 
-            // If the request is for an HTML file (navigation), return the offline page
+            // If the request is for an HTML file (navigation), return the index.html 
             if (event.request.mode === 'navigate') {
                 return caches.match('https://drkimogad.github.io/Pet-Exercise-Log/index.html');  // Ensure offline.html is cached
             }
@@ -64,7 +59,7 @@ self.addEventListener('fetch', (event) => {
             });
         }).catch((err) => {
             console.error('Error fetching:', err);
-            // In case of any unexpected errors, fallback to offline.html
+            // In case of any unexpected errors, fallback to index.html
             return caches.match('https://drkimogad.github.io/Pet-Exercise-Log/index.html');
         })
     );
