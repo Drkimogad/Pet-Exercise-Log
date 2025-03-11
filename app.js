@@ -28,6 +28,11 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
+function showSignIn() {
+    document.getElementById("auth-container").style.display = "block"; // Example
+}
+
+
 const AppHelper = (function() {
   const appContainer = document.getElementById('app');
   const components = {};
