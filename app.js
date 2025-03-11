@@ -17,17 +17,18 @@ function registerServiceWorker() {
 
 // ✅ Function to show the sign-in page
 function showSignIn() {
-    const authContainer = document.getElementById("auth-container");
-    if (authContainer) {
-        authContainer.style.display = "block";
-    } else {
-        console.error("Auth container not found in the DOM.");
-    }
+    document.addEventListener("DOMContentLoaded", () => {
+        const authContainer = document.getElementById("auth-container");
+        if (authContainer) {
+            authContainer.style.display = "block";
+        } else {
+            console.warn("⚠️ Auth container not found in the DOM. Check if #auth-container exists in index.html.");
+        }
+    });
 }
 
 // ✅ Run on page load
 document.addEventListener("DOMContentLoaded", () => {
-    // Register service worker
     registerServiceWorker();
 
     // Apply dark mode if enabled
@@ -40,12 +41,13 @@ document.addEventListener("DOMContentLoaded", () => {
         if (typeof PetEntry !== "undefined" && typeof PetEntry.showExerciseLog === "function") {
             PetEntry.showExerciseLog();
         } else {
-            console.error("PetEntry or showExerciseLog function is missing!");
+            console.error("❌ PetEntry or showExerciseLog function is missing!");
         }
     } else {
         showSignIn();
     }
 });
+
 
 // appHelper
 const AppHelper = (function() {
