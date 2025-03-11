@@ -74,7 +74,7 @@ const AppHelper = (function() {
     showErrors: (msgs) => msgs.forEach(msg => AppHelper.showError(msg))
   };
 })();
-
+// authentication 
 const Auth = (function() {
   let currentUser = null;
 
