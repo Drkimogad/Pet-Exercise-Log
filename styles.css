@@ -20,171 +20,162 @@
   --shadow-md: 0 4px 6px rgba(0,0,0,0.15);
 }
 
-/* ============================================================ 
-    BASE STYLES
+/* ============================================================
+    PWA Install Button (Enhanced)
 ============================================================ */
-body {
-    font-family: 'Segoe UI', system-ui, sans-serif;
-    margin: 0;
-    padding: 0;
-    background: linear-gradient(135deg, var(--light-purple) 0%, var(--primary-yellow) 100%);
-    color: var(--light-charcoal);
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-}
-
-#app {
-    flex: 1;
-    padding: 2rem;
-    max-width: 1400px;
-    margin: 6rem auto 0;
-    width: 100%;
-}
-
 #installButton {
     position: fixed;
-    bottom: 20px;
-    right: 20px;
-    background-color: #4CAF50; /* Green color */
-    color: white;
-    border: none;
-    padding: 12px 20px;
-    font-size: 16px;
-    border-radius: 8px;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    background-color: var(--dark-purple);
+    color: var(--off-white);
+    border: 2px solid var(--light-purple);
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    border-radius: 2rem;
     cursor: pointer;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+    box-shadow: var(--shadow-md);
     transition: all 0.3s ease-in-out;
-    display: none; /* Initially hidden */
+    z-index: 1000;
+    display: none; /* Controlled by JS */
+    backdrop-filter: blur(4px);
 }
 
 #installButton:hover {
-    background-color: #45a049;
-    transform: scale(1.05);
+    background-color: var(--light-purple);
+    transform: translateY(-0.25rem);
+    box-shadow: var(--shadow-md);
 }
 
 #installButton:active {
-    background-color: #3e8e41;
-    transform: scale(0.98);
+    transform: scale(0.95);
 }
 
-/* ============================================================ 
-    DASHBOARD LAYOUT
+#installButton::before {
+    content: "⬇️ ";
+}
+
+/* Dark Mode Override */
+body.dark-mode #installButton {
+    background-color: var(--light-purple);
+    color: var(--dark-charcoal);
+    border-color: var(--dark-purple);
+}
+
+body.dark-mode #installButton:hover {
+    background-color: var(--dark-purple);
+    color: var(--off-white);
+}
+
+/* ============================================================
+    Auth Container Styling (Missing in Original)
 ============================================================ */
-.dashboard-container {
-    display: grid;
-    grid-template-columns: 1fr 300px;
-    gap: 2rem;
-    align-items: start;
-}
-
-.dashboard-main {
-    display: grid;
-    gap: 2rem;
-}
-
-.data-section {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 2rem;
-}
-
-/* ============================================================ 
-    COMPONENT STYLES
-============================================================ */
-.pet-form {
+#auth-container {
     background: var(--container-bg);
-    border-radius: 12px;
-    padding: 1.5rem;
+    border-radius: 1rem;
+    padding: 2rem;
+    margin: 2rem auto;
+    max-width: 500px;
     box-shadow: var(--shadow-md);
     border: 1px solid var(--container-border);
 }
 
-.form-section {
-    display: grid;
-    gap: 1.5rem;
-}
-
-.image-upload {
-    position: relative;
-    display: inline-block;
-    width: 150px;
-    height: 150px;
-}
-
-#petImagePreview {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 8px;
-}
-
-/* ============================================================ 
-    VISUALIZATION CONTAINERS
-============================================================ */
-.calendar-container {
-    background: var(--container-bg);
-    border-radius: 12px;
-    padding: 1.5rem;
-    box-shadow: var(--shadow-sm);
-}
-
-.charts-container {
-    background: var(--container-bg);
-    border-radius: 12px;
-    padding: 1.5rem;
-    box-shadow: var(--shadow-sm);
-    display: grid;
-    gap: 2rem;
-}
-
-/* ============================================================ 
-    SAVED PROFILES SIDEBAR
-============================================================ */
-.saved-profiles {
-    display: grid;
-    gap: 1rem;
-    align-content: start;
-}
-
-.profile-card {
-    background: var(--container-bg);
-    border: 2px solid transparent;
-    border-radius: 8px;
-    padding: 1rem;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.profile-card.active {
-    border-color: var(--border-focus);
-    box-shadow: var(--shadow-md);
-}
-
-/* ============================================================ 
-    DARK MODE OVERRIDES
-============================================================ */
-body.dark-mode {
-    background: var(--dark-charcoal);
-    color: var(--off-white);
-}
-
-body.dark-mode .dashboard-card,
-body.dark-mode .pet-form,
-body.dark-mode .calendar-container,
-body.dark-mode .charts-container {
+body.dark-mode #auth-container {
     background: var(--light-charcoal);
     border-color: var(--dark-purple);
 }
 
-body.dark-mode input,
-body.dark-mode select,
-body.dark-mode textarea {
-    background: var(--dark-charcoal);
-    border-color: var(--light-purple);
-    color: var(--off-white);
+/* ============================================================
+    Enhanced Notification System
+============================================================ */
+.notifications-container {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    max-width: 300px;
+    z-index: 2000;
 }
 
+.error-message {
+    background: #ffebee;
+    color: #b71c1c;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    margin-bottom: 0.5rem;
+    border-left: 4px solid #b71c1c;
+    box-shadow: var(--shadow-sm);
+}
+
+body.dark-mode .error-message {
+    background: #3d1a1a;
+    color: #ff8a80;
+    border-color: #ff5252;
+}
+
+/* ============================================================
+    Improved Image Upload Preview
+============================================================ */
+.image-upload:hover #petImagePreview {
+    filter: brightness(0.9);
+    cursor: pointer;
+}
+
+.image-upload::after {
+    content: "📷 Click to Upload";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.6);
+    color: white;
+    padding: 0.5rem;
+    text-align: center;
+    border-radius: 0 0 8px 8px;
+    font-size: 0.9rem;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.image-upload:hover::after {
+    opacity: 1;
+}
+
+/* ============================================================
+    Calendar Modal Enhancements
+============================================================ */
+.calendar-modal {
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(3px);
+}
+
+.calendar-modal .modal-content {
+    background: var(--container-bg);
+    border: 2px solid var(--light-purple);
+    border-radius: 1rem;
+    padding: 2rem;
+}
+
+body.dark-mode .calendar-modal .modal-content {
+    background: var(--light-charcoal);
+    border-color: var(--dark-purple);
+}
+
+/* ============================================================
+    Responsive Tweaks
+============================================================ */
+@media (max-width: 480px) {
+    #installButton {
+        bottom: 1rem;
+        right: 1rem;
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+    }
+    
+    .dashboard-container {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+}
 /* ============================================================ 
     RESPONSIVE ADJUSTMENTS
 ============================================================ */
