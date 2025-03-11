@@ -1,4 +1,20 @@
 "use strict";
+function registerServiceWorker() {
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('service-worker.js')
+                .then((registration) => {
+                    console.log('Service Worker registered:', registration);
+                })
+                .catch((error) => {
+                    console.error('Service Worker registration failed:', error);
+                });
+        });
+    }
+}
+
+// Call the function during app startup
+registerServiceWorker();
 
 document.addEventListener('DOMContentLoaded', () => {
   ServiceWorker.registerServiceWorker();
@@ -579,22 +595,5 @@ const Charts = (function() {
 
   return { init, refresh, updateColors };
 })();
-
-function registerServiceWorker() {
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/service-worker.js')
-      .then((registration) => {
-        console.log('Service Worker registered with scope:', registration.scope);
-      })
-      .catch((error) => {
-        console.error('Service Worker registration failed:', error);
-      });
-  }
-}
-
-// Ensure service worker is registered when the app loads
-document.addEventListener('DOMContentLoaded', () => {
-  registerServiceWorker();
-});
 
  // end of code
