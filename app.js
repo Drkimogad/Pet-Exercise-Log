@@ -17,7 +17,7 @@ function registerServiceWorker() {
 registerServiceWorker();
 
 document.addEventListener('DOMContentLoaded', () => {
-  ServiceWorker.registerServiceWorker();
+  registerServiceWorker();
   if (localStorage.getItem('darkMode') === 'true') {
     document.body.classList.add('dark-mode');
   }
