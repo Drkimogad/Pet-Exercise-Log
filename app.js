@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (sessionStorage.getItem('user')) {
     PetEntryModule.showExerciseLog();
   } else {
-    AuthModule.showSignIn();
+    showSignIn();
   }
 });
 
