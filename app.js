@@ -1,8 +1,9 @@
 "use strict";
 
-// ✅ Service Worker Registration
-let deferredPrompt; // Declare ONCE globally here
+// ✅ SINGLE global declaration
+let deferredPrompt;
 
+// ✅ Service Worker Registration
 function registerServiceWorker() {
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
@@ -20,12 +21,11 @@ function registerServiceWorker() {
 // ✅ PWA Installation Logic
 window.addEventListener('beforeinstallprompt', (event) => {
     event.preventDefault();
-    deferredPrompt = event; // Assign to existing variable (no "let" here)
+    deferredPrompt = event; // <-- Assignment only
 
     const installButton = document.getElementById('installButton');
     if (installButton) {
         installButton.style.display = 'block';
-
         installButton.addEventListener('click', () => {
             deferredPrompt.prompt();
             deferredPrompt.userChoice.then((choiceResult) => {
@@ -37,8 +37,6 @@ window.addEventListener('beforeinstallprompt', (event) => {
         });
     }
 });
-
-// ... (rest of your code remains unchanged)
 
 // ✅ Function to show the sign-in page
 function showSignIn() {
