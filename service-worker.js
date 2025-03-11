@@ -4,7 +4,7 @@ const urlsToCache = [
     'https://drkimogad.github.io/Pet-Exercise-Log/',                // Main page URL
     'https://drkimogad.github.io/Pet-Exercise-Log/index.html',      // Ensure main HTML page is cached
     'https://drkimogad.github.io/Pet-Exercise-Log/styles.css',
-    'https://drkimogad.github.io/Pet-Exercise-Log/script.js',
+    'https://drkimogad.github.io/Pet-Exercise-Log/app.js',
     'https://drkimogad.github.io/Pet-Exercise-Log/manifest.json',
     'https://drkimogad.github.io/Pet-Exercise-Log/icons/icon-192x192.png',
     'https://drkimogad.github.io/Pet-Exercise-Log/favicon.ico',
