@@ -7,7 +7,7 @@ let deferredPrompt;
 function registerServiceWorker() {
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-            navigator.serviceWorker.register('service-worker.js')
+            navigator.serviceWorker.register('service-worker.js', { scope: '/' })
                 .then((registration) => {
                     console.log('Service Worker registered:', registration);
                 })
@@ -21,33 +21,37 @@ function registerServiceWorker() {
 // ✅ PWA Installation Logic
 window.addEventListener('beforeinstallprompt', (event) => {
     event.preventDefault();
-    deferredPrompt = event; // <-- Assignment only
+    deferredPrompt = event;
 
     const installButton = document.getElementById('installButton');
     if (installButton) {
         installButton.style.display = 'block';
-        installButton.addEventListener('click', () => {
-            deferredPrompt.prompt();
-            deferredPrompt.userChoice.then((choiceResult) => {
+        installButton.addEventListener('click', async () => {
+            if (!deferredPrompt) return;
+            try {
+                await deferredPrompt.prompt();
+                const choiceResult = await deferredPrompt.userChoice;
                 if (choiceResult.outcome === 'accepted') {
                     console.log('User accepted install');
                 }
+            } catch (error) {
+                console.error('Install prompt failed:', error);
+            } finally {
                 deferredPrompt = null;
-            });
+                installButton.style.display = 'none';
+            }
         });
     }
 });
 
-// ✅ Function to show the sign-in page
+// ✅ Fixed showSignIn (no nested DOMContentLoaded)
 function showSignIn() {
-    document.addEventListener("DOMContentLoaded", () => {
-        const authContainer = document.getElementById("auth-container");
-        if (authContainer) {
-            authContainer.style.display = "block";
-        } else {
-            console.warn("⚠️ Auth container not found in the DOM. Check if #auth-container exists in index.html.");
-        }
-    });
+    const authContainer = document.getElementById("auth-container");
+    if (authContainer) {
+        authContainer.style.display = "block";
+    } else {
+        console.warn("⚠️ Auth container not found");
+    }
 }
 
 // ✅ Run on page load
@@ -70,9 +74,6 @@ document.addEventListener("DOMContentLoaded", () => {
         showSignIn();
     }
 });
-
-// ... (rest of your existing code)
-
 
 // appHelper
 const AppHelper = (function() {
