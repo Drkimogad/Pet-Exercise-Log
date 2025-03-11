@@ -1,12 +1,12 @@
 "use strict";
 
 document.addEventListener('DOMContentLoaded', () => {
-  ServiceWorkerModule.registerServiceWorker();
+  ServiceWorker.registerServiceWorker();
   if (localStorage.getItem('darkMode') === 'true') {
     document.body.classList.add('dark-mode');
   }
   if (sessionStorage.getItem('user')) {
-    PetEntryModule.showExerciseLog();
+    PetEntry.showExerciseLog();
   } else {
     showSignIn();
   }
@@ -37,7 +37,7 @@ const AppHelper = (function() {
   };
 })();
 
-const AuthModule = (function() {
+const Auth = (function() {
   let currentUser = null;
 
   async function hashPassword(pass, salt) {
@@ -138,7 +138,7 @@ const AuthModule = (function() {
   };
 })();
 
-const PetEntryModule = (function() {
+const PetEntry = (function() {
   let activePetIndex = null;
   const MAX_PETS = 10;
   const DEFAULT_IMAGE = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAgSURBVHgB7dEBAQAAAIIg/69uSEABAAAAAAAAAAAAAAAAAADgNhG4AAE0mNlCAAAAAElFTkSuQmCC';
@@ -217,8 +217,8 @@ const PetEntryModule = (function() {
     AppHelper.registerComponent('petFormContainer', () => templates.petForm());
     AppHelper.refreshComponent('petFormContainer');
     
-    CalendarModule.init('#exerciseCalendar');
-    ChartsModule.init('#exerciseCharts');
+    Calendar.init('#exerciseCalendar');
+    Charts.init('#exerciseCharts');
     setupEventListeners();
     loadSavedProfiles();
     loadActivePetData();
@@ -346,7 +346,7 @@ const PetEntryModule = (function() {
   };
 })();
 
-const CalendarModule = (function() {
+const Calendar = (function() {
   let currentMonth = new Date().getMonth();
   let currentYear = new Date().getFullYear();
   let exerciseData = [];
@@ -449,13 +449,13 @@ const CalendarModule = (function() {
 
     document.body.insertAdjacentHTML('beforeend', modalHTML);
     document.querySelector('.add-exercise-btn').addEventListener('click', (e) => {
-      PetEntryModule.getActivePet().exerciseEntries.push({
+      PetEntry.getActivePet().exerciseEntries.push({
         date: e.target.dataset.date,
         exerciseType: 'walking',
         duration: 30,
         caloriesBurned: 150
       });
-      CalendarModule.refresh(PetEntryModule.getActivePet().exerciseEntries);
+      Calendar.refresh(PetEntry.getActivePet().exerciseEntries);
       document.querySelector('.calendar-modal').remove();
     });
     document.querySelector('.close-modal-btn').addEventListener('click', () => {
@@ -471,7 +471,7 @@ const CalendarModule = (function() {
   return { init, refresh };
 })();
 
-const ChartsModule = (function() {
+const Charts = (function() {
   let durationChart, caloriesChart, activityChart;
 
   function init(selector) {
@@ -579,15 +579,4 @@ const ChartsModule = (function() {
 
   return { init, refresh, updateColors };
 })();
-
-const ServiceWorkerModule = (function() {
-  return {
-    registerServiceWorker: () => {
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('service-worker.js')
-          .then(reg => console.log('SW registered:', reg.scope))
-          .catch(err => console.log('SW registration failed:', err));
-      }
-    }
-  };
-})();
+ // end of code
