@@ -1,53 +1,46 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#ffffff">
+    <meta name="description" content="Track your pet's exercise routine and health metrics">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="https://drkimogad.github.io/Pet-Exercise-Log/manifest.json">
+    
+    <!-- iOS PWA Support -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="https://drkimogad.github.io/Pet-Exercise-Log/icon-192x192.png">
+
     <title>Pet Exercise Log</title>
     <link rel="icon" href="https://drkimogad.github.io/Pet-Exercise-Log/favicon.ico" type="image/x-icon">
-    <link rel="manifest" href="https://drkimogad.github.io/Pet-Exercise-Log/manifest.json">
     <link rel="stylesheet" href="styles.css">
-    <!-- Include Chart.js -->
+    
+    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-    <div id="app-container">
-        <!-- All content will be managed by app.js -->
-        <div id="app"></div>
+    <!-- Auth Container (required for sign-in flow) -->
+    <div id="auth-container" style="display: none;"></div>
 
-        <!-- Global notification container -->
+    <!-- Main App Container -->
+    <div id="app-container">
+        <div id="app">
+            <!-- Content managed by app.js -->
+        </div>
+
+        <!-- Notifications System -->
         <div id="notifications" class="notifications-container"></div>
     </div>
-    
-    <button id="installButton" style="display: none;">Install App</button>
 
+    <!-- PWA Install Button -->
+    <button id="installButton" class="pwa-install-btn" style="display: none;" aria-label="Install app">
+        ⬇️ Install App
+    </button>
+
+    <!-- Single Script Import -->
     <script src="app.js"></script>
-
-    <!-- Install Button Handling -->
-    <script>
-        let deferredPrompt;
-        const installButton = document.getElementById('installButton');
-
-        window.addEventListener('beforeinstallprompt', (event) => {
-            event.preventDefault();
-            deferredPrompt = event;
-            installButton.style.display = 'block';
-        });
-
-        installButton.addEventListener('click', () => {
-            if (deferredPrompt) {
-                deferredPrompt.prompt();
-                deferredPrompt.userChoice.then((choiceResult) => {
-                    if (choiceResult.outcome === 'accepted') {
-                        console.log('User accepted the install prompt');
-                    } else {
-                        console.log('User dismissed the install prompt');
-                    }
-                    deferredPrompt = null;
-                    installButton.style.display = 'none';
-                });
-            }
-        });
-    </script>
 </body>
 </html>
