@@ -15,6 +15,41 @@ function registerServiceWorker() {
     }
 }
 
+// ✅ PWA Installation Logic
+let deferredPrompt; // Stores the beforeinstallprompt event
+
+window.addEventListener('beforeinstallprompt', (event) => {
+    // Prevent the default prompt from showing immediately
+    event.preventDefault();
+
+    // Store the event for later use
+    deferredPrompt = event;
+
+    // Show your custom "Install" button or UI
+    const installButton = document.getElementById('installButton');
+    if (installButton) {
+        installButton.style.display = 'block';
+
+        // Add a click event listener to the button
+        installButton.addEventListener('click', () => {
+            // Show the installation prompt
+            deferredPrompt.prompt();
+
+            // Wait for the user to respond to the prompt
+            deferredPrompt.userChoice.then((choiceResult) => {
+                if (choiceResult.outcome === 'accepted') {
+                    console.log('User accepted the install prompt');
+                } else {
+                    console.log('User dismissed the install prompt');
+                }
+
+                // Clear the deferredPrompt variable
+                deferredPrompt = null;
+            });
+        });
+    }
+});
+
 // ✅ Function to show the sign-in page
 function showSignIn() {
     document.addEventListener("DOMContentLoaded", () => {
@@ -47,6 +82,8 @@ document.addEventListener("DOMContentLoaded", () => {
         showSignIn();
     }
 });
+
+// ... (rest of your existing code)
 
 
 // appHelper
