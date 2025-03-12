@@ -98,7 +98,8 @@ const AppHelper = (function() {
     showErrors: (msgs) => msgs.forEach(msg => AppHelper.showError(msg))
   };
 })();
-// authentication 
+
+// authentication//
 const Auth = (function() {
   let currentUser = null;
 
@@ -200,6 +201,7 @@ const Auth = (function() {
   };
 })();
 
+// petentry//
 const PetEntry = (function() {
   let activePetIndex = null;
   const MAX_PETS = 10;
@@ -383,7 +385,7 @@ const PetEntry = (function() {
       if (petData) updateDashboard(petData);
     }
   }
-
+// toggle mode //
   function toggleDarkMode() {
     document.body.classList.toggle('dark-mode');
     localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
@@ -408,6 +410,7 @@ const PetEntry = (function() {
   };
 })();
 
+// Calender //
 const Calendar = (function() {
   let currentMonth = new Date().getMonth();
   let currentYear = new Date().getFullYear();
@@ -532,7 +535,7 @@ const Calendar = (function() {
 
   return { init, refresh };
 })();
-
+// Charts //
 const Charts = (function() {
   let durationChart, caloriesChart, activityChart;
 
