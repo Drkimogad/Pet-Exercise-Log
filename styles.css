@@ -11,9 +11,9 @@
   --white: #FFFFFF;
   --black: #000000;
   --off-white: #F7F7F7;
-  --border-focus: var(--dark-purple);
+  --border-focus: var(--primary-mustard);
   --input-bg: var(--white);
-  --input-border: var(--light-purple);
+  --input-border: var(--primary-mustard);
   --container-bg: var(--off-white);
   --container-border: var(--primary-mustard);
   --shadow-sm: 0 2px 4px rgba(0,0,0,0.1);
@@ -21,76 +21,71 @@
 }
 
 /* ============================================================
-    HEADER STYLING
+    HEADER & FOOTER STYLING
 ============================================================ */
-.header {
-    background-color: var(--light-charcoal);
+header {
+    background: var(--light-charcoal);
+    color: var(--dark-mustard);
     border-bottom: 3px solid var(--primary-mustard);
-    color: var(--primary-mustard);
+    padding: 1.5rem;
     text-align: center;
-    padding: 1.5rem 1rem;
-    font-weight: bold;
-    transition: top 0.3s;
+    font-size: 1.5rem;
 }
 
-.header h1 {
+header h1 {
     font-size: 2rem;
-    margin: 0;
-    color: var(--primary-mustard);
 }
 
-.header p {
-    font-size: 1.2rem;
-    margin-top: 0.5rem;
-    color: var(--primary-mustard);
+footer {
+    background: var(--light-charcoal);
+    color: var(--dark-mustard);
+    border-top: 3px solid var(--primary-mustard);
+    padding: 1.5rem;
+    text-align: center;
+    font-size: 1rem;
 }
 
-/* Hide header on scroll in dashboard */
-.dashboard-container .header {
-    position: relative;
+/* Header disappears on scroll in dashboard */
+.dashboard header {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    transition: transform 0.3s ease-in-out;
 }
 
-@media (max-width: 768px) {
-    .header h1 {
-        font-size: 1.5rem;
-    }
-    .header p {
-        font-size: 1rem;
-    }
+.dashboard.scrolled header {
+    transform: translateY(-100%);
 }
 
 /* ============================================================
-    FOOTER STYLING
+    AUTHENTICATION FORM STYLING
 ============================================================ */
-.footer {
-    background-color: var(--light-charcoal);
-    border-top: 3px solid var(--primary-mustard);
-    color: var(--primary-mustard);
+.auth-container {
+    width: 50%;
+    margin: 10vh auto;
+    background: var(--container-bg);
+    border: 2px solid var(--container-border);
+    padding: 2rem;
+    box-shadow: var(--shadow-md);
     text-align: center;
-    padding: 1rem;
-    font-size: 1rem;
+}
+
+.auth-container h2 {
+    color: var(--dark-mustard);
+    margin-bottom: 1rem;
+}
+
+/* Center Footer in Auth Pages */
+.auth-page footer {
+    position: fixed;
+    bottom: 0;
     width: 100%;
 }
 
 /* ============================================================
-    GENERAL CONTAINERS STYLING
+    PWA INSTALL BUTTON (ONLY ON AUTH PAGES)
 ============================================================ */
-.container {
-    background: var(--container-bg);
-    border: 2px solid var(--container-border);
-    border-radius: 1rem;
-    padding: 1.5rem;
-    box-shadow: var(--shadow-md);
-}
-
-.focus-border {
-    border-color: var(--border-focus);
-}
-
-/* ============================================================
-    PWA Install Button (Enhanced)
-============================================================ */
-#installButton {
+.auth-page #installButton {
     position: fixed;
     bottom: 1.5rem;
     right: 1.5rem;
@@ -104,33 +99,53 @@
     box-shadow: var(--shadow-md);
     transition: all 0.3s ease-in-out;
     z-index: 1000;
-    display: none;
-    backdrop-filter: blur(4px);
+    display: block;
 }
 
-#installButton:hover {
-    background-color: var(--light-purple);
-    transform: translateY(-0.25rem);
+.dashboard #installButton {
+    display: none;
+}
+
+/* ============================================================
+    DASHBOARD CONTAINER STYLING
+============================================================ */
+.dashboard-container {
+    background: var(--off-white);
+    border: 2px solid var(--primary-mustard);
+    padding: 2rem;
     box-shadow: var(--shadow-md);
 }
 
-/* ============================================================
-    AUTHENTICATION SPECIFIC STYLING
-============================================================ */
-.auth-container .header, .auth-container .footer {
-    position: fixed;
-    width: 100%;
-}
-.auth-container .header {
-    top: 0;
-}
-.auth-container .footer {
-    bottom: 0;
+/* Dashboard elements */
+.dashboard .container {
+    background: var(--light-purple);
+    border: 2px solid var(--dark-purple);
+    padding: 1rem;
+    border-radius: 1rem;
+    box-shadow: var(--shadow-sm);
 }
 
 /* ============================================================
-    RESPONSIVE TWEAKS
+    RESPONSIVE ADJUSTMENTS
 ============================================================ */
+@media (max-width: 768px) {
+    .auth-container {
+        width: 80%;
+    }
+    
+    .dashboard-container {
+        padding: 1rem;
+    }
+    
+    header {
+        font-size: 1.2rem;
+    }
+    
+    footer {
+        font-size: 0.9rem;
+    }
+}
+
 @media (max-width: 480px) {
     #installButton {
         bottom: 1rem;
