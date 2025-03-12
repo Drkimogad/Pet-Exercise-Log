@@ -13,7 +13,7 @@ function registerServiceWorker() {
         }).catch(error => {
             console.error('Service Worker registration failed:', error);
         });
-    } // <-- Add this closing brace
+    }
 }
 
 // ✅ PWA Installation Logic
@@ -31,6 +31,8 @@ window.addEventListener('beforeinstallprompt', (event) => {
                 const choiceResult = await deferredPrompt.userChoice;
                 if (choiceResult.outcome === 'accepted') {
                     console.log('User accepted install');
+                } else {
+                    console.log('User dismissed install');
                 }
             } catch (error) {
                 console.error('Install prompt failed:', error);
@@ -350,8 +352,8 @@ const PetEntry = (function() {
   }
 
   function updateDashboard(petData) {
-    CalendarModule.refresh(petData.exerciseEntries);
-    ChartsModule.refresh(petData.exerciseEntries);
+    Calendar.refresh(petData.exerciseEntries);
+    Charts.refresh(petData.exerciseEntries);
     loadSavedProfiles();
     AppHelper.refreshComponent('petFormContainer');
   }
@@ -390,8 +392,8 @@ const PetEntry = (function() {
   function toggleDarkMode() {
     document.body.classList.toggle('dark-mode');
     localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
-    ChartsModule.updateColors();
-    CalendarModule.refresh(getActivePet()?.exerciseEntries || []);
+    Charts.updateColors();
+    Calendar.refresh(getActivePet()?.exerciseEntries || []);
   }
 
   function handleImageUpload(e) {
@@ -411,7 +413,7 @@ const PetEntry = (function() {
   };
 })();
 
-// Calender //
+// Calendar //
 const Calendar = (function() {
   let currentMonth = new Date().getMonth();
   let currentYear = new Date().getFullYear();
