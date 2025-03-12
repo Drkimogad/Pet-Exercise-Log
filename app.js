@@ -68,9 +68,10 @@ document.addEventListener("DOMContentLoaded", () => {
     } else {
         console.error("❌ PetEntry or showExerciseLog function is missing!");
     }
-} else {
-    Auth.showAuth();
-}
+    } else {
+        Auth.showAuth();
+    }
+}); // <-- Closing brace for DOMContentLoaded
 
 // appHelper
 const AppHelper = (function() {
