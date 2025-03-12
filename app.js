@@ -623,12 +623,19 @@ const Charts = (function() {
       }
     });
   }
+    
+  function destroyCharts() {
+     if (durationChart) durationChart.destroy();
+     if (activityChart) activityChart.destroy();
+     if (caloriesChart) caloriesChart.destroy();
+   }
+ 
+   function updateColors() {
+     const textColor = document.body.classList.contains('dark-mode') ? '#fff' : '#374151';
+     Chart.defaults.color = textColor;
+     if (durationChart) durationChart.update();
+     if (activityChart) activityChart.update();
+     if (caloriesChart) caloriesChart.update();
 
-
-function processData(data) {
-  if (data.length > 0) {
-    for (let i = 0; i < data.length; i++) {
-      console.log(data[i]);
-    } // Now the `for` loop is properly closed.
-  } // Closing brace for if statement.
-} // Closing brace for the function.
+  return { init, refresh, updateColors };  
+   })(); // ✅ Properly close IIFE
