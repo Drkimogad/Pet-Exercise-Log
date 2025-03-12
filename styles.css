@@ -58,7 +58,7 @@
 /* Dark Mode Override */
 body.dark-mode #installButton {
     background-color: var(--light-purple);
-    color: var(--dark-charcoal);
+    color: var (--dark-charcoal);
     border-color: var(--dark-purple);
 }
 
