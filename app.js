@@ -2,18 +2,30 @@
 
 let deferredPrompt; // Store the event
 
-// ✅ Automatically Show Install Banner
+// ✅ Detect PWA Install Availability
 window.addEventListener('beforeinstallprompt', (event) => {
-    deferredPrompt = event; // Store the event
-    deferredPrompt.prompt(); // Show the install banner immediately
+    event.preventDefault();  
+    deferredPrompt = event;  // Store the event
 
-    deferredPrompt.userChoice.then((choiceResult) => {
-        console.log(choiceResult.outcome === 'accepted' ? 'User accepted install' : 'User dismissed install');
-        deferredPrompt = null; // Reset after prompt is handled
-    }).catch(error => {
-        console.error('Install prompt failed:', error);
-    });
+    const installButton = document.getElementById('installButton');
+    if (installButton) {
+        installButton.style.display = 'block';  // Show the button
+        installButton.addEventListener('click', async () => {
+            if (!deferredPrompt) return;
+            try {
+                await deferredPrompt.prompt(); // Show install banner on click
+                const choiceResult = await deferredPrompt.userChoice;
+                console.log(choiceResult.outcome === 'accepted' ? 'User accepted install' : 'User dismissed install');
+            } catch (error) {
+                console.error('Install prompt failed:', error);
+            } finally {
+                deferredPrompt = null;
+                installButton.style.display = 'none'; // Hide button after use
+            }
+        }, { once: true }); // Ensure the event only runs once
+    }
 });
+
 
 // ✅ Service Worker Registration
 function registerServiceWorker() {
