@@ -639,4 +639,4 @@ const Charts = (function() {
      if (caloriesChart) caloriesChart.update();
 
   return { init, refresh, updateColors };  
-   })(); // ✅ Properly close IIFE
+   }(); // ✅ Properly close IIFE
