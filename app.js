@@ -5,14 +5,15 @@ let deferredPrompt;
 
 // ✅ Service Worker Registration
 function registerServiceWorker() {
-   if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/Pet-Exercise-Log/service-worker.js', {
-    scope: '/Pet-Exercise-Log/' // Set the correct scope
-  }).then(reg => {
-    console.log('Service Worker registered with scope:', reg.scope);
-  }).catch(error => {
-    console.error('Service Worker registration failed:', error);
-  });
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/Pet-Exercise-Log/service-worker.js', {
+            scope: '/Pet-Exercise-Log/'
+        }).then(reg => {
+            console.log('Service Worker registered with scope:', reg.scope);
+        }).catch(error => {
+            console.error('Service Worker registration failed:', error);
+        });
+    } // <-- Add this closing brace
 }
 
 // ✅ PWA Installation Logic
@@ -639,5 +640,6 @@ const Charts = (function() {
   }
 
   return { init, refresh, updateColors };
+  }
 })();
 
