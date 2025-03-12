@@ -21,7 +21,44 @@
 }
 
 /* ============================================================
-    PWA Install Button (Enhanced)
+    GLOBAL STYLING
+============================================================ */
+body {
+    font-family: Arial, sans-serif;
+    background-color: var(--off-white);
+    color: var(--dark-charcoal);
+    margin: 0;
+    padding: 0;
+}
+
+/* ============================================================
+    HEADER & FOOTER STYLES
+============================================================ */
+#app-header {
+    background: var(--dark-purple);
+    color: var(--white);
+    padding: 1rem;
+    text-align: center;
+    font-size: 1.5rem;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+}
+
+#app-footer {
+    background: var(--light-charcoal);
+    color: var(--off-white);
+    padding: 0.75rem;
+    text-align: center;
+    font-size: 1rem;
+    position: fixed;
+    width: 100%;
+    bottom: 0;
+}
+
+/* ============================================================
+    PWA INSTALL BUTTON
 ============================================================ */
 #installButton {
     position: fixed;
@@ -44,31 +81,14 @@
 #installButton:hover {
     background-color: var(--light-purple);
     transform: translateY(-0.25rem);
-    box-shadow: var(--shadow-md);
 }
 
 #installButton:active {
     transform: scale(0.95);
 }
 
-#installButton::before {
-    content: "⬇️ ";
-}
-
-/* Dark Mode Override */
-body.dark-mode #installButton {
-    background-color: var(--light-purple);
-    color: var (--dark-charcoal);
-    border-color: var(--dark-purple);
-}
-
-body.dark-mode #installButton:hover {
-    background-color: var(--dark-purple);
-    color: var(--off-white);
-}
-
 /* ============================================================
-    Auth Container Styling (Missing in Original)
+    AUTH CONTAINER STYLES
 ============================================================ */
 #auth-container {
     background: var(--container-bg);
@@ -80,13 +100,13 @@ body.dark-mode #installButton:hover {
     border: 1px solid var(--container-border);
 }
 
-body.dark-mode #auth-container {
-    background: var(--light-charcoal);
-    border-color: var(--dark-purple);
+#auth-container:empty {
+    margin: 0 auto;
+    display: none; /* Hide empty auth container */
 }
 
 /* ============================================================
-    Enhanced Notification System
+    NOTIFICATIONS SYSTEM
 ============================================================ */
 .notifications-container {
     position: fixed;
@@ -106,90 +126,26 @@ body.dark-mode #auth-container {
     box-shadow: var(--shadow-sm);
 }
 
-body.dark-mode .error-message {
-    background: #3d1a1a;
-    color: #ff8a80;
-    border-color: #ff5252;
-}
-
 /* ============================================================
-    Improved Image Upload Preview
+    RESPONSIVE ADJUSTMENTS
 ============================================================ */
-.image-upload:hover #petImagePreview {
-    filter: brightness(0.9);
-    cursor: pointer;
-}
-
-.image-upload::after {
-    content: "📷 Click to Upload";
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: rgba(0, 0, 0, 0.6);
-    color: white;
-    padding: 0.5rem;
-    text-align: center;
-    border-radius: 0 0 8px 8px;
-    font-size: 0.9rem;
-    opacity: 0;
-    transition: opacity 0.2s ease;
-}
-
-.image-upload:hover::after {
-    opacity: 1;
-}
-
-/* ============================================================
-    Calendar Modal Enhancements
-============================================================ */
-.calendar-modal {
-    background: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(3px);
-}
-
-.calendar-modal .modal-content {
-    background: var(--container-bg);
-    border: 2px solid var(--light-purple);
-    border-radius: 1rem;
-    padding: 2rem;
-}
-
-body.dark-mode .calendar-modal .modal-content {
-    background: var(--light-charcoal);
-    border-color: var(--dark-purple);
-}
-
-/* ============================================================
-    Responsive Tweaks
-============================================================ */
-@media (max-width: 480px) {
+@media (max-width: 768px) {
     #installButton {
         bottom: 1rem;
         right: 1rem;
         padding: 0.5rem 1rem;
         font-size: 0.9rem;
     }
-    
-    .dashboard-container {
-        grid-template-columns: 1fr;
-        gap: 1rem;
-    }
-}
-/* ============================================================ 
-    RESPONSIVE ADJUSTMENTS
-============================================================ */
-@media (max-width: 768px) {
-    .dashboard-container {
-        grid-template-columns: 1fr;
-    }
-    
-    .saved-profiles {
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    }
-    
+
     #app {
         padding: 1rem;
-        margin-top: 4rem;
+        margin-top: 3rem;
+    }
+}
+
+@media (max-width: 480px) {
+    #installButton {
+        bottom: 0.5rem;
+        right: 0.5rem;
     }
 }
