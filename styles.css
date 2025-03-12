@@ -14,51 +14,81 @@
   --border-focus: var(--dark-purple);
   --input-bg: var(--white);
   --input-border: var(--light-purple);
-  --container-bg: var(--white);
-  --container-border: var(--light-purple);
+  --container-bg: var(--off-white);
+  --container-border: var(--primary-mustard);
   --shadow-sm: 0 2px 4px rgba(0,0,0,0.1);
   --shadow-md: 0 4px 6px rgba(0,0,0,0.15);
 }
 
 /* ============================================================
-    GLOBAL STYLING
+    HEADER STYLING
 ============================================================ */
-body {
-    font-family: Arial, sans-serif;
-    background-color: var(--off-white);
-    color: var(--dark-charcoal);
+.header {
+    background-color: var(--light-charcoal);
+    border-bottom: 3px solid var(--primary-mustard);
+    color: var(--primary-mustard);
+    text-align: center;
+    padding: 1.5rem 1rem;
+    font-weight: bold;
+    transition: top 0.3s;
+}
+
+.header h1 {
+    font-size: 2rem;
     margin: 0;
-    padding: 0;
+    color: var(--primary-mustard);
+}
+
+.header p {
+    font-size: 1.2rem;
+    margin-top: 0.5rem;
+    color: var(--primary-mustard);
+}
+
+/* Hide header on scroll in dashboard */
+.dashboard-container .header {
+    position: relative;
+}
+
+@media (max-width: 768px) {
+    .header h1 {
+        font-size: 1.5rem;
+    }
+    .header p {
+        font-size: 1rem;
+    }
 }
 
 /* ============================================================
-    HEADER & FOOTER STYLES
+    FOOTER STYLING
 ============================================================ */
-#app-header {
-    background: var(--dark-purple);
-    color: var(--white);
+.footer {
+    background-color: var(--light-charcoal);
+    border-top: 3px solid var(--primary-mustard);
+    color: var(--primary-mustard);
+    text-align: center;
     padding: 1rem;
-    text-align: center;
-    font-size: 1.5rem;
-    position: fixed;
-    top: 0;
-    width: 100%;
-    z-index: 1000;
-}
-
-#app-footer {
-    background: var(--light-charcoal);
-    color: var(--off-white);
-    padding: 0.75rem;
-    text-align: center;
     font-size: 1rem;
-    position: fixed;
     width: 100%;
-    bottom: 0;
 }
 
 /* ============================================================
-    PWA INSTALL BUTTON
+    GENERAL CONTAINERS STYLING
+============================================================ */
+.container {
+    background: var(--container-bg);
+    border: 2px solid var(--container-border);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    box-shadow: var(--shadow-md);
+}
+
+.focus-border {
+    border-color: var(--border-focus);
+}
+
+/* ============================================================
+    PWA Install Button (Enhanced)
 ============================================================ */
 #installButton {
     position: fixed;
@@ -74,78 +104,38 @@ body {
     box-shadow: var(--shadow-md);
     transition: all 0.3s ease-in-out;
     z-index: 1000;
-    display: none; /* Controlled by JS */
+    display: none;
     backdrop-filter: blur(4px);
 }
 
 #installButton:hover {
     background-color: var(--light-purple);
     transform: translateY(-0.25rem);
-}
-
-#installButton:active {
-    transform: scale(0.95);
-}
-
-/* ============================================================
-    AUTH CONTAINER STYLES
-============================================================ */
-#auth-container {
-    background: var(--container-bg);
-    border-radius: 1rem;
-    padding: 2rem;
-    margin: 2rem auto;
-    max-width: 500px;
     box-shadow: var(--shadow-md);
-    border: 1px solid var(--container-border);
-}
-
-#auth-container:empty {
-    margin: 0 auto;
-    display: none; /* Hide empty auth container */
 }
 
 /* ============================================================
-    NOTIFICATIONS SYSTEM
+    AUTHENTICATION SPECIFIC STYLING
 ============================================================ */
-.notifications-container {
+.auth-container .header, .auth-container .footer {
     position: fixed;
-    top: 1rem;
-    right: 1rem;
-    max-width: 300px;
-    z-index: 2000;
+    width: 100%;
 }
-
-.error-message {
-    background: #ffebee;
-    color: #b71c1c;
-    padding: 1rem;
-    border-radius: 0.5rem;
-    margin-bottom: 0.5rem;
-    border-left: 4px solid #b71c1c;
-    box-shadow: var(--shadow-sm);
+.auth-container .header {
+    top: 0;
+}
+.auth-container .footer {
+    bottom: 0;
 }
 
 /* ============================================================
-    RESPONSIVE ADJUSTMENTS
+    RESPONSIVE TWEAKS
 ============================================================ */
-@media (max-width: 768px) {
+@media (max-width: 480px) {
     #installButton {
         bottom: 1rem;
         right: 1rem;
         padding: 0.5rem 1rem;
         font-size: 0.9rem;
-    }
-
-    #app {
-        padding: 1rem;
-        margin-top: 3rem;
-    }
-}
-
-@media (max-width: 480px) {
-    #installButton {
-        bottom: 0.5rem;
-        right: 0.5rem;
     }
 }
