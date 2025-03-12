@@ -220,7 +220,8 @@ const Auth = (function() {
 const PetEntry = (function() {
   let activePetIndex = null;
   const MAX_PETS = 10;
-const DEFAULT_IMAGE = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAA...'; 
+  const DEFAULT_IMAGE = '/images/default-pet.png';
+    
   const templates = {
     dashboard: () => `
       <div class="dashboard-container">
