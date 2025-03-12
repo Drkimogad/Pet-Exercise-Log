@@ -175,7 +175,8 @@ const Auth = (function() {
       
       currentUser = userData;
       sessionStorage.setItem('user', JSON.stringify(userData));
-      isSignUp ? showAuth(false) : PetEntryModule.showExerciseLog();
+      console.log('Stored user data:', JSON.parse(sessionStorage.getItem('user')));
+      isSignUp ? showAuth(false) : PetEntry.showExerciseLog(); // Changed PetEntryModule to PetEntry
     } catch (error) {
       AppHelper.showError('Authentication failed');
       console.error(error);
@@ -205,7 +206,7 @@ const Auth = (function() {
 const PetEntry = (function() {
   let activePetIndex = null;
   const MAX_PETS = 10;
-  const DEFAULT_IMAGE = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAgSURBVHgB7dEBAQAAAIIg/69uSEABAAAAAAAAAAAAAAAAAADgNhG4AAE0mNlCAAAAAElFTkSuQmCC';
+  const DEFAULT_IMAGE = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAgSURBVHgB7dEBAQAAAIIg/69uSEABAAAAAAAAA[...]
 
   const templates = {
     dashboard: () => `
