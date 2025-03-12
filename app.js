@@ -1,7 +1,30 @@
 "use strict";
 
-// ✅ SINGLE global declaration
-let deferredPrompt;
+let deferredPrompt; // Store the event
+
+// ✅ Single PWA Installation Logic
+window.addEventListener('beforeinstallprompt', (event) => {
+    event.preventDefault();  
+    deferredPrompt = event; 
+
+    const installButton = document.getElementById('installButton');
+    if (installButton) {
+        installButton.style.display = 'block';  // Show the button
+        installButton.addEventListener('click', async () => {
+            if (!deferredPrompt) return;
+            try {
+                await deferredPrompt.prompt();
+                const choiceResult = await deferredPrompt.userChoice;
+                console.log(choiceResult.outcome === 'accepted' ? 'User accepted install' : 'User dismissed install');
+            } catch (error) {
+                console.error('Install prompt failed:', error);
+            } finally {
+                deferredPrompt = null;
+                installButton.style.display = 'none'; // Hide after action
+            }
+        });
+    }
+});
 
 // ✅ Service Worker Registration
 function registerServiceWorker() {
@@ -15,34 +38,6 @@ function registerServiceWorker() {
         });
     }
 }
-
-// ✅ PWA Installation Logic
-window.addEventListener('beforeinstallprompt', (event) => {
-    event.preventDefault();
-    deferredPrompt = event;
-
-    const installButton = document.getElementById('installButton');
-    if (installButton) {
-        installButton.style.display = 'block';
-        installButton.addEventListener('click', async () => {
-            if (!deferredPrompt) return;
-            try {
-                await deferredPrompt.prompt();
-                const choiceResult = await deferredPrompt.userChoice;
-                if (choiceResult.outcome === 'accepted') {
-                    console.log('User accepted install');
-                } else {
-                    console.log('User dismissed install');
-                }
-            } catch (error) {
-                console.error('Install prompt failed:', error);
-            } finally {
-                deferredPrompt = null;
-                installButton.style.display = 'none';
-            }
-        });
-    }
-});
 
 // ✅ Fixed showSignIn (no nested DOMContentLoaded)
 function showSignIn() {
