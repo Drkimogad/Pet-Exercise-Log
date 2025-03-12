@@ -639,4 +639,5 @@ const Charts = (function() {
   }
 
   return { init, refresh, updateColors };
+  }  
 })();
