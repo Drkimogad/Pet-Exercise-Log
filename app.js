@@ -1,28 +1,44 @@
 "use strict";
 
-let deferredPrompt; // Store the event
+let deferredPrompt; // Store the install event
 
-// ✅ Detect PWA Install Availability
+// ✅ Automatically Show Install Banner
 window.addEventListener('beforeinstallprompt', (event) => {
     event.preventDefault();  
-    deferredPrompt = event;  // Store the event
+    deferredPrompt = event; 
 
-    const installButton = document.getElementById('installButton');
-    if (installButton) {
-        installButton.style.display = 'block';  // Show the button
-        installButton.addEventListener('click', async () => {
-            if (!deferredPrompt) return;
+    // Automatically show the prompt after a short delay
+    setTimeout(async () => {
+        if (deferredPrompt) {
             try {
-                await deferredPrompt.prompt(); // Show install banner on click
+                await deferredPrompt.prompt();
                 const choiceResult = await deferredPrompt.userChoice;
                 console.log(choiceResult.outcome === 'accepted' ? 'User accepted install' : 'User dismissed install');
+                deferredPrompt = null; // Reset after use
             } catch (error) {
-                console.error('Install prompt failed:', error);
-            } finally {
-                deferredPrompt = null;
-                installButton.style.display = 'none'; // Hide button after use
+                console.error('Auto Install prompt failed:', error);
             }
-        }, { once: true }); // Ensure the event only runs once
+        }
+    }, 2000); // 2-second delay before auto prompt
+
+    // Also enable manual install button
+    const installButton = document.getElementById('installButton');
+    if (installButton) {
+        installButton.style.display = 'block';
+        installButton.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                try {
+                    await deferredPrompt.prompt();
+                    const choiceResult = await deferredPrompt.userChoice;
+                    console.log(choiceResult.outcome === 'accepted' ? 'User accepted install' : 'User dismissed install');
+                } catch (error) {
+                    console.error('Manual Install failed:', error);
+                } finally {
+                    deferredPrompt = null;
+                    installButton.style.display = 'none';
+                }
+            }
+        });
     }
 });
 
