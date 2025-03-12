@@ -640,5 +640,3 @@ const Charts = (function() {
 
   return { init, refresh, updateColors };
 })();
-
- // end of code
