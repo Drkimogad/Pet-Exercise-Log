@@ -638,6 +638,5 @@ const Charts = (function() {
     if (caloriesChart) caloriesChart.update();
   }
 
-  return { init, refresh, updateColors };
-  }  
+  return { init, refresh, updateColors };  
 })();
