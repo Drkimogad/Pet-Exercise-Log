@@ -380,145 +380,16 @@ const PetEntry = (function() {
     updateDashboard(petData);
   }
 
-  return {
-    showExerciseLog,
-    getPets, // Correctly return getPets function here
-    getActivePet: () => activePetIndex !== null ? this.getPets()[activePetIndex] : null
-  };
-})();
-
   function updateDashboard(petData) {
     Calendar.refresh(petData.exerciseEntries);
     Charts.refresh(petData.exerciseEntries);
     loadSavedProfiles();
     AppHelper.refreshComponent('petFormContainer');
   }
+
   // --- Add Profile Control (Save, Edit, Delete, Reports) ---
 
-// load saved pet profiles //
-function loadSavedProfiles() {
-  const pets = petEntry.getPets();
-  const profilesHTML = pets.map((pet, index) => `
-    <div class="profile-card ${index === activePetIndex ? 'active' : ''}">
-      <img src="${pet.petDetails.image}" alt="${pet.petDetails.name}">
-      <h4>${pet.petDetails.name}</h4>
-      <button class="select-btn" data-index="${index}">${index === activePetIndex ? 'Selected' : 'Select'}</button>
-      <div class="profile-controls">
-        <button class="edit-btn" data-index="${index}">Edit</button>
-        <button class="delete-btn" data-index="${index}">Delete</button>
-        <button class="monthly-report-btn" data-index="${index}">Monthly Report</button>
-        <button class="print-profile-btn" data-index="${index}">Print Profile</button>
-      </div>
-    </div>
-  `).join('');
-
-  AppHelper.renderComponent('savedProfiles', profilesHTML);
-
-  // Select button event
-  document.querySelectorAll('.select-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      activePetIndex = parseInt(btn.dataset.index);
-      sessionStorage.setItem('activePetIndex', activePetIndex);
-      updateDashboard(getPets()[activePetIndex]);
-    });
-  });
-
-  // Edit button event
-  document.querySelectorAll('.edit-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      activePetIndex = parseInt(btn.dataset.index);
-      sessionStorage.setItem('activePetIndex', activePetIndex);
-      // Refresh the pet form with current pet details for editing
-      AppHelper.refreshComponent('petFormContainer');
-    });
-  });
-
-  // Delete button event
-  document.querySelectorAll('.delete-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const index = parseInt(btn.dataset.index);
-      const pets = PetEntry.getPets();
-      pets.splice(index, 1);
-      localStorage.setItem('pets', JSON.stringify(pets));
-      if (activePetIndex === index) {
-        activePetIndex = null;
-        sessionStorage.removeItem('activePetIndex');
-      } else if (activePetIndex > index) {
-        activePetIndex--;
-        sessionStorage.setItem('activePetIndex', activePetIndex);
-      }
-      loadSavedProfiles();
-      if (activePetIndex !== null) {
-        updateDashboard(pets[activePetIndex]);
-      }
-    });
-  });
-
-  // Monthly Report button event
-  document.querySelectorAll('.monthly-report-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const index = parseInt(btn.dataset.index);
-      openMonthlyReport(index);
-    });
-  });
-
-  // Print Profile button event
-  document.querySelectorAll('.print-profile-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const index = parseInt(btn.dataset.index);
-      printProfile(index);
-    });
-  });
-}
-
-// Function to generate monthly report
-function openMonthlyReport(index) {
-  const pets = getPets();
-  const pet = pets[index];
-  const now = new Date();
-  const currentMonth = now.getMonth();
-  const currentYear = now.getFullYear();
-
-  const reportHTML = `
-    <div class="monthly-report">
-      <h2>Monthly Report for ${pet.petDetails.name}</h2>
-      <div id="monthlyCalendar">
-        <!-- Calendar with ticked days goes here -->
-      </div>
-      <div id="monthlyCharts">
-        <!-- Two charts displaying exercise trends go here -->
-      </div>
-      <button id="exportReportBtn">Export Report</button>
-      <button id="backToDashboardBtn">Back to Dashboard</button>
-    </div>
-  `;
-  AppHelper.showPage(reportHTML);
-  document.getElementById('backToDashboardBtn')?.addEventListener('click', () => {
-    PetEntry.showExerciseLog();
-  });
-}
-
-// Function to print pet profile
-function printProfile(index) {
-  const pets = getPets();
-  const pet = pets[index];
-  const printContent = `
-    <div>
-      <h2>Pet Profile: ${pet.petDetails.name}</h2>
-      <img src="${pet.petDetails.image}" alt="${pet.petDetails.name}">
-      <p>${pet.petDetails.characteristics}</p>
-      <h3>Exercise Entries:</h3>
-      <ul>
-        ${pet.exerciseEntries.map(e => `<li>${e.date}: ${e.exerciseType} for ${e.duration} minutes, ${e.caloriesBurned} calories</li>`).join('')}
-      </ul>
-    </div>
-  `;
-  const printWindow = window.open('', '', 'width=800,height=600');
-  printWindow.document.write(printContent);
-  printWindow.document.close();
-  printWindow.print();
-}
-
+  // load saved pet profiles //
   function loadSavedProfiles() {
     const pets = getPets();
     const profilesHTML = pets.map((pet, index) => `
@@ -556,7 +427,7 @@ function printProfile(index) {
     document.querySelectorAll('.delete-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         const index = parseInt(btn.dataset.index);
-        const pets = PetEntry.getPets();
+        const pets = getPets();
         pets.splice(index, 1);
         localStorage.setItem('pets', JSON.stringify(pets));
         if (activePetIndex === index) {
@@ -588,8 +459,62 @@ function printProfile(index) {
     });
   }
 
-  return { showExerciseLog };
+  // Function to generate monthly report
+  function openMonthlyReport(index) {
+    const pets = getPets();
+    const pet = pets[index];
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
+
+    const reportHTML = `
+      <div class="monthly-report">
+        <h2>Monthly Report for ${pet.petDetails.name}</h2>
+        <div id="monthlyCalendar">
+          <!-- Calendar with ticked days goes here -->
+        </div>
+        <div id="monthlyCharts">
+          <!-- Two charts displaying exercise trends go here -->
+        </div>
+        <button id="exportReportBtn">Export Report</button>
+        <button id="backToDashboardBtn">Back to Dashboard</button>
+      </div>
+    `;
+    AppHelper.showPage(reportHTML);
+    document.getElementById('backToDashboardBtn')?.addEventListener('click', () => {
+      PetEntry.showExerciseLog();
+    });
+  }
+
+  // Function to print pet profile
+  function printProfile(index) {
+    const pets = getPets();
+    const pet = pets[index];
+    const printContent = `
+      <div>
+        <h2>Pet Profile: ${pet.petDetails.name}</h2>
+        <img src="${pet.petDetails.image}" alt="${pet.petDetails.name}">
+        <p>${pet.petDetails.characteristics}</p>
+        <h3>Exercise Entries:</h3>
+        <ul>
+          ${pet.exerciseEntries.map(e => `<li>${e.date}: ${e.exerciseType} for ${e.duration} minutes, ${e.caloriesBurned} calories</li>`).join('')}
+        </ul>
+      </div>
+    `;
+    const printWindow = window.open('', '', 'width=800,height=600');
+    printWindow.document.write(printContent);
+    printWindow.document.close();
+    printWindow.print();
+  }
+
+  // Return the necessary public methods
+  return {
+    showExerciseLog,
+    getPets, // Make sure this is accessible
+    getActivePet: () => activePetIndex !== null ? getPets()[activePetIndex] : null
+  };
 })();
+
 
 // Calendar //
 const Calendar = (function() {
