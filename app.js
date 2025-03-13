@@ -528,12 +528,29 @@ function openMonthlyReport(index) {
   });
 }
 
-  document.getElementById('exportReportBtn')?.addEventListener('click', () => {
-    // Implement export logic, e.g., export as PDF or CSV.
-    alert('Export functionality coming soon!');
+// Export functionality //
+document.getElementById('exportReportBtn')?.addEventListener('click', () => {
+  const reportElement = document.querySelector('.monthly-report');
+  if (!reportElement) {
+    alert('Monthly report not found!');
+    return;
+  }
+  html2canvas(reportElement).then(canvas => {
+    const imgData = canvas.toDataURL('image/png');
+    // Using jsPDF from the global window.jspdf namespace
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+    pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+    pdf.save('monthly_report.pdf');
+  }).catch(error => {
+    console.error('Error exporting PDF:', error);
+    alert('Failed to export PDF.');
   });
-}
+});
 
+// initialize monthly charts //
 function initMonthlyCharts(data) {
   // Process data for duration and activity charts
   const durationData = data.reduce((acc, e) => {
@@ -573,6 +590,7 @@ function initMonthlyCharts(data) {
     }
   });
 }
+
   const reportHTML = `
     <div class="monthly-report">
       <h2>Monthly Report for ${pet.petDetails.name}</h2>
