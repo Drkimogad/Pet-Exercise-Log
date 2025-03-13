@@ -145,6 +145,20 @@ footer {
     border-radius: 1rem;
     box-shadow: var(--shadow-sm);
 }
+.dashboard .icon-btn {
+  background-color: var(--primary-mustard);
+  color: var(--black);
+  border: 1px solid var(--black);
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  border-radius: 0.3rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.dashboard .icon-btn:hover {
+  background-color: var(--dark-mustard);
+}
 
 /* ============================================================
    RESPONSIVE ADJUSTMENTS
