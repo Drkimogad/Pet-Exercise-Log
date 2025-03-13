@@ -161,6 +161,208 @@ footer {
 }
 
 /* ============================================================
+/* Profile Cards */
+============================================================ */
+.profile-card {
+    background: var(--off-white);
+    border: 2px solid var(--primary-mustard);
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-radius: 8px;
+}
+
+.profile-card img {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 50%;
+    margin-bottom: 10px;
+}
+
+.profile-card h4 {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.profile-controls {
+    margin-top: 10px;
+}
+
+.profile-controls button {
+    background-color: var(--primary-mustard);
+    color: var(--black);
+    padding: 0.4rem 1rem;
+    margin: 0.3rem;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+}
+
+.profile-controls button:hover {
+    background-color: var(--dark-mustard);
+}
+
+/* Monthly Report Section */
+.monthly-report {
+    padding: 2rem;
+    background: var(--off-white);
+    border: 2px solid var(--primary-mustard);
+    box-shadow: var(--shadow-md);
+    margin-top: 1rem;
+    border-radius: 8px;
+}
+
+.monthly-report h2 {
+    font-size: 1.6rem;
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+.monthly-report .pet-details-report {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.monthly-report .pet-details-report img {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 50%;
+    margin-right: 15px;
+}
+
+.monthly-report .monthly-charts {
+    margin-top: 1.5rem;
+}
+
+.monthly-report button {
+    background-color: var(--primary-mustard);
+    color: var(--black);
+    padding: 0.5rem 1.5rem;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+    margin-top: 1rem;
+    transition: background-color 0.3s ease;
+}
+
+.monthly-report button:hover {
+    background-color: var(--dark-mustard);
+}
+
+/* Modal Styling for Day Exercise */
+.calendar-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.calendar-modal .modal-content {
+    background: var(--off-white);
+    padding: 2rem;
+    box-shadow: var(--shadow-md);
+    border-radius: 8px;
+    width: 80%;
+    max-width: 600px;
+}
+
+.calendar-modal .modal-content h3 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+.calendar-modal .form-group {
+    margin-bottom: 1rem;
+}
+
+.calendar-modal button {
+    background-color: var(--primary-mustard);
+    color: var(--black);
+    padding: 0.5rem 1.5rem;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+}
+
+.calendar-modal button:hover {
+    background-color: var(--dark-mustard);
+}
+
+.calendar-modal .close-modal-btn {
+    background-color: var(--dark-charcoal);
+    color: var(--white);
+    margin-top: 1rem;
+    padding: 0.5rem 1.5rem;
+}
+
+.calendar-modal .close-modal-btn:hover {
+    background-color: var(--light-charcoal);
+}
+
+/* Chart Containers */
+.chart {
+    margin-top: 1.5rem;
+    width: 100%;
+}
+
+.chart canvas {
+    width: 100%;
+    height: auto;
+}
+
+/* ============================================================
+    RESPONSIVE ADJUSTMENTS
+============================================================ */
+@media (max-width: 768px) {
+    .auth-container {
+        width: 80%;
+    }
+
+    .dashboard-container {
+        padding: 1rem;
+    }
+
+    header {
+        font-size: 1.2rem;
+    }
+
+    footer {
+        font-size: 0.9rem;
+    }
+
+    .profile-card {
+        width: 100%;
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    #installButton {
+        bottom: 1rem;
+        right: 1rem;
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+    }
+}
+
+
+/* ============================================================
    RESPONSIVE ADJUSTMENTS
 ============================================================ */
 @media (max-width: 768px) {
