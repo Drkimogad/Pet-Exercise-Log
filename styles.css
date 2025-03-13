@@ -52,7 +52,6 @@ footer {
     width: 100%;
     transition: transform 0.3s ease-in-out;
 }
-
 .dashboard.scrolled header {
     transform: translateY(-100%);
 }
