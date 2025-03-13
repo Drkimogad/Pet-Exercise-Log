@@ -240,57 +240,61 @@ dashboard: () => `
     <aside class="saved-profiles" id="savedProfiles"></aside>
   </div>`
     
-    petForm: () => `
-      <form id="exerciseForm" class="pet-form card">
-        <fieldset class="pet-details">
-          <legend>${activePetIndex === null ? 'New Pet' : 'Update Pet'}</legend>
+petForm: () => {
+  const pet = activePetIndex !== null ? PetEntry.getPets()[activePetIndex] : null;
+  return `
+    <form id="exerciseForm" class="pet-form card">
+      <fieldset class="pet-details">
+        <legend>${activePetIndex === null ? 'New Pet' : 'Update Pet'}</legend>
+        <div class="form-group">
+          <label for="petName">Name</label>
+          <input type="text" id="petName" value="${pet ? pet.petDetails.name : ''}" required>
+        </div>
+        <div class="form-group">
+          <label>Image</label>
+          <div class="image-upload">
+            <input type="file" id="petImage" accept="image/*">
+            <img id="petImagePreview" src="${pet ? pet.petDetails.image : DEFAULT_IMAGE}" alt="Pet Preview">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="petCharacteristics">Description</label>
+          <textarea id="petCharacteristics" rows="3">${pet ? pet.petDetails.characteristics : ''}</textarea>
+        </div>
+      </fieldset>
+      <fieldset class="exercise-entry">
+        <legend>Add Exercise</legend>
+        <div class="form-grid">
           <div class="form-group">
-            <label for="petName">Name</label>
-            <input type="text" id="petName" required>
+            <label for="exerciseType">Type</label>
+            <select id="exerciseType" required>
+              <option value="walking">Walking</option>
+              <option value="running">Running</option>
+              <option value="swimming">Swimming</option>
+              <option value="playing">Playing</option>
+            </select>
           </div>
           <div class="form-group">
-            <label>Image</label>
-            <div class="image-upload">
-              <input type="file" id="petImage" accept="image/*">
-              <img id="petImagePreview" src="${DEFAULT_IMAGE}" alt="Pet Preview">
-            </div>
+            <label for="exerciseDuration">Duration (min)</label>
+            <input type="number" id="exerciseDuration" min="1" required>
           </div>
           <div class="form-group">
-            <label for="petCharacteristics">Description</label>
-            <textarea id="petCharacteristics" rows="3"></textarea>
+            <label for="exerciseDate">Date</label>
+            <input type="date" id="exerciseDate" value="${new Date().toISOString().split('T')[0]}" required>
           </div>
-        </fieldset>
-        <fieldset class="exercise-entry">
-          <legend>Add Exercise</legend>
-          <div class="form-grid">
-            <div class="form-group">
-              <label for="exerciseType">Type</label>
-              <select id="exerciseType" required>
-                <option value="walking">Walking</option>
-                <option value="running">Running</option>
-                <option value="swimming">Swimming</option>
-                <option value="playing">Playing</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label for="exerciseDuration">Duration (min)</label>
-              <input type="number" id="exerciseDuration" min="1" required>
-            </div>
-            <div class="form-group">
-              <label for="exerciseDate">Date</label>
-              <input type="date" id="exerciseDate" required>
-            </div>
-            <div class="form-group">
-              <label for="caloriesBurned">Calories</label>
-              <input type="number" id="caloriesBurned" min="1" required>
-            </div>
+          <div class="form-group">
+            <label for="caloriesBurned">Calories</label>
+            <input type="number" id="caloriesBurned" min="1" required>
           </div>
-          <button type="submit" class="primary-btn">
-            ${activePetIndex === null ? 'Create Profile' : 'Add Exercise'}
-          </button>
-        </fieldset>
-      </form>`
-  };
+        </div>
+        <button type="submit" class="primary-btn">
+          ${activePetIndex === null ? 'Create Profile' : 'Add Exercise'}
+        </button>
+      </fieldset>
+    </form>
+  `;
+}
+
 
   function showExerciseLog() {
     AppHelper.showPage(templates.dashboard());
