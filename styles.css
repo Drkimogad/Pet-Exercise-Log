@@ -1,5 +1,5 @@
 /* ============================================================
-   CSS VARIABLES: PALETTE DEFINITION
+    CSS VARIABLES: PALETTE DEFINITION
 ============================================================ */
 :root {
   --primary-yellow: #FFDB58;  /* Light mustard */
@@ -22,7 +22,7 @@
 }
 
 /* ============================================================
-   HEADER & FOOTER STYLING (UPDATED FOR AUTH PAGES)
+   HEADER & FOOTER STYLING (AUTHENTICATION PAGES)
 ============================================================ */
 .auth-page header {
   background-color: var(--primary-yellow);  /* Light mustard background */
@@ -43,23 +43,135 @@
 }
 
 /* ============================================================
+   HEADER & FOOTER STYLING (DASHBOARD)
+============================================================ */
+header {
+    background: var(--light-charcoal);
+    color: var(--primary-mustard);
+    border-bottom: 3px solid var(--primary-mustard);
+    padding: 1.5rem;
+    text-align: center;
+    font-size: 1.5rem;
+}
+
+header h1 {
+    font-size: 2rem;
+}
+
+footer {
+    background: var(--light-charcoal);
+    color: var(--primary-mustard);
+    border-top: 3px solid var(--primary-mustard);
+    padding: 1.5rem;
+    text-align: center;
+    font-size: 1rem;
+}
+
+/* Header disappears on scroll in dashboard */
+.dashboard header {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    transition: transform 0.3s ease-in-out;
+}
+.dashboard.scrolled header {
+    transform: translateY(-100%);
+}
+
+/* ============================================================
+   AUTHENTICATION FORM STYLING
+============================================================ */
+.auth-container {
+    width: 50%;
+    margin: 10vh auto;
+    background: var(--container-bg);
+    border: 2px solid var(--container-border);
+    padding: 2rem;
+    box-shadow: var(--shadow-md);
+    text-align: center;
+}
+
+.auth-container h2 {
+    color: var(--dark-mustard);
+    margin-bottom: 1rem;
+}
+
+/* Center Footer in Auth Pages */
+.auth-page footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+}
+
+/* ============================================================
    PWA INSTALL BUTTON (ONLY ON AUTH PAGES)
 ============================================================ */
 .auth-page #installButton {
-  position: fixed;
-  bottom: 1.5rem;
-  right: 1.5rem;
-  background-color: var(--dark-purple);
-  color: var(--off-white);
-  border: 2px solid var(--light-purple);
-  padding: 0.75rem 1.5rem;
-  font-size: 1rem;
-  border-radius: 2rem;
-  cursor: pointer;
-  box-shadow: var(--shadow-md);
-  transition: all 0.3s ease-in-out;
-  z-index: 1000;
-  display: block;
+    position: fixed;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    background-color: var(--dark-purple);
+    color: var(--off-white);
+    border: 2px solid var(--light-purple);
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    border-radius: 2rem;
+    cursor: pointer;
+    box-shadow: var(--shadow-md);
+    transition: all 0.3s ease-in-out;
+    z-index: 1000;
+    display: block;
 }
 
-/* ... other styles remain unchanged ... */
+.dashboard #installButton {
+    display: none;
+}
+
+/* ============================================================
+   DASHBOARD CONTAINER STYLING
+============================================================ */
+.dashboard-container {
+    background: var(--off-white);
+    border: 2px solid var(--primary-mustard);
+    padding: 2rem;
+    box-shadow: var(--shadow-md);
+}
+
+/* Dashboard elements */
+.dashboard .container {
+    background: var(--light-purple);
+    border: 2px solid var(--dark-purple);
+    padding: 1rem;
+    border-radius: 1rem;
+    box-shadow: var(--shadow-sm);
+}
+
+/* ============================================================
+   RESPONSIVE ADJUSTMENTS
+============================================================ */
+@media (max-width: 768px) {
+    .auth-container {
+        width: 80%;
+    }
+    
+    .dashboard-container {
+        padding: 1rem;
+    }
+    
+    header {
+        font-size: 1.2rem;
+    }
+    
+    footer {
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 480px) {
+    #installButton {
+        bottom: 1rem;
+        right: 1rem;
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+    }
+}
