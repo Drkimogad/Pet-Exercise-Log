@@ -340,7 +340,7 @@ function showExerciseLog() {
     const pets = getPets();
     const petData = activePetIndex !== null ? pets[activePetIndex] : {
       petDetails: { name: '', image: DEFAULT_IMAGE, characteristics: '' },
-      exerciseEntries: []
+      exerciseEntries: [],
       monthlyReports: []  // <-- New property for archived reports
     };
 
