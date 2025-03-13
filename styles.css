@@ -24,26 +24,22 @@
 /* ============================================================
     HEADER & FOOTER STYLING
 ============================================================ */
-header {
-    background: var(--light-charcoal);
-    color: var(--primary-mustard);  /* Changed from dark mustard to primary mustard */
-    border-bottom: 3px solid var(--primary-mustard);
-    padding: 1.5rem;
-    text-align: center;
-    font-size: 1.5rem;
+.auth-page header {
+  background: var(--light-charcoal);
+  color: var(--primary-mustard);
+  border-bottom: 2px solid var(--primary-mustard);
+  padding: 0.5rem 1rem;       /* Reduced padding */
+  text-align: center;
+  font-size: 1rem;           /* Smaller font size */
 }
 
-header h1 {
-    font-size: 2rem;
-}
-
-footer {
-    background: var(--light-charcoal);
-    color: var(--primary-mustard);  /* Changed from dark mustard to primary mustard */
-    border-top: 3px solid var(--primary-mustard);
-    padding: 1.5rem;
-    text-align: center;
-    font-size: 1rem;
+.auth-page footer {
+  background: var(--light-charcoal);
+  color: var(--primary-mustard);
+  border-top: 2px solid var(--primary-mustard);
+  padding: 0.5rem 1rem;       /* Reduced padding */
+  text-align: center;
+  font-size: 0.8rem;         /* Smaller font size */
 }
 /* Header disappears on scroll in dashboard */
 .dashboard header {
