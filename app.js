@@ -242,7 +242,7 @@ const PetEntry = (function() {
     petForm: () => {
       const pet = activePetIndex !== null ? PetEntry.getPets()[activePetIndex] : null;
         return {
-    petEntry.getPets() => JSON.parse(localStorage.getItem('pets') || '[]'),
+    PetEntry.getPets() => JSON.parse(localStorage.getItem('pets') || '[]'),
     getActivePet: () => activePetIndex !== null ? this.getPets()[activePetIndex] : null
   };
 })(); `
