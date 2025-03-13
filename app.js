@@ -453,8 +453,100 @@ function loadSavedProfiles() {
 function openMonthlyReport(index) {
   const pets = getPets();
   const pet = pets[index];
-  // This is a placeholder for the monthly report view.
-  // You can later expand this section to include the detailed calendar and charts.
+function openMonthlyReport(index) {
+  const pets = getPets();
+  const pet = pets[index];
+  // Determine current month and year
+  const now = new Date();
+  const currentMonth = now.getMonth(); // 0-indexed
+  const currentYear = now.getFullYear();
+
+  // Filter exercise entries for the current month and year
+  const monthlyEntries = pet.exerciseEntries.filter(entry => {
+    const entryDate = new Date(entry.date);
+    return entryDate.getMonth() === currentMonth && entryDate.getFullYear() === currentYear;
+  });
+
+  // Create monthly report HTML
+  const reportHTML = `
+    <div class="monthly-report">
+      <h2>Monthly Report for ${pet.petDetails.name} (${now.toLocaleString('default', { month: 'long' })} ${currentYear})</h2>
+      <div class="pet-details-report">
+        <img src="${pet.petDetails.image}" alt="${pet.petDetails.name}">
+        <p>${pet.petDetails.characteristics}</p>
+      </div>
+      <div class="monthly-calendar" id="monthlyCalendar">
+        <h3>Exercise Calendar</h3>
+        ${monthlyEntries.length ? `<ul>${monthlyEntries.map(e => `<li>${e.date} - ${e.exerciseType} (${e.duration} min, ${e.caloriesBurned} cal)</li>`).join('')}</ul>` : '<p>No exercises recorded this month.</p>'}
+      </div>
+      <div class="monthly-charts" id="monthlyCharts">
+        <h3>Exercise Trends</h3>
+        <div class="chart">
+          <canvas id="monthlyDurationChart"></canvas>
+        </div>
+        <div class="chart">
+          <canvas id="monthlyActivityChart"></canvas>
+        </div>
+      </div>
+      <div class="report-controls">
+        <button id="exportReportBtn">Export Report</button>
+        <button id="backToDashboardBtn">Back to Dashboard</button>
+      </div>
+    </div>
+  `;
+  AppHelper.showPage(reportHTML);
+
+  // Initialize monthly charts with the filtered data
+  initMonthlyCharts(monthlyEntries);
+
+  document.getElementById('backToDashboardBtn')?.addEventListener('click', () => {
+    PetEntry.showExerciseLog();
+  });
+  document.getElementById('exportReportBtn')?.addEventListener('click', () => {
+    // Implement export logic, e.g., export as PDF or CSV.
+    alert('Export functionality coming soon!');
+  });
+}
+
+function initMonthlyCharts(data) {
+  // Process data for duration and activity charts
+  const durationData = data.reduce((acc, e) => {
+    acc[e.date] = (acc[e.date] || 0) + e.duration;
+    return acc;
+  }, {});
+  const activitiesData = data.reduce((acc, e) => {
+    acc[e.exerciseType] = (acc[e.exerciseType] || 0) + 1;
+    return acc;
+  }, {});
+
+  // Create monthly duration chart (line chart)
+  const ctxDuration = document.getElementById('monthlyDurationChart');
+  new Chart(ctxDuration, {
+    type: 'line',
+    data: {
+      labels: Object.keys(durationData).sort(),
+      datasets: [{
+        label: 'Total Duration (min)',
+        data: Object.keys(durationData).sort().map(date => durationData[date]),
+        borderColor: '#4bc0c0',
+        tension: 0.3
+      }]
+    }
+  });
+
+  // Create monthly activity chart (doughnut chart)
+  const ctxActivity = document.getElementById('monthlyActivityChart');
+  new Chart(ctxActivity, {
+    type: 'doughnut',
+    data: {
+      labels: Object.keys(activitiesData),
+      datasets: [{
+        data: Object.values(activitiesData),
+        backgroundColor: ['#ff6384', '#36a2eb', '#ffce56', '#4bc0c0']
+      }]
+    }
+  });
+}
   const reportHTML = `
     <div class="monthly-report">
       <h2>Monthly Report for ${pet.petDetails.name}</h2>
