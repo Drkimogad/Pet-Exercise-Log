@@ -219,7 +219,7 @@ const Auth = (function() {
 const PetEntry = (function() {
   let activePetIndex = null;
   const MAX_PETS = 10;
-  const DEFAULT_IMAGE = '/images/default-pet.png';
+  const DEFAULT_IMAGE = 'https://drkimogad.github.io/Pet-Exercise-Log/public/images/default-pet.png';
 
   const templates = {
     dashboard: () => `
@@ -241,7 +241,11 @@ const PetEntry = (function() {
     
     petForm: () => {
       const pet = activePetIndex !== null ? PetEntry.getPets()[activePetIndex] : null;
-      return `
+        return {
+    petEntry.getPets: () => JSON.parse(localStorage.getItem('pets') || '[]'),
+    getActivePet: () => activePetIndex !== null ? this.getPets()[activePetIndex] : null
+  };
+})(); `
         <form id="exerciseForm" class="pet-form card">
           <fieldset class="pet-details">
             <legend>${activePetIndex === null ? 'New Pet' : 'Update Pet'}</legend>
@@ -381,7 +385,7 @@ const PetEntry = (function() {
 
 // load saved pet profiles //
 function loadSavedProfiles() {
-  const pets = getPets();
+  const pets = petEntry.getPets();
   const profilesHTML = pets.map((pet, index) => `
     <div class="profile-card ${index === activePetIndex ? 'active' : ''}">
       <img src="${pet.petDetails.image}" alt="${pet.petDetails.name}">
