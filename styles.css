@@ -4,6 +4,7 @@
 :root {
   --primary-yellow: #FFDB58;
   --primary-mustard: #FFB700;
+  --dark-mustard: #D18C00;  /* Added variable for dark mustard */
   --dark-purple: #301934;
   --light-purple: #A18AC4;
   --light-charcoal: #333333;
@@ -25,7 +26,7 @@
 ============================================================ */
 header {
     background: var(--light-charcoal);
-    color: var(--dark-mustard);
+    color: var(--primary-mustard);  /* Changed from dark mustard to primary mustard */
     border-bottom: 3px solid var(--primary-mustard);
     padding: 1.5rem;
     text-align: center;
@@ -38,13 +39,12 @@ header h1 {
 
 footer {
     background: var(--light-charcoal);
-    color: var(--dark-mustard);
+    color: var(--primary-mustard);  /* Changed from dark mustard to primary mustard */
     border-top: 3px solid var(--primary-mustard);
     padding: 1.5rem;
     text-align: center;
     font-size: 1rem;
 }
-
 /* Header disappears on scroll in dashboard */
 .dashboard header {
     position: absolute;
