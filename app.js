@@ -239,7 +239,7 @@ dashboard: () => `
     </main>
     <aside class="saved-profiles" id="savedProfiles"></aside>
   </div>`
-    
+,    
 petForm: () => {
   const pet = activePetIndex !== null ? PetEntry.getPets()[activePetIndex] : null;
   return `
@@ -294,8 +294,6 @@ petForm: () => {
     </form>
   `;
 }
-
-
   function showExerciseLog() {
     AppHelper.showPage(templates.dashboard());
     AppHelper.registerComponent('petFormContainer', () => templates.petForm());
