@@ -223,21 +223,22 @@ const PetEntry = (function() {
   const DEFAULT_IMAGE = '/images/default-pet.png';
     
   const templates = {
-    dashboard: () => `
-      <div class="dashboard-container">
-        <header class="dashboard-header">
-          <button id="addNewProfileButton" class="icon-btn">＋ New Profile</button>
-          <button id="toggleModeButton" class="icon-btn">🌓 Toggle Mode</button>
-        </header>
-        <main class="dashboard-main">
-          <section class="form-section" id="petFormContainer"></section>
-          <section class="data-section">
-            <div class="calendar-container" id="exerciseCalendar"></div>
-            <div class="charts-container" id="exerciseCharts"></div>
-          </section>
-        </main>
-        <aside class="saved-profiles" id="savedProfiles"></aside>
-      </div>`,
+dashboard: () => `
+  <div class="dashboard-container">
+    <header class="dashboard-header">
+  <button id="addNewProfileButton" class="icon-btn">＋ New Profile</button>
+  <button id="toggleModeButton" class="icon-btn">🌓 Toggle Mode</button>
+  <button id="logoutButton" class="icon-btn">Logout</button>
+</header>
+    <main class="dashboard-main">
+      <section class="form-section" id="petFormContainer"></section>
+      <section class="data-section">
+        <div class="calendar-container" id="exerciseCalendar"></div>
+        <div class="charts-container" id="exerciseCharts"></div>
+      </section>
+    </main>
+    <aside class="saved-profiles" id="savedProfiles"></aside>
+  </div>`
     
     petForm: () => `
       <form id="exerciseForm" class="pet-form card">
@@ -307,6 +308,9 @@ const PetEntry = (function() {
     document.getElementById('exerciseForm')?.addEventListener('submit', handleFormSubmit);
     document.getElementById('petImage')?.addEventListener('change', handleImageUpload);
     document.getElementById('toggleModeButton')?.addEventListener('click', toggleDarkMode);
+    document.getElementById('logoutButton')?.addEventListener('click', () => {
+  Auth.logout();
+});
     document.getElementById('addNewProfileButton')?.addEventListener('click', () => {
       activePetIndex = null;
       AppHelper.refreshComponent('petFormContainer');
