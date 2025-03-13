@@ -339,6 +339,7 @@ dashboard: () => `
     const petData = activePetIndex !== null ? pets[activePetIndex] : {
       petDetails: { name: '', image: DEFAULT_IMAGE, characteristics: '' },
       exerciseEntries: []
+      monthlyReports: []  // <-- New property for archived reports
     };
 
     petData.petDetails = {
@@ -453,40 +454,58 @@ function loadSavedProfiles() {
 function openMonthlyReport(index) {
   const pets = getPets();
   const pet = pets[index];
-function openMonthlyReport(index) {
-  const pets = getPets();
-  const pet = pets[index];
-  // Determine current month and year
   const now = new Date();
-  const currentMonth = now.getMonth(); // 0-indexed
+  const currentMonth = now.getMonth();
   const currentYear = now.getFullYear();
 
-  // Filter exercise entries for the current month and year
-  const monthlyEntries = pet.exerciseEntries.filter(entry => {
+  // Build HTML for archived monthly reports.
+  let archivedReportsHTML = '';
+  if (pet.monthlyReports && pet.monthlyReports.length > 0) {
+    archivedReportsHTML = pet.monthlyReports.map(report => {
+      const monthName = new Date(report.year, report.month).toLocaleString('default', { month: 'long' });
+      return `
+        <div class="archived-report">
+          <h3>Archived Report: ${monthName} ${report.year}</h3>
+          <ul>
+            ${report.entries.map(e => `<li>${e.date}: ${e.exerciseType} (${e.duration} min, ${e.caloriesBurned} cal)</li>`).join('')}
+          </ul>
+        </div>
+      `;
+    }).join('');
+  }
+
+  // Filter current month's entries.
+  const currentEntries = pet.exerciseEntries.filter(entry => {
     const entryDate = new Date(entry.date);
     return entryDate.getMonth() === currentMonth && entryDate.getFullYear() === currentYear;
   });
 
-  // Create monthly report HTML
+  const currentMonthName = now.toLocaleString('default', { month: 'long' });
   const reportHTML = `
     <div class="monthly-report">
-      <h2>Monthly Report for ${pet.petDetails.name} (${now.toLocaleString('default', { month: 'long' })} ${currentYear})</h2>
+      <h2>Monthly Report for ${pet.petDetails.name}</h2>
       <div class="pet-details-report">
         <img src="${pet.petDetails.image}" alt="${pet.petDetails.name}">
         <p>${pet.petDetails.characteristics}</p>
       </div>
-      <div class="monthly-calendar" id="monthlyCalendar">
-        <h3>Exercise Calendar</h3>
-        ${monthlyEntries.length ? `<ul>${monthlyEntries.map(e => `<li>${e.date} - ${e.exerciseType} (${e.duration} min, ${e.caloriesBurned} cal)</li>`).join('')}</ul>` : '<p>No exercises recorded this month.</p>'}
+      <div class="current-report">
+        <h3>Current Month: ${currentMonthName} ${currentYear}</h3>
+        <div class="monthly-calendar" id="monthlyCalendar">
+          ${currentEntries.length ? `<ul>${currentEntries.map(e => `<li>${e.date} - ${e.exerciseType} (${e.duration} min, ${e.caloriesBurned} cal)</li>`).join('')}</ul>` : '<p>No exercises recorded this month.</p>'}
+        </div>
+        <div class="monthly-charts" id="monthlyCharts">
+          <h3>Exercise Trends</h3>
+          <div class="chart">
+            <canvas id="monthlyDurationChart"></canvas>
+          </div>
+          <div class="chart">
+            <canvas id="monthlyActivityChart"></canvas>
+          </div>
+        </div>
       </div>
-      <div class="monthly-charts" id="monthlyCharts">
-        <h3>Exercise Trends</h3>
-        <div class="chart">
-          <canvas id="monthlyDurationChart"></canvas>
-        </div>
-        <div class="chart">
-          <canvas id="monthlyActivityChart"></canvas>
-        </div>
+      <div class="archived-reports">
+        <h3>Archived Monthly Reports</h3>
+        ${archivedReportsHTML ? archivedReportsHTML : '<p>No archived reports.</p>'}
       </div>
       <div class="report-controls">
         <button id="exportReportBtn">Export Report</button>
@@ -496,12 +515,19 @@ function openMonthlyReport(index) {
   `;
   AppHelper.showPage(reportHTML);
 
-  // Initialize monthly charts with the filtered data
-  initMonthlyCharts(monthlyEntries);
+  // Initialize charts only if there are current entries.
+  if (currentEntries.length) {
+    initMonthlyCharts(currentEntries);
+  }
 
   document.getElementById('backToDashboardBtn')?.addEventListener('click', () => {
     PetEntry.showExerciseLog();
   });
+  document.getElementById('exportReportBtn')?.addEventListener('click', () => {
+    alert('Export functionality coming soon!');
+  });
+}
+
   document.getElementById('exportReportBtn')?.addEventListener('click', () => {
     // Implement export logic, e.g., export as PDF or CSV.
     alert('Export functionality coming soon!');
