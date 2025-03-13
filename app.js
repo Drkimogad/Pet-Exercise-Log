@@ -219,7 +219,17 @@ const Auth = (function() {
 const PetEntry = (function() {
   let activePetIndex = null;
   const MAX_PETS = 10;
-  const DEFAULT_IMAGE = 'https://drkimogad.github.io/Pet-Exercise-Log/public/images/default-pet.png';
+  const DEFAULT_IMAGE = '/images/default-pet.png';
+
+  // The method to get the list of pets from localStorage
+  const getPets = () => {
+    try {
+      return JSON.parse(localStorage.getItem('pets') || '[]');
+    } catch (e) {
+      console.error('Error parsing pets from localStorage', e);
+      return [];
+    }
+  };
 
   const templates = {
     dashboard: () => `
@@ -237,15 +247,11 @@ const PetEntry = (function() {
           </section>
         </main>
         <aside class="saved-profiles" id="savedProfiles"></aside>
-      </div>`,
-    
+      </div>
+    `,
     petForm: () => {
       const pet = activePetIndex !== null ? PetEntry.getPets()[activePetIndex] : null;
-        return {
-    PetEntry.getPets() => JSON.parse(localStorage.getItem('pets') || '[]'),
-    getActivePet: () => activePetIndex !== null ? this.getPets()[activePetIndex] : null
-  };
-})(); `
+      return `
         <form id="exerciseForm" class="pet-form card">
           <fieldset class="pet-details">
             <legend>${activePetIndex === null ? 'New Pet' : 'Update Pet'}</legend>
@@ -303,7 +309,6 @@ const PetEntry = (function() {
     AppHelper.showPage(templates.dashboard());
     AppHelper.registerComponent('petFormContainer', () => templates.petForm());
     AppHelper.refreshComponent('petFormContainer');
-    
     Calendar.init('#exerciseCalendar');
     Charts.init('#exerciseCharts');
     setupEventListeners();
@@ -346,7 +351,7 @@ const PetEntry = (function() {
     const petData = activePetIndex !== null ? pets[activePetIndex] : {
       petDetails: { name: '', image: DEFAULT_IMAGE, characteristics: '' },
       exerciseEntries: [],
-      monthlyReports: [] // <-- New property for archived reports
+      monthlyReports: []  // <-- New property for archived reports
     };
 
     petData.petDetails = {
@@ -374,6 +379,13 @@ const PetEntry = (function() {
     sessionStorage.setItem('activePetIndex', activePetIndex);
     updateDashboard(petData);
   }
+
+  return {
+    showExerciseLog,
+    getPets, // Correctly return getPets function here
+    getActivePet: () => activePetIndex !== null ? this.getPets()[activePetIndex] : null
+  };
+})();
 
   function updateDashboard(petData) {
     Calendar.refresh(petData.exerciseEntries);
