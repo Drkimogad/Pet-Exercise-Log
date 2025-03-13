@@ -42,7 +42,6 @@ window.addEventListener('beforeinstallprompt', (event) => {
     }
 });
 
-
 // ✅ Service Worker Registration
 function registerServiceWorker() {
     if ('serviceWorker' in navigator) {
@@ -77,11 +76,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Check if user is logged in
     if (sessionStorage.getItem('user')) {
-    if (typeof PetEntry !== "undefined" && typeof PetEntry.showExerciseLog === "function") {
-        PetEntry.showExerciseLog();
-    } else {
-        console.error("❌ PetEntry or showExerciseLog function is missing!");
-    }
+        if (typeof PetEntry !== "undefined" && typeof PetEntry.showExerciseLog === "function") {
+            PetEntry.showExerciseLog();
+        } else {
+            console.error("❌ PetEntry or showExerciseLog function is missing!");
+        }
     } else {
         Auth.showAuth();
     }
