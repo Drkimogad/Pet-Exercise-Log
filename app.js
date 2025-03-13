@@ -592,6 +592,17 @@ function initMonthlyCharts(data) {
   });
 }
 
+// ----- Beginning of second half of app.js -----
+
+// (This code is assumed to be inside your PetEntry module's IIFE)
+
+function openMonthlyReport(index) {
+  const pets = getPets();
+  const pet = pets[index];
+  const now = new Date();
+  const currentMonth = now.getMonth();
+  const currentYear = now.getFullYear();
+
   const reportHTML = `
     <div class="monthly-report">
       <h2>Monthly Report for ${pet.petDetails.name}</h2>
@@ -609,6 +620,7 @@ function initMonthlyCharts(data) {
   document.getElementById('backToDashboardBtn')?.addEventListener('click', () => {
     PetEntry.showExerciseLog();
   });
+  // (If you prefer, you can move the export functionality inside this function)
 }
 
 function printProfile(index) {
@@ -632,29 +644,33 @@ function printProfile(index) {
 }
 
 // toggle mode //
-  function toggleDarkMode() {
-    document.body.classList.toggle('dark-mode');
-    localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
-    Charts.updateColors();
-    Calendar.refresh(getActivePet()?.exerciseEntries || []);
-  }
+function toggleDarkMode() {
+  document.body.classList.toggle('dark-mode');
+  localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+  Charts.updateColors();
+  Calendar.refresh(PetEntry.getActivePet()?.exerciseEntries || []);
+}
 
-  function handleImageUpload(e) {
-    const file = e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      document.getElementById('petImagePreview').src = event.target.result;
-    };
-    reader.readAsDataURL(file);
-  }
-
-  return {
-    showExerciseLog,
-    getPets: () => JSON.parse(localStorage.getItem('pets') || '[]'),
-    getActivePet: () => activePetIndex !== null ? this.getPets()[activePetIndex] : null
+function handleImageUpload(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (event) => {
+    document.getElementById('petImagePreview').src = event.target.result;
   };
-})();
+  reader.readAsDataURL(file);
+}
+
+return {
+  showExerciseLog,
+  getPets: () => JSON.parse(localStorage.getItem('pets') || '[]'),
+  getActivePet: () => {
+    const pets = JSON.parse(localStorage.getItem('pets') || '[]');
+    return activePetIndex !== null ? pets[activePetIndex] : null;
+  }
+};
+
+})(); // <-- End of PetEntry module
 
 // Calendar //
 const Calendar = (function() {
@@ -740,76 +756,76 @@ const Calendar = (function() {
     });
   }
 
-function showDayModal(date, entries) {
-  const modalHTML = `
-    <div class="calendar-modal">
-      <div class="modal-content">
-        <h3>Exercises for ${date}</h3>
-        ${entries.length ? entries.map(e => `
-          <div class="exercise-entry">
-            <span>${e.exerciseType}</span>
-            <span>${e.duration} mins</span>
-            <span>${e.caloriesBurned} cal</span>
-          </div>
-        `).join('') : '<p>No exercises</p>'}
-        <form id="dayExerciseForm">
-          <input type="hidden" name="date" value="${date}">
-          <div class="form-group">
-            <label for="exerciseTypeDay">Type</label>
-            <select id="exerciseTypeDay" required>
-              <option value="walking">Walking</option>
-              <option value="running">Running</option>
-              <option value="swimming">Swimming</option>
-              <option value="playing">Playing</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="exerciseDurationDay">Duration (min)</label>
-            <input type="number" id="exerciseDurationDay" min="1" required>
-          </div>
-          <div class="form-group">
-            <label for="caloriesBurnedDay">Calories</label>
-            <input type="number" id="caloriesBurnedDay" min="1" required>
-          </div>
-          <button type="submit" class="add-exercise-btn">Add Exercise</button>
-        </form>
-        <button class="close-modal-btn">Close</button>
+  function showDayModal(date, entries) {
+    const modalHTML = `
+      <div class="calendar-modal">
+        <div class="modal-content">
+          <h3>Exercises for ${date}</h3>
+          ${entries.length ? entries.map(e => `
+            <div class="exercise-entry">
+              <span>${e.exerciseType}</span>
+              <span>${e.duration} mins</span>
+              <span>${e.caloriesBurned} cal</span>
+            </div>
+          `).join('') : '<p>No exercises</p>'}
+          <form id="dayExerciseForm">
+            <input type="hidden" name="date" value="${date}">
+            <div class="form-group">
+              <label for="exerciseTypeDay">Type</label>
+              <select id="exerciseTypeDay" required>
+                <option value="walking">Walking</option>
+                <option value="running">Running</option>
+                <option value="swimming">Swimming</option>
+                <option value="playing">Playing</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="exerciseDurationDay">Duration (min)</label>
+              <input type="number" id="exerciseDurationDay" min="1" required>
+            </div>
+            <div class="form-group">
+              <label for="caloriesBurnedDay">Calories</label>
+              <input type="number" id="caloriesBurnedDay" min="1" required>
+            </div>
+            <button type="submit" class="add-exercise-btn">Add Exercise</button>
+          </form>
+          <button class="close-modal-btn">Close</button>
+        </div>
       </div>
-    </div>
-  `;
-  document.body.insertAdjacentHTML('beforeend', modalHTML);
-  
-  // Add event listener for the form submission
-  document.getElementById('dayExerciseForm').addEventListener('submit', (e) => {
-    e.preventDefault();
-    const exerciseType = document.getElementById('exerciseTypeDay').value;
-    const duration = Number(document.getElementById('exerciseDurationDay').value);
-    const caloriesBurned = Number(document.getElementById('caloriesBurnedDay').value);
-    const newEntry = {
-      date: date,
-      exerciseType,
-      duration,
-      caloriesBurned
-    };
-    // Get the active pet and update its exercise entries
-    const activePet = PetEntry.getActivePet();
-    if (activePet) {
-      activePet.exerciseEntries.push(newEntry);
-      // Update local storage for persistence
-      const pets = PetEntry.getPets();
-      const activeIndex = parseInt(sessionStorage.getItem('activePetIndex'));
-      pets[activeIndex] = activePet;
-      localStorage.setItem('pets', JSON.stringify(pets));
-      Calendar.refresh(activePet.exerciseEntries);
-    }
-    document.querySelector('.calendar-modal').remove();
-  });
-  
-  // Close modal event listener
-  document.querySelector('.close-modal-btn').addEventListener('click', () => {
-    document.querySelector('.calendar-modal').remove();
-  });
-}
+    `;
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+    
+    // Add event listener for the form submission
+    document.getElementById('dayExerciseForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const exerciseType = document.getElementById('exerciseTypeDay').value;
+      const duration = Number(document.getElementById('exerciseDurationDay').value);
+      const caloriesBurned = Number(document.getElementById('caloriesBurnedDay').value);
+      const newEntry = {
+        date: date,
+        exerciseType,
+        duration,
+        caloriesBurned
+      };
+      // Get the active pet and update its exercise entries
+      const activePet = PetEntry.getActivePet();
+      if (activePet) {
+        activePet.exerciseEntries.push(newEntry);
+        // Update local storage for persistence
+        const pets = PetEntry.getPets();
+        const activeIndex = parseInt(sessionStorage.getItem('activePetIndex'));
+        pets[activeIndex] = activePet;
+        localStorage.setItem('pets', JSON.stringify(pets));
+        Calendar.refresh(activePet.exerciseEntries);
+      }
+      document.querySelector('.calendar-modal').remove();
+    });
+    
+    // Close modal event listener
+    document.querySelector('.close-modal-btn').addEventListener('click', () => {
+      document.querySelector('.calendar-modal').remove();
+    });
+  }
     
   function refresh(data) {
     exerciseData = data || [];
@@ -928,3 +944,5 @@ const Charts = (function() {
 
   return { init, refresh, updateColors };
 })();
+
+// ----- End of second half of app.js -----
