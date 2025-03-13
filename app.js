@@ -4,87 +4,87 @@ let deferredPrompt; // Store the install event
 
 // ✅ Automatically Show Install Banner
 window.addEventListener('beforeinstallprompt', (event) => {
-    event.preventDefault();  
-    deferredPrompt = event; 
+  event.preventDefault();
+  deferredPrompt = event;
 
-    // Automatically show the prompt after a short delay
-    setTimeout(async () => {
-        if (deferredPrompt) {
-            try {
-                await deferredPrompt.prompt();
-                const choiceResult = await deferredPrompt.userChoice;
-                console.log(choiceResult.outcome === 'accepted' ? 'User accepted install' : 'User dismissed install');
-                deferredPrompt = null; // Reset after use
-            } catch (error) {
-                console.error('Auto Install prompt failed:', error);
-            }
-        }
-    }, 2000); // 2-second delay before auto prompt
-
-    // Also enable manual install button
-    const installButton = document.getElementById('installButton');
-    if (installButton) {
-        installButton.style.display = 'block';
-        installButton.addEventListener('click', async () => {
-            if (deferredPrompt) {
-                try {
-                    await deferredPrompt.prompt();
-                    const choiceResult = await deferredPrompt.userChoice;
-                    console.log(choiceResult.outcome === 'accepted' ? 'User accepted install' : 'User dismissed install');
-                } catch (error) {
-                    console.error('Manual Install failed:', error);
-                } finally {
-                    deferredPrompt = null;
-                    installButton.style.display = 'none';
-                }
-            }
-        });
+  // Automatically show the prompt after a short delay
+  setTimeout(async () => {
+    if (deferredPrompt) {
+      try {
+        await deferredPrompt.prompt();
+        const choiceResult = await deferredPrompt.userChoice;
+        console.log(choiceResult.outcome === 'accepted' ? 'User accepted install' : 'User dismissed install');
+        deferredPrompt = null; // Reset after use
+      } catch (error) {
+        console.error('Auto Install prompt failed:', error);
+      }
     }
+  }, 2000); // 2-second delay before auto prompt
+
+  // Also enable manual install button
+  const installButton = document.getElementById('installButton');
+  if (installButton) {
+    installButton.style.display = 'block';
+    installButton.addEventListener('click', async () => {
+      if (deferredPrompt) {
+        try {
+          await deferredPrompt.prompt();
+          const choiceResult = await deferredPrompt.userChoice;
+          console.log(choiceResult.outcome === 'accepted' ? 'User accepted install' : 'User dismissed install');
+        } catch (error) {
+          console.error('Manual Install failed:', error);
+        } finally {
+          deferredPrompt = null;
+          installButton.style.display = 'none';
+        }
+      }
+    });
+  }
 });
 
 // ✅ Service Worker Registration
 function registerServiceWorker() {
-    if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/Pet-Exercise-Log/service-worker.js', {
-            scope: '/Pet-Exercise-Log/'
-        }).then(reg => {
-            console.log('Service Worker registered with scope:', reg.scope);
-        }).catch(error => {
-            console.error('Service Worker registration failed:', error);
-        });
-    }
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/Pet-Exercise-Log/service-worker.js', {
+      scope: '/Pet-Exercise-Log/'
+    }).then(reg => {
+      console.log('Service Worker registered with scope:', reg.scope);
+    }).catch(error => {
+      console.error('Service Worker registration failed:', error);
+    });
+  }
 }
 
 // ✅ Fixed showSignIn (no nested DOMContentLoaded)
 function showSignIn() {
-    const authContainer = document.getElementById("auth-container");
-    if (authContainer) {
-        authContainer.style.display = "block";
-    } else {
-        console.warn("⚠️ Auth container not found");
-    }
+  const authContainer = document.getElementById("auth-container");
+  if (authContainer) {
+    authContainer.style.display = "block";
+  } else {
+    console.warn("⚠️ Auth container not found");
+  }
 }
 
 // ✅ Run on page load
 document.addEventListener("DOMContentLoaded", () => {
-    registerServiceWorker();
+  registerServiceWorker();
 
-    // Apply dark mode if enabled
-    if (localStorage.getItem('darkMode') === 'true') {
-        document.body.classList.add('dark-mode');
-    }
+  // Apply dark mode if enabled
+  if (localStorage.getItem('darkMode') === 'true') {
+    document.body.classList.add('dark-mode');
+  }
 
-    // Check if user is logged in
-    if (sessionStorage.getItem('user')) {
-        if (typeof PetEntry !== "undefined" && typeof PetEntry.showExerciseLog === "function") {
-            PetEntry.showExerciseLog();
-        } else {
-            console.error("❌ PetEntry or showExerciseLog function is missing!");
-        }
+  // Check if user is logged in
+  if (sessionStorage.getItem('user')) {
+    if (typeof PetEntry !== "undefined" && typeof PetEntry.showExerciseLog === "function") {
+      PetEntry.showExerciseLog();
     } else {
-        Auth.showAuth();
+      console.error("❌ PetEntry or showExerciseLog function is missing!");
     }
-}); // <-- Closing brace for DOMContentLoaded
+  } else {
+    Auth.showAuth();
+  }
+});
 
 // appHelper
 const AppHelper = (function() {
@@ -112,7 +112,7 @@ const AppHelper = (function() {
   };
 })();
 
-// authentication//
+// Authentication //
 const Auth = (function() {
   let currentUser = null;
 
@@ -215,11 +215,11 @@ const Auth = (function() {
   };
 })();
 
-// petentry//
+// PetEntry //
 const PetEntry = (function() {
   let activePetIndex = null;
   const MAX_PETS = 10;
-  const DEFAULT_IMAGE = '/images/default-pet.png'; 
+  const DEFAULT_IMAGE = '/images/default-pet.png';
 
   const templates = {
     dashboard: () => `
@@ -293,7 +293,7 @@ const PetEntry = (function() {
         </form>
       `;
     }
-  }; // <-- End of templates object
+  };
 
   function showExerciseLog() {
     AppHelper.showPage(templates.dashboard());
@@ -342,7 +342,7 @@ const PetEntry = (function() {
     const petData = activePetIndex !== null ? pets[activePetIndex] : {
       petDetails: { name: '', image: DEFAULT_IMAGE, characteristics: '' },
       exerciseEntries: [],
-      monthlyReports: []  // <-- New property for archived reports
+      monthlyReports: [] // <-- New property for archived reports
     };
 
     petData.petDetails = {
@@ -378,7 +378,8 @@ const PetEntry = (function() {
     AppHelper.refreshComponent('petFormContainer');
   }
 
-  // profiles control and buttons //
+  // --- Add Profile Control (Save, Edit, Delete, Reports) ---
+
   function loadSavedProfiles() {
     const pets = getPets();
     const profilesHTML = pets.map((pet, index) => `
@@ -397,7 +398,6 @@ const PetEntry = (function() {
 
     AppHelper.renderComponent('savedProfiles', profilesHTML);
 
-    // Event listeners for buttons
     document.querySelectorAll('.select-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         activePetIndex = parseInt(btn.dataset.index);
@@ -417,7 +417,7 @@ const PetEntry = (function() {
     document.querySelectorAll('.delete-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         const index = parseInt(btn.dataset.index);
-        const pets = getPets();
+        const pets = PetEntry.getPets();
         pets.splice(index, 1);
         localStorage.setItem('pets', JSON.stringify(pets));
         if (activePetIndex === index) {
@@ -449,67 +449,8 @@ const PetEntry = (function() {
     });
   }
 
-  // Monthly Report and Printing logic
-  function openMonthlyReport(index) {
-    const pets = getPets();
-    const pet = pets[index];
-    const now = new Date();
-    const currentMonth = now.getMonth();
-    const currentYear = now.getFullYear();
-
-    const reportHTML = `
-      <div class="monthly-report">
-        <h2>Monthly Report for ${pet.petDetails.name}</h2>
-        <div id="monthlyCalendar">
-          <!-- Calendar with ticked days goes here -->
-        </div>
-        <div id="monthlyCharts">
-          <!-- Two charts displaying exercise trends go here -->
-        </div>
-        <button id="exportReportBtn">Export Report</button>
-        <button id="backToDashboardBtn">Back to Dashboard</button>
-      </div>
-    `;
-    AppHelper.showPage(reportHTML);
-    document.getElementById('backToDashboardBtn')?.addEventListener('click', () => {
-      PetEntry.showExerciseLog();
-    });
-  }
-
-  function printProfile(index) {
-    const pets = getPets();
-    const pet = pets[index];
-    const printContent = `
-      <div>
-        <h2>Pet Profile: ${pet.petDetails.name}</h2>
-        <img src="${pet.petDetails.image}" alt="${pet.petDetails.name}">
-        <p>${pet.petDetails.characteristics}</p>
-        <h3>Exercise Entries:</h3>
-        <ul>
-          ${pet.exerciseEntries.map(e => `<li>${e.date}: ${e.exerciseType} for ${e.duration} minutes, ${e.caloriesBurned} calories</li>`).join('')}
-        </ul>
-      </div>
-    `;
-    const printWindow = window.open('', '', 'width=800,height=600');
-    printWindow.document.write(printContent);
-    printWindow.document.close();
-    printWindow.print();
-  }
-
-  return {
-    showExerciseLog,
-    getPets: () => JSON.parse(localStorage.getItem('pets') || '[]'),
-    getActivePet: () => {
-      const pets = JSON.parse(localStorage.getItem('pets') || '[]');
-      return activePetIndex !== null ? pets[activePetIndex] : null;
-    }
-  };
-
+  return { showExerciseLog };
 })();
-
-// Calendar and Charts code can follow from the earlier shared sections.
-
-})(); // <-- End of PetEntry module
 
 // Calendar //
 const Calendar = (function() {
@@ -595,86 +536,10 @@ const Calendar = (function() {
     });
   }
 
-  function showDayModal(date, entries) {
-    const modalHTML = `
-      <div class="calendar-modal">
-        <div class="modal-content">
-          <h3>Exercises for ${date}</h3>
-          ${entries.length ? entries.map(e => `
-            <div class="exercise-entry">
-              <span>${e.exerciseType}</span>
-              <span>${e.duration} mins</span>
-              <span>${e.caloriesBurned} cal</span>
-            </div>
-          `).join('') : '<p>No exercises</p>'}
-          <form id="dayExerciseForm">
-            <input type="hidden" name="date" value="${date}">
-            <div class="form-group">
-              <label for="exerciseTypeDay">Type</label>
-              <select id="exerciseTypeDay" required>
-                <option value="walking">Walking</option>
-                <option value="running">Running</option>
-                <option value="swimming">Swimming</option>
-                <option value="playing">Playing</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label for="exerciseDurationDay">Duration (min)</label>
-              <input type="number" id="exerciseDurationDay" min="1" required>
-            </div>
-            <div class="form-group">
-              <label for="caloriesBurnedDay">Calories</label>
-              <input type="number" id="caloriesBurnedDay" min="1" required>
-            </div>
-            <button type="submit" class="add-exercise-btn">Add Exercise</button>
-          </form>
-          <button class="close-modal-btn">Close</button>
-        </div>
-      </div>
-    `;
-    document.body.insertAdjacentHTML('beforeend', modalHTML);
-    
-    // Add event listener for the form submission
-    document.getElementById('dayExerciseForm').addEventListener('submit', (e) => {
-      e.preventDefault();
-      const exerciseType = document.getElementById('exerciseTypeDay').value;
-      const duration = Number(document.getElementById('exerciseDurationDay').value);
-      const caloriesBurned = Number(document.getElementById('caloriesBurnedDay').value);
-      const newEntry = {
-        date: date,
-        exerciseType,
-        duration,
-        caloriesBurned
-      };
-      // Get the active pet and update its exercise entries
-      const activePet = PetEntry.getActivePet();
-      if (activePet) {
-        activePet.exerciseEntries.push(newEntry);
-        // Update local storage for persistence
-        const pets = PetEntry.getPets();
-        const activeIndex = parseInt(sessionStorage.getItem('activePetIndex'));
-        pets[activeIndex] = activePet;
-        localStorage.setItem('pets', JSON.stringify(pets));
-        Calendar.refresh(activePet.exerciseEntries);
-      }
-      document.querySelector('.calendar-modal').remove();
-    });
-    
-    // Close modal event listener
-    document.querySelector('.close-modal-btn').addEventListener('click', () => {
-      document.querySelector('.calendar-modal').remove();
-    });
-  }
-    
-  function refresh(data) {
-    exerciseData = data || [];
-    generateCalendar();
-  }
-
   return { init, refresh };
 })();
 
-// Charts //
+// Charts
 const Charts = (function() {
   let durationChart, caloriesChart, activityChart;
 
@@ -766,13 +631,13 @@ const Charts = (function() {
       }
     });
   }
-    
+
   function destroyCharts() {
     if (durationChart) durationChart.destroy();
     if (activityChart) activityChart.destroy();
     if (caloriesChart) caloriesChart.destroy();
   }
-  
+
   function updateColors() {
     const textColor = document.body.classList.contains('dark-mode') ? '#fff' : '#374151';
     Chart.defaults.color = textColor;
@@ -784,4 +649,5 @@ const Charts = (function() {
   return { init, refresh, updateColors };
 })();
 
-// ----- End of second half of app.js -----
+// Initialize dashboard and other components
+PetEntry.showExerciseLog();
