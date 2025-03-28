@@ -99,23 +99,98 @@ const PetEntry = (function() {
 
   // Modified Templates
   const templates = {
-    petForm: (pet) => `
-      <form id="exerciseForm">
-        <!-- Existing fields... -->
+  petForm: (pet) => `
+    <form id="exerciseForm" class="pet-form">
+      <!-- Pet Details Section -->
+      <fieldset class="pet-details">
+        <legend>${pet ? 'Edit Profile' : 'New Pet Profile'}</legend>
+        
         <div class="form-group">
-          <label for="exerciseMood">Mood</label>
-          <select id="exerciseMood" required>
-            ${MOOD_OPTIONS.map(m => 
-              `<option value="${m.value}">${m.emoji} ${m.label}</option>`
-            ).join('')}
+          <label for="petName">Name*</label>
+          <input type="text" id="petName" value="${pet?.name || ''}" required>
+        </div>
+        
+        <div class="form-group">
+          <label>Profile Image</label>
+          <div class="image-upload">
+            <input type="file" id="petImage" accept="image/*">
+            <img id="petImagePreview" src="${pet?.image || '/images/default-pet.png'}" alt="Pet Preview">
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="bodyCondition">Body Condition*</label>
+          <select id="bodyCondition" required>
+            <option value="obese" ${pet?.bodyCondition === 'obese' ? 'selected' : ''}>Obese</option>
+            <option value="overweight" ${pet?.bodyCondition === 'overweight' ? 'selected' : ''}>Overweight</option>
+            <option value="ideal" ${pet?.bodyCondition === 'ideal' ? 'selected' : ''}>Ideal Weight</option>
+            <option value="lean" ${pet?.bodyCondition === 'lean' ? 'selected' : ''}>Lean</option>
+            <option value="underweight" ${pet?.bodyCondition === 'underweight' ? 'selected' : ''}>Underweight</option>
           </select>
         </div>
-        <div class="form-group">
-          <label for="monthlyGoal">Monthly Goal (hours)</label>
-          <input type="number" id="monthlyGoal" value="${pet?.monthlyGoal || 30}" min="1">
+      </fieldset>
+
+      <!-- Daily Entry Section -->
+      <fieldset class="daily-entry">
+        <legend>Daily Log</legend>
+        
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="exerciseDate">Date*</label>
+            <input type="date" id="exerciseDate" value="${new Date().toISOString().split('T')[0]}" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="exerciseDuration">Duration (mins)*</label>
+            <input type="number" id="exerciseDuration" min="1" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="caloriesBurned">Calories Burned*</label>
+            <input type="number" id="caloriesBurned" min="1" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="diet">Diet Type</label>
+            <select id="diet">
+              <option value="kibble">Kibble</option>
+              <option value="raw">Raw Food</option>
+              <option value="homecooked">Homecooked</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label for="dailyIntake">Daily Intake (kcal)</label>
+            <input type="number" id="dailyIntake" min="0">
+          </div>
+          
+          <div class="form-group">
+            <label for="healthStatus">Health Status</label>
+            <select id="healthStatus">
+              <option value="excellent">Excellent</option>
+              <option value="good">Good</option>
+              <option value="fair">Fair</option>
+              <option value="poor">Poor</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label for="energyLevel">Energy Level</label>
+            <select id="energyLevel">
+              <option value="high">High</option>
+              <option value="medium">Medium</option>
+              <option value="low">Low</option>
+            </select>
+          </div>
         </div>
-      </form>`
-  };
+        
+        <button type="submit" class="primary-btn">
+          ${pet ? 'Update Log' : 'Create Profile'}
+        </button>
+      </fieldset>
+    </form>
+  `
+};
 
   // New: Enhanced Exercise Handling
   function handleFormSubmit(e) {
@@ -210,3 +285,22 @@ document.addEventListener("DOMContentLoaded", () => {
   if (sessionStorage.getItem('user')) PetEntry.showExerciseLog();
   else Auth.showAuth();
 });
+
+// In Charts module:
+function processData(exercises) {
+  return {
+    // Existing chart data...
+    conditionTrend: calculateConditionScore(exercises),
+    dietAnalysis: groupByDietType(exercises),
+    energyCorrelation: correlateEnergyWithExercise(exercises)
+  };
+}
+
+function calculateConditionScore(entries) {
+  // Analyze weight changes over time
+  return entries.map(e => ({
+    date: e.date,
+    score: e.bodyCondition // Convert to numerical score
+  }));
+}
+
