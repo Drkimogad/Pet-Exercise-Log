@@ -1,0 +1,212 @@
+"use strict";
+
+// ==================== 
+// PWA Installation
+// ====================
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  setTimeout(() => deferredPrompt?.prompt(), 2000);
+  
+  const installButton = document.getElementById('installButton');
+  if (installButton) {
+    installButton.style.display = 'block';
+    installButton.onclick = () => deferredPrompt.prompt();
+  }
+});
+
+// ==================== 
+// Service Worker
+// ====================
+function registerServiceWorker() {
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/service-worker.js')
+      .then(reg => console.log('SW registered:', reg.scope))
+      .catch(err => console.error('SW failed:', err));
+  }
+}
+
+// ==================== 
+// Auth Module
+// ==================== 
+const Auth = (function() {
+  let currentUser = null;
+
+  async function hashPassword(pass, salt) {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(salt ? pass + salt : pass);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
+  }
+
+  function authTemplate(isSignUp) {
+    return `...`; // Keep your existing template
+  }
+
+  async function handleAuthSubmit(e, isSignUp) {
+    e.preventDefault();
+    // ... existing validation ...
+    
+    try {
+      const salt = crypto.getRandomValues(new Uint8Array(16)).join('');
+      const userData = {
+        email: formData.email,
+        password: await hashPassword(formData.password, salt),
+        salt
+      };
+      
+      currentUser = userData;
+      sessionStorage.setItem('user', JSON.stringify(userData));
+      isSignUp ? showAuth(false) : PetEntry.showExerciseLog();
+    } catch (error) {
+      console.error("Auth error:", error);
+    }
+  }
+
+  function showAuth(isSignUp = false) {
+    AppHelper.showPage(authTemplate(isSignUp));
+    document.getElementById('authForm').onsubmit = (e) => handleAuthSubmit(e, isSignUp);
+    document.getElementById('switchAuth').onclick = (e) => {
+      e.preventDefault();
+      showAuth(!isSignUp);
+    };
+  }
+
+  return { showAuth, logout: () => sessionStorage.removeItem('user') };
+})();
+
+// ==================== 
+// Enhanced PetEntry Module
+// ==================== 
+const PetEntry = (function() {
+  const MOOD_OPTIONS = [
+    { value: "happy", emoji: "😊", label: "Happy" },
+    { value: "tired", emoji: "🥱", label: "Tired" },
+    { value: "excited", emoji: "🤪", label: "Excited" },
+    { value: "sick", emoji: "🤒", label: "Sick" }
+  ];
+
+  // Enhanced Data Structure
+  function getPets() {
+    const pets = JSON.parse(localStorage.getItem('pets') || '[]');
+    return pets.map(pet => ({
+      monthlyGoal: pet.monthlyGoal || 30, // Default goal
+      missedDays: pet.missedDays || [],
+      ...pet
+    }));
+  }
+
+  // Modified Templates
+  const templates = {
+    petForm: (pet) => `
+      <form id="exerciseForm">
+        <!-- Existing fields... -->
+        <div class="form-group">
+          <label for="exerciseMood">Mood</label>
+          <select id="exerciseMood" required>
+            ${MOOD_OPTIONS.map(m => 
+              `<option value="${m.value}">${m.emoji} ${m.label}</option>`
+            ).join('')}
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="monthlyGoal">Monthly Goal (hours)</label>
+          <input type="number" id="monthlyGoal" value="${pet?.monthlyGoal || 30}" min="1">
+        </div>
+      </form>`
+  };
+
+  // New: Enhanced Exercise Handling
+  function handleFormSubmit(e) {
+    e.preventDefault();
+    const pet = getActivePet();
+    
+    const exercise = {
+      date: document.getElementById('exerciseDate').value,
+      duration: parseInt(document.getElementById('exerciseDuration').value),
+      calories: parseInt(document.getElementById('caloriesBurned').value),
+      mood: document.getElementById('exerciseMood').value,
+      type: document.getElementById('exerciseType').value
+    };
+
+    pet.exercises = [...(pet.exercises || []), exercise];
+    pet.monthlyGoal = parseInt(document.getElementById('monthlyGoal').value);
+    
+    updateMissedDays(pet);
+    savePets();
+    refreshUI();
+  }
+
+  // New: Missed Days Tracking
+  function updateMissedDays(pet) {
+    const exercisedDates = new Set(pet.exercises.map(e => e.date));
+    const allDates = getDaysInMonth();
+    pet.missedDays = allDates.filter(date => !exercisedDates.has(date));
+  }
+
+  return {
+    showExerciseLog,
+    handleFormSubmit,
+    getPets,
+    // ... other existing methods ...
+  };
+})();
+
+// ==================== 
+// Enhanced Calendar Module
+// ==================== 
+const Calendar = (function() {
+  function renderDay(day, exercises, missedDays) {
+    const exercise = exercises.find(e => e.date === day);
+    const isMissed = missedDays.includes(day);
+    
+    return `
+      <div class="calendar-day 
+        ${exercise ? 'has-exercise' : ''} 
+        ${isMissed ? 'missed-day' : ''}" 
+        data-date="${day}">
+        ${day.split('-')[2]}
+        ${exercise ? `<span class="mood">${MOOD_OPTIONS.find(m => m.value === exercise.mood)?.emoji}</span>` : ''}
+      </div>`;
+  }
+
+  // ... rest of calendar code ...
+})();
+
+// ==================== 
+// Enhanced Reports Module
+// ==================== 
+const Reports = (function() {
+  function generateMonthlyReport(pet) {
+    const totalHours = pet.exercises.reduce((sum, e) => sum + e.duration, 0) / 60;
+    
+    return `
+      <div class="report">
+        <h2>${pet.name}'s Monthly Report</h2>
+        <img src="${pet.image}" class="pet-image">
+        
+        <div class="stats">
+          <p>Exercised: ${pet.exercises.length} days</p>
+          <p>Goal: ${totalHours.toFixed(1)}/${pet.monthlyGoal} hours</p>
+          <p>Average mood: ${getAverageMood(pet)}</p>
+        </div>
+        
+        ${Calendar.renderMonth(pet.exercises, pet.missedDays)}
+        ${Charts.render(pet.exercises)}
+        
+        <button onclick="window.print()">Export</button>
+        <button onclick="PetEntry.showExerciseLog()">Back</button>
+      </div>
+    `;
+  }
+
+  // ... rest of report code ...
+})();
+
+// Initialize
+document.addEventListener("DOMContentLoaded", () => {
+  registerServiceWorker();
+  if (sessionStorage.getItem('user')) PetEntry.showExerciseLog();
+  else Auth.showAuth();
+});
