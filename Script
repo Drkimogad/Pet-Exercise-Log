@@ -96,6 +96,20 @@ const PetEntry = (function() {
       ...pet
     }));
   }
+// Add to PetEntry module:
+function handleImageUpload(event) {
+  const file = event.target.files[0];
+  const reader = new FileReader();
+  
+  reader.onload = (e) => {
+    document.getElementById('petImagePreview').src = e.target.result;
+  };
+  
+  if (file) reader.readAsDataURL(file);
+}
+
+// Initialize in form setup:
+document.getElementById('petImage')?.addEventListener('change', handleImageUpload);
 
   // Modified Templates
   const templates = {
