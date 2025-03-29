@@ -8,27 +8,17 @@ let deferredPrompt;
 window.addEventListener('beforeinstallprompt', (e) => {
   e.preventDefault();
   deferredPrompt = e;
-  setTimeout(async () => {
-    if (deferredPrompt) {
-      try {
-        await deferredPrompt.prompt();
-        const choiceResult = await deferredPrompt.userChoice;
-        console.log(choiceResult.outcome === 'accepted' ? 'User accepted install' : 'User dismissed install');
-        deferredPrompt = null;
-      } catch (error) {
-        console.error('Auto Install prompt failed:', error);
-      }
-    }
-  }, 2000);
+  document.getElementById('installButton').style.display = 'block'; // Show install button
 });
 
-function registerServiceWorker() {
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/service-worker.js')
-      .then(reg => console.log('SW registered:', reg.scope))
-      .catch(err => console.error('SW failed:', err));
+document.getElementById('installButton').addEventListener('click', async () => {
+  if (deferredPrompt) {
+    await deferredPrompt.prompt(); // Now triggered by user click
+    const { outcome } = await deferredPrompt.userChoice;
+    console.log('User:', outcome);
+    deferredPrompt = null;
   }
-}
+});
 
 document.addEventListener("DOMContentLoaded", () => {
   registerServiceWorker();
@@ -61,20 +51,20 @@ const Auth = (function() {
             ${isSignUp ? `
               <div class="form-group">
                 <label for="username">Name</label>
-                <input type="text" id="username" required>
+                <input type="text" autocomplete="name">
               </div>` : ''}
             <div class="form-group">
               <label for="email">Email</label>
-              <input type="email" id="email" required>
+              <input type="email" autocomplete="email">
             </div>
             <div class="form-group">
               <label for="password">Password</label>
-              <input type="password" id="password" required minlength="8">
+              <input type="password" autocomplete="current-password">
             </div>
             ${isSignUp ? `
               <div class="form-group">
                 <label for="confirmPassword">Confirm Password</label>
-                <input type="password" id="confirmPassword" required>
+                <input type="password" autocomplete="current-password">
               </div>` : ''}
             <button type="submit" class="auth-btn">${isSignUp ? 'Sign Up' : 'Sign In'}</button>
           </form>
