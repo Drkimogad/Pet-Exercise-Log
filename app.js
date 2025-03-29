@@ -50,113 +50,85 @@ const Auth = (function() {
     return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
   }
 
-function authTemplate(isSignUp) {
-  return `
-    <div class="auth-container">
-      <div class="auth-card">
-        <h2>${isSignUp ? 'Create Account' : 'Sign In'}</h2>
-        <form id="authForm">
-          ${isSignUp ? `
+  function authTemplate(isSignUp) {
+    return `
+      <div class="auth-container" style="display: block;"> <!-- Ensure visible -->
+        <div class="auth-card">
+          <h2>${isSignUp ? 'Create Account' : 'Sign In'}</h2>
+          <form id="authForm">
+            ${isSignUp ? `
+              <div class="form-group">
+                <label for="username">Name</label>
+                <input type="text" id="username" autocomplete="name" required>
+              </div>` : ''}
             <div class="form-group">
-              <label for="username">Name</label>
-              <input type="text" id="username" autocomplete="name">
-            </div>` : ''}
-          <div class="form-group">
-            <label for="email">Email</label>
-            <input type="email" id="email" autocomplete="email">
-          </div>
-          <div class="form-group">
-            <label for="password">Password</label>
-            <input type="password" id="password" autocomplete="current-password">
-          </div>
-          ${isSignUp ? `
+              <label for="email">Email</label>
+              <input type="email" id="email" autocomplete="email" required>
+            </div>
             <div class="form-group">
-              <label for="confirmPassword">Confirm Password</label>
-              <input type="password" id="confirmPassword" autocomplete="current-password">
-            </div>` : ''}
-          <button type="submit" class="auth-btn">${isSignUp ? 'Sign Up' : 'Sign In'}</button>
-        </form>
-        <div class="auth-switch">
-          ${isSignUp ? 'Have an account?' : 'New user?'}
-          <a href="#" id="switchAuth">${isSignUp ? 'Sign In' : 'Sign Up'}</a>
+              <label for="password">Password</label>
+              <input type="password" id="password" autocomplete="current-password" required>
+            </div>
+            ${isSignUp ? `
+              <div class="form-group">
+                <label for="confirmPassword">Confirm Password</label>
+                <input type="password" id="confirmPassword" autocomplete="current-password" required>
+              </div>` : ''}
+            <button type="submit" class="auth-btn">${isSignUp ? 'Sign Up' : 'Sign In'}</button>
+          </form>
+          <div class="auth-switch">
+            ${isSignUp ? 'Have an account?' : 'New user?'}
+            <a href="#" id="switchAuth">${isSignUp ? 'Sign In' : 'Sign Up'}</a>
+          </div>
         </div>
-      </div>
-    </div>`;
-}
-
-async function handleAuthSubmit(e, isSignUp) {
-  e.preventDefault();
-  const emailElement = document.getElementById('email');
-  const passwordElement = document.getElementById('password');
-  const usernameElement = isSignUp ? document.getElementById('username') : null;
-  const confirmPasswordElement = isSignUp ? document.getElementById('confirmPassword') : null;
-
-  if (!emailElement || !passwordElement || (isSignUp && (!usernameElement || !confirmPasswordElement))) {
-    AppHelper.showError('Form elements not found');
-    return;
+      </div>`;
   }
 
-  const formData = {
-    email: emailElement.value,
-    password: passwordElement.value,
-    ...(isSignUp && {
-      username: usernameElement.value,
-      confirmPassword: confirmPasswordElement.value
-    })
-  };
+  async function handleAuthSubmit(e, isSignUp) {
+    e.preventDefault();
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    
+    if (isSignUp) {
+      const confirmPassword = document.getElementById('confirmPassword').value;
+      if (password !== confirmPassword) {
+        return AppHelper.showError("Passwords don't match");
+      }
+    }
 
-  const errors = [];
-  if (isSignUp && !formData.username.trim()) errors.push('Name required');
-  if (!/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(formData.email)) errors.push('Invalid email');
-  if (formData.password.length < 8) errors.push('Password must be 8+ chars');
-  if (isSignUp && formData.password !== formData.confirmPassword) errors.push('Passwords mismatch');
+    // For demo purposes, we'll just store in sessionStorage
+    const salt = crypto.getRandomValues(new Uint8Array(16)).join('');
+    const hashedPassword = await hashPassword(password, salt);
+    
+    currentUser = {
+      email,
+      password: hashedPassword,
+      salt,
+      lastLogin: new Date().toISOString()
+    };
 
-  if (errors.length) return AppHelper.showErrors(errors);
-  
-console.log('Form Data:', formData);
-console.log('Is Sign-Up:', isSignUp);
-
-try {
-  const saltArray = crypto.getRandomValues(new Uint8Array(16));
-  const salt = Array.from(saltArray, byte => byte.toString(16).padStart(2, '0')).join('');
-
-  console.log('Hashing password with salt:', formData.password, salt); // Debugging log
-
-  const userData = {
-    ...(isSignUp && { username: formData.username }),
-    email: formData.email,
-    password: await hashPassword(formData.password, salt),
-    salt,
-    lastLogin: new Date().toISOString()
-  };
-
-  console.log('User Data being stored:', userData); // Debugging log
-
-  currentUser = userData;
-  sessionStorage.setItem('user', JSON.stringify(userData));
-  isSignUp ? showAuth(false) : PetEntry.showExerciseLog();
-} catch (error) {
-  AppHelper.showError('Authentication failed');
-  console.error(error);
-}
-
+    sessionStorage.setItem('user', JSON.stringify(currentUser));
+    PetEntry.showExerciseLog(); // Redirect to dashboard
+  }
 
   function showAuth(isSignUp = false) {
     AppHelper.showPage(authTemplate(isSignUp));
-    document.getElementById('authForm').addEventListener('submit', e => handleAuthSubmit(e, isSignUp));
-    document.getElementById('switchAuth').addEventListener('click', e => {
+    document.getElementById('authForm').addEventListener('submit', (e) => handleAuthSubmit(e, isSignUp));
+    document.getElementById('switchAuth').addEventListener('click', (e) => {
       e.preventDefault();
       showAuth(!isSignUp);
     });
   }
 
+  function logout() {
+    sessionStorage.removeItem('user');
+    currentUser = null;
+    showAuth(false);
+  }
+
   return {
     showAuth,
-    logout: () => {
-      sessionStorage.removeItem('user');
-      AppHelper.showPage('<div class="logout-message">Logged out</div>');
-      setTimeout(() => showAuth(false), 2000);
-    }
+    logout
   };
 })();
 
@@ -216,7 +188,11 @@ function showExerciseLog() {
       </div>
     </div>
   `);
-
+  
+  // Add event listeners
+  document.getElementById('logoutButton').addEventListener('click', Auth.logout);
+  document.getElementById('toggleModeButton').addEventListener('click', toggleMode);
+  
   // Initialize various components and listeners after rendering
   loadSavedProfiles();
   renderPetForm();
@@ -448,29 +424,6 @@ const Charts = (function() {
   return { init, refresh };
 })();
 
-// toggle mode
-function toggleMode() {
-  const body = document.body;
-  body.classList.toggle('dark-mode');
-  
-  // Save the user's preference in localStorage
-  const isDarkMode = body.classList.contains('dark-mode');
-  localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
-}
-
-function applySavedTheme() {
-  const savedTheme = localStorage.getItem('theme');
-  if (savedTheme === 'dark') {
-    document.body.classList.add('dark-mode');
-  }
-}
-
-// Apply saved theme on page load
-document.addEventListener('DOMContentLoaded', applySavedTheme);
-
-// Attach event listener for toggle button
-document.getElementById('toggleModeButton')?.addEventListener('click', toggleMode);
-
 
 /* ==================== */
 /*  Helper Functions    */
@@ -511,3 +464,29 @@ const AppHelper = {
     `);
   }
 };
+
+// Toggle mode function 
+function toggleMode() {
+  const body = document.body;
+  body.classList.toggle('dark-mode');
+  localStorage.setItem('theme', body.classList.contains('dark-mode') ? 'dark' : 'light');
+}
+
+// Apply saved theme on load
+function applySavedTheme() {
+  const savedTheme = localStorage.getItem('theme');
+  if (savedTheme === 'dark') {
+    document.body.classList.add('dark-mode');
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  applySavedTheme();
+  registerServiceWorker();
+  
+  if (sessionStorage.getItem('user')) {
+    PetEntry.showExerciseLog();
+  } else {
+    Auth.showAuth(false); // Show sign-in by default
+  }
+});
