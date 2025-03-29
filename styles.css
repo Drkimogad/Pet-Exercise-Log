@@ -164,6 +164,58 @@ footer {
 .dashboard .icon-btn:hover {
   background-color: var(--dark-mustard);
 }
+/* added
+---------------------
+/* General dashboard styling */
+.dashboard {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+}
+
+/* Optimize for desktop screens */
+@media screen and (min-width: 1024px) {
+    .dashboard {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+}
+
+/* Optimize for tablet screens */
+@media screen and (max-width: 1023px) and (min-width: 768px) {
+    .dashboard {
+        max-width: 768px;
+        margin: 0 auto;
+    }
+}
+
+/* General item styling inside the dashboard */
+.dashboard-item {
+    width: 100%;
+    margin: 10px 0;
+    padding: 15px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+}
+
+/* Example styles for different items */
+.header {
+    font-size: 24px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.content {
+    flex-grow: 1;
+}
+
+.footer {
+    text-align: center;
+    padding: 10px;
+}
+
 
 /* ============================================================
 /* Profile Cards */
