@@ -148,7 +148,7 @@ const Auth = (function() {
 /* ==================== */
 const PetEntry = (function() {
   const ACTIVITY_ICONS = {
-    fetch: "🥎", swimming: "🏊", tug: "🪢", running: "🏃", agility: "⛳"
+    fetch: "🦮", swimming: "🏊", tug: "🦴", running: "🏃", agility: "⛳"
   };
   let activePetIndex = null;
   const MAX_PETS = 5;
@@ -181,8 +181,8 @@ const PetEntry = (function() {
         <div id="petFormContainer"></div>
         <div id="savedProfiles" class="profiles-grid"></div>
         <div class="exercise-tracker">
-          <div id="exerciseCalendar"></div>
-          <div id="exerciseCharts"></div>
+          <div id="exerciseCalendar" style="display: block;"></div>
+          <div id="exerciseCharts" style="display: none;"></div>
         </div>
       </div>
     `);
