@@ -50,39 +50,39 @@ const Auth = (function() {
     return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
   }
 
-  function authTemplate(isSignUp) {
-    return `
-      <div class="auth-container">
-        <div class="auth-card">
-          <h2>${isSignUp ? 'Create Account' : 'Sign In'}</h2>
-          <form id="authForm">
-            ${isSignUp ? `
-              <div class="form-group">
-                <label for="username">Name</label>
-                <input type="text" id="username" autocomplete="name">
-              </div>` : ''}
+function authTemplate(isSignUp) {
+  return `
+    <div class="auth-container">
+      <div class="auth-card">
+        <h2>${isSignUp ? 'Create Account' : 'Sign In'}</h2>
+        <form id="authForm">
+          ${isSignUp ? `
             <div class="form-group">
-              <label for="email">Email</label>
-              <input type="email" autocomplete="email">
-            </div>
-            <div class="form-group">
-              <label for="password">Password</label>
-              <input type="password" autocomplete="current-password">
-            </div>
-            ${isSignUp ? `
-              <div class="form-group">
-                <label for="confirmPassword">Confirm Password</label>
-                <input type="password" autocomplete="current-password">
-              </div>` : ''}
-            <button type="submit" class="auth-btn">${isSignUp ? 'Sign Up' : 'Sign In'}</button>
-          </form>
-          <div class="auth-switch">
-            ${isSignUp ? 'Have an account?' : 'New user?'}
-            <a href="#" id="switchAuth">${isSignUp ? 'Sign In' : 'Sign Up'}</a>
+              <label for="username">Name</label>
+              <input type="text" id="username" autocomplete="name">
+            </div>` : ''}
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" autocomplete="email">
           </div>
+          <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" autocomplete="current-password">
+          </div>
+          ${isSignUp ? `
+            <div class="form-group">
+              <label for="confirmPassword">Confirm Password</label>
+              <input type="password" id="confirmPassword" autocomplete="current-password">
+            </div>` : ''}
+          <button type="submit" class="auth-btn">${isSignUp ? 'Sign Up' : 'Sign In'}</button>
+        </form>
+        <div class="auth-switch">
+          ${isSignUp ? 'Have an account?' : 'New user?'}
+          <a href="#" id="switchAuth">${isSignUp ? 'Sign In' : 'Sign Up'}</a>
         </div>
-      </div>`;
-  }
+      </div>
+    </div>`;
+}
 
 async function handleAuthSubmit(e, isSignUp) {
   e.preventDefault();
