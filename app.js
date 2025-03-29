@@ -178,22 +178,47 @@ const PetEntry = (function() {
   function showExerciseLog() {
     AppHelper.showPage(`
       <div class="dashboard">
-        <div id="petFormContainer" style="display: block;"></div>
-        <div id="savedProfiles" class="profiles-grid" style="display: block;"></div>
-        <div class="exercise-tracker">
-          <div id="exerciseCalendar" style="display: block;"></div>
-          <div id="exerciseCharts" style="display: block;"></div>
+        <header class="dashboard-header">
+          <h1>Pet Exercise Tracker</h1>
+          <button id="logoutButton" class="logout-btn">Logout</button>
+        </header>
+        
+        <div class="dashboard-grid">
+          <!-- Left Column -->
+          <div class="left-column">
+            <div class="section">
+              <div class="section-header">
+                <h2>Pet Profiles</h2>
+                <button id="addNewProfileButton" class="add-btn">+ Add Pet</button>
+              </div>
+              <div id="petFormContainer"></div>
+              <div id="savedProfiles" class="profiles-grid"></div>
+            </div>
+          </div>
+          
+          <!-- Right Column -->
+          <div class="right-column">
+            <div class="section">
+              <h2>Exercise Calendar</h2>
+              <div id="exerciseCalendar"></div>
+            </div>
+            <div class="section">
+              <h2>Activity Charts</h2>
+              <div id="exerciseCharts"></div>
+            </div>
+          </div>
         </div>
       </div>
     `);
     
     loadSavedProfiles();
+    renderPetForm();
     Calendar.init('#exerciseCalendar');
     Charts.init('#exerciseCharts');
     setupEventListeners();
     
     if (activePetIndex !== null) {
-      loadActivePetData();
+      updateDashboard();
     }
   }
 
@@ -271,13 +296,15 @@ const PetEntry = (function() {
     const pets = getPets();
     document.getElementById('savedProfiles').innerHTML = pets.map((pet, index) => `
       <div class="profile-card ${index === activePetIndex ? 'active' : ''}" data-id="${pet.id}">
-        <img src="${pet.image}" alt="${pet.name}">
-        <h3>${pet.name}</h3>
-        <div class="profile-meta">
-          <span>${pet.exerciseEntries?.length || 0} activities</span>
-          ${pet.weightHistory?.length ? `<span>${pet.weightHistory[0].kg} kg</span>` : ''}
+        <img src="${pet.image}" alt="${pet.name}" class="pet-avatar">
+        <div class="pet-info">
+          <h3>${pet.name}</h3>
+          <div class="pet-stats">
+            <span>${pet.exerciseEntries?.length || 0} activities</span>
+            ${pet.weightHistory?.length ? `<span>${pet.weightHistory[0].kg} kg</span>` : ''}
+          </div>
         </div>
-        <div class="profile-actions">
+        <div class="pet-actions">
           <button class="btn-select" data-index="${index}">Select</button>
           <button class="btn-edit" data-id="${pet.id}">Edit</button>
         </div>
@@ -327,7 +354,7 @@ const PetEntry = (function() {
           <label for="characteristics">Characteristics</label>
           <textarea id="characteristics" name="characteristics">${pet?.characteristics || ''}</textarea>
         </div>
-        <button type="submit">${pet ? 'Update' : 'Create'} Profile</button>
+        <button type="submit" class="save-btn">${pet ? 'Update' : 'Create'} Profile</button>
       </form>
       ${pet ? `
         <form id="exerciseForm" class="exercise-form">
@@ -353,7 +380,7 @@ const PetEntry = (function() {
             <label for="date">Date</label>
             <input type="date" id="date" name="date" value="${new Date().toISOString().split('T')[0]}">
           </div>
-          <button type="submit">Log Activity</button>
+          <button type="submit" class="log-btn">Log Activity</button>
         </form>
       ` : ''}
     `;
@@ -480,7 +507,7 @@ const Calendar = (function() {
 /*  Charts Module       */
 /* ==================== */
 const Charts = (function() {
-  let durationChart, caloriesChart, activityChart;
+  let durationChart, activityChart;
 
   function init(selector) {
     document.querySelector(selector).innerHTML = `
@@ -498,8 +525,12 @@ const Charts = (function() {
     if (activityChart) activityChart.destroy();
 
     if (entries.length === 0) {
-      document.getElementById('durationChart').innerHTML = '<p>No exercise data</p>';
-      document.getElementById('activityChart').innerHTML = '<p>No exercise data</p>';
+      document.querySelector('#exerciseCharts').innerHTML = `
+        <div class="no-data">
+          <p>No exercise data available</p>
+          <p>Log activities to see charts</p>
+        </div>
+      `;
       return;
     }
 
@@ -524,8 +555,18 @@ const Charts = (function() {
           label: 'Exercise Duration (min)',
           data: durationData,
           borderColor: '#4bc0c0',
-          tension: 0.1
+          tension: 0.1,
+          fill: true,
+          backgroundColor: 'rgba(75, 192, 192, 0.1)'
         }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            position: 'top'
+          }
+        }
       }
     });
 
@@ -539,8 +580,17 @@ const Charts = (function() {
           data: Object.values(activityCounts),
           backgroundColor: [
             '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF'
-          ]
+          ],
+          borderWidth: 1
         }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            position: 'right'
+          }
+        }
       }
     });
   }
