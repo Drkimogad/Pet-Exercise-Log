@@ -20,6 +20,14 @@ document.getElementById('installButton').addEventListener('click', async () => {
   }
 });
 
+function registerServiceWorker() {
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/Pet-Exercise-Log/service-worker.js')
+      .then(reg => console.log('SW registered:', reg))
+      .catch(err => console.error('SW registration failed:', err));
+  }
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   registerServiceWorker();
   if (sessionStorage.getItem('user')) {
@@ -51,7 +59,7 @@ const Auth = (function() {
             ${isSignUp ? `
               <div class="form-group">
                 <label for="username">Name</label>
-                <input type="text" autocomplete="name">
+                <input type="text" id="username" autocomplete="name">
               </div>` : ''}
             <div class="form-group">
               <label for="email">Email</label>
