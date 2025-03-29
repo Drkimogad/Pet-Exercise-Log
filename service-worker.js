@@ -8,6 +8,7 @@ const urlsToCache = [
     './manifest.json',
     './icons/icon-192x192.png',
     './favicon.ico',
+    './images/default-pet.png',
     'https://cdn.jsdelivr.net/npm/chart.js',
     './offline.html'     // Ensure offline page is cached
 ];
