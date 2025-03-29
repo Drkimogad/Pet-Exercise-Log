@@ -6,14 +6,14 @@
     <meta name="theme-color" content="#ffffff">
     <meta name="description" content="Track your pet's exercise routine and health metrics">
     <!-- PWA Manifest -->
-    <link rel="manifest" href="https://drkimogad.github.io/Pet-Exercise-Log/manifest.json">
+    <link rel="manifest"/Pet-Exercise-Log/manifest.json">
     <!-- iOS PWA Support -->
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="apple-touch-icon" href="https://drkimogad.github.io/Pet-Exercise-Log/icon-192x192.png">
+    <link rel="apple-touch-icon" href="/Pet-Exercise-Log/icon-192x192.png">
     <title>Pet Exercise Log</title>
-    <link rel="icon" href="https://drkimogad.github.io/Pet-Exercise-Log/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="/Pet-Exercise-Log/favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="styles.css">
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -37,13 +37,13 @@
     <div id="notifications" class="notifications"></div>
 
     <!-- App Script -->
-    <script src="app.js"></script>
+    <script src="/Pet-Exercise-Log/app.js"></script>
     
     <script>
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
             navigator.serviceWorker.register(
-                'https://drkimogad.github.io/Pet-Exercise-Log/service-worker.js',
+                '/Pet-Exercise-Log/service-worker.js',
                 {
                     scope: '/Pet-Exercise-Log/'
                 }
