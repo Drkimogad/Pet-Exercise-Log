@@ -112,25 +112,34 @@ async function handleAuthSubmit(e, isSignUp) {
   if (isSignUp && formData.password !== formData.confirmPassword) errors.push('Passwords mismatch');
 
   if (errors.length) return AppHelper.showErrors(errors);
+  
+console.log('Form Data:', formData);
+console.log('Is Sign-Up:', isSignUp);
 
-  try {
-    const salt = crypto.getRandomValues(new Uint8Array(16)).join('');
-    const userData = {
-      ...(isSignUp && { username: formData.username }),
-      email: formData.email,
-      password: await hashPassword(formData.password, salt),
-      salt,
-      lastLogin: new Date().toISOString()
-    };
-    
-    currentUser = userData;
-    sessionStorage.setItem('user', JSON.stringify(userData));
-    isSignUp ? showAuth(false) : PetEntry.showExerciseLog();
-  } catch (error) {
-    AppHelper.showError('Authentication failed');
-    console.error(error);
-  }
+try {
+  const saltArray = crypto.getRandomValues(new Uint8Array(16));
+  const salt = Array.from(saltArray, byte => byte.toString(16).padStart(2, '0')).join('');
+
+  console.log('Hashing password with salt:', formData.password, salt); // Debugging log
+
+  const userData = {
+    ...(isSignUp && { username: formData.username }),
+    email: formData.email,
+    password: await hashPassword(formData.password, salt),
+    salt,
+    lastLogin: new Date().toISOString()
+  };
+
+  console.log('User Data being stored:', userData); // Debugging log
+
+  currentUser = userData;
+  sessionStorage.setItem('user', JSON.stringify(userData));
+  isSignUp ? showAuth(false) : PetEntry.showExerciseLog();
+} catch (error) {
+  AppHelper.showError('Authentication failed');
+  console.error(error);
 }
+
 
   function showAuth(isSignUp = false) {
     AppHelper.showPage(authTemplate(isSignUp));
