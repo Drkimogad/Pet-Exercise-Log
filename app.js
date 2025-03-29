@@ -136,7 +136,7 @@ const Auth = (function() {
 /*  PetEntry Module     */
 /* ==================== */
 // Constants and Variables
-const MAX_PETS = 5; // Max number of pet profiles allowed
+const MAX_PETS = 10; // Max number of pet profiles allowed
 const DEFAULT_IMAGE = 'default-pet.png'; // Default pet image if not provided
 let activePetIndex = sessionStorage.getItem('activePetIndex') 
   ? parseInt(sessionStorage.getItem('activePetIndex')) 
