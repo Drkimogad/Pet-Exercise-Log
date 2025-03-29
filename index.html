@@ -5,159 +5,62 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#ffffff">
     <meta name="description" content="Track your pet's exercise routine and health metrics">
+    
     <!-- PWA Manifest -->
-    <link rel="manifest"/Pet-Exercise-Log/manifest.json">
+    <link rel="manifest" href="/Pet-Exercise-Log/manifest.json">
+    
     <!-- iOS PWA Support -->
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="/Pet-Exercise-Log/icon-192x192.png">
+    
     <title>Pet Exercise Log</title>
     <link rel="icon" href="/Pet-Exercise-Log/favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="styles.css">
+    
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-</head>
-<body>
-    <button id="toggleModeButton" class="icon-btn">🌓 Toggle Mode</button>
-    <!-- App Root -->
-    <div id="app">
-        <!-- Auth screens will render here initially -->
-        <!-- Then dashboard content will replace it -->
-    </div>
-
-    <!-- Install Prompt -->
-    <button id="installButton" class="install-btn" style="display: none;">
-        <span>Install App</span>
-        <svg width="24" height="24" viewBox="0 0 24 24">
-            <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
-        </svg>
-    </button>
-
-    <!-- Notification System -->
-    <div id="notifications" class="notifications"></div>
-
-    <!-- App Script -->
-    <script src="/Pet-Exercise-Log/app.js"></script>
     
-    <script>
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            navigator.serviceWorker.register(
-                '/Pet-Exercise-Log/service-worker.js',
-                {
-                    scope: '/Pet-Exercise-Log/'
-                }
-            ).then((registration) => {
-                console.log('Service Worker registered:', registration);
-                setInterval(() => registration.update(), 60 * 60 * 1000);
-                
-                registration.addEventListener('updatefound', () => {
-                    const newWorker = registration.installing;
-                    newWorker.addEventListener('statechange', () => {
-                        if (newWorker.state === 'activated') {
-                            window.location.reload();
-                        }
-                    });
-                });
-                
-                navigator.serviceWorker.addEventListener('controllerchange', () => {
-                    window.location.reload();
-                });
-            }).catch(console.error);
-        });
-    }
-    </script>
-
-    <!-- ==================== -->
-    <!-- NEW: Critical CSS Additions -->
-    <!-- ==================== -->
+    <!-- Critical CSS -->
     <style>
-        /* Dashboard Layout */
-        .dashboard {
-            display: grid;
-            grid-template-rows: auto 1fr;
+        :root {
+            --primary-color: #4a89dc;
+            --bg-color: #f5f7fa;
+            --text-color: #333;
+            --card-bg: #ffffff;
+        }
+        
+        .dark-mode {
+            --primary-color: #5d9cec;
+            --bg-color: #1a1a1a;
+            --text-color: #f0f0f0;
+            --card-bg: #2d2d2d;
+        }
+        
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: background-color 0.3s ease;
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        /* Auth Container */
+        .auth-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
             min-height: 100vh;
             padding: 20px;
-            max-width: 1400px;
-            margin: 0 auto;
         }
         
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: 350px 1fr;
-            gap: 30px;
-        }
-        
-        .dashboard-header {
-            grid-column: 1 / -1;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 0;
-            border-bottom: 1px solid #eee;
-            margin-bottom: 20px;
-        }
-        
-        .left-column {
-            display: flex;
-            flex-direction: column;
-            gap: 25px;
-        }
-        
-        .right-column {
-            display: flex;
-            flex-direction: column;
-            gap: 25px;
-        }
-        
-        .section {
-            background: white;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-        }
-        
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-        
-        /* Profile Cards */
-        .profiles-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 15px;
-        }
-        
-        .profile-card {
-            background: white;
-            border-radius: 8px;
-            padding: 15px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        
-        /* Forms */
-        .pet-form, .exercise-form {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
-        
-        /* Existing styles (preserved) */
-        [style*="display: none"] {
-            position: absolute;
-            left: -9999px;
-        }
-        
+        /* Install Button */
         .install-btn {
             position: fixed;
             bottom: 20px;
             right: 20px;
-            background: #4CAF50;
+            background: var(--primary-color);
             color: white;
             border: none;
             border-radius: 50px;
@@ -170,13 +73,28 @@
             cursor: pointer;
         }
         
-        .notifications {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            max-width: 300px;
-            z-index: 1000;
+        /* Hidden elements */
+        [style*="display: none"] {
+            position: absolute;
+            left: -9999px;
         }
     </style>
+</head>
+<body>
+    <!-- App Root -->
+    <div id="app">
+        <!-- Content will be injected here by app.js -->
+    </div>
+
+    <!-- Install Prompt -->
+    <button id="installButton" class="install-btn" style="display: none;">
+        <span>Install App</span>
+        <svg width="24" height="24" viewBox="0 0 24 24">
+            <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+        </svg>
+    </button>
+
+    <!-- App Script -->
+    <script src="/Pet-Exercise-Log/app.js"></script>
 </body>
 </html>
