@@ -178,11 +178,11 @@ const PetEntry = (function() {
   function showExerciseLog() {
     AppHelper.showPage(`
       <div class="dashboard">
-        <div id="petFormContainer"></div>
-        <div id="savedProfiles" class="profiles-grid"></div>
+        <div id="petFormContainer" style="display: block;"></div>
+        <div id="savedProfiles" class="profiles-grid" style="display: block;"></div>
         <div class="exercise-tracker">
           <div id="exerciseCalendar" style="display: block;"></div>
-          <div id="exerciseCharts" style="display: none;"></div>
+          <div id="exerciseCharts" style="display: block;"></div>
         </div>
       </div>
     `);
