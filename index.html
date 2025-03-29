@@ -7,53 +7,79 @@
     <meta name="description" content="Track your pet's exercise routine and health metrics">
     
     <!-- PWA Manifest -->
-    <link rel="manifest" href="https://drkimogad.github.io/Pet-Exercise-Log/manifest.json">
+    <link rel="manifest" href="/manifest.json">
     
     <!-- iOS PWA Support -->
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="apple-touch-icon" href="https://drkimogad.github.io/Pet-Exercise-Log/icon-192x192.png">
+    <link rel="apple-touch-icon" href="/icon-192x192.png">
 
     <title>Pet Exercise Log</title>
-    <link rel="icon" href="https://drkimogad.github.io/Pet-Exercise-Log/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="styles.css">
     
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
-    <!-- Header -->
-    <header id="main-header">
-        <h1>Your Pet Exercise Log</h1>
-        <p>Track your pet's exercise routine and health metrics</p>
-    </header>
-
-    <!-- Auth Container (required for sign-in flow) -->
-    <div id="auth-container"></div>
-
-    <!-- Main App Container -->
-    <div id="app-container">
-        <div id="app">
-            <!-- Content managed by app.js -->
-        </div>
-
-        <!-- Notifications System -->
-        <div id="notifications" class="notifications-container"></div>
+    <!-- App Root -->
+    <div id="app">
+        <!-- Auth screens will render here initially -->
+        <!-- Then dashboard content will replace it -->
     </div>
 
-    <!-- PWA Install Button -->
-    <button id="installButton" style="display: none;">Install App</button>
-    <div id="saved-profiles"></div>
+    <!-- Install Prompt -->
+    <button id="installButton" class="install-btn" style="display: none;">
+        <span>Install App</span>
+        <svg width="24" height="24" viewBox="0 0 24 24">
+            <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+        </svg>
+    </button>
 
-    <!-- Footer -->
-    <footer id="main-footer">
-        <p>&copy; 2025 Pet Exercise Log. All Rights Reserved.</p>
-    </footer>
+    <!-- Hidden containers for dynamic content -->
+    <div id="petFormContainer" style="display: none;"></div>
+    <div id="savedProfiles" class="profiles-grid" style="display: none;"></div>
+    <div id="exerciseCalendar" style="display: none;"></div>
+    <div id="exerciseCharts" style="display: none;"></div>
 
-    <!-- Single Script Import -->
+    <!-- Notification System -->
+    <div id="notifications" class="notifications"></div>
+
+    <!-- App Script -->
     <script src="app.js"></script>
+
+    <style>
+        /* Ensure hidden containers don't take space */
+        [style*="display: none"] {
+            position: absolute;
+            left: -9999px;
+        }
+        
+        .install-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 12px 24px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 1000;
+            cursor: pointer;
+        }
+        
+        .notifications {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            max-width: 300px;
+            z-index: 1000;
+        }
+    </style>
 </body>
 </html>
