@@ -43,7 +43,6 @@ document.addEventListener("DOMContentLoaded", () => {
 const Auth = (function() {
   let currentUser = null;
 
-  // Password hashing utility
   async function hashPassword(pass, salt) {
     const encoder = new TextEncoder();
     const data = encoder.encode(salt ? pass + salt : pass);
@@ -51,7 +50,6 @@ const Auth = (function() {
     return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
   }
 
-  // Auth form template
   function authTemplate(isSignUp) {
     return `
       <div class="auth-container">
@@ -61,36 +59,25 @@ const Auth = (function() {
             ${isSignUp ? `
               <div class="form-group">
                 <label for="username">Name</label>
-                <input type="text" id="username" name="username" required 
-                      placeholder="Your name">
+                <input type="text" id="username" name="username" required>
               </div>` : ''}
-            
             <div class="form-group">
               <label for="email">Email</label>
-              <input type="email" id="email" name="email" required
-                    placeholder="your@email.com">
+              <input type="email" id="email" name="email" required>
             </div>
-            
             <div class="form-group">
               <label for="password">Password</label>
-              <input type="password" id="password" name="password" required
-                    minlength="8" placeholder="••••••••">
+              <input type="password" id="password" name="password" required minlength="8">
             </div>
-            
             ${isSignUp ? `
               <div class="form-group">
                 <label for="confirmPassword">Confirm Password</label>
-                <input type="password" id="confirmPassword" name="confirmPassword" required
-                      placeholder="••••••••">
+                <input type="password" id="confirmPassword" name="confirmPassword" required>
               </div>` : ''}
-              
-            <button type="submit" class="auth-btn">
-              ${isSignUp ? 'Sign Up' : 'Sign In'}
-            </button>
+            <button type="submit" class="auth-btn">${isSignUp ? 'Sign Up' : 'Sign In'}</button>
           </form>
-          
           <div class="auth-switch">
-            ${isSignUp ? 'Already have an account?' : 'Need an account?'}
+            ${isSignUp ? 'Have an account?' : 'New user?'}
             <a href="#" id="switchAuth">${isSignUp ? 'Sign In' : 'Sign Up'}</a>
           </div>
         </div>
@@ -98,98 +85,91 @@ const Auth = (function() {
     `;
   }
 
-  // Handle form submission
   async function handleAuthSubmit(e, isSignUp) {
     e.preventDefault();
     const form = e.target;
-    const email = form.email.value;
-    const password = form.password.value;
-    
+    const formData = new FormData(form);
+    const email = formData.get('email');
+    const password = formData.get('password');
+
     try {
       // Clear previous errors
-      clearErrors(form);
-      
-      // Validate inputs
+      const existingErrors = form.querySelectorAll('.error-text');
+      existingErrors.forEach(el => el.remove());
+
+      // Validation
       const errors = [];
       if (isSignUp) {
-        const username = form.username?.value;
-        const confirmPassword = form.confirmPassword?.value;
+        const username = formData.get('username');
+        const confirmPassword = formData.get('confirmPassword');
         
-        if (!username?.trim()) errors.push('Name is required');
+        if (!username) errors.push('Name is required');
         if (password !== confirmPassword) errors.push('Passwords must match');
       }
-      
+
       if (!/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(email)) {
         errors.push('Invalid email format');
       }
-      
-      if (password.length < 8) errors.push('Password must be 8+ characters');
-      
-      // Show errors if any
+
+      if (password.length < 8) errors.push('Password must be at least 8 characters');
+
       if (errors.length > 0) {
-        showErrors(form, errors);
+        errors.forEach(error => {
+          const errorElement = document.createElement('p');
+          errorElement.className = 'error-text';
+          errorElement.textContent = error;
+          errorElement.style.color = 'var(--error)';
+          errorElement.style.marginTop = '8px';
+          form.appendChild(errorElement);
+        });
         return;
       }
 
-      // Process valid form
+      // Process successful auth
       const salt = crypto.getRandomValues(new Uint8Array(16)).join('');
       const hashedPassword = await hashPassword(password, salt);
-      
+
       currentUser = {
         email,
         password: hashedPassword,
         salt,
-        ...(isSignUp && { username: form.username.value }),
+        ...(isSignUp && { username: formData.get('username') }),
         lastLogin: new Date().toISOString()
       };
 
-      // Store user and redirect
       sessionStorage.setItem('user', JSON.stringify(currentUser));
-      PetEntry.showExerciseLog();
       
+      // CRITICAL FIX: Redirect to dashboard
+      PetEntry.showExerciseLog();
+
     } catch (error) {
-      showErrors(form, ['An unexpected error occurred. Please try again.']);
-      console.error('Authentication error:', error);
+      const errorElement = document.createElement('p');
+      errorElement.className = 'error-text';
+      errorElement.textContent = 'An error occurred. Please try again.';
+      errorElement.style.color = 'var(--error)';
+      form.appendChild(errorElement);
+      console.error('Auth error:', error);
     }
   }
 
-  // Error handling utilities
-  function clearErrors(form) {
-    const errorElements = form.querySelectorAll('.error-text');
-    errorElements.forEach(el => el.remove());
-  }
-
-  function showErrors(form, errors) {
-    errors.forEach(error => {
-      const errorElement = document.createElement('p');
-      errorElement.className = 'error-text';
-      errorElement.textContent = error;
-      form.querySelector('button[type="submit"]')
-        .insertAdjacentElement('afterend', errorElement);
-    });
-  }
-
-  // Show auth screen
   function showAuth(isSignUp = false) {
     AppHelper.showPage(authTemplate(isSignUp));
     
     const form = document.getElementById('authForm');
     form.addEventListener('submit', (e) => handleAuthSubmit(e, isSignUp));
     
-    document.getElementById('switchAuth')?.addEventListener('click', (e) => {
+    document.getElementById('switchAuth').addEventListener('click', (e) => {
       e.preventDefault();
       showAuth(!isSignUp);
     });
   }
 
-  // Logout functionality
   function logout() {
-    currentUser = null;
     sessionStorage.removeItem('user');
+    currentUser = null;
     showAuth(false);
   }
 
-  // Public API
   return {
     showAuth,
     logout
