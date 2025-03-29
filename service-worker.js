@@ -1,15 +1,15 @@
-const CACHE_NAME = 'Pet-Exercise-Log-cache-v3'; // Update cache version
-const OFFLINE_URL = 'https://drkimogad.github.io/Pet-Exercise-Log/offline.html';
+const CACHE_NAME = 'Pet-Exercise-Log-cache-v4'; // Update cache version
+const OFFLINE_URL = './offline.html';
 const urlsToCache = [
-    'https://drkimogad.github.io/Pet-Exercise-Log/',                // Main page URL
-    'https://drkimogad.github.io/Pet-Exercise-Log/index.html',      // Ensure main HTML page is cached
-    'https://drkimogad.github.io/Pet-Exercise-Log/styles.css',
-    'https://drkimogad.github.io/Pet-Exercise-Log/app.js',
-    'https://drkimogad.github.io/Pet-Exercise-Log/manifest.json',
-    'https://drkimogad.github.io/Pet-Exercise-Log/icons/icon-192x192.png',
-    'https://drkimogad.github.io/Pet-Exercise-Log/favicon.ico',
+    './',                // Main page URL
+    './index.html',      // Ensure main HTML page is cached
+    './styles.css',
+    './app.js',
+    './manifest.json',
+    './icons/icon-192x192.png',
+    './favicon.ico',
     'https://cdn.jsdelivr.net/npm/chart.js',
-    'https://drkimogad.github.io/Pet-Exercise-Log/offline.html'     // Ensure offline page is cached
+    './offline.html'     // Ensure offline page is cached
 ];
 
 // Install event: Cache necessary assets
@@ -49,18 +49,18 @@ self.addEventListener('fetch', (event) => {
 
             // If the request is for an HTML file (navigation), return the index.html 
             if (event.request.mode === 'navigate') {
-                return caches.match('https://drkimogad.github.io/Pet-Exercise-Log/index.html');  // Ensure offline.html is cached
+                return caches.match('./index.html');  // Ensure offline.html is cached
             }
 
             console.log('Fetching from network:', event.request.url);
             return fetch(event.request).catch(() => {
                 // Offline fallback if fetch fails (e.g., user is offline)
-                return caches.match('https://drkimogad.github.io/Pet-Exercise-Log/index.html');  // Ensure offline.html is cached
+                return caches.match('./offline.html');  // Ensure offline.html is cached
             });
         }).catch((err) => {
             console.error('Error fetching:', err);
             // In case of any unexpected errors, fallback to index.html
-            return caches.match('https://drkimogad.github.io/Pet-Exercise-Log/index.html');
+            return caches.match('./index.html');
         })
     );
 });
