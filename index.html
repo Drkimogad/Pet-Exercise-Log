@@ -49,16 +49,16 @@
     <!-- App Script -->
     <script src="app.js"></script>
     
-    </script>
-    if ('serviceWorker' in navigator) {
+    <script>
+if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
         navigator.serviceWorker.register(
-            './service-worker.js',
+            './service-worker.js',  // Ensure this path is correct
             {
-                scope: '/Pet-Health-Tracker/'
+                scope: '/Pet-Exercise-Log/'  // Ensure this scope is correct
             }
         ).then((registration) => {
-            console.log('SW registered:', registration);
+            console.log('Service Worker registered:', registration);
             setInterval(() => registration.update(), 60 * 60 * 1000);
             
             // Enhanced update handling
@@ -76,7 +76,8 @@
             });
         }).catch(console.error);
     });
-    </script>
+}
+</script>
     <style>
         /* Ensure hidden containers don't take space */
         [style*="display: none"] {
