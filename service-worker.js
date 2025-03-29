@@ -1,4 +1,4 @@
-const CACHE_NAME = 'Pet-Exercise-Log-cache-v4'; // Update cache version
+const CACHE_NAME = 'Pet-Exercise-Log-cache-v5'; // Update cache version
 const OFFLINE_URL = './offline.html';
 const urlsToCache = [
     './',                // Main page URL
@@ -6,9 +6,9 @@ const urlsToCache = [
     './styles.css',
     './app.js',
     './manifest.json',
-    './icons/icon-192x192.png',
+    './icons/icon-192x192.png', // Updated path for icons
     './favicon.ico',
-    './images/default-pet.png',
+    './public/images/default-pet.png', // Updated path for images
     'https://cdn.jsdelivr.net/npm/chart.js',
     './offline.html'     // Ensure offline page is cached
 ];
@@ -32,6 +32,13 @@ self.addEventListener('install', (event) => {
                 })
                 .catch((err) => {
                     console.error('Error caching assets:', err);
+                    urlsToCache.forEach(url => {
+                        fetch(url).then(response => {
+                            if (!response.ok) {
+                                console.error('Failed to fetch:', url);
+                            }
+                        });
+                    });
                 });
         })
     );
@@ -50,7 +57,13 @@ self.addEventListener('fetch', (event) => {
 
             // If the request is for an HTML file (navigation), return the index.html 
             if (event.request.mode === 'navigate') {
-                return caches.match('./index.html');  // Ensure offline.html is cached
+                return caches.match('./index.html').then(response => {
+                    if (response) {
+                        return response;
+                    } else {
+                        return fetch(event.request);
+                    }
+                });
             }
 
             console.log('Fetching from network:', event.request.url);
@@ -86,7 +99,6 @@ self.addEventListener('activate', (event) => {
         })
     );
 });
-
 
 // NEW: Check for updates and fetch new service worker
 self.addEventListener('message', (event) => {
