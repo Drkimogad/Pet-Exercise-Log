@@ -1,118 +1,47 @@
 "use strict";
 
-let deferredPrompt; // Store the install event
+/* ==================== */
+/*  Core Functionality  */
+/* ==================== */
+let deferredPrompt;
 
-// ✅ Automatically Show Install Banner
-window.addEventListener('beforeinstallprompt', (event) => {
-  event.preventDefault();
-  deferredPrompt = event;
-
-  // Automatically show the prompt after a short delay
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
   setTimeout(async () => {
     if (deferredPrompt) {
       try {
         await deferredPrompt.prompt();
         const choiceResult = await deferredPrompt.userChoice;
         console.log(choiceResult.outcome === 'accepted' ? 'User accepted install' : 'User dismissed install');
-        deferredPrompt = null; // Reset after use
+        deferredPrompt = null;
       } catch (error) {
         console.error('Auto Install prompt failed:', error);
       }
     }
-  }, 2000); // 2-second delay before auto prompt
-
-  // Also enable manual install button
-  const installButton = document.getElementById('installButton');
-  if (installButton) {
-    installButton.style.display = 'block';
-    installButton.addEventListener('click', async () => {
-      if (deferredPrompt) {
-        try {
-          await deferredPrompt.prompt();
-          const choiceResult = await deferredPrompt.userChoice;
-          console.log(choiceResult.outcome === 'accepted' ? 'User accepted install' : 'User dismissed install');
-        } catch (error) {
-          console.error('Manual Install failed:', error);
-        } finally {
-          deferredPrompt = null;
-          installButton.style.display = 'none';
-        }
-      }
-    });
-  }
+  }, 2000);
 });
 
-// ✅ Service Worker Registration
 function registerServiceWorker() {
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/Pet-Exercise-Log/service-worker.js', {
-      scope: '/Pet-Exercise-Log/'
-    }).then(reg => {
-      console.log('Service Worker registered with scope:', reg.scope);
-    }).catch(error => {
-      console.error('Service Worker registration failed:', error);
-    });
+    navigator.serviceWorker.register('/service-worker.js')
+      .then(reg => console.log('SW registered:', reg.scope))
+      .catch(err => console.error('SW failed:', err));
   }
 }
 
-// ✅ Fixed showSignIn (no nested DOMContentLoaded)
-function showSignIn() {
-  const authContainer = document.getElementById("auth-container");
-  if (authContainer) {
-    authContainer.style.display = "block";
-  } else {
-    console.warn("⚠️ Auth container not found");
-  }
-}
-
-// ✅ Run on page load
 document.addEventListener("DOMContentLoaded", () => {
   registerServiceWorker();
-
-  // Apply dark mode if enabled
-  if (localStorage.getItem('darkMode') === 'true') {
-    document.body.classList.add('dark-mode');
-  }
-
-  // Check if user is logged in
   if (sessionStorage.getItem('user')) {
-    if (typeof PetEntry !== "undefined" && typeof PetEntry.showExerciseLog === "function") {
-      PetEntry.showExerciseLog();
-    } else {
-      console.error("❌ PetEntry or showExerciseLog function is missing!");
-    }
+    PetEntry.showExerciseLog();
   } else {
     Auth.showAuth();
   }
 });
 
-// appHelper
-const AppHelper = (function() {
-  const appContainer = document.getElementById('app');
-  const components = {};
-
-  return {
-    showPage: (html) => appContainer.innerHTML = html,
-    renderComponent: (id, html) => {
-      const target = document.getElementById(id);
-      if (target) target.innerHTML = html;
-      return !!target;
-    },
-    updateSection: (id, content) => AppHelper.renderComponent(id, content),
-    registerComponent: (id, renderFn) => components[id] = renderFn,
-    refreshComponent: (id) => components[id] && AppHelper.renderComponent(id, components[id]()),
-    showError: (msg) => {
-      const error = document.createElement('div');
-      error.className = 'error-message';
-      error.textContent = msg;
-      appContainer.appendChild(error);
-      setTimeout(() => error.remove(), 5000);
-    },
-    showErrors: (msgs) => msgs.forEach(msg => AppHelper.showError(msg))
-  };
-})();
-
-// Authentication //
+/* ==================== */
+/*  Auth Module         */
+/* ==================== */
 const Auth = (function() {
   let currentUser = null;
 
@@ -188,8 +117,7 @@ const Auth = (function() {
       
       currentUser = userData;
       sessionStorage.setItem('user', JSON.stringify(userData));
-      console.log('Stored user data:', JSON.parse(sessionStorage.getItem('user')));
-      isSignUp ? showAuth(false) : PetEntry.showExerciseLog(); // Changed PetEntryModule to PetEntry
+      isSignUp ? showAuth(false) : PetEntry.showExerciseLog();
     } catch (error) {
       AppHelper.showError('Authentication failed');
       console.error(error);
@@ -215,366 +143,301 @@ const Auth = (function() {
   };
 })();
 
-// PetEntry //
+/* ==================== */
+/*  PetEntry Module     */
+/* ==================== */
 const PetEntry = (function() {
+  const ACTIVITY_ICONS = {
+    fetch: "🥎", swimming: "🏊", tug: "🪢", running: "🏃", agility: "⛳"
+  };
   let activePetIndex = null;
-  const MAX_PETS = 10;
+  const MAX_PETS = 5;
   const DEFAULT_IMAGE = '/images/default-pet.png';
 
-  // The method to get the list of pets from localStorage
-  const getPets = () => {
-    try {
-      return JSON.parse(localStorage.getItem('pets') || '[]');
-    } catch (e) {
-      console.error('Error parsing pets from localStorage', e);
-      return [];
-    }
-  };
+  function generateId() {
+    return Math.random().toString(36).substring(2, 9);
+  }
 
-  const templates = {
-    dashboard: () => `
-      <div class="dashboard-container">
-        <header class="dashboard-header">
-          <button id="addNewProfileButton" class="icon-btn">＋ New Profile</button>
-          <button id="toggleModeButton" class="icon-btn">🌓 Toggle Mode</button>
-          <button id="logoutButton" class="icon-btn">Logout</button>
-        </header>
-        <main class="dashboard-main">
-          <section class="form-section" id="petFormContainer"></section>
-          <section class="data-section">
-            <div class="calendar-container" id="exerciseCalendar"></div>
-            <div class="charts-container" id="exerciseCharts"></div>
-          </section>
-        </main>
-        <aside class="saved-profiles" id="savedProfiles"></aside>
-      </div>
-    `,
-    petForm: () => {
-      const pet = activePetIndex !== null ? PetEntry.getPets()[activePetIndex] : null;
-      return `
-        <form id="exerciseForm" class="pet-form card">
-          <fieldset class="pet-details">
-            <legend>${activePetIndex === null ? 'New Pet' : 'Update Pet'}</legend>
-            <div class="form-group">
-              <label for="petName">Name</label>
-              <input type="text" id="petName" value="${pet ? pet.petDetails.name : ''}" required>
-            </div>
-            <div class="form-group">
-              <label>Image</label>
-              <div class="image-upload">
-                <input type="file" id="petImage" accept="image/*">
-                <img id="petImagePreview" src="${pet ? pet.petDetails.image : DEFAULT_IMAGE}" alt="Pet Preview">
-              </div>
-            </div>
-            <div class="form-group">
-              <label for="petCharacteristics">Description</label>
-              <textarea id="petCharacteristics" rows="3">${pet ? pet.petDetails.characteristics : ''}</textarea>
-            </div>
-          </fieldset>
-          <fieldset class="exercise-entry">
-            <legend>Add Exercise</legend>
-            <div class="form-grid">
-              <div class="form-group">
-                <label for="exerciseType">Type</label>
-                <select id="exerciseType" required>
-                  <option value="walking">Walking</option>
-                  <option value="running">Running</option>
-                  <option value="swimming">Swimming</option>
-                  <option value="playing">Playing</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label for="exerciseDuration">Duration (min)</label>
-                <input type="number" id="exerciseDuration" min="1" required>
-              </div>
-              <div class="form-group">
-                <label for="exerciseDate">Date</label>
-                <input type="date" id="exerciseDate" value="${new Date().toISOString().split('T')[0]}" required>
-              </div>
-              <div class="form-group">
-                <label for="caloriesBurned">Calories</label>
-                <input type="number" id="caloriesBurned" min="1" required>
-              </div>
-            </div>
-            <button type="submit" class="primary-btn">
-              ${activePetIndex === null ? 'Create Profile' : 'Add Exercise'}
-            </button>
-          </fieldset>
-        </form>
-      `;
-    }
-  };
+  function getPets() {
+    const pets = JSON.parse(localStorage.getItem('pets') || '[]');
+    return pets.map(pet => ({
+      id: pet.id || generateId(),
+      name: pet.name || pet.petDetails?.name || 'Unnamed',
+      image: pet.image || pet.petDetails?.image || DEFAULT_IMAGE,
+      characteristics: pet.characteristics || pet.petDetails?.characteristics || '',
+      weightHistory: pet.weightHistory || [],
+      exerciseEntries: pet.exerciseEntries || [],
+      monthlyReports: pet.monthlyReports || []
+    }));
+  }
+
+  function savePets(pets) {
+    localStorage.setItem('pets', JSON.stringify(pets));
+  }
 
   function showExerciseLog() {
-    AppHelper.showPage(templates.dashboard());
-    AppHelper.registerComponent('petFormContainer', () => templates.petForm());
-    AppHelper.refreshComponent('petFormContainer');
+    AppHelper.showPage(`
+      <div class="dashboard">
+        <div id="petFormContainer"></div>
+        <div id="savedProfiles" class="profiles-grid"></div>
+        <div class="exercise-tracker">
+          <div id="exerciseCalendar"></div>
+          <div id="exerciseCharts"></div>
+        </div>
+      </div>
+    `);
+    
+    loadSavedProfiles();
     Calendar.init('#exerciseCalendar');
     Charts.init('#exerciseCharts');
     setupEventListeners();
-    loadSavedProfiles();
-    loadActivePetData();
+    
+    if (activePetIndex !== null) {
+      loadActivePetData();
+    }
   }
 
   function setupEventListeners() {
-    document.getElementById('exerciseForm')?.addEventListener('submit', handleFormSubmit);
-    document.getElementById('petImage')?.addEventListener('change', handleImageUpload);
-    document.getElementById('toggleModeButton')?.addEventListener('click', toggleDarkMode);
-    document.getElementById('logoutButton')?.addEventListener('click', () => {
-      Auth.logout();
+    document.addEventListener('submit', e => {
+      if (e.target.matches('#petForm')) handlePetFormSubmit(e);
+      if (e.target.matches('#exerciseForm')) handleExerciseSubmit(e);
     });
+    
+    document.getElementById('logoutButton')?.addEventListener('click', Auth.logout);
     document.getElementById('addNewProfileButton')?.addEventListener('click', () => {
       activePetIndex = null;
-      AppHelper.refreshComponent('petFormContainer');
+      renderPetForm();
     });
   }
 
-  function handleFormSubmit(e) {
+  function handlePetFormSubmit(e) {
     e.preventDefault();
-    const formData = {
-      petName: document.getElementById('petName').value,
-      petImage: document.getElementById('petImagePreview').src,
-      characteristics: document.getElementById('petCharacteristics').value,
-      exerciseType: document.getElementById('exerciseType').value,
-      duration: document.getElementById('exerciseDuration').value,
-      date: document.getElementById('exerciseDate').value,
-      calories: document.getElementById('caloriesBurned').value
-    };
-
-    const errors = [];
-    if (!formData.petName.trim()) errors.push('Pet name required');
-    if (formData.duration < 1) errors.push('Invalid duration');
-    if (formData.calories < 1) errors.push('Invalid calories');
-    if (errors.length) return AppHelper.showErrors(errors);
-
+    const formData = new FormData(e.target);
     const pets = getPets();
-    const petData = activePetIndex !== null ? pets[activePetIndex] : {
-      petDetails: { name: '', image: DEFAULT_IMAGE, characteristics: '' },
+    const petId = formData.get('petId') || generateId();
+    
+    const petData = {
+      id: petId,
+      name: formData.get('petName'),
+      image: formData.get('petImage') || DEFAULT_IMAGE,
+      characteristics: formData.get('characteristics'),
+      weightHistory: [{
+        date: new Date().toISOString().split('T')[0],
+        kg: parseFloat(formData.get('currentWeight')),
+        condition: formData.get('bodyCondition')
+      }],
       exerciseEntries: [],
-      monthlyReports: []  // <-- New property for archived reports
+      monthlyReports: []
     };
 
-    petData.petDetails = {
-      name: formData.petName,
-      image: formData.petImage,
-      characteristics: formData.characteristics
-    };
-
-    petData.exerciseEntries.push({
-      exerciseType: formData.exerciseType,
-      duration: Number(formData.duration),
-      date: formData.date,
-      caloriesBurned: Number(formData.calories)
-    });
-
-    if (activePetIndex === null) {
+    const existingIndex = pets.findIndex(p => p.id === petId);
+    if (existingIndex >= 0) {
+      petData.exerciseEntries = pets[existingIndex].exerciseEntries;
+      petData.monthlyReports = pets[existingIndex].monthlyReports;
+      pets[existingIndex] = petData;
+      activePetIndex = existingIndex;
+    } else {
       if (pets.length >= MAX_PETS) return AppHelper.showError('Maximum profiles reached');
       pets.push(petData);
       activePetIndex = pets.length - 1;
-    } else {
-      pets[activePetIndex] = petData;
     }
 
-    localStorage.setItem('pets', JSON.stringify(pets));
+    savePets(pets);
     sessionStorage.setItem('activePetIndex', activePetIndex);
-    updateDashboard(petData);
-  }
-
-  function updateDashboard(petData) {
-    Calendar.refresh(petData.exerciseEntries);
-    Charts.refresh(petData.exerciseEntries);
     loadSavedProfiles();
-    AppHelper.refreshComponent('petFormContainer');
+    renderPetForm();
   }
 
-  // --- Add Profile Control (Save, Edit, Delete, Reports) ---
+  function handleExerciseSubmit(e) {
+    e.preventDefault();
+    if (activePetIndex === null) return;
+    
+    const formData = new FormData(e.target);
+    const pets = getPets();
+    const pet = pets[activePetIndex];
+    
+    pet.exerciseEntries.unshift({
+      exerciseType: formData.get('exerciseType'),
+      duration: parseInt(formData.get('duration')),
+      date: formData.get('date') || new Date().toISOString().split('T')[0],
+      caloriesBurned: parseInt(formData.get('caloriesBurned'))
+    });
 
-  // load saved pet profiles //
+    savePets(pets);
+    updateDashboard();
+  }
+
   function loadSavedProfiles() {
     const pets = getPets();
-    const profilesHTML = pets.map((pet, index) => `
-      <div class="profile-card ${index === activePetIndex ? 'active' : ''}">
-        <img src="${pet.petDetails.image}" alt="${pet.petDetails.name}">
-        <h4>${pet.petDetails.name}</h4>
-        <button class="select-btn" data-index="${index}">${index === activePetIndex ? 'Selected' : 'Select'}</button>
-        <div class="profile-controls">
-          <button class="edit-btn" data-index="${index}">Edit</button>
-          <button class="delete-btn" data-index="${index}">Delete</button>
-          <button class="monthly-report-btn" data-index="${index}">Monthly Report</button>
-          <button class="print-profile-btn" data-index="${index}">Print Profile</button>
+    document.getElementById('savedProfiles').innerHTML = pets.map((pet, index) => `
+      <div class="profile-card ${index === activePetIndex ? 'active' : ''}" data-id="${pet.id}">
+        <img src="${pet.image}" alt="${pet.name}">
+        <h3>${pet.name}</h3>
+        <div class="profile-meta">
+          <span>${pet.exerciseEntries?.length || 0} activities</span>
+          ${pet.weightHistory?.length ? `<span>${pet.weightHistory[0].kg} kg</span>` : ''}
+        </div>
+        <div class="profile-actions">
+          <button class="btn-select" data-index="${index}">Select</button>
+          <button class="btn-edit" data-id="${pet.id}">Edit</button>
         </div>
       </div>
     `).join('');
 
-    AppHelper.renderComponent('savedProfiles', profilesHTML);
-
-    document.querySelectorAll('.select-btn').forEach(btn => {
+    document.querySelectorAll('.btn-select').forEach(btn => {
       btn.addEventListener('click', () => {
         activePetIndex = parseInt(btn.dataset.index);
         sessionStorage.setItem('activePetIndex', activePetIndex);
-        updateDashboard(getPets()[activePetIndex]);
+        updateDashboard();
       });
     });
 
-    document.querySelectorAll('.edit-btn').forEach(btn => {
+    document.querySelectorAll('.btn-edit').forEach(btn => {
       btn.addEventListener('click', () => {
-        activePetIndex = parseInt(btn.dataset.index);
+        activePetIndex = getPets().findIndex(p => p.id === btn.dataset.id);
         sessionStorage.setItem('activePetIndex', activePetIndex);
-        AppHelper.refreshComponent('petFormContainer');
-      });
-    });
-
-    document.querySelectorAll('.delete-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const index = parseInt(btn.dataset.index);
-        const pets = getPets();
-        pets.splice(index, 1);
-        localStorage.setItem('pets', JSON.stringify(pets));
-        if (activePetIndex === index) {
-          activePetIndex = null;
-          sessionStorage.removeItem('activePetIndex');
-        } else if (activePetIndex > index) {
-          activePetIndex--;
-          sessionStorage.setItem('activePetIndex', activePetIndex);
-        }
-        loadSavedProfiles();
-        if (activePetIndex !== null) {
-          updateDashboard(pets[activePetIndex]);
-        }
-      });
-    });
-
-    document.querySelectorAll('.monthly-report-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const index = parseInt(btn.dataset.index);
-        openMonthlyReport(index);
-      });
-    });
-
-    document.querySelectorAll('.print-profile-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const index = parseInt(btn.dataset.index);
-        printProfile(index);
+        renderPetForm();
       });
     });
   }
 
-  // Function to generate monthly report
-  function openMonthlyReport(index) {
-    const pets = getPets();
-    const pet = pets[index];
-    const now = new Date();
-    const currentMonth = now.getMonth();
-    const currentYear = now.getFullYear();
-
-    const reportHTML = `
-      <div class="monthly-report">
-        <h2>Monthly Report for ${pet.petDetails.name}</h2>
-        <div id="monthlyCalendar">
-          <!-- Calendar with ticked days goes here -->
+  function renderPetForm() {
+    const pet = activePetIndex !== null ? getPets()[activePetIndex] : null;
+    document.getElementById('petFormContainer').innerHTML = `
+      <form id="petForm" class="pet-form">
+        <input type="hidden" name="petId" value="${pet?.id || ''}">
+        <div class="form-group">
+          <label for="petName">Pet Name</label>
+          <input type="text" id="petName" name="petName" value="${pet?.name || ''}" required>
         </div>
-        <div id="monthlyCharts">
-          <!-- Two charts displaying exercise trends go here -->
+        <div class="form-group">
+          <label for="currentWeight">Weight (kg)</label>
+          <input type="number" step="0.1" id="currentWeight" name="currentWeight" 
+                 value="${pet?.weightHistory?.[0]?.kg || ''}" required>
         </div>
-        <button id="exportReportBtn">Export Report</button>
-        <button id="backToDashboardBtn">Back to Dashboard</button>
-      </div>
+        <div class="form-group">
+          <label for="bodyCondition">Body Condition</label>
+          <select id="bodyCondition" name="bodyCondition">
+            <option ${pet?.weightHistory?.[0]?.condition === 'underweight' ? 'selected' : ''}>underweight</option>
+            <option ${!pet?.weightHistory?.[0]?.condition || pet?.weightHistory?.[0]?.condition === 'ideal' ? 'selected' : ''}>ideal</option>
+            <option ${pet?.weightHistory?.[0]?.condition === 'overweight' ? 'selected' : ''}>overweight</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="characteristics">Characteristics</label>
+          <textarea id="characteristics" name="characteristics">${pet?.characteristics || ''}</textarea>
+        </div>
+        <button type="submit">${pet ? 'Update' : 'Create'} Profile</button>
+      </form>
+      ${pet ? `
+        <form id="exerciseForm" class="exercise-form">
+          <h3>Log Exercise</h3>
+          <div class="form-group">
+            <label for="exerciseType">Activity</label>
+            <select id="exerciseType" name="exerciseType" required>
+              <option value="walk">Walk</option>
+              <option value="run">Run</option>
+              <option value="swim">Swim</option>
+              <option value="play">Play</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="duration">Duration (minutes)</label>
+            <input type="number" id="duration" name="duration" min="1" required>
+          </div>
+          <div class="form-group">
+            <label for="caloriesBurned">Calories Burned</label>
+            <input type="number" id="caloriesBurned" name="caloriesBurned" min="1" required>
+          </div>
+          <div class="form-group">
+            <label for="date">Date</label>
+            <input type="date" id="date" name="date" value="${new Date().toISOString().split('T')[0]}">
+          </div>
+          <button type="submit">Log Activity</button>
+        </form>
+      ` : ''}
     `;
-    AppHelper.showPage(reportHTML);
-    document.getElementById('backToDashboardBtn')?.addEventListener('click', () => {
-      PetEntry.showExerciseLog();
-    });
   }
 
-  // Function to print pet profile
-  function printProfile(index) {
-    const pets = getPets();
-    const pet = pets[index];
-    const printContent = `
-      <div>
-        <h2>Pet Profile: ${pet.petDetails.name}</h2>
-        <img src="${pet.petDetails.image}" alt="${pet.petDetails.name}">
-        <p>${pet.petDetails.characteristics}</p>
-        <h3>Exercise Entries:</h3>
-        <ul>
-          ${pet.exerciseEntries.map(e => `<li>${e.date}: ${e.exerciseType} for ${e.duration} minutes, ${e.caloriesBurned} calories</li>`).join('')}
-        </ul>
-      </div>
-    `;
-    const printWindow = window.open('', '', 'width=800,height=600');
-    printWindow.document.write(printContent);
-    printWindow.document.close();
-    printWindow.print();
+  function updateDashboard() {
+    if (activePetIndex === null) return;
+    const pet = getPets()[activePetIndex];
+    Calendar.refresh(pet.exerciseEntries);
+    Charts.refresh(pet.exerciseEntries);
   }
 
-  // Return the necessary public methods
+  function loadActivePetData() {
+    activePetIndex = parseInt(sessionStorage.getItem('activePetIndex')) || null;
+    if (activePetIndex !== null) {
+      updateDashboard();
+      renderPetForm();
+    }
+  }
+
   return {
     showExerciseLog,
-    getPets, // Make sure this is accessible
-    getActivePet: () => activePetIndex !== null ? getPets()[activePetIndex] : null
+    getPets,
+    savePets
   };
 })();
 
-
-// Calendar //
+/* ==================== */
+/*  Calendar Module     */
+/* ==================== */
 const Calendar = (function() {
   let currentMonth = new Date().getMonth();
   let currentYear = new Date().getFullYear();
   let exerciseData = [];
 
   function init(selector) {
-    const container = document.querySelector(selector);
-    if (!container) return;
-    container.innerHTML = '<div class="calendar"></div>';
+    document.querySelector(selector).innerHTML = '<div class="calendar"></div>';
+    generateCalendar();
+  }
+
+  function refresh(entries) {
+    exerciseData = entries || [];
     generateCalendar();
   }
 
   function generateCalendar() {
-    const container = document.querySelector('.calendar');
-    if (!container) return;
-
     const date = new Date(currentYear, currentMonth, 1);
-    const monthName = date.toLocaleString('default', { month: 'long' });
+    const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
     const startDay = date.getDay();
-    const endDate = new Date(currentYear, currentMonth + 1, 0).getDate();
 
     let calendarHTML = `
       <div class="calendar-header">
-        <button class="nav-btn prev">←</button>
-        <h2>${monthName} ${currentYear}</h2>
-        <button class="nav-btn next">→</button>
+        <button class="prev-month">←</button>
+        <h2>${date.toLocaleString('default', { month: 'long' })} ${currentYear}</h2>
+        <button class="next-month">→</button>
       </div>
       <div class="calendar-grid">
-        ${['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
-          .map(day => `<div class="calendar-day header">${day}</div>`)
-          .join('')}
+        ${['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => `
+          <div class="calendar-day-header">${day}</div>
+        `).join('')}
     `;
 
     // Empty days
     for (let i = 0; i < startDay; i++) {
-      calendarHTML += `<div class="calendar-day empty"></div>`;
+      calendarHTML += '<div class="calendar-day empty"></div>';
     }
 
-    // Actual days
-    for (let day = 1; day <= endDate; day++) {
-      const paddedMonth = String(currentMonth + 1).padStart(2, '0');
-      const dateStr = `${currentYear}-${paddedMonth}-${String(day).padStart(2, '0')}`;
-      const count = exerciseData.filter(e => e.date === dateStr).length;
+    // Days of month
+    for (let day = 1; day <= daysInMonth; day++) {
+      const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+      const dayExercises = exerciseData.filter(e => e.date === dateStr);
+      
       calendarHTML += `
-        <div class="calendar-day ${count ? 'has-exercise' : ''}" data-date="${dateStr}">
+        <div class="calendar-day ${dayExercises.length ? 'has-activity' : ''}" data-date="${dateStr}">
           ${day}
-          ${count ? `<div class="exercise-count">${count}</div>` : ''}
+          ${dayExercises.length ? `<div class="activity-count">${dayExercises.length}</div>` : ''}
         </div>
       `;
     }
 
-    calendarHTML += '</div>';
-    container.innerHTML = calendarHTML;
-    addEventListeners();
-  }
+    document.querySelector('.calendar').innerHTML = calendarHTML;
 
-  function addEventListeners() {
-    document.querySelector('.prev')?.addEventListener('click', () => {
+    // Event listeners
+    document.querySelector('.prev-month').addEventListener('click', () => {
       currentMonth--;
       if (currentMonth < 0) {
         currentMonth = 11;
@@ -583,7 +446,7 @@ const Calendar = (function() {
       generateCalendar();
     });
 
-    document.querySelector('.next')?.addEventListener('click', () => {
+    document.querySelector('.next-month').addEventListener('click', () => {
       currentMonth++;
       if (currentMonth > 11) {
         currentMonth = 0;
@@ -594,8 +457,18 @@ const Calendar = (function() {
 
     document.querySelectorAll('.calendar-day:not(.empty)').forEach(day => {
       day.addEventListener('click', () => {
-        const entries = exerciseData.filter(e => e.date === day.dataset.date);
-        showDayModal(day.dataset.date, entries);
+        const date = day.dataset.date;
+        const exercises = exerciseData.filter(e => e.date === date);
+        if (exercises.length) {
+          AppHelper.showModal(`
+            <h3>Activities on ${date}</h3>
+            <ul>
+              ${exercises.map(e => `
+                <li>${e.exerciseType} - ${e.duration} mins (${e.caloriesBurned} cal)</li>
+              `).join('')}
+            </ul>
+          `);
+        }
       });
     });
   }
@@ -603,115 +476,114 @@ const Calendar = (function() {
   return { init, refresh };
 })();
 
-// Charts
+/* ==================== */
+/*  Charts Module       */
+/* ==================== */
 const Charts = (function() {
   let durationChart, caloriesChart, activityChart;
 
   function init(selector) {
-    const container = document.querySelector(selector);
-    if (!container) return;
-    container.innerHTML = `
-      <div class="chart">
+    document.querySelector(selector).innerHTML = `
+      <div class="chart-container">
         <canvas id="durationChart"></canvas>
       </div>
-      <div class="chart">
+      <div class="chart-container">
         <canvas id="activityChart"></canvas>
-      </div>
-      <div class="chart">
-        <canvas id="caloriesChart"></canvas>
       </div>
     `;
   }
 
-  function refresh(data) {
-    if (!data.length) return;
-    destroyCharts();
-    
-    const processed = processData(data);
-    createDurationChart(processed);
-    createActivityChart(processed);
-    createCaloriesChart(processed);
-  }
-
-  function processData(data) {
-    return {
-      labels: [...new Set(data.map(e => e.date))].sort(),
-      duration: data.reduce((acc, e) => {
-        acc[e.date] = (acc[e.date] || 0) + e.duration;
-        return acc;
-      }, {}),
-      calories: data.reduce((acc, e) => {
-        acc[e.date] = (acc[e.date] || 0) + e.caloriesBurned;
-        return acc;
-      }, {}),
-      activities: data.reduce((acc, e) => {
-        acc[e.exerciseType] = (acc[e.exerciseType] || 0) + 1;
-        return acc;
-      }, {})
-    };
-  }
-
-  function createDurationChart(data) {
-    const ctx = document.getElementById('durationChart');
-    durationChart = new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: Object.keys(data.duration),
-        datasets: [{
-          label: 'Total Duration (min)',
-          data: Object.values(data.duration),
-          borderColor: '#4bc0c0',
-          tension: 0.3
-        }]
-      }
-    });
-  }
-
-  function createActivityChart(data) {
-    const ctx = document.getElementById('activityChart');
-    activityChart = new Chart(ctx, {
-      type: 'doughnut',
-      data: {
-        labels: Object.keys(data.activities),
-        datasets: [{
-          data: Object.values(data.activities),
-          backgroundColor: ['#ff6384', '#36a2eb', '#ffce56', '#4bc0c0']
-        }]
-      }
-    });
-  }
-
-  function createCaloriesChart(data) {
-    const ctx = document.getElementById('caloriesChart');
-    caloriesChart = new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels: Object.keys(data.calories),
-        datasets: [{
-          label: 'Calories Burned',
-          data: Object.values(data.calories),
-          backgroundColor: '#cc65fe'
-        }]
-      }
-    });
-  }
-
-  function destroyCharts() {
+  function refresh(entries = []) {
     if (durationChart) durationChart.destroy();
     if (activityChart) activityChart.destroy();
-    if (caloriesChart) caloriesChart.destroy();
+
+    if (entries.length === 0) {
+      document.getElementById('durationChart').innerHTML = '<p>No exercise data</p>';
+      document.getElementById('activityChart').innerHTML = '<p>No exercise data</p>';
+      return;
+    }
+
+    // Process data
+    const dates = [...new Set(entries.map(e => e.date))].sort();
+    const durationData = dates.map(date => 
+      entries.filter(e => e.date === date).reduce((sum, e) => sum + e.duration, 0)
+    );
+
+    const activityCounts = entries.reduce((acc, e) => {
+      acc[e.exerciseType] = (acc[e.exerciseType] || 0) + 1;
+      return acc;
+    }, {});
+
+    // Duration Chart
+    const durationCtx = document.getElementById('durationChart').getContext('2d');
+    durationChart = new Chart(durationCtx, {
+      type: 'line',
+      data: {
+        labels: dates,
+        datasets: [{
+          label: 'Exercise Duration (min)',
+          data: durationData,
+          borderColor: '#4bc0c0',
+          tension: 0.1
+        }]
+      }
+    });
+
+    // Activity Chart
+    const activityCtx = document.getElementById('activityChart').getContext('2d');
+    activityChart = new Chart(activityCtx, {
+      type: 'doughnut',
+      data: {
+        labels: Object.keys(activityCounts),
+        datasets: [{
+          data: Object.values(activityCounts),
+          backgroundColor: [
+            '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF'
+          ]
+        }]
+      }
+    });
   }
 
-  function updateColors() {
-    const textColor = document.body.classList.contains('dark-mode') ? '#fff' : '#374151';
-    Chart.defaults.color = textColor;
-    if (durationChart) durationChart.update();
-    if (activityChart) activityChart.update();
-    if (caloriesChart) caloriesChart.update();
-  }
-
-  return { init, refresh, updateColors };
+  return { init, refresh };
 })();
 
-// Initialize dashboard and other components
-PetEntry.showExerciseLog();
+/* ==================== */
+/*  Helper Functions    */
+/* ==================== */
+const AppHelper = {
+  showPage: (content) => {
+    document.getElementById('app').innerHTML = content;
+  },
+  showModal: (content) => {
+    const modal = document.createElement('div');
+    modal.className = 'modal';
+    modal.innerHTML = `
+      <div class="modal-content">
+        ${content}
+        <button class="close-modal">Close</button>
+      </div>
+    `;
+    modal.querySelector('.close-modal').addEventListener('click', () => {
+      document.body.removeChild(modal);
+    });
+    document.body.appendChild(modal);
+  },
+  showError: (message) => {
+    const error = document.createElement('div');
+    error.className = 'error-message';
+    error.textContent = message;
+    document.body.appendChild(error);
+    setTimeout(() => {
+      document.body.removeChild(error);
+    }, 3000);
+  },
+  showErrors: (messages) => {
+    AppHelper.showModal(`
+      <h3>Errors</h3>
+      <ul>
+        ${messages.map(m => `<li>${m}</li>`).join('')}
+      </ul>
+    `);
+  }
+};
