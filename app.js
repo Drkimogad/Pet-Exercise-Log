@@ -84,43 +84,53 @@ const Auth = (function() {
       </div>`;
   }
 
-  async function handleAuthSubmit(e, isSignUp) {
-    e.preventDefault();
-    const formData = {
-      email: document.getElementById('email').value,
-      password: document.getElementById('password').value,
-      ...(isSignUp && {
-        username: document.getElementById('username').value,
-        confirmPassword: document.getElementById('confirmPassword')?.value
-      })
-    };
+async function handleAuthSubmit(e, isSignUp) {
+  e.preventDefault();
+  const emailElement = document.getElementById('email');
+  const passwordElement = document.getElementById('password');
+  const usernameElement = isSignUp ? document.getElementById('username') : null;
+  const confirmPasswordElement = isSignUp ? document.getElementById('confirmPassword') : null;
 
-    const errors = [];
-    if (isSignUp && !formData.username?.trim()) errors.push('Name required');
-    if (!/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(formData.email)) errors.push('Invalid email');
-    if (formData.password.length < 8) errors.push('Password must be 8+ chars');
-    if (isSignUp && formData.password !== formData.confirmPassword) errors.push('Passwords mismatch');
-
-    if (errors.length) return AppHelper.showErrors(errors);
-
-    try {
-      const salt = crypto.getRandomValues(new Uint8Array(16)).join('');
-      const userData = {
-        ...(isSignUp && { username: formData.username }),
-        email: formData.email,
-        password: await hashPassword(formData.password, salt),
-        salt,
-        lastLogin: new Date().toISOString()
-      };
-      
-      currentUser = userData;
-      sessionStorage.setItem('user', JSON.stringify(userData));
-      isSignUp ? showAuth(false) : PetEntry.showExerciseLog();
-    } catch (error) {
-      AppHelper.showError('Authentication failed');
-      console.error(error);
-    }
+  if (!emailElement || !passwordElement || (isSignUp && (!usernameElement || !confirmPasswordElement))) {
+    AppHelper.showError('Form elements not found');
+    return;
   }
+
+  const formData = {
+    email: emailElement.value,
+    password: passwordElement.value,
+    ...(isSignUp && {
+      username: usernameElement.value,
+      confirmPassword: confirmPasswordElement.value
+    })
+  };
+
+  const errors = [];
+  if (isSignUp && !formData.username.trim()) errors.push('Name required');
+  if (!/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(formData.email)) errors.push('Invalid email');
+  if (formData.password.length < 8) errors.push('Password must be 8+ chars');
+  if (isSignUp && formData.password !== formData.confirmPassword) errors.push('Passwords mismatch');
+
+  if (errors.length) return AppHelper.showErrors(errors);
+
+  try {
+    const salt = crypto.getRandomValues(new Uint8Array(16)).join('');
+    const userData = {
+      ...(isSignUp && { username: formData.username }),
+      email: formData.email,
+      password: await hashPassword(formData.password, salt),
+      salt,
+      lastLogin: new Date().toISOString()
+    };
+    
+    currentUser = userData;
+    sessionStorage.setItem('user', JSON.stringify(userData));
+    isSignUp ? showAuth(false) : PetEntry.showExerciseLog();
+  } catch (error) {
+    AppHelper.showError('Authentication failed');
+    console.error(error);
+  }
+}
 
   function showAuth(isSignUp = false) {
     AppHelper.showPage(authTemplate(isSignUp));
