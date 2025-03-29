@@ -88,20 +88,19 @@ const Auth = (function() {
   async function handleAuthSubmit(e, isSignUp) {
     e.preventDefault();
     const form = e.target;
-    const formData = new FormData(form);
-    const email = formData.get('email');
-    const password = formData.get('password');
+    const email = form.email.value;
+    const password = form.password.value;
 
     try {
       // Clear previous errors
-      const existingErrors = form.querySelectorAll('.error-text');
-      existingErrors.forEach(el => el.remove());
+      const errorElements = form.querySelectorAll('.error-text');
+      errorElements.forEach(el => el.remove());
 
       // Validation
       const errors = [];
       if (isSignUp) {
-        const username = formData.get('username');
-        const confirmPassword = formData.get('confirmPassword');
+        const username = form.username?.value;
+        const confirmPassword = form.confirmPassword?.value;
         
         if (!username) errors.push('Name is required');
         if (password !== confirmPassword) errors.push('Passwords must match');
@@ -119,36 +118,67 @@ const Auth = (function() {
           errorElement.className = 'error-text';
           errorElement.textContent = error;
           errorElement.style.color = 'var(--error)';
-          errorElement.style.marginTop = '8px';
           form.appendChild(errorElement);
         });
         return;
       }
 
-      // Process successful auth
-      const salt = crypto.getRandomValues(new Uint8Array(16)).join('');
-      const hashedPassword = await hashPassword(password, salt);
+      // Process successful sign-up (but don't log in yet)
+      if (isSignUp) {
+        const salt = crypto.getRandomValues(new Uint8Array(16)).join('');
+        const hashedPassword = await hashPassword(password, salt);
 
+        // Store user data (could use localStorage for persistence)
+        const users = JSON.parse(localStorage.getItem('users') || '[]');
+        users.push({
+          email,
+          username: form.username?.value,
+          password: hashedPassword,
+          salt
+        });
+        localStorage.setItem('users', JSON.stringify(users));
+
+        // Show success message and switch to sign-in
+        const successElement = document.createElement('p');
+        successElement.className = 'success-text';
+        successElement.textContent = 'Account created! Please sign in.';
+        successElement.style.color = 'var(--success)';
+        form.appendChild(successElement);
+
+        // Switch to sign-in after 1.5 seconds
+        setTimeout(() => showAuth(false), 1500);
+        return;
+      }
+
+      // Process sign-in
+      const users = JSON.parse(localStorage.getItem('users') || '[]');
+      const user = users.find(u => u.email === email);
+      
+      if (!user) {
+        throw new Error('User not found');
+      }
+
+      const hashedPassword = await hashPassword(password, user.salt);
+      if (hashedPassword !== user.password) {
+        throw new Error('Invalid password');
+      }
+
+      // Successful login
       currentUser = {
-        email,
-        password: hashedPassword,
-        salt,
-        ...(isSignUp && { username: formData.get('username') }),
+        email: user.email,
+        username: user.username,
         lastLogin: new Date().toISOString()
       };
 
       sessionStorage.setItem('user', JSON.stringify(currentUser));
-      
-      // CRITICAL FIX: Redirect to dashboard
       PetEntry.showExerciseLog();
 
     } catch (error) {
       const errorElement = document.createElement('p');
       errorElement.className = 'error-text';
-      errorElement.textContent = 'An error occurred. Please try again.';
+      errorElement.textContent = error.message || 'Authentication failed';
       errorElement.style.color = 'var(--error)';
       form.appendChild(errorElement);
-      console.error('Auth error:', error);
     }
   }
 
