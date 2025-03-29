@@ -42,6 +42,11 @@
   font-size: 0.8rem;                          /* Reduced font size */
 }
 
+.auth-container {
+  display: block !important;
+  opacity: 1 !important;
+}
+
 /* ============================================================
    HEADER & FOOTER STYLING (DASHBOARD)
 ============================================================ */
