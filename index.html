@@ -1,44 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#ffffff">
-    <meta name="description" content="Track your pet's exercise routine and health metrics">
-    
-    <!-- PWA Manifest -->
-    <link rel="manifest" href="/Pet-Exercise-Log/manifest.json">
-    
-    <!-- iOS PWA Support -->
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="apple-touch-icon" href="/Pet-Exercise-Log/icon-192x192.png">
-    
-    <title>Pet Exercise Log</title>
-    <link rel="icon" href="/Pet-Exercise-Log/favicon.ico" type="image/x-icon">
-    <link rel="stylesheet" href="/Pet-Exercise-Log/styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>  
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#ffffff" />
+  <meta name="description" content="Track your pet's exercise routine and health metrics" />
+  
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="/Pet-Exercise-Log/manifest.json" />
+  
+  <!-- iOS PWA Support -->
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="apple-touch-icon" href="/Pet-Exercise-Log/icon-192x192.png" />
+  
+  <title>Pet Exercise Log</title>
+  <link rel="icon" href="/Pet-Exercise-Log/favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="/Pet-Exercise-Log/styles.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
+  <!-- App Root -->
+  <div id="app">
+    <!-- The dynamic dashboard will be injected here by app.js -->
   </div>
-    <!-- App Root -->
-    <div id="app">
-        <!-- Content will be injected here by app.js -->
-    </div>
 
-    <!-- Install Prompt -->
-    <button id="installButton" class="install-btn" style="display: none;">
-        <span>Install App</span>
-        <svg width="24" height="24" viewBox="0 0 24 24">
-            <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
-        </svg>
-    </button>
+  <!-- Install Prompt -->
+  <button id="installButton" class="install-btn" style="display: none;">
+    <span>Install App</span>
+    <svg width="24" height="24" viewBox="0 0 24 24">
+      <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+    </svg>
+  </button>
 
-    <!-- App Script -->
-    <script src="/Pet-Exercise-Log/app.js"></script>
+  <!-- App Script -->
+  <script src="/Pet-Exercise-Log/app.js"></script>
 </body>
 </html>
