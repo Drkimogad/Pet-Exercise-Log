@@ -45,13 +45,14 @@ function toggleMode() {
   localStorage.setItem('theme', body.classList.contains('dark-mode') ? 'dark' : 'light');
 }
 
-// Apply saved theme on load
+// initialize saved theme on load
 function applySavedTheme() {
   const savedTheme = localStorage.getItem('theme');
   if (savedTheme === 'dark') {
     document.body.classList.add('dark-mode');
   }
 }
+document.addEventListener('DOMContentLoaded', applySavedTheme);
 
 document.addEventListener('DOMContentLoaded', () => {
   applySavedTheme();
