@@ -716,3 +716,112 @@ const Charts = {
     document.querySelector(selector).innerHTML = '<p>Charts will be displayed here.</p>';
   }
 };
+
+   const Charts = (function() {
+      let durationChart, caloriesChart, activityChart;
+
+      function init(selector) {
+        const container = document.querySelector(selector);
+        if (!container) return;
+        container.innerHTML = `
+          <div class="chart">
+            <canvas id="durationChart"></canvas>
+          </div>
+          <div class="chart">
+            <canvas id="activityChart"></canvas>
+          </div>
+          <div class="chart">
+            <canvas id="caloriesChart"></canvas>
+          </div>
+        `;
+      }
+
+      function refresh(data) {
+        if (!data.length) return;
+        destroyCharts();
+        
+        const processed = processData(data);
+        createDurationChart(processed);
+        createActivityChart(processed);
+        createCaloriesChart(processed);
+      }
+
+      function processData(data) {
+        return {
+          labels: [...new Set(data.map(e => e.date))].sort(),
+          duration: data.reduce((acc, e) => {
+            acc[e.date] = (acc[e.date] || 0) + e.duration;
+            return acc;
+          }, {}),
+          calories: data.reduce((acc, e) => {
+            acc[e.date] = (acc[e.date] || 0) + e.caloriesBurned;
+            return acc;
+          }, {}),
+          activities: data.reduce((acc, e) => {
+            acc[e.exerciseType] = (acc[e.exerciseType] || 0) + 1;
+            return acc;
+          }, {})
+        };
+      }
+
+      function createDurationChart(data) {
+        const ctx = document.getElementById('durationChart');
+        durationChart = new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: Object.keys(data.duration),
+            datasets: [{
+              label: 'Total Duration (min)',
+              data: Object.values(data.duration),
+              borderColor: '#4bc0c0',
+              tension: 0.3
+            }]
+          }
+        });
+      }
+
+      function createActivityChart(data) {
+        const ctx = document.getElementById('activityChart');
+        activityChart = new Chart(ctx, {
+          type: 'doughnut',
+          data: {
+            labels: Object.keys(data.activities),
+            datasets: [{
+              data: Object.values(data.activities),
+              backgroundColor: ['#ff6384', '#36a2eb', '#ffce56', '#4bc0c0']
+            }]
+          }
+        });
+      }
+
+      function createCaloriesChart(data) {
+        const ctx = document.getElementById('caloriesChart');
+        caloriesChart = new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: Object.keys(data.calories),
+            datasets: [{
+              label: 'Calories Burned',
+              data: Object.values(data.calories),
+              backgroundColor: '#cc65fe'
+            }]
+          }
+        });
+      }
+        
+      function destroyCharts() {
+         if (durationChart) durationChart.destroy();
+         if (activityChart) durationChart.destroy();
+         if (caloriesChart) durationChart.destroy();
+       }
+     
+       function updateColors() {
+         const textColor = document.body.classList.contains('dark-mode') ? '#fff' : '#374151';
+         Chart.defaults.color = textColor;
+         if (durationChart) durationChart.update();
+         if (activityChart) durationChart.update();
+         if (caloriesChart) durationChart.update();
+       }
+
+      return { init, refresh, updateColors };  
+    })(); // ✅ Properly close IIFE
