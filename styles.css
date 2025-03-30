@@ -28,106 +28,43 @@
 }
 
 /* ============================================================
-    BASE STYLES & DARK MODE DEFAULTS
+    BASE STYLES & RESETS
 ============================================================ */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
 body {
   background: var(--dark-bg);
   color: var(--text-primary);
   font-family: var(--font-body);
   line-height: 1.6;
-  margin: 0;
-  padding: 0;
   min-height: 100vh;
   background-image: 
     radial-gradient(at 80% 0%, hsla(189, 100%, 56%, 0.15) 0, transparent 50%),
     radial-gradient(at 0% 50%, hsla(355, 100%, 93%, 0.1) 0, transparent 50%);
 }
 
-/* ============================================================
-    AUTHENTICATION SCREENS - MODERN GLASS DESIGN
-============================================================ */
-.auth-container {
-  width: 100%;
-  max-width: 420px;
-  margin: 5vh auto;
-  background: var(--glass-bg);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid var(--glass-border);
-  border-radius: 16px;
-  padding: 2.5rem;
-  box-shadow: var(--glass-shadow);
-  transform-style: preserve-3d;
-  perspective: 1000px;
-}
-
-.auth-card {
-  transform: translateZ(20px);
-}
-
-.auth-card h2 {
+h1, h2, h3, h4 {
   font-family: var(--font-heading);
-  font-weight: 700;
-  font-size: 1.8rem;
-  margin-bottom: 1.5rem;
-  background: linear-gradient(90deg, var(--primary-accent), var(--secondary-accent));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  text-align: center;
-}
-
-/* Form Elements with Floating Labels */
-.form-group {
-  position: relative;
-  margin-bottom: 1.5rem;
-}
-
-.form-group input {
-  width: 100%;
-  padding: 1rem;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
-  color: var(--text-primary);
-  font-size: 1rem;
-  transition: var(--transition-fast);
-}
-
-.form-group input:focus {
-  outline: none;
-  border-color: var(--primary-accent);
-  box-shadow: 0 0 0 2px rgba(110, 68, 255, 0.3);
-}
-
-/* Animated Buttons */
-.auth-btn {
-  width: 100%;
-  padding: 1rem;
-  background: linear-gradient(135deg, var(--primary-accent), var(--secondary-accent));
-  color: white;
-  border: none;
-  border-radius: 8px;
   font-weight: 600;
-  font-size: 1rem;
+  line-height: 1.2;
+}
+
+button {
   cursor: pointer;
   transition: var(--transition-fast);
-  transform: translateY(0);
-  box-shadow: 0 4px 15px rgba(110, 68, 255, 0.3);
-}
-
-.auth-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(110, 68, 255, 0.4);
 }
 
 /* ============================================================
-    DASHBOARD - FUTURISTIC LAYOUT
+    MAIN DASHBOARD LAYOUT
 ============================================================ */
 .dashboard {
   display: grid;
-  grid-template-columns: 280px 1fr;
-  grid-template-rows: 80px 1fr;
+  grid-template-columns: minmax(250px, 300px) 1fr;
+  grid-template-rows: auto 1fr;
   min-height: 100vh;
 }
 
@@ -136,7 +73,7 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 2rem;
+  padding: 1rem 2rem;
   background: var(--glass-bg);
   backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--glass-border);
@@ -144,182 +81,332 @@ body {
 }
 
 .dashboard-header h1 {
-  font-family: var(--font-heading);
   font-size: 1.5rem;
-  font-weight: 700;
   background: linear-gradient(90deg, var(--primary-accent), var(--secondary-accent));
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
 }
 
-/* Sidebar with Holographic Effect */
+.dashboard-grid {
+  grid-column: 2;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  overflow-y: auto;
+}
+
+.left-column {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.right-column {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* ============================================================
+    SIDEBAR & PROFILE SECTION
+============================================================ */
 .sidebar {
   background: var(--glass-bg);
   backdrop-filter: blur(12px);
   border-right: 1px solid var(--glass-border);
-  padding: 2rem 1.5rem;
-  position: relative;
-  overflow: hidden;
+  padding: 1.5rem;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
 }
 
-.sidebar::before {
-  content: '';
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: linear-gradient(
-    to bottom right,
-    rgba(110, 68, 255, 0.1) 0%,
-    rgba(0, 212, 255, 0.05) 50%,
-    transparent 100%
-  );
-  transform: rotate(30deg);
-  z-index: -1;
-}
-
-/* Pet Profile Cards with 3D Tilt Effect */
-.profile-card {
+.section {
   background: var(--card-bg);
   border-radius: 12px;
   padding: 1.5rem;
-  margin-bottom: 1.5rem;
-  transition: var(--transition-smooth);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-  transform-style: preserve-3d;
-  will-change: transform;
-}
-
-.profile-card:hover {
-  transform: translateY(-5px) rotateX(5deg);
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
-}
-
-/* Data Visualization Cards */
-.data-card {
-  background: var(--card-bg);
-  border-radius: 12px;
-  padding: 1.5rem;
-  margin-bottom: 1.5rem;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-  position: relative;
-  overflow: hidden;
-}
-
-.data-card::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 100%;
-  height: 4px;
-  background: linear-gradient(90deg, var(--primary-accent), var(--secondary-accent));
-}
-
-/* ============================================================
-    INTERACTIVE ELEMENTS
-============================================================ */
-/* Install Button with Pulse Animation */
-#installButton {
-  position: fixed;
-  bottom: 2rem;
-  right: 2rem;
-  background: linear-gradient(135deg, var(--primary-accent), var(--secondary-accent));
-  color: white;
-  border: none;
-  border-radius: 50px;
-  padding: 0.75rem 1.5rem;
-  font-weight: 600;
-  cursor: pointer;
-  box-shadow: 0 4px 20px rgba(110, 68, 255, 0.4);
-  z-index: 100;
-  animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-  0% { box-shadow: 0 0 0 0 rgba(110, 68, 255, 0.7); }
-  70% { box-shadow: 0 0 0 12px rgba(110, 68, 255, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(110, 68, 255, 0); }
-}
-
-/* Toggle Switch with Glow Effect */
-.toggle-switch {
-  position: relative;
-  display: inline-block;
-  width: 50px;
-  height: 24px;
-}
-
-.toggle-switch input {
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
-
-.toggle-slider {
-  position: absolute;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: var(--card-bg);
-  transition: var(--transition-fast);
-  border-radius: 34px;
+  box-shadow: var(--glass-shadow);
   border: 1px solid var(--glass-border);
 }
 
-.toggle-slider:before {
-  position: absolute;
-  content: "";
-  height: 16px;
-  width: 16px;
-  left: 4px;
-  bottom: 3px;
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.section h2 {
+  font-size: 1.25rem;
+  color: var(--text-primary);
+}
+
+.add-btn, .logout-btn {
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-weight: 500;
+  border: none;
+}
+
+.add-btn {
+  background: var(--primary-accent);
+  color: white;
+}
+
+.logout-btn {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--error);
+}
+
+/* ============================================================
+    PET PROFILE CARDS
+============================================================ */
+.profiles-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1rem;
+}
+
+.profile-card {
+  background: var(--card-bg);
+  border-radius: 12px;
+  padding: 1.25rem;
+  transition: var(--transition-smooth);
+  border: 1px solid var(--glass-border);
+}
+
+.profile-card img {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 0.75rem;
+}
+
+.profile-card h3 {
+  margin-bottom: 0.5rem;
+  font-size: 1.1rem;
+}
+
+.profile-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.profile-actions button {
+  flex: 1;
+  padding: 0.5rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.85rem;
+}
+
+.edit-btn {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+}
+
+.select-btn {
+  background: var(--primary-accent);
+  color: white;
+}
+
+/* ============================================================
+    FORMS & INPUTS
+============================================================ */
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 0.75rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--glass-border);
+  border-radius: 8px;
+  color: var(--text-primary);
+  font-family: var(--font-body);
+}
+
+.save-btn, .log-btn {
+  width: 100%;
+  padding: 0.75rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+  margin-top: 0.5rem;
+}
+
+.save-btn {
+  background: var(--primary-accent);
+  color: white;
+}
+
+.log-btn {
+  background: var(--secondary-accent);
+  color: var(--dark-bg);
+}
+
+/* ============================================================
+    DATA DISPLAYS (LOGS, CHARTS, ETC.)
+============================================================ */
+.exercise-entries {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.exercise-entry {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 0.75rem;
+  border-radius: 8px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.mood-log-list {
+  list-style: none;
+  margin-top: 1rem;
+}
+
+.mood-log-list li {
+  padding: 0.5rem 0;
+  border-bottom: 1px dashed var(--glass-border);
+}
+
+.chart-container {
+  height: 300px;
+  margin-top: 1rem;
+}
+
+/* ============================================================
+    AUTHENTICATION SCREENS
+============================================================ */
+.auth-container {
+  width: 100%;
+  max-width: 420px;
+  margin: 5vh auto;
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: var(--glass-shadow);
+}
+
+.auth-card h2 {
+  font-size: 1.8rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  background: linear-gradient(90deg, var(--primary-accent), var(--secondary-accent));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.auth-btn {
+  width: 100%;
+  padding: 1rem;
   background: linear-gradient(135deg, var(--primary-accent), var(--secondary-accent));
-  transition: var(--transition-fast);
-  border-radius: 50%;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  margin-top: 1rem;
 }
 
-input:checked + .toggle-slider {
-  background-color: rgba(110, 68, 255, 0.2);
+.auth-switch {
+  text-align: center;
+  margin-top: 1.5rem;
+  color: var(--text-secondary);
 }
 
-input:checked + .toggle-slider:before {
-  transform: translateX(26px);
+/* ============================================================
+    UTILITY CLASSES
+============================================================ */
+.error-text {
+  color: var(--error);
+  font-size: 0.9rem;
+  margin-top: 0.25rem;
+}
+
+.success-text {
+  color: var(--success);
+  font-size: 0.9rem;
+  margin-top: 0.25rem;
+}
+
+.active {
+  border: 2px solid var(--secondary-accent);
 }
 
 /* ============================================================
     RESPONSIVE ADJUSTMENTS
 ============================================================ */
-@media (max-width: 1024px) {
+@media (max-width: 1200px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 992px) {
   .dashboard {
     grid-template-columns: 1fr;
   }
   
   .sidebar {
-    grid-row: 2;
+    position: static;
+    height: auto;
     border-right: none;
     border-bottom: 1px solid var(--glass-border);
+  }
+  
+  .dashboard-grid {
+    grid-column: 1;
   }
 }
 
 @media (max-width: 768px) {
+  .dashboard-header {
+    padding: 1rem;
+  }
+  
+  .dashboard-grid {
+    padding: 1rem;
+    gap: 1rem;
+  }
+  
   .auth-container {
     padding: 1.5rem;
     margin: 2vh auto;
   }
-  
-  .dashboard-header {
-    padding: 0 1rem;
+}
+
+@media (max-width: 576px) {
+  .profiles-grid {
+    grid-template-columns: 1fr;
   }
   
-  #installButton {
-    bottom: 1rem;
-    right: 1rem;
-    padding: 0.6rem 1.2rem;
-    font-size: 0.9rem;
+  .profile-actions {
+    flex-direction: column;
+  }
+  
+  .section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
   }
 }
