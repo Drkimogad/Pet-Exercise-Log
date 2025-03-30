@@ -287,8 +287,8 @@ const PetEntry = (function() {
   const EMOJIS = ['😀', '😐', '😞', '😊', '😠']; // Mood emojis
 
   // State
-  let activePetIndex = sessionStorage.getItem('activePetIndex') 
-    ? parseInt(sessionStorage.getItem('activePetIndex')) 
+  let activePetIndex = sessionStorage.getItem('activePetIndex')
+    ? parseInt(sessionStorage.getItem('activePetIndex'))
     : null;
 
   // Private functions
@@ -305,7 +305,7 @@ const PetEntry = (function() {
   }
 
   // ====================
-  // NEW: CALENDAR RENDER
+  // CALENDAR RENDER
   // ====================
   function renderCalendar(pet) {
     const currentDate = new Date();
@@ -340,26 +340,87 @@ const PetEntry = (function() {
   }
 
   // ========================
-  // UPDATED: PET FORM RENDER
+  // PET FORM RENDER
   // ========================
   function renderPetForm(editIndex = null) {
     const pets = getPets();
-    const pet = editIndex !== null ? pets[editIndex] : null;
+    const pet = editIndex !== null ? pets[editIndex] : {};
     
     document.getElementById('petFormContainer').innerHTML = `
       <form id="petForm" class="pet-form">
-        <input type="hidden" id="petId" name="petId" value="${pet?.id || ''}">
+        <input type="hidden" id="petId" name="petId" value="${pet.id || generateId()}">
+        
         <div class="form-group">
           <label for="petName">Pet Name</label>
-          <input type="text" id="petName" name="petName" value="${pet?.name || ''}" required>
+          <input type="text" id="petName" name="petName" value="${pet.name || ''}" required>
         </div>
-        <!-- Other pet fields (image, weight, etc.) -->
+        
+        <!-- Image Upload with Placeholder -->
+        <div class="form-group">
+          <label for="petImage">Pet Image</label>
+          <input type="file" id="petImage" name="petImage" accept="image/*">
+          <img id="petImagePreview" src="${pet.image || DEFAULT_IMAGE}" alt="Pet Image" style="max-width:100px; display:block; margin-top:8px;">
+        </div>
+        
+        <!-- Age Field -->
+        <div class="form-group">
+          <label for="petAge">Age</label>
+          <input type="number" id="petAge" name="petAge" value="${pet.age || ''}" min="0" required>
+        </div>
+        
+        <!-- Weight Field -->
+        <div class="form-group">
+          <label for="petWeight">Weight</label>
+          <input type="number" id="petWeight" name="petWeight" value="${pet.weight || ''}" min="0" required>
+        </div>
+        
+        <!-- Body Condition -->
+        <div class="form-group">
+          <label for="petCondition">Body Condition</label>
+          <select id="petCondition" name="petCondition" required>
+            <option value="">Select Condition</option>
+            <option value="under weight" ${pet.condition === 'under weight' ? 'selected' : ''}>Under Weight</option>
+            <option value="lean" ${pet.condition === 'lean' ? 'selected' : ''}>Lean</option>
+            <option value="over weight" ${pet.condition === 'over weight' ? 'selected' : ''}>Over Weight</option>
+            <option value="obese" ${pet.condition === 'obese' ? 'selected' : ''}>Obese</option>
+          </select>
+        </div>
+        
+        <!-- Medical History -->
+        <div class="form-group">
+          <label for="petMedicalHistory">Medical History</label>
+          <textarea id="petMedicalHistory" name="petMedicalHistory" rows="3">${pet.medicalHistory || ''}</textarea>
+        </div>
+        
+        <!-- Exercise Level -->
+        <div class="form-group">
+          <label for="petExerciseLevel">Exercise Level</label>
+          <input type="text" id="petExerciseLevel" name="petExerciseLevel" value="${pet.exerciseLevel || ''}" required>
+        </div>
+        
+        <!-- Date Field -->
+        <div class="form-group">
+          <label for="petDate">Date</label>
+          <input type="date" id="petDate" name="petDate" value="${pet.date || ''}" required>
+        </div>
+        
+        <!-- Exercise Duration in Minutes -->
+        <div class="form-group">
+          <label for="petExerciseDuration">Exercise Duration (minutes)</label>
+          <input type="number" id="petExerciseDuration" name="petExerciseDuration" value="${pet.exerciseDuration || ''}" min="0" required>
+        </div>
+        
+        <!-- Calories Burnt -->
+        <div class="form-group">
+          <label for="petCalories">Calories Burnt</label>
+          <input type="number" id="petCalories" name="petCalories" value="${pet.calories || ''}" min="0" required>
+        </div>
       </form>
     `;
   }
 
   // =========================
-  // NEW: SAVED PROFILES LIST
+  // SAVED PROFILES LIST
   // =========================
   function renderSavedProfiles() {
     const pets = getPets();
@@ -383,7 +444,7 @@ const PetEntry = (function() {
   }
 
   // ======================
-  // UPDATED: DASHBOARD LAYOUT
+  // DASHBOARD LAYOUT
   // ======================
   function showExerciseLog() {
     const user = JSON.parse(sessionStorage.getItem('user'));
@@ -407,13 +468,13 @@ const PetEntry = (function() {
               <div id="petFormContainer"></div>
             </div>
 
-            <!-- NEW: Calendar -->
+            <!-- Calendar -->
             <div class="section">
               <h2>Exercise Calendar</h2>
               <div id="calendarContainer"></div>
             </div>
 
-            <!-- NEW: Saved Profiles -->
+            <!-- Saved Profiles -->
             <div class="section">
               <h2>Saved Profiles</h2>
               <div id="savedProfiles"></div>
@@ -447,13 +508,66 @@ const PetEntry = (function() {
 
     // Initialize components
     renderPetForm();
-    if (activePetIndex !== null) {
-      const pets = getPets();
+    const pets = getPets();
+    if (activePetIndex !== null && pets[activePetIndex]) {
       document.getElementById('calendarContainer').innerHTML = renderCalendar(pets[activePetIndex]);
     }
     document.getElementById('savedProfiles').innerHTML = renderSavedProfiles();
     Charts.init('#exerciseCharts');
     setupEventListeners();
+  }
+
+  // ======================
+  // MONTHLY REPORT RENDER
+  // ======================
+  function renderMonthlyReport(pet, month, year) {
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    let reportHTML = `
+      <div class="monthly-report">
+        <h2>Monthly Report for ${pet.name} (${month + 1}/${year})</h2>
+        <div class="pet-details">
+          <p><strong>Age:</strong> ${pet.age}</p>
+          <p><strong>Weight:</strong> ${pet.weight}</p>
+          <p><strong>Condition:</strong> ${pet.condition}</p>
+          <p><strong>Medical History:</strong> ${pet.medicalHistory || 'N/A'}</p>
+        </div>
+        <div class="report-calendar">`;
+    
+    for (let day = 1; day <= daysInMonth; day++) {
+      const dateStr = `${year}-${(month + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+      const hasExercise = pet?.exerciseEntries?.some(e => e.date === dateStr);
+      reportHTML += `<div class="report-day" style="display:inline-block;width:30px;height:30px;margin:2px;background:${hasExercise ? '#00D4FF' : '#F87171'};"></div>`;
+    }
+    reportHTML += `</div>
+      <div class="report-charts">
+        <h3>Activity Charts</h3>
+        <div id="reportCharts"><p>Charts go here.</p></div>
+      </div>
+      <div class="report-summary">
+        <h3>Exercise Summary</h3>
+        <p>Total Days: ${daysInMonth}</p>
+        <p>Exercise Days: ${pet.exerciseEntries ? pet.exerciseEntries.filter(e => {
+          const d = new Date(e.date);
+          return d.getMonth() === month && d.getFullYear() === year;
+        }).length : 0}</p>
+      </div>
+      <div class="report-actions" style="margin-top:20px;"> 
+        <button id="exportReport" class="add-btn">Export</button>
+        <button id="backToDashboard" class="logout-btn">Back to Dashboard</button>
+      </div>
+    </div>
+    `;
+    
+    const reportWindow = window.open("", "_blank", "width=800,height=600");
+    reportWindow.document.write(reportHTML);
+    reportWindow.document.close();
+
+    reportWindow.document.getElementById('backToDashboard').addEventListener('click', () => {
+      reportWindow.close();
+    });
+    reportWindow.document.getElementById('exportReport').addEventListener('click', () => {
+      alert('Export functionality coming soon.');
+    });
   }
 
   // ======================
@@ -463,25 +577,129 @@ const PetEntry = (function() {
     // Save All Button
     document.getElementById('saveAllButton')?.addEventListener('click', () => {
       const pets = getPets();
-      const pet = pets[activePetIndex] || {};
+      let pet = pets[activePetIndex] || {};
       
       // Update pet data from form
       const formData = new FormData(document.getElementById('petForm'));
       pet.name = formData.get('petName');
-      // (Add other form fields)
+      pet.id = formData.get('petId');
+      pet.age = formData.get('petAge');
+      pet.weight = formData.get('petWeight');
+      pet.condition = formData.get('petCondition');
+      pet.medicalHistory = formData.get('petMedicalHistory');
+      pet.exerciseLevel = formData.get('petExerciseLevel');
+      pet.date = formData.get('petDate');
+      pet.exerciseDuration = formData.get('petExerciseDuration');
+      pet.calories = formData.get('petCalories');
+      
+      // (Image handling logic can be added here as needed)
+      
+      if (activePetIndex === null) {
+        pets.push(pet);
+        activePetIndex = pets.length - 1;
+        sessionStorage.setItem('activePetIndex', activePetIndex);
+      } else {
+        pets[activePetIndex] = pet;
+      }
       
       savePets(pets);
       updateDashboard();
     });
 
-    // Emoji Button Handler
+    // Emoji Button Handler for Mood Log
     document.addEventListener('click', (e) => {
       if (e.target.classList.contains('emoji-btn')) {
         const mood = e.target.dataset.mood;
         const date = e.target.dataset.date;
-        // Save mood log...
+        const pets = getPets();
+        let pet = pets[activePetIndex] || {};
+        pet.moodLogs = pet.moodLogs || [];
+        pet.moodLogs = pet.moodLogs.filter(m => m.date !== date);
+        pet.moodLogs.push({ date, mood });
+        pets[activePetIndex] = pet;
+        savePets(pets);
+        e.target.parentElement.querySelectorAll('.emoji-btn').forEach(btn => btn.classList.remove('selected'));
+        e.target.classList.add('selected');
       }
     });
+
+    // Edit Button Handler
+    document.querySelectorAll('.edit-btn').forEach(button => {
+      button.addEventListener('click', (e) => {
+        const index = parseInt(e.target.dataset.index);
+        activePetIndex = index;
+        sessionStorage.setItem('activePetIndex', activePetIndex);
+        renderPetForm(index);
+      });
+    });
+
+    // Delete Button Handler
+    document.querySelectorAll('.delete-btn').forEach(button => {
+      button.addEventListener('click', (e) => {
+        const index = parseInt(e.target.dataset.index);
+        const pets = getPets();
+        if (confirm(`Are you sure you want to delete ${pets[index].name}?`)) {
+          pets.splice(index, 1);
+          if (activePetIndex === index) {
+            activePetIndex = null;
+            sessionStorage.removeItem('activePetIndex');
+          }
+          savePets(pets);
+          updateDashboard();
+        }
+      });
+    });
+
+    // Print Button Handler
+    document.querySelectorAll('.print-btn').forEach(button => {
+      button.addEventListener('click', (e) => {
+        const index = parseInt(e.target.dataset.index);
+        const pets = getPets();
+        const pet = pets[index];
+        const printWindow = window.open("", "_blank", "width=600,height=400");
+        printWindow.document.write(`
+          <html>
+            <head><title>Print Pet Profile</title></head>
+            <body>
+              <h2>${pet.name}</h2>
+              <img src="${pet.image || DEFAULT_IMAGE}" alt="${pet.name}" style="max-width:200px;">
+              <p><strong>Age:</strong> ${pet.age}</p>
+              <p><strong>Weight:</strong> ${pet.weight}</p>
+              <p><strong>Condition:</strong> ${pet.condition}</p>
+              <p><strong>Medical History:</strong> ${pet.medicalHistory || 'N/A'}</p>
+            </body>
+          </html>
+        `);
+        printWindow.document.close();
+        printWindow.print();
+      });
+    });
+
+    // Share Button Handler
+    document.querySelectorAll('.share-btn').forEach(button => {
+      button.addEventListener('click', (e) => {
+        const index = parseInt(e.target.dataset.index);
+        const pets = getPets();
+        const pet = pets[index];
+        alert(`Share functionality for ${pet.name} coming soon.`);
+      });
+    });
+
+    // Report Button Handler in Saved Profiles
+    document.querySelectorAll('.report-btn').forEach(button => {
+      button.addEventListener('click', (e) => {
+        const index = parseInt(e.target.dataset.index);
+        const pets = getPets();
+        const pet = pets[index];
+        const now = new Date();
+        renderMonthlyReport(pet, now.getMonth(), now.getFullYear());
+      });
+    });
+  }
+
+  // Helper to update the dashboard view
+  function updateDashboard() {
+    showExerciseLog();
   }
 
   // Public API
@@ -490,5 +708,11 @@ const PetEntry = (function() {
   };
 })();
 
-
-
+// ======================
+// Charts Stub (replace with your actual charts implementation as needed)
+// ======================
+const Charts = {
+  init: function(selector) {
+    document.querySelector(selector).innerHTML = '<p>Charts will be displayed here.</p>';
+  }
+};
