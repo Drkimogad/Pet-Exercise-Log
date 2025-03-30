@@ -209,199 +209,351 @@ const Auth = (function() {
 /* ==================== */
 /*  PetEntry Module     */
 /* ==================== */
-// Constants and Variables
-const MAX_PETS = 10; // Max number of pet profiles allowed
-const DEFAULT_IMAGE = 'default-pet.png'; // Default pet image if not provided
-let activePetIndex = sessionStorage.getItem('activePetIndex') 
-  ? parseInt(sessionStorage.getItem('activePetIndex')) 
-  : null; // Track currently active pet
+const PetEntry = (function() {
+  // Constants
+  const MAX_PETS = 10;
+  const DEFAULT_IMAGE = 'default-pet.png';
+  
+  // State
+  let activePetIndex = sessionStorage.getItem('activePetIndex') 
+    ? parseInt(sessionStorage.getItem('activePetIndex')) 
+    : null;
 
-function getPets() {
-  // Retrieve pet data from local storage, or return an empty array if none exists
-  return JSON.parse(localStorage.getItem('pets')) || [];
-}
+  // Private functions
+  function getPets() {
+    return JSON.parse(localStorage.getItem('pets')) || [];
+  }
 
-function savePets(pets) {
-  // Save updated pet data to local storage
-  localStorage.setItem('pets', JSON.stringify(pets));
-}
+  function savePets(pets) {
+    localStorage.setItem('pets', JSON.stringify(pets));
+  }
 
-function showExerciseLog() {
-  // Render the main exercise log dashboard
-  AppHelper.showPage(`
-    <div class="dashboard">
-      <header class="dashboard-header">
-        <h1>Pet Exercise Tracker</h1>
-        <button id="logoutButton" class="logout-btn">Logout</button>
-      </header>
-      <div class="dashboard-grid">
-        <div class="left-column">
-          <div class="section">
-            <div class="section-header">
-              <h2>Pet Profiles</h2>
-              <button id="addNewProfileButton" class="add-btn">+ Add Pet</button>
-            </div>
-            <div id="petFormContainer"></div>
-            <div id="savedProfiles" class="profiles-grid"></div>
-          </div>
+  function generateId() {
+    return crypto.randomUUID() || Math.random().toString(36).substring(2, 15);
+  }
+
+  function renderPetForm(editIndex = null) {
+    const pets = getPets();
+    const pet = editIndex !== null ? pets[editIndex] : null;
+    
+    document.getElementById('petFormContainer').innerHTML = `
+      <form id="petForm" class="pet-form">
+        <input type="hidden" id="petId" name="petId" value="${pet?.id || ''}">
+        <div class="form-group">
+          <label for="petName">Pet Name</label>
+          <input type="text" id="petName" name="petName" value="${pet?.name || ''}" required>
         </div>
-        <div class="right-column">
-          <div class="section">
-            <h2>Exercise Calendar</h2>
-            <div id="exerciseCalendar"></div>
-          </div>
-          <div class="section">
-            <h2>Activity Charts</h2>
-            <div id="exerciseCharts"></div>
-          </div>
-          <div class="section">
-            <h2>Mood Logs</h2>
-            <div id="moodLogContainer"></div>
-          </div>
+        <div class="form-group">
+          <label for="petImage">Image URL</label>
+          <input type="text" id="petImage" name="petImage" value="${pet?.image || ''}">
+        </div>
+        <div class="form-group">
+          <label for="characteristics">Characteristics</label>
+          <textarea id="characteristics" name="characteristics">${pet?.characteristics || ''}</textarea>
+        </div>
+        <div class="form-group">
+          <label for="currentWeight">Current Weight (kg)</label>
+          <input type="number" id="currentWeight" name="currentWeight" 
+                 value="${pet?.weightHistory?.[0]?.kg || ''}" step="0.1" required>
+        </div>
+        <div class="form-group">
+          <label for="bodyCondition">Body Condition</label>
+          <select id="bodyCondition" name="bodyCondition" required>
+            <option value="underweight" ${pet?.weightHistory?.[0]?.condition === 'underweight' ? 'selected' : ''}>Underweight</option>
+            <option value="ideal" ${(!pet || pet?.weightHistory?.[0]?.condition === 'ideal') ? 'selected' : ''}>Ideal</option>
+            <option value="overweight" ${pet?.weightHistory?.[0]?.condition === 'overweight' ? 'selected' : ''}>Overweight</option>
+          </select>
+        </div>
+        <button type="submit" class="save-btn">${pet ? 'Update Profile' : 'Save Profile'}</button>
+        ${pet ? '<button type="button" id="cancelEdit" class="cancel-btn">Cancel</button>' : ''}
+      </form>
+    `;
+
+    if (pet) {
+      document.getElementById('cancelEdit').addEventListener('click', () => {
+        activePetIndex = null;
+        renderPetForm();
+      });
+    }
+  }
+
+  function loadSavedProfiles() {
+    const pets = getPets();
+    const container = document.getElementById('savedProfiles');
+    
+    container.innerHTML = pets.map((pet, index) => `
+      <div class="profile-card ${activePetIndex === index ? 'active' : ''}" data-index="${index}">
+        <img src="${pet.image || DEFAULT_IMAGE}" alt="${pet.name}">
+        <h3>${pet.name}</h3>
+        <p>${pet.characteristics?.substring(0, 30)}${pet.characteristics?.length > 30 ? '...' : ''}</p>
+        <div class="profile-actions">
+          <button class="edit-btn" data-index="${index}">Edit</button>
+          <button class="select-btn" data-index="${index}">Select</button>
         </div>
       </div>
-    </div>
-  `);
-  
-  // Add event listeners
-  document.getElementById('logoutButton').addEventListener('click', Auth.logout);
-  document.getElementById('toggleModeButton').addEventListener('click', toggleMode);
-  
-  // Initialize various components and listeners after rendering
-  loadSavedProfiles();
-  renderPetForm();
-  Calendar.init('#exerciseCalendar');
-  Charts.init('#exerciseCharts');
-  renderMoodLog();
-  setupEventListeners();
+    `).join('');
 
-  if (activePetIndex !== null) {
-    updateDashboard(); // Update dashboard if a pet is already selected
+    // Add event listeners
+    document.querySelectorAll('.edit-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        activePetIndex = parseInt(e.target.dataset.index);
+        renderPetForm(activePetIndex);
+      });
+    });
+
+    document.querySelectorAll('.select-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        activePetIndex = parseInt(e.target.dataset.index);
+        sessionStorage.setItem('activePetIndex', activePetIndex);
+        updateDashboard();
+      });
+    });
   }
-}
 
-function setupEventListeners() {
-  // Add event listeners for form submissions and button clicks
-  document.addEventListener('submit', e => {
-    if (e.target.matches('#petForm')) handlePetFormSubmit(e);
-    if (e.target.matches('#exerciseForm')) handleExerciseSubmit(e);
-    if (e.target.matches('#moodForm')) handleMoodLogSubmit(e);
-  });
+  function updateDashboard() {
+    if (activePetIndex === null) return;
+    
+    const pets = getPets();
+    const pet = pets[activePetIndex];
+    
+    // Update any dashboard elements that show pet-specific data
+    document.querySelectorAll('.pet-name-display').forEach(el => {
+      el.textContent = pet.name;
+    });
+    
+    // Refresh exercise log and charts
+    renderExerciseLog();
+    Charts.refresh(pet.exerciseEntries);
+    renderMoodLog();
+  }
 
-  document.getElementById('logoutButton')?.addEventListener('click', Auth.logout);
+  function renderExerciseLog() {
+    if (activePetIndex === null) return;
+    
+    const pets = getPets();
+    const pet = pets[activePetIndex];
+    const container = document.getElementById('exerciseLogContainer');
+    
+    if (!container) return;
+    
+    container.innerHTML = `
+      <h3>Exercise Log for ${pet.name}</h3>
+      <form id="exerciseForm" class="exercise-form">
+        <div class="form-group">
+          <label for="exerciseType">Activity</label>
+          <select id="exerciseType" name="exerciseType" required>
+            <option value="walk">Walk</option>
+            <option value="run">Run</option>
+            <option value="play">Play</option>
+            <option value="swim">Swim</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="duration">Duration (minutes)</label>
+          <input type="number" id="duration" name="duration" min="1" required>
+        </div>
+        <div class="form-group">
+          <label for="date">Date</label>
+          <input type="date" id="date" name="date" value="${new Date().toISOString().split('T')[0]}" required>
+        </div>
+        <button type="submit" class="log-btn">Log Activity</button>
+      </form>
+      <div class="exercise-entries">
+        ${pet.exerciseEntries.map(entry => `
+          <div class="exercise-entry">
+            <span class="entry-date">${entry.date}</span>
+            <span class="entry-activity">${entry.exerciseType}</span>
+            <span class="entry-duration">${entry.duration} min</span>
+          </div>
+        `).join('')}
+      </div>
+    `;
+  }
 
-  document.getElementById('addNewProfileButton')?.addEventListener('click', () => {
-    activePetIndex = null; // Reset active pet index to allow new pet entry
+  function renderMoodLog() {
+    if (activePetIndex === null) return;
+    const pets = getPets();
+    const pet = pets[activePetIndex];
+
+    document.getElementById('moodLogContainer').innerHTML = `
+      <form id="moodForm" class="mood-form">
+        <div class="form-group">
+          <label for="mood">Log Mood</label>
+          <select id="mood" name="mood" required>
+            <option value="happy">Happy</option>
+            <option value="playful">Playful</option>
+            <option value="calm">Calm</option>
+            <option value="anxious">Anxious</option>
+            <option value="tired">Tired</option>
+          </select>
+        </div>
+        <button type="submit" class="log-btn">Log Mood</button>
+      </form>
+      <ul class="mood-log-list">
+        ${pet.moodLogs.map(log => `<li>${log.date}: ${log.mood}</li>`).join('')}
+      </ul>
+    `;
+  }
+
+  function handlePetFormSubmit(e) {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const pets = getPets();
+    const petId = formData.get('petId') || generateId();
+
+    const petData = {
+      id: petId,
+      name: formData.get('petName'),
+      image: formData.get('petImage') || DEFAULT_IMAGE,
+      characteristics: formData.get('characteristics'),
+      weightHistory: [{
+        date: new Date().toISOString().split('T')[0],
+        kg: parseFloat(formData.get('currentWeight')),
+        condition: formData.get('bodyCondition')
+      }],
+      exerciseEntries: [],
+      moodLogs: [],
+      monthlyReports: []
+    };
+
+    const existingIndex = pets.findIndex(p => p.id === petId);
+    if (existingIndex >= 0) {
+      petData.exerciseEntries = pets[existingIndex].exerciseEntries;
+      petData.moodLogs = pets[existingIndex].moodLogs;
+      petData.monthlyReports = pets[existingIndex].monthlyReports;
+      pets[existingIndex] = petData;
+      activePetIndex = existingIndex;
+    } else {
+      if (pets.length >= MAX_PETS) return AppHelper.showError('Maximum profiles reached');
+      pets.push(petData);
+      activePetIndex = pets.length - 1;
+    }
+
+    savePets(pets);
+    sessionStorage.setItem('activePetIndex', activePetIndex);
+    loadSavedProfiles();
     renderPetForm();
-  });
-}
-
-function handlePetFormSubmit(e) {
-  e.preventDefault(); // Prevent default form submission
-  const formData = new FormData(e.target); // Collect form data
-  const pets = getPets();
-  const petId = formData.get('petId') || generateId(); // Generate ID if not provided
-
-  // Create or update pet profile object
-  const petData = {
-    id: petId,
-    name: formData.get('petName'),
-    image: formData.get('petImage') || DEFAULT_IMAGE,
-    characteristics: formData.get('characteristics'),
-    weightHistory: [{
-      date: new Date().toISOString().split('T')[0],
-      kg: parseFloat(formData.get('currentWeight')),
-      condition: formData.get('bodyCondition')
-    }],
-    exerciseEntries: [],
-    moodLogs: [],
-    monthlyReports: []
-  };
-
-  const existingIndex = pets.findIndex(p => p.id === petId);
-  if (existingIndex >= 0) {
-    // Update existing profile, retaining exercise, mood, and report data
-    petData.exerciseEntries = pets[existingIndex].exerciseEntries;
-    petData.moodLogs = pets[existingIndex].moodLogs;
-    petData.monthlyReports = pets[existingIndex].monthlyReports;
-    pets[existingIndex] = petData;
-    activePetIndex = existingIndex;
-  } else {
-    if (pets.length >= MAX_PETS) return AppHelper.showError('Maximum profiles reached');
-    pets.push(petData); // Add new pet profile to the list
-    activePetIndex = pets.length - 1;
+    updateDashboard();
   }
 
-  savePets(pets); // Save updated pet data to local storage
-  sessionStorage.setItem('activePetIndex', activePetIndex);
-  loadSavedProfiles(); // Refresh pet profiles display
-  renderPetForm(); // Reset and render pet form
-}
+  function handleExerciseSubmit(e) {
+    e.preventDefault();
+    if (activePetIndex === null) return;
 
-// Handle exercise log form submission
-function handleExerciseSubmit(e) {
-  e.preventDefault();
-  if (activePetIndex === null) return; // Skip if no active pet selected
+    const formData = new FormData(e.target);
+    const pets = getPets();
+    const pet = pets[activePetIndex];
 
-  const formData = new FormData(e.target);
-  const pets = getPets();
-  const pet = pets[activePetIndex];
+    pet.exerciseEntries.unshift({
+      exerciseType: formData.get('exerciseType'),
+      duration: parseInt(formData.get('duration')),
+      date: formData.get('date') || new Date().toISOString().split('T')[0],
+      caloriesBurned: calculateCaloriesBurned(
+        formData.get('exerciseType'),
+        parseInt(formData.get('duration')),
+        pet.weightHistory[0]?.kg
+      )
+    });
 
-  pet.exerciseEntries.unshift({
-    exerciseType: formData.get('exerciseType'),
-    duration: parseInt(formData.get('duration')),
-    date: formData.get('date') || new Date().toISOString().split('T')[0],
-    caloriesBurned: parseInt(formData.get('caloriesBurned'))
-  });
+    savePets(pets);
+    updateDashboard();
+  }
 
-  savePets(pets);
-  updateDashboard(); // Refresh the dashboard after updating exercise log
-}
+  function handleMoodLogSubmit(e) {
+    e.preventDefault();
+    if (activePetIndex === null) return;
 
-// Handle mood log submission and update local storage
-function handleMoodLogSubmit(e) {
-  e.preventDefault();
-  if (activePetIndex === null) return;
+    const formData = new FormData(e.target);
+    const pets = getPets();
+    const pet = pets[activePetIndex];
 
-  const formData = new FormData(e.target);
-  const pets = getPets();
-  const pet = pets[activePetIndex];
+    pet.moodLogs.unshift({
+      mood: formData.get('mood'),
+      date: new Date().toISOString().split('T')[0],
+      notes: formData.get('notes') || ''
+    });
 
-  pet.moodLogs.unshift({
-    mood: formData.get('mood'),
-    date: new Date().toISOString().split('T')[0]
-  });
+    savePets(pets);
+    renderMoodLog();
+  }
 
-  savePets(pets);
-  renderMoodLog(); // Refresh mood log display
-}
+  function calculateCaloriesBurned(exerciseType, duration, weight) {
+    if (!weight) return 0;
+    
+    const METs = {
+      walk: 3,
+      run: 7,
+      play: 5,
+      swim: 6
+    };
+    
+    const met = METs[exerciseType] || 3;
+    return Math.round((met * 3.5 * weight * duration) / 200);
+  }
 
-// Render mood log for the currently selected pet
-function renderMoodLog() {
-  if (activePetIndex === null) return;
-  const pets = getPets();
-  const pet = pets[activePetIndex];
+  function setupEventListeners() {
+    document.addEventListener('submit', e => {
+      if (e.target.matches('#petForm')) handlePetFormSubmit(e);
+      if (e.target.matches('#exerciseForm')) handleExerciseSubmit(e);
+      if (e.target.matches('#moodForm')) handleMoodLogSubmit(e);
+    });
 
-  document.getElementById('moodLogContainer').innerHTML = `
-    <form id="moodForm" class="mood-form">
-      <div class="form-group">
-        <label for="mood">Log Mood</label>
-        <select id="mood" name="mood" required>
-          <option value="happy">Happy</option>
-          <option value="playful">Playful</option>
-          <option value="calm">Calm</option>
-          <option value="anxious">Anxious</option>
-          <option value="tired">Tired</option>
-        </select>
-      </div>
-      <button type="submit" class="log-btn">Log Mood</button>
-    </form>
-    <ul class="mood-log-list">
-      ${pet.moodLogs.map(log => `<li>${log.date}: ${log.mood}</li>`).join('')}
-    </ul>
-  `;
-}
+    document.getElementById('addNewProfileButton')?.addEventListener('click', () => {
+      activePetIndex = null;
+      renderPetForm();
+    });
+  }
 
+  // Public API
+  return {
+    showExerciseLog: function() {
+      AppHelper.showPage(`
+        <div class="dashboard">
+          <header class="dashboard-header">
+            <h1>Pet Exercise Tracker</h1>
+            <button id="logoutButton" class="logout-btn">Logout</button>
+          </header>
+          <div class="dashboard-grid">
+            <div class="left-column">
+              <div class="section">
+                <div class="section-header">
+                  <h2>Pet Profiles</h2>
+                  <button id="addNewProfileButton" class="add-btn">+ Add Pet</button>
+                </div>
+                <div id="petFormContainer"></div>
+                <div id="savedProfiles" class="profiles-grid"></div>
+              </div>
+            </div>
+            <div class="right-column">
+              <div class="section">
+                <h2>Exercise Log</h2>
+                <div id="exerciseLogContainer"></div>
+              </div>
+              <div class="section">
+                <h2>Activity Charts</h2>
+                <div id="exerciseCharts"></div>
+              </div>
+              <div class="section">
+                <h2>Mood Logs</h2>
+                <div id="moodLogContainer"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `);
+      
+      document.getElementById('logoutButton').addEventListener('click', Auth.logout);
+      setupEventListeners();
+      loadSavedProfiles();
+      renderPetForm();
+      Charts.init('#exerciseCharts');
+      
+      if (activePetIndex !== null) {
+        updateDashboard();
+      }
+    }
+  };
+})();
 
 /* ==================== */
 /*  Charts Module       */
