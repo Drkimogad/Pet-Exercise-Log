@@ -2,27 +2,20 @@
     MODERN CSS VARIABLES & THEME SETUP
 ============================================================ */
 :root {
-  /* Vibrant Color Palette */
-  --primary-accent: #6E44FF;       /* Electric purple */
-  --secondary-accent: #00D4FF;     /* Cyan */
-  --dark-bg: #0F0F1A;             /* Deep navy */
-  --card-bg: #1A1A2E;             /* Slightly lighter navy */
-  --text-primary: #F0F0FF;        /* Soft white */
-  --text-secondary: #B8B8D1;      /* Light gray */
-  --success: #4ADE80;             /* Vibrant green */
-  --warning: #FACC15;             /* Golden yellow */
-  --error: #F87171;               /* Soft red */
-  
-  /* Glass Morphism Effects */
+  --primary-accent: #6E44FF;
+  --secondary-accent: #00D4FF;
+  --dark-bg: #0F0F1A;
+  --card-bg: #1A1A2E;
+  --text-primary: #F0F0FF;
+  --text-secondary: #B8B8D1;
+  --success: #4ADE80;
+  --warning: #FACC15;
+  --error: #F87171;
   --glass-bg: rgba(26, 26, 46, 0.7);
   --glass-border: rgba(255, 255, 255, 0.1);
   --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-  
-  /* Animations */
   --transition-fast: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   --transition-smooth: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  
-  /* Typography */
   --font-heading: 'Inter', -apple-system, sans-serif;
   --font-body: 'Inter', -apple-system, sans-serif;
 }
@@ -56,20 +49,19 @@ h1, h2, h3, h4 {
 button {
   cursor: pointer;
   transition: var(--transition-fast);
+  font-family: inherit;
 }
 
 /* ============================================================
-    MAIN DASHBOARD LAYOUT
+    DASHBOARD STRUCTURE
 ============================================================ */
 .dashboard {
-  display: grid;
-  grid-template-columns: minmax(250px, 300px) 1fr;
-  grid-template-rows: auto 1fr;
+  display: flex;
+  flex-direction: column;
   min-height: 100vh;
 }
 
 .dashboard-header {
-  grid-column: 1 / -1;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -88,47 +80,41 @@ button {
   color: transparent;
 }
 
-.dashboard-grid {
-  grid-column: 2;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1.5rem;
+.header-actions {
+  display: flex;
+  gap: 1rem;
+}
+
+.dashboard-container {
+  display: flex;
   padding: 1.5rem;
-  overflow-y: auto;
+  gap: 1.5rem;
+  flex: 1;
 }
 
 .left-column {
+  flex: 0.6;
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
 }
 
 .right-column {
+  flex: 0.4;
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
 }
 
 /* ============================================================
-    SIDEBAR & PROFILE SECTION
+    COMPONENT STYLES
 ============================================================ */
-.sidebar {
-  background: var(--glass-bg);
-  backdrop-filter: blur(12px);
-  border-right: 1px solid var(--glass-border);
-  padding: 1.5rem;
-  position: sticky;
-  top: 0;
-  height: 100vh;
-  overflow-y: auto;
-}
-
 .section {
   background: var(--card-bg);
   border-radius: 12px;
   padding: 1.5rem;
-  box-shadow: var(--glass-shadow);
   border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
 }
 
 .section-header {
@@ -138,85 +124,13 @@ button {
   margin-bottom: 1.5rem;
 }
 
-.section h2 {
-  font-size: 1.25rem;
-  color: var(--text-primary);
-}
-
-.add-btn, .logout-btn {
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
-  font-weight: 500;
-  border: none;
-}
-
-.add-btn {
-  background: var(--primary-accent);
-  color: white;
-}
-
-.logout-btn {
-  background: rgba(255, 255, 255, 0.1);
-  color: var(--error);
-}
-
-/* ============================================================
-    PET PROFILE CARDS
-============================================================ */
-.profiles-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+/* PET FORM */
+.pet-form {
+  display: flex;
+  flex-direction: column;
   gap: 1rem;
 }
 
-.profile-card {
-  background: var(--card-bg);
-  border-radius: 12px;
-  padding: 1.25rem;
-  transition: var(--transition-smooth);
-  border: 1px solid var(--glass-border);
-}
-
-.profile-card img {
-  width: 100%;
-  height: 160px;
-  object-fit: cover;
-  border-radius: 8px;
-  margin-bottom: 0.75rem;
-}
-
-.profile-card h3 {
-  margin-bottom: 0.5rem;
-  font-size: 1.1rem;
-}
-
-.profile-actions {
-  display: flex;
-  gap: 0.5rem;
-  margin-top: 1rem;
-}
-
-.profile-actions button {
-  flex: 1;
-  padding: 0.5rem;
-  border: none;
-  border-radius: 6px;
-  font-size: 0.85rem;
-}
-
-.edit-btn {
-  background: rgba(255, 255, 255, 0.1);
-  color: var(--text-primary);
-}
-
-.select-btn {
-  background: var(--primary-accent);
-  color: white;
-}
-
-/* ============================================================
-    FORMS & INPUTS
-============================================================ */
 .form-group {
   margin-bottom: 1rem;
 }
@@ -224,8 +138,8 @@ button {
 .form-group label {
   display: block;
   margin-bottom: 0.5rem;
-  font-size: 0.9rem;
   color: var(--text-secondary);
+  font-size: 0.9rem;
 }
 
 .form-group input,
@@ -237,176 +151,141 @@ button {
   border: 1px solid var(--glass-border);
   border-radius: 8px;
   color: var(--text-primary);
-  font-family: var(--font-body);
 }
 
-.save-btn, .log-btn {
-  width: 100%;
-  padding: 0.75rem;
+/* CALENDAR */
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.5rem;
+}
+
+.day-box {
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--glass-border);
+  border-radius: 8px;
+  padding: 0.5rem;
+}
+
+.day-number {
+  font-size: 0.8rem;
+}
+
+.exercise-indicator {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin: 4px 0;
+}
+
+.exercise-indicator.exercised {
+  background: var(--secondary-accent);
+}
+
+.exercise-indicator.skipped {
+  background: var(--error);
+}
+
+.emoji-buttons {
+  display: flex;
+  gap: 2px;
+}
+
+.emoji-btn {
+  background: none;
   border: none;
+  font-size: 1rem;
+  padding: 2px;
+}
+
+/* SAVED PROFILES */
+.saved-profiles-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.saved-profile {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 1rem;
+  border: 1px solid var(--glass-border);
+}
+
+.profile-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.profile-actions button {
+  flex: 1;
+  padding: 0.5rem;
+  font-size: 0.8rem;
+  border-radius: 6px;
+}
+
+/* BUTTONS */
+.add-btn, .logout-btn, .save-btn {
+  padding: 0.75rem 1.5rem;
   border-radius: 8px;
   font-weight: 500;
-  margin-top: 0.5rem;
+  border: none;
 }
 
-.save-btn {
+.add-btn {
   background: var(--primary-accent);
   color: white;
 }
 
-.log-btn {
-  background: var(--secondary-accent);
-  color: var(--dark-bg);
-}
-
-/* ============================================================
-    DATA DISPLAYS (LOGS, CHARTS, ETC.)
-============================================================ */
-.exercise-entries {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  margin-top: 1rem;
-}
-
-.exercise-entry {
-  background: rgba(255, 255, 255, 0.05);
-  padding: 0.75rem;
-  border-radius: 8px;
-  display: flex;
-  justify-content: space-between;
-}
-
-.mood-log-list {
-  list-style: none;
-  margin-top: 1rem;
-}
-
-.mood-log-list li {
-  padding: 0.5rem 0;
-  border-bottom: 1px dashed var(--glass-border);
-}
-
-.chart-container {
-  height: 300px;
-  margin-top: 1rem;
-}
-
-/* ============================================================
-    AUTHENTICATION SCREENS
-============================================================ */
-.auth-container {
-  width: 100%;
-  max-width: 420px;
-  margin: 5vh auto;
-  background: var(--glass-bg);
-  backdrop-filter: blur(12px);
-  border: 1px solid var(--glass-border);
-  border-radius: 16px;
-  padding: 2rem;
-  box-shadow: var(--glass-shadow);
-}
-
-.auth-card h2 {
-  font-size: 1.8rem;
-  margin-bottom: 1.5rem;
-  text-align: center;
-  background: linear-gradient(90deg, var(--primary-accent), var(--secondary-accent));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-
-.auth-btn {
-  width: 100%;
-  padding: 1rem;
-  background: linear-gradient(135deg, var(--primary-accent), var(--secondary-accent));
+.save-btn {
+  background: var(--success);
   color: white;
-  border: none;
-  border-radius: 8px;
-  font-weight: 600;
-  margin-top: 1rem;
+  width: 100%;
 }
 
-.auth-switch {
-  text-align: center;
-  margin-top: 1.5rem;
-  color: var(--text-secondary);
-}
-
-/* ============================================================
-    UTILITY CLASSES
-============================================================ */
-.error-text {
+.logout-btn {
+  background: rgba(255, 255, 255, 0.1);
   color: var(--error);
-  font-size: 0.9rem;
-  margin-top: 0.25rem;
 }
 
-.success-text {
-  color: var(--success);
-  font-size: 0.9rem;
-  margin-top: 0.25rem;
-}
-
-.active {
-  border: 2px solid var(--secondary-accent);
-}
+.edit-btn { background: rgba(110, 68, 255, 0.1); color: var(--primary-accent); }
+.delete-btn { background: rgba(248, 113, 113, 0.1); color: var(--error); }
+.print-btn { background: rgba(251, 191, 36, 0.1); color: var(--warning); }
+.share-btn { background: rgba(74, 222, 128, 0.1); color: var(--success); }
+.report-btn { background: rgba(96, 165, 250, 0.1); color: #60a5fa; }
 
 /* ============================================================
     RESPONSIVE ADJUSTMENTS
 ============================================================ */
-@media (max-width: 1200px) {
-  .dashboard-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
 @media (max-width: 992px) {
-  .dashboard {
-    grid-template-columns: 1fr;
+  .dashboard-container {
+    flex-direction: column;
   }
-  
-  .sidebar {
-    position: static;
-    height: auto;
-    border-right: none;
-    border-bottom: 1px solid var(--glass-border);
-  }
-  
-  .dashboard-grid {
-    grid-column: 1;
-  }
-}
-
-@media (max-width: 768px) {
-  .dashboard-header {
-    padding: 1rem;
-  }
-  
-  .dashboard-grid {
-    padding: 1rem;
-    gap: 1rem;
-  }
-  
-  .auth-container {
-    padding: 1.5rem;
-    margin: 2vh auto;
+  .left-column, .right-column {
+    flex: 1;
+    width: 100%;
   }
 }
 
 @media (max-width: 576px) {
-  .profiles-grid {
-    grid-template-columns: 1fr;
+  .dashboard-header {
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem;
   }
-  
+  .header-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
   .profile-actions {
-    flex-direction: column;
+    flex-wrap: wrap;
   }
-  
-  .section-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.5rem;
+  .profile-actions button {
+    min-width: calc(50% - 0.25rem);
   }
 }
