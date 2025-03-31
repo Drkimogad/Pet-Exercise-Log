@@ -446,59 +446,48 @@ const PetEntry = (function() {
   // ======================
   // DASHBOARD LAYOUT
   // ======================
-  function showExerciseLog() {
+function showExerciseLog() {
     const user = JSON.parse(sessionStorage.getItem('user'));
-    
+
     AppHelper.showPage(`
       <div class="dashboard">
         <header class="dashboard-header">
-          <h1>Pet Exercise Tracker</h1>
+          <h1>Pet Exercise Log</h1>
           <div class="header-actions">
             <button id="addNewProfileButton" class="add-btn">+ Add Pet</button>
             <button id="toggleModeButton" class="toggle-btn">Dark Mode</button>
           </div>
         </header>
 
-        <div class="dashboard-container">
-          <!-- LEFT COLUMN (60%) -->
-          <div class="left-column">
-            <!-- Pet Form -->
+        <div class="dashboard-container"> <div class="left-column">
             <div class="section">
               <h2>Pet Profile</h2>
               <div id="petFormContainer"></div>
             </div>
+          </div>
 
-            <!-- Calendar -->
+          <div class="right-column">
             <div class="section">
               <h2>Exercise Calendar</h2>
               <div id="calendarContainer"></div>
             </div>
-
-            <!-- Saved Profiles -->
-            <div class="section">
-              <h2>Saved Profiles</h2>
-              <div id="savedProfiles"></div>
-            </div>
-
-            <!-- Save Button -->
-            <button id="saveAllButton" class="save-btn">Save All</button>
-          </div>
-
-          <!-- RIGHT COLUMN (40%) -->
-          <div class="right-column">
-            <!-- Mood Log -->
             <div class="section">
               <h2>Daily Mood</h2>
               <div id="moodLogContainer"></div>
             </div>
-
-            <!-- Charts -->
             <div class="section">
               <h2>Activity Charts</h2>
               <div id="exerciseCharts"></div>
             </div>
           </div>
         </div>
+        <button id="saveAllButton" class="save-btn">Save All</button>
+        </div>
+
+        <div class="section">
+            <h2>Saved Profiles</h2>
+            <div id="savedProfiles"></div>
+          </div>
 
         <footer>
           <button id="logoutButton" class="logout-btn">Logout</button>
@@ -516,7 +505,7 @@ const PetEntry = (function() {
     Charts.init('#exerciseCharts');
     setupEventListeners();
   }
-
+  
   // ======================
   // MONTHLY REPORT RENDER
   // ======================
