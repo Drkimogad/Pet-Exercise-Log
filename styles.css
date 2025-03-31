@@ -162,42 +162,49 @@ button {
 }
 
 /* ============================================================
-    CALENDAR STYLES
+    CALENDAR STYLES
 ============================================================ */
 .calendar-grid {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 0.5rem;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.5rem;
 }
 
 .day-box {
-  aspect-ratio: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid var(--glass-border);
-  border-radius: 8px;
-  padding: 0.5rem;
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--glass-border);
+  border-radius: 8px;
+  padding: 0.5rem;
 }
 
 .day-number {
-  font-size: 0.8rem;
+  font-size: 0.8rem;
 }
 
-.exercise-indicator {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  margin: 4px 0;
+.exercise-toggle {
+  width: 18px; /* Adjust size as needed */
+  height: 18px; /* Adjust size as needed */
+  border-radius: 50%;
+  margin: 4px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem; /* Size of the 'X' */
+  font-weight: bold;
 }
 
-.exercise-indicator.exercised {
-  background: var(--secondary-accent);
+.exercise-toggle.exercised {
+  background: var(--secondary-accent);
+  color: white; /* Color of the 'X' when exercised */
 }
 
-.exercise-indicator.skipped {
-  background: var(--error);
+.exercise-toggle.skipped {
+  background: var(--error);
+  color: transparent; /* Hide the 'X' when skipped, or you could style it differently */
 }
 
 /* ============================================================
