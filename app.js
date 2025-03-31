@@ -634,7 +634,7 @@ function showExerciseLog() {
       
       savePets(pets);
       updateDashboard();
-    });
+    }
 
 // Exercise Toggle Handler added
     document.addEventListener('click', (e) => {
