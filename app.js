@@ -508,6 +508,16 @@ function showExerciseLog() {
     Charts.init('#exerciseCharts');
     setupEventListeners();
   }
+
+// Helper to update the dashboard view
+  function updateDashboard() {
+    showExerciseLog();
+    // Refresh the charts with the latest data
+    const pets = getPets();
+    if (activePetIndex !== null && pets[activePetIndex]) {
+      Charts.refresh(pets[activePetIndex].exerciseEntries || []);
+    }
+  }
   
   // ======================
   // MONTHLY REPORT RENDER
