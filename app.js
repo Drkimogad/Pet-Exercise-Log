@@ -307,38 +307,44 @@ const PetEntry = (function() {
   // ====================
   // CALENDAR RENDER
   // ====================
+// ====================
+  // CALENDAR RENDER
+  // ====================
   function renderCalendar(pet) {
     const currentDate = new Date();
     const currentMonth = currentDate.getMonth();
     const currentYear = currentDate.getFullYear();
     const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
-    
+
     let calendarHTML = '<div class="calendar-grid">';
-    
+
     for (let day = 1; day <= daysInMonth; day++) {
       const dateStr = `${currentYear}-${(currentMonth + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
-      const hasExercise = pet?.exerciseEntries?.some(e => e.date === dateStr);
+      const exerciseEntry = pet?.exerciseEntries?.find(e => e.date === dateStr);
+      const hasExercise = exerciseEntry ? exerciseEntry.exercised : false; // Check if exercised is true
       const moodEntry = pet?.moodLogs?.find(m => m.date === dateStr);
-      
+
       calendarHTML += `
         <div class="day-box" data-date="${dateStr}">
           <span class="day-number">${day}</span>
-          <span class="exercise-indicator ${hasExercise ? 'exercised' : 'skipped'}"></span>
+          <div class="exercise-toggle ${hasExercise ? 'exercised' : 'skipped'}" data-date="${dateStr}">
+            ${hasExercise ? 'X' : ''}
+          </div>
           <div class="emoji-buttons">
             ${EMOJIS.map(emoji => `
-              <button class="emoji-btn ${moodEntry?.mood === emoji ? 'selected' : ''}" 
-                      data-mood="${emoji}" 
+              <button class="emoji-btn ${moodEntry?.mood === emoji ? 'selected' : ''}"
+                      data-mood="${emoji}"
                       data-date="${dateStr}">${emoji}</button>
             `).join('')}
           </div>
         </div>
       `;
     }
-    
+
     calendarHTML += '</div>';
     return calendarHTML;
   }
-
+  
   // ========================
   // PET FORM RENDER
   // ========================
