@@ -577,10 +577,11 @@ function showExerciseLog() {
   // ======================
   function setupEventListeners() {
     // Save All Button
+// Save All Button
     document.getElementById('saveAllButton')?.addEventListener('click', () => {
       const pets = getPets();
       let pet = pets[activePetIndex] || {};
-      
+
       // Update pet data from form
       const formData = new FormData(document.getElementById('petForm'));
       pet.name = formData.get('petName');
@@ -593,8 +594,35 @@ function showExerciseLog() {
       pet.date = formData.get('petDate');
       pet.exerciseDuration = formData.get('petExerciseDuration');
       pet.calories = formData.get('petCalories');
-      
-      // (Image handling logic can be added here as needed)
+
+      // Handle Image Upload
+      const petImageInput = document.getElementById('petImage');
+      const file = petImageInput.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          pet.image = e.target.result; // Store base64 data
+          savePetDataAndContinue(pets, pet);
+        };
+        reader.readAsDataURL(file);
+      } else {
+        pet.image = pet.image || DEFAULT_IMAGE; // Keep existing or default
+        savePetDataAndContinue(pets, pet);
+      }
+    });
+
+    function savePetDataAndContinue(pets, pet) {
+      if (activePetIndex === null) {
+        pets.push(pet);
+        activePetIndex = pets.length - 1;
+        sessionStorage.setItem('activePetIndex', activePetIndex);
+      } else {
+        pets[activePetIndex] = pet;
+      }
+
+      savePets(pets);
+      updateDashboard();
+    }
       
       if (activePetIndex === null) {
         pets.push(pet);
