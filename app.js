@@ -1,14 +1,11 @@
 "use strict";
 
-/* ==================== */
-/* Core Functionality  */
-/* ==================== */
-let deferredPrompt;
+let deferredPrompt; // Store the install event
 
-//  ✅ Automatically Show Install Banner
+// ✅ Automatically Show Install Banner
 window.addEventListener('beforeinstallprompt', (event) => {
-    event.preventDefault();
-    deferredPrompt = event;
+    event.preventDefault();  
+    deferredPrompt = event; 
 
     // Automatically show the prompt after a short delay
     setTimeout(async () => {
@@ -45,229 +42,51 @@ window.addEventListener('beforeinstallprompt', (event) => {
     }
 });
 
+// ✅ Service Worker Registration
 function registerServiceWorker() {
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/Pet-Exercise-Log/service-worker.js')
-      .then(reg => console.log('SW registered:', reg))
-      .catch(err => console.error('SW registration failed:', err));
-  }
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/Pet-Exercise-Log/service-worker.js', {
+            scope: '/Pet-Exercise-Log/'
+        }).then(reg => {
+            console.log('Service Worker registered with scope:', reg.scope);
+        }).catch(error => {
+            console.error('Service Worker registration failed:', error);
+        });
+    }
 }
 
+// ✅ Fixed showSignIn (no nested DOMContentLoaded)
+function showSignIn() {
+    const authContainer = document.getElementById("auth-container");
+    if (authContainer) {
+        authContainer.style.display = "block";
+    } else {
+        console.warn("⚠️ Auth container not found");
+    }
+}
+
+// ✅ Run on page load
 document.addEventListener("DOMContentLoaded", () => {
-  registerServiceWorker();
+    registerServiceWorker();
+
     // Apply dark mode if enabled
     if (localStorage.getItem('darkMode') === 'true') {
         document.body.classList.add('dark-mode');
     }
-  if (sessionStorage.getItem('user')) {
-    PetEntry.showExerciseLog();
-  } else {
-    Auth.showAuth();
-  }
-});
-//---------------------------------------------------
-// Toggle mode function 
-//----------------------------------------------------
-function toggleMode() {
-  document.body.classList.toggle('dark-mode');
-  localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
-  Charts.updateColors();
-  Calendar.refresh(PetEntry.getActivePet()?.exerciseEntries || []);
-}
 
-// initialize saved theme on load
-function applySavedTheme() {
-  const savedTheme = localStorage.getItem('theme');
-  if (savedTheme === 'dark') {
-    document.body.classList.add('dark-mode');
-  }
-}
-document.addEventListener('DOMContentLoaded', applySavedTheme);
-
-document.addEventListener('DOMContentLoaded', () => {
-  applySavedTheme();
-  registerServiceWorker();
-  
-  if (sessionStorage.getItem('user')) {
-    PetEntry.showExerciseLog();
-  } else {
-    Auth.showAuth(false); // Show sign-in by default
-  }
-});
-
-
-/* ==================== */
-/* Auth Module         */
-/* ==================== */
-const Auth = (function() {
-  let currentUser = null;
-
-  async function hashPassword(pass, salt) {
-    const encoder = new TextEncoder();
-    const data = encoder.encode(salt ? pass + salt : pass);
-    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-    return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
-  }
-
-  function authTemplate(isSignUp) {
-    return `
-      <div class="auth-container">
-        <div class="auth-card">
-          <h2>${isSignUp ? 'Create Account' : 'Sign In'}</h2>
-          <form id="authForm" class="auth-form">
-            ${isSignUp ? `
-              <div class="form-group">
-                <label for="username">Name</label>
-                <input type="text" id="username" name="username" required>
-              </div>` : ''}
-            <div class="form-group">
-              <label for="email">Email</label>
-              <input type="email" id="email" name="email" required>
-            </div>
-            <div class="form-group">
-              <label for="password">Password</label>
-              <input type="password" id="password" name="password" required minlength="8">
-            </div>
-            ${isSignUp ? `
-              <div class="form-group">
-                <label for="confirmPassword">Confirm Password</label>
-                <input type="password" id="confirmPassword" name="confirmPassword" required>
-              </div>` : ''}
-            <button type="submit" class="auth-btn">${isSignUp ? 'Sign Up' : 'Sign In'}</button>
-          </form>
-          <div class="auth-switch">
-            ${isSignUp ? 'Have an account?' : 'New user?'}
-            <a href="#" id="switchAuth">${isSignUp ? 'Sign In' : 'Sign Up'}</a>
-          </div>
-        </div>
-      </div>
-    `;
-  }
-
-  async function handleAuthSubmit(e, isSignUp) {
-    e.preventDefault();
-    const form = e.target;
-    const email = form.email.value;
-    const password = form.password.value;
-
-    try {
-      // Clear previous errors
-      const errorElements = form.querySelectorAll('.error-text');
-      errorElements.forEach(el => el.remove());
-
-      // Validation
-      const errors = [];
-      if (isSignUp) {
-        const username = form.username?.value;
-        const confirmPassword = form.confirmPassword?.value;
-        
-        if (!username) errors.push('Name is required');
-        if (password !== confirmPassword) errors.push('Passwords must match');
-      }
-
-      if (!/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(email)) {
-        errors.push('Invalid email format');
-      }
-
-      if (password.length < 8) errors.push('Password must be at least 8 characters');
-
-      if (errors.length > 0) {
-        errors.forEach(error => {
-          const errorElement = document.createElement('p');
-          errorElement.className = 'error-text';
-          errorElement.textContent = error;
-          errorElement.style.color = 'var(--error)';
-          form.appendChild(errorElement);
-        });
-        return;
-      }
-
-      // Process successful sign-up (but don't log in yet)
-      if (isSignUp) {
-        const salt = crypto.getRandomValues(new Uint8Array(16)).join('');
-        const hashedPassword = await hashPassword(password, salt);
-
-        // Store user data (could use localStorage for persistence)
-        const users = JSON.parse(localStorage.getItem('users') || '[]');
-        users.push({
-          email,
-          username: form.username?.value,
-          password: hashedPassword,
-          salt
-        });
-        localStorage.setItem('users', JSON.stringify(users));
-
-        // Show success message and switch to sign-in
-        const successElement = document.createElement('p');
-        successElement.className = 'success-text';
-        successElement.textContent = 'Account created! Please sign in.';
-        successElement.style.color = 'var(--success)';
-        form.appendChild(successElement);
-
-        // Switch to sign-in after 1.5 seconds
-        setTimeout(() => showAuth(false), 1500);
-        return;
-      }
-
-      // Process sign-in
-      const users = JSON.parse(localStorage.getItem('users') || '[]');
-      const user = users.find(u => u.email === email);
-      
-      if (!user) {
-        throw new Error('User not found');
-      }
-
-      const hashedPassword = await hashPassword(password, user.salt);
-      if (hashedPassword !== user.password) {
-        throw new Error('Invalid password');
-      }
-
-      // Successful login
-      currentUser = {
-        email: user.email,
-        username: user.username,
-        lastLogin: new Date().toISOString()
-      };
-
-      sessionStorage.setItem('user', JSON.stringify(currentUser));
-      PetEntry.showExerciseLog();
-
-    } catch (error) {
-      const errorElement = document.createElement('p');
-      errorElement.className = 'error-text';
-      errorElement.textContent = error.message || 'Authentication failed';
-      errorElement.style.color = 'var(--error)';
-      form.appendChild(errorElement);
+    // Check if user is logged in
+    if (sessionStorage.getItem('user')) {
+        if (typeof PetEntry !== "undefined" && typeof PetEntry.showExerciseLog === "function") {
+            PetEntry.showExerciseLog();
+        } else {
+            console.error("❌ PetEntry or showExerciseLog function is missing!");
+        }
+    } else {
+        Auth.showAuth();
     }
-  }
+}); // <-- Closing brace for DOMContentLoaded
 
-  function showAuth(isSignUp = false) {
-    AppHelper.showPage(authTemplate(isSignUp));
-    
-    const form = document.getElementById('authForm');
-    form.addEventListener('submit', (e) => handleAuthSubmit(e, isSignUp));
-    
-    document.getElementById('switchAuth').addEventListener('click', (e) => {
-      e.preventDefault();
-      showAuth(!isSignUp);
-    });
-  }
-
-  function logout() {
-    sessionStorage.removeItem('user');
-    currentUser = null;
-    showAuth(false);
-  }
-
-  return {
-    showAuth,
-    logout
-  };
-})();
-
-/* ==================== */
-/* Helper Functions    */
-/* ==================== */
+// appHelper
 const AppHelper = (function() {
   const appContainer = document.getElementById('app');
   const components = {};
@@ -293,16 +112,115 @@ const AppHelper = (function() {
   };
 })();
 
-/* ==================== */
-/* PetEntry Module     */
-/* ==================== */
+// authentication//
+const Auth = (function() {
+  let currentUser = null;
+
+  async function hashPassword(pass, salt) {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(salt ? pass + salt : pass);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
+  }
+
+  function authTemplate(isSignUp) {
+    return `
+      <div class="auth-container">
+        <div class="auth-card">
+          <h2>${isSignUp ? 'Create Account' : 'Sign In'}</h2>
+          <form id="authForm">
+            ${isSignUp ? `
+              <div class="form-group">
+                <label for="username">Name</label>
+                <input type="text" id="username" required>
+              </div>` : ''}
+            <div class="form-group">
+              <label for="email">Email</label>
+              <input type="email" id="email" required>
+            </div>
+            <div class="form-group">
+              <label for="password">Password</label>
+              <input type="password" id="password" required minlength="8">
+            </div>
+            ${isSignUp ? `
+              <div class="form-group">
+                <label for="confirmPassword">Confirm Password</label>
+                <input type="password" id="confirmPassword" required>
+              </div>` : ''}
+            <button type="submit" class="auth-btn">${isSignUp ? 'Sign Up' : 'Sign In'}</button>
+          </form>
+          <div class="auth-switch">
+            ${isSignUp ? 'Have an account?' : 'New user?'}
+            <a href="#" id="switchAuth">${isSignUp ? 'Sign In' : 'Sign Up'}</a>
+          </div>
+        </div>
+      </div>`;
+  }
+
+  async function handleAuthSubmit(e, isSignUp) {
+    e.preventDefault();
+    const formData = {
+      email: document.getElementById('email').value,
+      password: document.getElementById('password').value,
+      ...(isSignUp && {
+        username: document.getElementById('username').value,
+        confirmPassword: document.getElementById('confirmPassword')?.value
+      })
+    };
+
+    const errors = [];
+    if (isSignUp && !formData.username?.trim()) errors.push('Name required');
+    if (!/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(formData.email)) errors.push('Invalid email');
+    if (formData.password.length < 8) errors.push('Password must be 8+ chars');
+    if (isSignUp && formData.password !== formData.confirmPassword) errors.push('Passwords mismatch');
+
+    if (errors.length) return AppHelper.showErrors(errors);
+
+    try {
+      const salt = crypto.getRandomValues(new Uint8Array(16)).join('');
+      const userData = {
+        ...(isSignUp && { username: formData.username }),
+        email: formData.email,
+        password: await hashPassword(formData.password, salt),
+        salt,
+        lastLogin: new Date().toISOString()
+      };
+      
+      currentUser = userData;
+      sessionStorage.setItem('user', JSON.stringify(userData));
+      console.log('Stored user data:', JSON.parse(sessionStorage.getItem('user')));
+      isSignUp ? showAuth(false) : PetEntry.showExerciseLog(); // Changed PetEntryModule to PetEntry
+    } catch (error) {
+      AppHelper.showError('Authentication failed');
+      console.error(error);
+    }
+  }
+
+  function showAuth(isSignUp = false) {
+    AppHelper.showPage(authTemplate(isSignUp));
+    document.getElementById('authForm').addEventListener('submit', e => handleAuthSubmit(e, isSignUp));
+    document.getElementById('switchAuth').addEventListener('click', e => {
+      e.preventDefault();
+      showAuth(!isSignUp);
+    });
+  }
+
+  return {
+    showAuth,
+    logout: () => {
+      sessionStorage.removeItem('user');
+      AppHelper.showPage('<div class="logout-message">Logged out</div>');
+      setTimeout(() => showAuth(false), 2000);
+    }
+  };
+})();
+
+// petentry//
 const PetEntry = (function() {
   let activePetIndex = null;
   const MAX_PETS = 10;
-  const DEFAULT_IMAGE = '/images/default-pet.png';
-  const EMOJIS = ['😀', '😐', '😞', '😊', '😠'];
-
-  const templates = {
+  const DEFAULT_IMAGE = '/images/default-pet.png'; 
+const templates = {
   dashboard: () => `
     <div class="dashboard-container">
       <header class="dashboard-header">
@@ -373,7 +291,7 @@ const PetEntry = (function() {
       </form>
     `;
   }
-};
+};  // <-- Close the templates object here!
 
 function showExerciseLog() {
   AppHelper.showPage(templates.dashboard());
@@ -386,6 +304,7 @@ function showExerciseLog() {
   loadSavedProfiles();
   loadActivePetData();
 }
+
 
   function setupEventListeners() {
     document.getElementById('exerciseForm')?.addEventListener('submit', handleFormSubmit);
@@ -422,7 +341,7 @@ function showExerciseLog() {
     const petData = activePetIndex !== null ? pets[activePetIndex] : {
       petDetails: { name: '', image: DEFAULT_IMAGE, characteristics: '' },
       exerciseEntries: [],
-      monthlyReports: []
+      monthlyReports: []  // <-- New property for archived reports
     };
 
     petData.petDetails = {
@@ -457,7 +376,8 @@ function showExerciseLog() {
     loadSavedProfiles();
     AppHelper.refreshComponent('petFormContainer');
   }
-
+// profiles control and buttons //
+// load saved pet profiles //
 function loadSavedProfiles() {
   const pets = getPets();
   const profilesHTML = pets.map((pet, index) => `
@@ -476,6 +396,7 @@ function loadSavedProfiles() {
 
   AppHelper.renderComponent('savedProfiles', profilesHTML);
 
+  // Select button event
   document.querySelectorAll('.select-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       activePetIndex = parseInt(btn.dataset.index);
@@ -484,14 +405,17 @@ function loadSavedProfiles() {
     });
   });
 
+  // Edit button event
   document.querySelectorAll('.edit-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       activePetIndex = parseInt(btn.dataset.index);
       sessionStorage.setItem('activePetIndex', activePetIndex);
+      // Refresh the pet form with current pet details for editing
       AppHelper.refreshComponent('petFormContainer');
     });
   });
 
+  // Delete button event
   document.querySelectorAll('.delete-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       const index = parseInt(btn.dataset.index);
@@ -512,6 +436,7 @@ function loadSavedProfiles() {
     });
   });
 
+  // Monthly Report button event
   document.querySelectorAll('.monthly-report-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       const index = parseInt(btn.dataset.index);
@@ -519,6 +444,7 @@ function loadSavedProfiles() {
     });
   });
 
+  // Print Profile button event
   document.querySelectorAll('.print-profile-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       const index = parseInt(btn.dataset.index);
@@ -534,6 +460,7 @@ function openMonthlyReport(index) {
   const currentMonth = now.getMonth();
   const currentYear = now.getFullYear();
 
+  // Build HTML for archived monthly reports.
   let archivedReportsHTML = '';
   if (pet.monthlyReports && pet.monthlyReports.length > 0) {
     archivedReportsHTML = pet.monthlyReports.map(report => {
@@ -549,6 +476,7 @@ function openMonthlyReport(index) {
     }).join('');
   }
 
+  // Filter current month's entries.
   const currentEntries = pet.exerciseEntries.filter(entry => {
     const entryDate = new Date(entry.date);
     return entryDate.getMonth() === currentMonth && entryDate.getFullYear() === currentYear;
@@ -589,6 +517,7 @@ function openMonthlyReport(index) {
   `;
   AppHelper.showPage(reportHTML);
 
+  // Initialize charts only if there are current entries.
   if (currentEntries.length) {
     initMonthlyCharts(currentEntries);
   }
@@ -601,6 +530,7 @@ function openMonthlyReport(index) {
   });
 }
 
+// Export functionality //
 document.getElementById('exportReportBtn')?.addEventListener('click', () => {
   const reportElement = document.querySelector('.monthly-report');
   if (!reportElement) {
@@ -609,6 +539,7 @@ document.getElementById('exportReportBtn')?.addEventListener('click', () => {
   }
   html2canvas(reportElement).then(canvas => {
     const imgData = canvas.toDataURL('image/png');
+    // Using jsPDF from the global window.jspdf namespace
     const { jsPDF } = window.jspdf;
     const pdf = new jsPDF('p', 'mm', 'a4');
     const pdfWidth = pdf.internal.pageSize.getWidth();
@@ -621,7 +552,9 @@ document.getElementById('exportReportBtn')?.addEventListener('click', () => {
   });
 });
 
+// initialize monthly charts //
 function initMonthlyCharts(data) {
+  // Process data for duration and activity charts
   const durationData = data.reduce((acc, e) => {
     acc[e.date] = (acc[e.date] || 0) + e.duration;
     return acc;
@@ -631,6 +564,7 @@ function initMonthlyCharts(data) {
     return acc;
   }, {});
 
+  // Create monthly duration chart (line chart)
   const ctxDuration = document.getElementById('monthlyDurationChart');
   new Chart(ctxDuration, {
     type: 'line',
@@ -645,6 +579,7 @@ function initMonthlyCharts(data) {
     }
   });
 
+  // Create monthly activity chart (doughnut chart)
   const ctxActivity = document.getElementById('monthlyActivityChart');
   new Chart(ctxActivity, {
     type: 'doughnut',
@@ -656,6 +591,37 @@ function initMonthlyCharts(data) {
       }]
     }
   });
+}
+
+// ----- Beginning of second half of app.js -----
+
+// (This code is assumed to be inside your PetEntry module's IIFE)
+
+function openMonthlyReport(index) {
+  const pets = getPets();
+  const pet = pets[index];
+  const now = new Date();
+  const currentMonth = now.getMonth();
+  const currentYear = now.getFullYear();
+
+  const reportHTML = `
+    <div class="monthly-report">
+      <h2>Monthly Report for ${pet.petDetails.name}</h2>
+      <div id="monthlyCalendar">
+        <!-- Calendar with ticked days goes here -->
+      </div>
+      <div id="monthlyCharts">
+        <!-- Two charts displaying exercise trends go here -->
+      </div>
+      <button id="exportReportBtn">Export Report</button>
+      <button id="backToDashboardBtn">Back to Dashboard</button>
+    </div>
+  `;
+  AppHelper.showPage(reportHTML);
+  document.getElementById('backToDashboardBtn')?.addEventListener('click', () => {
+    PetEntry.showExerciseLog();
+  });
+  // (If you prefer, you can move the export functionality inside this function)
 }
 
 function printProfile(index) {
@@ -678,6 +644,7 @@ function printProfile(index) {
   printWindow.print();
 }
 
+// toggle mode //
 function toggleDarkMode() {
   document.body.classList.toggle('dark-mode');
   localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
@@ -703,9 +670,10 @@ return {
     return activePetIndex !== null ? pets[activePetIndex] : null;
   }
 };
-})();
 
-/* Calendar */
+})(); // <-- End of PetEntry module
+
+// Calendar //
 const Calendar = (function() {
   let currentMonth = new Date().getMonth();
   let currentYear = new Date().getFullYear();
@@ -739,10 +707,12 @@ const Calendar = (function() {
           .join('')}
     `;
 
+    // Empty days
     for (let i = 0; i < startDay; i++) {
       calendarHTML += `<div class="calendar-day empty"></div>`;
     }
 
+    // Actual days
     for (let day = 1; day <= endDate; day++) {
       const paddedMonth = String(currentMonth + 1).padStart(2, '0');
       const dateStr = `${currentYear}-${paddedMonth}-${String(day).padStart(2, '0')}`;
@@ -826,6 +796,7 @@ const Calendar = (function() {
     `;
     document.body.insertAdjacentHTML('beforeend', modalHTML);
     
+    // Add event listener for the form submission
     document.getElementById('dayExerciseForm').addEventListener('submit', (e) => {
       e.preventDefault();
       const exerciseType = document.getElementById('exerciseTypeDay').value;
@@ -837,9 +808,11 @@ const Calendar = (function() {
         duration,
         caloriesBurned
       };
+      // Get the active pet and update its exercise entries
       const activePet = PetEntry.getActivePet();
       if (activePet) {
         activePet.exerciseEntries.push(newEntry);
+        // Update local storage for persistence
         const pets = PetEntry.getPets();
         const activeIndex = parseInt(sessionStorage.getItem('activePetIndex'));
         pets[activeIndex] = activePet;
@@ -849,6 +822,7 @@ const Calendar = (function() {
       document.querySelector('.calendar-modal').remove();
     });
     
+    // Close modal event listener
     document.querySelector('.close-modal-btn').addEventListener('click', () => {
       document.querySelector('.calendar-modal').remove();
     });
@@ -862,7 +836,7 @@ const Calendar = (function() {
   return { init, refresh };
 })();
 
-/* Charts */
+// Charts //
 const Charts = (function() {
   let durationChart, caloriesChart, activityChart;
 
@@ -873,4 +847,103 @@ const Charts = (function() {
       <div class="chart">
         <canvas id="durationChart"></canvas>
       </div>
-      <div
+      <div class="chart">
+        <canvas id="activityChart"></canvas>
+      </div>
+      <div class="chart">
+        <canvas id="caloriesChart"></canvas>
+      </div>
+    `;
+  }
+
+  function refresh(data) {
+    if (!data.length) return;
+    destroyCharts();
+    
+    const processed = processData(data);
+    createDurationChart(processed);
+    createActivityChart(processed);
+    createCaloriesChart(processed);
+  }
+
+  function processData(data) {
+    return {
+      labels: [...new Set(data.map(e => e.date))].sort(),
+      duration: data.reduce((acc, e) => {
+        acc[e.date] = (acc[e.date] || 0) + e.duration;
+        return acc;
+      }, {}),
+      calories: data.reduce((acc, e) => {
+        acc[e.date] = (acc[e.date] || 0) + e.caloriesBurned;
+        return acc;
+      }, {}),
+      activities: data.reduce((acc, e) => {
+        acc[e.exerciseType] = (acc[e.exerciseType] || 0) + 1;
+        return acc;
+      }, {})
+    };
+  }
+
+  function createDurationChart(data) {
+    const ctx = document.getElementById('durationChart');
+    durationChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: Object.keys(data.duration),
+        datasets: [{
+          label: 'Total Duration (min)',
+          data: Object.values(data.duration),
+          borderColor: '#4bc0c0',
+          tension: 0.3
+        }]
+      }
+    });
+  }
+
+  function createActivityChart(data) {
+    const ctx = document.getElementById('activityChart');
+    activityChart = new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels: Object.keys(data.activities),
+        datasets: [{
+          data: Object.values(data.activities),
+          backgroundColor: ['#ff6384', '#36a2eb', '#ffce56', '#4bc0c0']
+        }]
+      }
+    });
+  }
+
+  function createCaloriesChart(data) {
+    const ctx = document.getElementById('caloriesChart');
+    caloriesChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: Object.keys(data.calories),
+        datasets: [{
+          label: 'Calories Burned',
+          data: Object.values(data.calories),
+          backgroundColor: '#cc65fe'
+        }]
+      }
+    });
+  }
+    
+  function destroyCharts() {
+    if (durationChart) durationChart.destroy();
+    if (activityChart) activityChart.destroy();
+    if (caloriesChart) caloriesChart.destroy();
+  }
+  
+  function updateColors() {
+    const textColor = document.body.classList.contains('dark-mode') ? '#fff' : '#374151';
+    Chart.defaults.color = textColor;
+    if (durationChart) durationChart.update();
+    if (activityChart) activityChart.update();
+    if (caloriesChart) caloriesChart.update();
+  }
+
+  return { init, refresh, updateColors };
+})();
+
+// ----- End of second half of app.js -----
