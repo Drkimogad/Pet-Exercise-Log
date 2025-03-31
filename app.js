@@ -578,6 +578,7 @@ function showExerciseLog() {
   function setupEventListeners() {
     // Save All Button
 // Save All Button
+// Save All Button
     document.getElementById('saveAllButton')?.addEventListener('click', () => {
       const pets = getPets();
       let pet = pets[activePetIndex] || {};
@@ -635,6 +636,10 @@ function showExerciseLog() {
       savePets(pets);
       updateDashboard();
     }
+  // Helper to update the dashboard view
+  function updateDashboard() {
+    showExerciseLog();
+  }
 
 // Exercise Toggle Handler added
     document.addEventListener('click', (e) => {
@@ -751,11 +756,6 @@ function showExerciseLog() {
         renderMonthlyReport(pet, now.getMonth(), now.getFullYear());
       });
     });
-  }
-
-  // Helper to update the dashboard view
-  function updateDashboard() {
-    showExerciseLog();
   }
 
   // Public API
