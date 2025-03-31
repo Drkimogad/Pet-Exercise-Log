@@ -572,13 +572,11 @@ function showExerciseLog() {
     });
   }
 
-  // ======================
+// ======================
   // EVENT HANDLERS
   // ======================
   function setupEventListeners() {
     // Save All Button
-// Save All Button
-// Save All Button
     document.getElementById('saveAllButton')?.addEventListener('click', () => {
       const pets = getPets();
       let pet = pets[activePetIndex] || {};
@@ -624,24 +622,13 @@ function showExerciseLog() {
       savePets(pets);
       updateDashboard();
     }
-      
-      if (activePetIndex === null) {
-        pets.push(pet);
-        activePetIndex = pets.length - 1;
-        sessionStorage.setItem('activePetIndex', activePetIndex);
-      } else {
-        pets[activePetIndex] = pet;
-      }
-      
-      savePets(pets);
-      updateDashboard();
-    }
-  // Helper to update the dashboard view
-  function updateDashboard() {
-    showExerciseLog();
-  }
 
-// Exercise Toggle Handler added
+    // Helper to update the dashboard view
+    function updateDashboard() {
+      showExerciseLog();
+    }
+
+    // Exercise Toggle Handler added
     document.addEventListener('click', (e) => {
       if (e.target.classList.contains('exercise-toggle')) {
         const date = e.target.dataset.date;
@@ -666,7 +653,7 @@ function showExerciseLog() {
         updateDashboard(); // Re-render the dashboard to update the calendar
       }
     });
-    
+
     // Emoji Button Handler for Mood Log
     document.addEventListener('click', (e) => {
       if (e.target.classList.contains('emoji-btn')) {
@@ -763,6 +750,7 @@ function showExerciseLog() {
     showExerciseLog
   };
 })();
+
 /*-------------------------------------------------*/
 // Charts
 /*-------------------------------------------------*/
