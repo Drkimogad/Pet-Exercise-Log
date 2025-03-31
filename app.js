@@ -304,11 +304,8 @@ const PetEntry = (function() {
     return crypto.randomUUID() || Math.random().toString(36).substring(2, 15);
   }
 
-  // ====================
-  // CALENDAR RENDER
-  // ====================
 // ====================
-  // CALENDAR RENDER
+  // CALENDAR RENDER    updated
   // ====================
   function renderCalendar(pet) {
     const currentDate = new Date();
@@ -450,7 +447,7 @@ const PetEntry = (function() {
   }
 
   // ======================
-  // DASHBOARD LAYOUT
+  // DASHBOARD LAYOUT     updated
   // ======================
 function showExerciseLog() {
     const user = JSON.parse(sessionStorage.getItem('user'));
@@ -601,6 +598,32 @@ function showExerciseLog() {
       updateDashboard();
     });
 
+// Exercise Toggle Handler added
+    document.addEventListener('click', (e) => {
+      if (e.target.classList.contains('exercise-toggle')) {
+        const date = e.target.dataset.date;
+        const pets = getPets();
+        let pet = pets[activePetIndex] || {};
+        pet.exerciseEntries = pet.exerciseEntries || [];
+
+        const existingEntryIndex = pet.exerciseEntries.findIndex(entry => entry.date === date);
+        const wasExercised = e.target.classList.contains('exercised');
+
+        if (existingEntryIndex > -1) {
+          pet.exerciseEntries.splice(existingEntryIndex, 1); // Remove existing entry
+          if (!wasExercised) {
+            pet.exerciseEntries.push({ date: date, exercised: true }); // Add if toggling to exercised
+          }
+        } else {
+          pet.exerciseEntries.push({ date: date, exercised: true }); // Add new entry as exercised
+        }
+
+        pets[activePetIndex] = pet;
+        savePets(pets);
+        updateDashboard(); // Re-render the dashboard to update the calendar
+      }
+    });
+    
     // Emoji Button Handler for Mood Log
     document.addEventListener('click', (e) => {
       if (e.target.classList.contains('emoji-btn')) {
