@@ -448,6 +448,44 @@ const AppHelper = {
       </form>`
   };
 
+// In PetEntry.showExerciseLog():
+function showExerciseLog() {
+  AppHelper.showPage(templates.dashboard());
+  render.petForm();
+  
+  // Initialize all sections
+  initMoodLogs();
+  initCalendar();
+  initCharts();
+  render.savedProfiles();
+}
+
+function initMoodLogs() {
+  const pets = dataService.getPets();
+  const activePet = dataService.getActivePet();
+  if (activePet) {
+    document.getElementById('moodLogs').innerHTML = `
+      <div class="mood-container">
+        ${activePet.moodLogs?.map(log => `
+          <div class="mood-entry">
+            <span>${new Date(log.date).toLocaleDateString()}</span>
+            <span class="mood-emoji">${CONFIG.EMOJIS[log.mood]}</span>
+          </div>
+        `).join('') || '<p>No mood entries yet</p>'}
+      </div>`;
+  }
+}
+
+function initCalendar() {
+  // Initialize your calendar component here
+  document.getElementById('calendarContainer').innerHTML = `
+    <div class="calendar">
+      <!-- Calendar implementation -->
+    </div>`;
+}
+
+
+   
   // SECTION 4: UTILITY FUNCTIONS
   const utils = {
     generateId: () => crypto.randomUUID() || Math.random().toString(36).substring(2, 15),
