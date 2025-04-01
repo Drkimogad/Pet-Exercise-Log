@@ -70,6 +70,9 @@ document.addEventListener('DOMContentLoaded', () => {
   applySavedTheme();
   registerServiceWorker();
 
+  // Explicitly clear session storage for testing purposes
+  sessionStorage.clear();
+
   // Correct initialization sequence: Show signup form if not authenticated
   if (!sessionStorage.getItem('user')) {
     Auth.showAuth(true); // Show signup form
