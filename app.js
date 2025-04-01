@@ -5,9 +5,13 @@
 /* ==================== */
 let deferredPrompt;
 
+// In your beforeinstallprompt handler:
 window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
   deferredPrompt = e;
-  document.getElementById('installButton').style.display = 'block';
+  const installBtn = document.getElementById('installButton');
+  if (installBtn) installBtn.style.display = 'block'; 
+  // Only show if not already visible
 });
 
 document.getElementById('installButton').addEventListener('click', async () => {
