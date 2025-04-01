@@ -4,22 +4,24 @@
 /* 1  Core Functionality  */
 /* ==================== */
 let deferredPrompt;
-
 let installButtonAdded = false;
 
 window.addEventListener('beforeinstallprompt', (e) => {
   if (installButtonAdded) return;
-  
+
   e.preventDefault();
   deferredPrompt = e;
-  
+
   const installBtn = document.createElement('button');
   installBtn.id = 'installButton';
   installBtn.textContent = 'Install App';
   installBtn.className = 'install-btn';
   installBtn.style.display = 'block';
-  
-  document.querySelector('footer').prepend(installBtn);
+
+  const footer = document.querySelector('footer');
+  if (footer) {
+    footer.prepend(installBtn);
+  }
   installButtonAdded = true;
 });
 
@@ -37,33 +39,28 @@ function registerServiceWorker() {
 function toggleMode() {
   const body = document.body;
   body.classList.toggle('dark-mode');
-  localStorage.setItem('theme', body.classList.contains('dark-mode') ? 'dark' : 'light');
-  Charts.updateColors();
-}
 
-function applySavedTheme() {
-  const savedTheme = localStorage.getItem('theme');
-  if (savedTheme === 'dark') {
-    document.body.classList.add('dark-mode');
-  }
-}
-
-function toggleMode() {
-  const body = document.body;
-  body.classList.toggle('dark-mode');
-  
   // Persist state
   const isDark = body.classList.contains('dark-mode');
   localStorage.setItem('darkMode', isDark);
-  
-  // Update button text
+
+  // Update button text - Ensure we target the button in the PetEntry dashboard
   const toggleBtn = document.getElementById('toggleModeButton');
   if (toggleBtn) {
     toggleBtn.textContent = isDark ? 'Light Mode' : 'Dark Mode';
   }
-  
-  // Update charts
-  Charts.updateColors();
+
+  // Update charts - Assuming Charts is globally accessible
+  if (typeof Charts !== 'undefined') {
+    Charts.updateColors();
+  }
+}
+
+function applySavedTheme() {
+  const savedTheme = localStorage.getItem('darkMode');
+  if (savedTheme === 'true') {
+    document.body.classList.add('dark-mode');
+  }
 }
 
 /* ==================== */
@@ -72,17 +69,19 @@ function toggleMode() {
 document.addEventListener('DOMContentLoaded', () => {
   applySavedTheme();
   registerServiceWorker();
-  
-// Correct initialization sequence
-if (!sessionStorage.getItem('user')) {
-  Auth.showAuth(false); // Show auth first
-} else {
-  // Only load PetEntry if authenticated
-  PetEntry.showExerciseLog(); 
-}
+
+  // Correct initialization sequence: Show signup form if not authenticated
+  if (!sessionStorage.getItem('user')) {
+    Auth.showAuth(true); // Show signup form
+  } else {
+    // Only load PetEntry if authenticated
+    // We will handle the toggleMode event listener in app.js now
+    PetEntry.showExerciseLog();
+  }
+});
 
 /* ==================== */
-/*  4 Auth Module         */
+/* 4 Auth Module         */
 /* ==================== */
 const Auth = (function() {
   let currentUser = null;
@@ -141,11 +140,11 @@ const Auth = (function() {
       const email = form.email.value;
       const password = form.password.value;
       const errors = [];
-      
+
       if (isSignUp) {
         const username = form.username?.value;
         const confirmPassword = form.confirmPassword?.value;
-        
+
         if (!username) errors.push('Name is required');
         if (password !== confirmPassword) errors.push('Passwords must match');
       }
@@ -186,7 +185,7 @@ const Auth = (function() {
 
       const users = JSON.parse(localStorage.getItem('users') || '[]');
       const user = users.find(u => u.email === email);
-      
+
       if (!user) throw new Error('User not found');
       if (await hashPassword(password, user.salt) !== user.password) throw new Error('Invalid password');
 
@@ -212,10 +211,10 @@ const Auth = (function() {
     appContainer.style.opacity = 0;
     appContainer.innerHTML = authTemplate(isSignUp);
     setTimeout(() => appContainer.style.opacity = 1, 50);
-    
+
     const form = document.getElementById('authForm');
     form.addEventListener('submit', (e) => handleAuthSubmit(e, isSignUp));
-    
+
     document.getElementById('switchAuth').addEventListener('click', (e) => {
       e.preventDefault();
       showAuth(!isSignUp);
@@ -227,7 +226,8 @@ const Auth = (function() {
     logout: () => {
       sessionStorage.removeItem('user');
       showAuth(false);
-    }
+    },
+    toggleMode: toggleMode // Expose toggleMode to be accessible globally
   };
 })();
 
