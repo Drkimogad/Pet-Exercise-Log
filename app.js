@@ -6,7 +6,6 @@
 let deferredPrompt;
 
 window.addEventListener('beforeinstallprompt', (e) => {
-  // Store the event but don't prevent default to avoid console warnings
   deferredPrompt = e;
   document.getElementById('installButton').style.display = 'block';
 });
@@ -35,6 +34,7 @@ function toggleMode() {
   const body = document.body;
   body.classList.toggle('dark-mode');
   localStorage.setItem('theme', body.classList.contains('dark-mode') ? 'dark' : 'light');
+  Charts.updateColors();
 }
 
 function applySavedTheme() {
@@ -51,11 +51,10 @@ document.addEventListener('DOMContentLoaded', () => {
   applySavedTheme();
   registerServiceWorker();
   
-  // Single DOMContentLoaded handler
   if (sessionStorage.getItem('user')) {
     PetEntry.showExerciseLog();
   } else {
-    Auth.showAuth(false); // Show sign-in by default
+    Auth.showAuth(false);
   }
 });
 
@@ -109,15 +108,17 @@ const Auth = (function() {
   async function handleAuthSubmit(e, isSignUp) {
     e.preventDefault();
     const form = e.target;
-    const email = form.email.value;
-    const password = form.password.value;
+    const submitBtn = form.querySelector('button[type="submit"]');
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Processing...';
 
     try {
-      // Clear previous errors
       form.querySelectorAll('.error-text').forEach(el => el.remove());
 
-      // Validation
+      const email = form.email.value;
+      const password = form.password.value;
       const errors = [];
+      
       if (isSignUp) {
         const username = form.username?.value;
         const confirmPassword = form.confirmPassword?.value;
@@ -143,7 +144,6 @@ const Auth = (function() {
         return;
       }
 
-      // Process sign-up
       if (isSignUp) {
         const salt = crypto.getRandomValues(new Uint8Array(16)).join('');
         const hashedPassword = await hashPassword(password, salt);
@@ -161,7 +161,6 @@ const Auth = (function() {
         return;
       }
 
-      // Process sign-in
       const users = JSON.parse(localStorage.getItem('users') || '[]');
       const user = users.find(u => u.email === email);
       
@@ -178,11 +177,18 @@ const Auth = (function() {
       errorElement.textContent = error.message || 'Authentication failed';
       errorElement.style.color = 'var(--error)';
       form.appendChild(errorElement);
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = isSignUp ? 'Sign Up' : 'Sign In';
     }
   }
 
   function showAuth(isSignUp = false) {
-    AppHelper.showPage(authTemplate(isSignUp));
+    const appContainer = document.getElementById('app');
+    appContainer.innerHTML = '';
+    appContainer.style.opacity = 0;
+    appContainer.innerHTML = authTemplate(isSignUp);
+    setTimeout(() => appContainer.style.opacity = 1, 50);
     
     const form = document.getElementById('authForm');
     form.addEventListener('submit', (e) => handleAuthSubmit(e, isSignUp));
@@ -207,7 +213,10 @@ const Auth = (function() {
 /* ==================== */
 const AppHelper = {
   showPage: (content) => {
-    document.getElementById('app').innerHTML = content;
+    const app = document.getElementById('app');
+    app.style.opacity = 0;
+    app.innerHTML = content;
+    setTimeout(() => app.style.opacity = 1, 50);
   },
   showModal: (content) => {
     const modal = document.createElement('div');
@@ -233,24 +242,16 @@ const AppHelper = {
 /* PetEntry Module      */
 /* ==================== */
 const PetEntry = (function() {
-  // SECTION 1: CONSTANTS AND CONFIGURATION
   const CONFIG = {
     MAX_PETS: 10,
     DEFAULT_IMAGE: 'default-pet.png',
     EMOJIS: ['😀', '😐', '😞', '😊', '😠'],
     EXERCISE_LEVELS: ['high', 'medium', 'low'],
     FAVORITE_EXERCISES: ['running', 'swimming', 'fetch', 'walking', 'playing'],
-    ACTIVITY_TYPES: [
-      'running_park', 
-      'around_block', 
-      'swimming', 
-      'house_play', 
-      'companion_play'
-    ],
+    ACTIVITY_TYPES: ['running_park', 'around_block', 'swimming', 'house_play', 'companion_play'],
     LOCATIONS: ['park', 'backyard', 'indoors', 'beach', 'trail']
   };
 
-  // SECTION 2: STATE MANAGEMENT
   let state = {
     activePetIndex: sessionStorage.getItem('activePetIndex') 
       ? parseInt(sessionStorage.getItem('activePetIndex')) 
@@ -258,7 +259,37 @@ const PetEntry = (function() {
     darkMode: localStorage.getItem('darkMode') === 'true'
   };
 
-  // SECTION 3: TEMPLATES
+  const dataService = {
+    cache: null,
+    getPets: () => {
+      try {
+        if (!dataService.cache) {
+          dataService.cache = JSON.parse(localStorage.getItem('pets')) || [];
+        }
+        return [...dataService.cache];
+      } catch (e) {
+        console.error('Error getting pets:', e);
+        return [];
+      }
+    },
+    savePets: (pets) => {
+      try {
+        if (pets.length > CONFIG.MAX_PETS) {
+          throw new Error(`Maximum of ${CONFIG.MAX_PETS} pets allowed`);
+        }
+        dataService.cache = pets;
+        localStorage.setItem('pets', JSON.stringify(pets));
+        console.log('Pets data saved');
+      } catch (e) {
+        console.error('Error saving pets:', e);
+      }
+    },
+    getActivePet: () => {
+      const pets = dataService.getPets();
+      return state.activePetIndex !== null ? pets[state.activePetIndex] : null;
+    }
+  };
+
   const templates = {
     dashboard: () => `
       <div class="dashboard ${state.darkMode ? 'dark-mode' : ''}">
@@ -309,7 +340,7 @@ const PetEntry = (function() {
 
     petForm: (pet = {}) => `
       <form id="petForm" class="pet-form">
-        <input type="hidden" id="petId" value="${pet.id || generateId()}">
+        <input type="hidden" id="petId" value="${pet.id || crypto.randomUUID()}">
         
         <div class="form-group">
           <label for="petName">Pet Name</label>
@@ -337,7 +368,6 @@ const PetEntry = (function() {
           </div>
         </div>
 
-        <!-- Exercise Fields -->
         <div class="form-group">
           <label for="petExerciseLevel">Exercise Level</label>
           <select id="petExerciseLevel" required>
@@ -387,66 +417,6 @@ const PetEntry = (function() {
       </form>`
   };
 
-  // SECTION 4: UTILITY FUNCTIONS
-  const utils = {
-    generateId: () => crypto.randomUUID() || Math.random().toString(36).substring(2, 15),
-    
-    formatDate: (dateStr) => {
-      try {
-        const date = new Date(dateStr);
-        return date.toLocaleDateString('en-US', { 
-          year: 'numeric', month: 'short', day: 'numeric' 
-        });
-      } catch (e) {
-        console.error('Date formatting error:', e);
-        return dateStr;
-      }
-    },
-    
-    validatePet: (pet) => {
-      const errors = [];
-      if (!pet.name) errors.push('Pet name is required');
-      if (!pet.age || pet.age < 0) errors.push('Valid age is required');
-      if (!pet.weight || pet.weight < 0) errors.push('Valid weight is required');
-      if (!pet.exerciseLevel) errors.push('Exercise level is required');
-      return errors.length ? errors : null;
-    },
-    
-    handleError: (error, context = '') => {
-      console.error(`Error in ${context}:`, error);
-      AppHelper.showError(`Operation failed: ${error.message}`);
-    }
-  };
-
-  // SECTION 5: DATA MANAGEMENT
-  const dataService = {
-    getPets: () => {
-      try {
-        return JSON.parse(localStorage.getItem('pets')) || [];
-      } catch (e) {
-        utils.handleError(e, 'getPets');
-        return [];
-      }
-    },
-    
-    savePets: (pets) => {
-      try {
-        if (pets.length > CONFIG.MAX_PETS) {
-          throw new Error(`Maximum of ${CONFIG.MAX_PETS} pets allowed`);
-        }
-        localStorage.setItem('pets', JSON.stringify(pets));
-      } catch (e) {
-        utils.handleError(e, 'savePets');
-      }
-    },
-    
-    getActivePet: () => {
-      const pets = dataService.getPets();
-      return state.activePetIndex !== null ? pets[state.activePetIndex] : null;
-    }
-  };
-
-  // SECTION 6: RENDER FUNCTIONS
   const render = {
     petForm: (editIndex = null) => {
       try {
@@ -454,7 +424,7 @@ const PetEntry = (function() {
         const pet = editIndex !== null ? pets[editIndex] : {};
         document.getElementById('petFormContainer').innerHTML = templates.petForm(pet);
       } catch (e) {
-        utils.handleError(e, 'renderPetForm');
+        console.error('Error rendering pet form:', e);
       }
     },
     
@@ -477,334 +447,89 @@ const PetEntry = (function() {
           </div>`;
         document.getElementById('savedProfiles').innerHTML = html;
       } catch (e) {
-        utils.handleError(e, 'renderSavedProfiles');
+        console.error('Error rendering saved profiles:', e);
       }
-    },
-    
-    monthlyReport: (pet, month, year) => {
-  // Implementation for monthly report
-  // ======================
-  //10 MONTHLY REPORT RENDER
-  // ======================
-  function renderMonthlyReport(pet, month, year) {
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
-    let reportHTML = `
-      <div class="monthly-report">
-        <h2>Monthly Report for ${pet.name} (${month + 1}/${year})</h2>
-        <div class="pet-details">
-          <p><strong>Age:</strong> ${pet.age}</p>
-          <p><strong>Weight:</strong> ${pet.weight}</p>
-          <p><strong>Condition:</strong> ${pet.condition}</p>
-          <p><strong>Medical History:</strong> ${pet.medicalHistory || 'N/A'}</p>
-        </div>
-        <div class="report-calendar">`;
-    
-    for (let day = 1; day <= daysInMonth; day++) {
-      const dateStr = `${year}-${(month + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
-      const hasExercise = pet?.exerciseEntries?.some(e => e.date === dateStr);
-      reportHTML += `<div class="report-day" style="display:inline-block;width:30px;height:30px;margin:2px;background:${hasExercise ? '#00D4FF' : '#F87171'};"></div>`;
     }
-    reportHTML += `</div>
-      <div class="report-charts">
-        <h3>Activity Charts</h3>
-        <div id="reportCharts"><p>Charts go here.</p></div>
-      </div>
-      <div class="report-summary">
-        <h3>Exercise Summary</h3>
-        <p>Total Days: ${daysInMonth}</p>
-        <p>Exercise Days: ${pet.exerciseEntries ? pet.exerciseEntries.filter(e => {
-          const d = new Date(e.date);
-          return d.getMonth() === month && d.getFullYear() === year;
-        }).length : 0}</p>
-      </div>
-      <div class="report-actions" style="margin-top:20px;"> 
-        <button id="exportReport" class="add-btn">Export</button>
-        <button id="backToDashboard" class="logout-btn">Back to Dashboard</button>
-      </div>
-    </div>
-    `;
-    
-    const reportWindow = window.open("", "_blank", "width=800,height=600");
-    reportWindow.document.write(reportHTML);
-    reportWindow.document.close();
-
-    reportWindow.document.getElementById('backToDashboard').addEventListener('click', () => {
-      reportWindow.close();
-    });
-    reportWindow.document.getElementById('exportReport').addEventListener('click', () => {
-      alert('Export functionality coming soon.');
-    });  
   };
 
-  // SECTION 7: EVENT HANDLERS
-  const handlers = {
-    handleImageUpload: (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-      
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        document.getElementById('petImagePreview').src = event.target.result;
-      };
-      reader.onerror = (e) => utils.handleError(e, 'imageUpload');
-      reader.readAsDataURL(file);
-    },
+  function handleImageUpload(e) {
+    const file = e.target.files[0];
+    if (!file) return;
     
-    handleFormSubmit: (e) => {
-      e.preventDefault();
-      try {
-        const pets = dataService.getPets();
-        let pet = state.activePetIndex !== null 
-          ? pets[state.activePetIndex] 
-          : { id: utils.generateId() };
-        
-        // Get form values
-        pet.name = document.getElementById('petName').value;
-        pet.age = parseInt(document.getElementById('petAge').value);
-        pet.weight = parseFloat(document.getElementById('petWeight').value);
-        pet.image = document.getElementById('petImagePreview').src;
-        pet.exerciseLevel = document.getElementById('petExerciseLevel').value;
-        pet.favoriteExercise = document.getElementById('petFavoriteExercise').value;
-        pet.lastActivity = document.getElementById('petLastActivity').value;
-        pet.exerciseLocation = document.getElementById('petExerciseLocation').value;
-        
-        // Validate
-        const errors = utils.validatePet(pet);
-        if (errors) return AppHelper.showError(errors.join('\n'));
-        
-        // Save
-        if (state.activePetIndex === null) {
-          pets.push(pet);
-          state.activePetIndex = pets.length - 1;
-        } else {
-          pets[state.activePetIndex] = pet;
-        }
-        
-        dataService.savePets(pets);
-        sessionStorage.setItem('activePetIndex', state.activePetIndex);
-        render.savedProfiles();
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      document.getElementById('petImagePreview').src = event.target.result;
+    };
+    reader.onerror = (e) => console.error('Image upload error:', e);
+    reader.readAsDataURL(file);
+  }
+
+  function handleFormSubmit(e) {
+    e.preventDefault();
+    try {
+      const pets = dataService.getPets();
+      let pet = state.activePetIndex !== null ? pets[state.activePetIndex] : { id: crypto.randomUUID() };
+      
+      pet.name = document.getElementById('petName').value;
+      pet.age = parseInt(document.getElementById('petAge').value);
+      pet.weight = parseFloat(document.getElementById('petWeight').value);
+      pet.image = document.getElementById('petImagePreview').src;
+      pet.exerciseLevel = document.getElementById('petExerciseLevel').value;
+      pet.favoriteExercise = document.getElementById('petFavoriteExercise').value;
+      pet.lastActivity = document.getElementById('petLastActivity').value;
+      pet.exerciseLocation = document.getElementById('petExerciseLocation').value;
+      
+      if (!pet.name || !pet.age || !pet.weight || !pet.exerciseLevel) {
+        throw new Error('Please fill all required fields');
+      }
+      
+      if (state.activePetIndex === null) {
+        pets.push(pet);
+        state.activePetIndex = pets.length - 1;
+      } else {
+        pets[state.activePetIndex] = pet;
+      }
+      
+      dataService.savePets(pets);
+      sessionStorage.setItem('activePetIndex', state.activePetIndex);
+      render.savedProfiles();
+      
+      const chartsSection = document.getElementById('exerciseCharts');
+      if (chartsSection) {
         Charts.refresh(pet.exerciseEntries || []);
-      } catch (e) {
-        utils.handleError(e, 'formSubmit');
       }
-    },
-    
-    handleSaveAll: () => {
-      // Implementation for save all
-      function setupEventListeners() {
-// Save All Button
-document.getElementById('saveAllButton')?.addEventListener('click', () => {
-    const pets = getPets();
-    let pet = pets[activePetIndex] || {};
-
-    // Update pet data from form
-    const formData = new FormData(document.getElementById('petForm'));
-    pet.name = formData.get('petName');
-    pet.id = formData.get('petId');
-    pet.age = formData.get('petAge');
-    pet.weight = formData.get('petWeight');
-    pet.condition = formData.get('petCondition');
-    pet.medicalHistory = formData.get('petMedicalHistory');
-    
-    // New fields
-    pet.exerciseLevel = formData.get('petExerciseLevel');
-    pet.favoriteExercise = formData.get('petFavoriteExercise');
-    pet.lastActivity = formData.get('petLastActivity');
-    pet.exerciseLocation = formData.get('petExerciseLocation');
-    
-    // Rest of the handler remains the same...
-    pet.date = formData.get('petDate');
-    pet.exerciseDuration = formData.get('petExerciseDuration');
-    pet.calories = formData.get('petCalories');
-
-    // Handle image upload (existing code)
-    const petImageInput = document.getElementById('petImage');
-    const file = petImageInput.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            pet.image = e.target.result;
-            savePetDataAndContinue(pets, pet);
-        };
-        reader.readAsDataURL(file);
-    } else {
-        pet.image = pet.image || DEFAULT_IMAGE;
-        savePetDataAndContinue(pets, pet);
+    } catch (error) {
+      AppHelper.showError(error.message);
     }
-});
-
-
-    function savePetDataAndContinue(pets, pet) {
-      if (activePetIndex === null) {
-        pets.push(pet);
-        activePetIndex = pets.length - 1;
-        sessionStorage.setItem('activePetIndex', activePetIndex);
-      } else {
-        pets[activePetIndex] = pet;
-      }
-
-      savePets(pets);
-      updateDashboard();
-    }
-      
-      if (activePetIndex === null) {
-        pets.push(pet);
-        activePetIndex = pets.length - 1;
-        sessionStorage.setItem('activePetIndex', activePetIndex);
-      } else {
-        pets[activePetIndex] = pet;
-      }
-      
-      savePets(pets);
-      updateDashboard();
-      }
-      // Exercise Toggle Handler added
-    document.addEventListener('click', (e) => {
-      if (e.target.classList.contains('exercise-toggle')) {
-        const date = e.target.dataset.date;
-        const pets = getPets();
-        let pet = pets[activePetIndex] || {};
-        pet.exerciseEntries = pet.exerciseEntries || [];
-
-        const existingEntryIndex = pet.exerciseEntries.findIndex(entry => entry.date === date);
-        const wasExercised = e.target.classList.contains('exercised');
-
-        if (existingEntryIndex > -1) {
-          pet.exerciseEntries.splice(existingEntryIndex, 1); // Remove existing entry
-          if (!wasExercised) {
-            pet.exerciseEntries.push({ date: date, exercised: true }); // Add if toggling to exercised
-          }
-        } else {
-          pet.exerciseEntries.push({ date: date, exercised: true }); // Add new entry as exercised
-        }
-
-        pets[activePetIndex] = pet;
-        savePets(pets);
-        updateDashboard(); // Re-render the dashboard to update the calendar
-      }
-    });
-    
-    // Emoji Button Handler for Mood Log
-    document.addEventListener('click', (e) => {
-      if (e.target.classList.contains('emoji-btn')) {
-        const mood = e.target.dataset.mood;
-        const date = e.target.dataset.date;
-        const pets = getPets();
-        let pet = pets[activePetIndex] || {};
-        pet.moodLogs = pet.moodLogs || [];
-        pet.moodLogs = pet.moodLogs.filter(m => m.date !== date);
-        pet.moodLogs.push({ date, mood });
-        pets[activePetIndex] = pet;
-        savePets(pets);
-        e.target.parentElement.querySelectorAll('.emoji-btn').forEach(btn => btn.classList.remove('selected'));
-        e.target.classList.add('selected');
-      }
-    });
-
-    // Edit Button Handler
-    document.querySelectorAll('.edit-btn').forEach(button => {
-      button.addEventListener('click', (e) => {
-        const index = parseInt(e.target.dataset.index);
-        activePetIndex = index;
-        sessionStorage.setItem('activePetIndex', activePetIndex);
-        renderPetForm(index);
-      });
-    });
-
-    // Delete Button Handler
-    document.querySelectorAll('.delete-btn').forEach(button => {
-      button.addEventListener('click', (e) => {
-        const index = parseInt(e.target.dataset.index);
-        const pets = getPets();
-        if (confirm(`Are you sure you want to delete ${pets[index].name}?`)) {
-          pets.splice(index, 1);
-          if (activePetIndex === index) {
-            activePetIndex = null;
-            sessionStorage.removeItem('activePetIndex');
-          }
-          savePets(pets);
-          updateDashboard();
-        }
-      });
-    });
-
-    // Print Button Handler
-document.querySelectorAll('.print-btn').forEach(button => {
-    button.addEventListener('click', (e) => {
-        const index = parseInt(e.target.dataset.index);
-        const pets = getPets();
-        const pet = pets[index];
-        const printWindow = window.open("", "_blank", "width=600,height=400");
-        printWindow.document.write(`
-          <html>
-            <head><title>Print Pet Profile</title></head>
-            <body>
-              <h2>${pet.name}</h2>
-              <img src="${pet.image || DEFAULT_IMAGE}" alt="${pet.name}" style="max-width:200px;">
-              <p><strong>Age:</strong> ${pet.age}</p>
-              <p><strong>Weight:</strong> ${pet.weight}</p>
-              <p><strong>Exercise Level:</strong> ${pet.exerciseLevel}</p>
-              <p><strong>Favorite Exercise:</strong> ${pet.favoriteExercise || 'N/A'}</p>
-              <p><strong>Last Activity:</strong> ${pet.lastActivity || 'N/A'}</p>
-              <p><strong>Exercise Location:</strong> ${pet.exerciseLocation || 'N/A'}</p>
-            </body>
-          </html>
-        `);
-        printWindow.document.close();
-        printWindow.print();
-    });
-});
-
-    // Share Button Handler
-    document.querySelectorAll('.share-btn').forEach(button => {
-      button.addEventListener('click', (e) => {
-        const index = parseInt(e.target.dataset.index);
-        const pets = getPets();
-        const pet = pets[index];
-        alert(`Share functionality for ${pet.name} coming soon.`);
-      });
-    });
-
-    // Report Button Handler in Saved Profiles
-    document.querySelectorAll('.report-btn').forEach(button => {
-      button.addEventListener('click', (e) => {
-        const index = parseInt(e.target.dataset.index);
-        const pets = getPets();
-        const pet = pets[index];
-        const now = new Date();
-        renderMonthlyReport(pet, now.getMonth(), now.getFullYear());
-      });
-    });
   }
 
-  // Helper to update the dashboard view
-  function updateDashboard() {
-    showExerciseLog();
+  function initCharts() {
+    const chartsSection = document.getElementById('exerciseCharts');
+    if (chartsSection) {
+      const observer = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting) {
+          Charts.init('#exerciseCharts');
+          const activePet = dataService.getActivePet();
+          if (activePet) {
+            Charts.refresh(activePet.exerciseEntries || []);
+          }
+          observer.disconnect();
+        }
+      });
+      observer.observe(chartsSection);
+    }
   }
 
-  // Public API
-  return {
-    showExerciseLog
-  });
- });
- }
-
-  // SECTION 8: INITIALIZATION
-  function initEventListeners() {
-    // Form Events
-    document.getElementById('petForm')?.addEventListener('submit', handlers.handleFormSubmit);
-    document.getElementById('petImage')?.addEventListener('change', handlers.handleImageUpload);
-    
-    // Button Events
+  function setupEventListeners() {
+    document.getElementById('petForm')?.addEventListener('submit', handleFormSubmit);
+    document.getElementById('petImage')?.addEventListener('change', handleImageUpload);
     document.getElementById('toggleModeButton')?.addEventListener('click', toggleMode);
     document.getElementById('logoutButton')?.addEventListener('click', Auth.logout);
     document.getElementById('addNewProfileButton')?.addEventListener('click', () => {
       state.activePetIndex = null;
       render.petForm();
     });
-    document.getElementById('saveAllButton')?.addEventListener('click', handlers.handleSaveAll);
     
-    // Dynamic Events
     document.addEventListener('click', (e) => {
       if (e.target.classList.contains('edit-btn')) {
         state.activePetIndex = parseInt(e.target.dataset.index);
@@ -833,22 +558,14 @@ document.querySelectorAll('.print-btn').forEach(button => {
     Charts.updateColors();
   }
 
-  // SECTION 9: PUBLIC API
   return {
     showExerciseLog: () => {
       AppHelper.showPage(templates.dashboard());
       render.petForm();
-      initEventListeners();
-      Calendar.init('#calendarContainer');
-      Charts.init('#exerciseCharts');
+      setupEventListeners();
+      initCharts();
       render.savedProfiles();
-      
-      const activePet = dataService.getActivePet();
-      if (activePet) {
-        Charts.refresh(activePet.exerciseEntries || []);
-      }
     },
-    
     updateDashboard: () => {
       this.showExerciseLog();
     }
@@ -858,7 +575,6 @@ document.querySelectorAll('.print-btn').forEach(button => {
 /* ==================== */
 /* Charts Module        */
 /* ==================== */
-// Charts implementation would go here
 const Charts = (function() {
   let durationChart, caloriesChart, activityChart;
 
@@ -966,21 +682,6 @@ const Charts = (function() {
   }
 
   return { init, refresh, updateColors };
-})();
-
-  function showExerciseLog() {
-    AppHelper.showPage(templates.dashboard());
-    renderPetForm();
-    setupEventListeners();
-    Calendar.init('#calendarContainer');
-    Charts.init('#exerciseCharts');
-    loadSavedProfiles();
-  }
-  return {
-    init: () => {},
-    refresh: () => {},
-    updateColors: () => {}
-  };
 })();
 
 /* ==================== */
