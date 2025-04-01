@@ -230,65 +230,86 @@ const AppHelper = {
 };
 
 /* ==================== */
-/* 6 PetEntry Module     */
+/* PetEntry Module      */
 /* ==================== */
-  const PetEntry = (function() {
-  // Constants
-  const MAX_PETS = 10;
-  const DEFAULT_IMAGE = 'default-pet.png';
-  const EMOJIS = ['😀', '😐', '😞', '😊', '😠']; // Mood emojis
-  // State
-  let activePetIndex = sessionStorage.getItem('activePetIndex')
-    ? parseInt(sessionStorage.getItem('activePetIndex')): null;
-    
+const PetEntry = (function() {
+  // SECTION 1: CONSTANTS AND CONFIGURATION
+  const CONFIG = {
+    MAX_PETS: 10,
+    DEFAULT_IMAGE: 'default-pet.png',
+    EMOJIS: ['😀', '😐', '😞', '😊', '😠'],
+    EXERCISE_LEVELS: ['high', 'medium', 'low'],
+    FAVORITE_EXERCISES: ['running', 'swimming', 'fetch', 'walking', 'playing'],
+    ACTIVITY_TYPES: [
+      'running_park', 
+      'around_block', 
+      'swimming', 
+      'house_play', 
+      'companion_play'
+    ],
+    LOCATIONS: ['park', 'backyard', 'indoors', 'beach', 'trail']
+  };
+
+  // SECTION 2: STATE MANAGEMENT
+  let state = {
+    activePetIndex: sessionStorage.getItem('activePetIndex') 
+      ? parseInt(sessionStorage.getItem('activePetIndex')) 
+      : null,
+    darkMode: localStorage.getItem('darkMode') === 'true'
+  };
+
+  // SECTION 3: TEMPLATES
   const templates = {
     dashboard: () => `
-      <div class="dashboard">
+      <div class="dashboard ${state.darkMode ? 'dark-mode' : ''}">
         <header class="dashboard-header">
           <h1>Pet Exercise Log</h1>
           <div class="header-actions">
             <button id="addNewProfileButton" class="add-btn">+ Add Pet</button>
-            <button id="toggleModeButton" class="toggle-btn">Dark Mode</button>
+            <button id="toggleModeButton" class="toggle-btn">
+              ${state.darkMode ? 'Light' : 'Dark'} Mode
+            </button>
           </div>
         </header>
 
         <div class="dashboard-container">
-            <div class="section">
-              <h2>Pet Profile</h2>
-              <div id="petFormContainer"></div>
-            </div>
+          <div class="section">
+            <h2>Pet Profile</h2>
+            <div id="petFormContainer"></div>
           </div>
-          
-        <div class="section">
-              <h2>Mood Logs</h2>
-              <div id="moodLogs"></div>
-            </div>
 
-         <div class="section">
-              <h2>Exercise Calendar</h2>
-              <div id="calendarContainer"></div>
-            </div>
-         <div class="section">
-              <h2>Activity Charts</h2>
-              <div id="exerciseCharts"></div>
-            </div>
+          <div class="section">
+            <h2>Daily Mood Logs</h2>
+            <div id="moodLogs"></div>
+          </div>
+
+          <div class="section">
+            <h2>Exercise Calendar</h2>
+            <div id="calendarContainer"></div>
+          </div>
+
+          <div class="section">
+            <h2>Activity Charts</h2>
+            <div id="exerciseCharts"></div>
           </div>
         </div>
 
-        <div class="saved-profiles-section">
+        <div class="section">
           <h2>Saved Profiles</h2>
           <div id="savedProfiles"></div>
         </div>
 
+        <button id="saveAllButton" class="save-btn">Save All</button>
         <button id="logoutButton" class="logout-btn">Logout</button>
+        
         <footer>
-          <p>2024 Pet Exercise Log. All rights reserved.</p>
+          <p>© ${new Date().getFullYear()} Pet Exercise Log. All rights reserved.</p>
         </footer>
       </div>`,
-      
+
     petForm: (pet = {}) => `
       <form id="petForm" class="pet-form">
-        <input type="hidden" id="petId" value="${pet.id || crypto.randomUUID()}">
+        <input type="hidden" id="petId" value="${pet.id || generateId()}">
         
         <div class="form-group">
           <label for="petName">Pet Name</label>
@@ -299,7 +320,7 @@ const AppHelper = {
           <label for="petImage">Pet Image</label>
           <div class="image-upload">
             <input type="file" id="petImage" accept="image/*">
-            <img id="petImagePreview" src="${pet.image || DEFAULT_IMAGE}" 
+            <img id="petImagePreview" src="${pet.image || CONFIG.DEFAULT_IMAGE}" 
                  alt="Pet Preview" style="max-width: 150px;">
           </div>
         </div>
@@ -316,295 +337,152 @@ const AppHelper = {
           </div>
         </div>
 
+        <!-- Exercise Fields -->
+        <div class="form-group">
+          <label for="petExerciseLevel">Exercise Level</label>
+          <select id="petExerciseLevel" required>
+            ${CONFIG.EXERCISE_LEVELS.map(level => `
+              <option value="${level}" ${pet.exerciseLevel === level ? 'selected' : ''}>
+                ${level.charAt(0).toUpperCase() + level.slice(1)}
+              </option>
+            `).join('')}
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="petFavoriteExercise">Favorite Exercise</label>
+          <select id="petFavoriteExercise">
+            ${CONFIG.FAVORITE_EXERCISES.map(ex => `
+              <option value="${ex}" ${pet.favoriteExercise === ex ? 'selected' : ''}>
+                ${ex.charAt(0).toUpperCase() + ex.slice(1)}
+              </option>
+            `).join('')}
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="petLastActivity">Last Activity</label>
+          <select id="petLastActivity">
+            ${CONFIG.ACTIVITY_TYPES.map(act => `
+              <option value="${act}" ${pet.lastActivity === act ? 'selected' : ''}>
+                ${act.replace('_', ' ').split(' ').map(s => 
+                  s.charAt(0).toUpperCase() + s.slice(1)).join(' ')}
+              </option>
+            `).join('')}
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="petExerciseLocation">Exercise Location</label>
+          <select id="petExerciseLocation">
+            ${CONFIG.LOCATIONS.map(loc => `
+              <option value="${loc}" ${pet.exerciseLocation === loc ? 'selected' : ''}>
+                ${loc.charAt(0).toUpperCase() + loc.slice(1)}
+              </option>
+            `).join('')}
+          </select>
+        </div>
+
         <button type="submit" class="save-btn">Save Profile</button>
       </form>`
   };
 
-
-// ========================
-// 7 PET FORM RENDER (Updated)
-// ========================
-function renderPetForm(editIndex = null) {
-    const pets = getPets();
-    const pet = editIndex !== null ? pets[editIndex] : {};
+  // SECTION 4: UTILITY FUNCTIONS
+  const utils = {
+    generateId: () => crypto.randomUUID() || Math.random().toString(36).substring(2, 15),
     
-    document.getElementById('petFormContainer').innerHTML = `
-      <form id="petForm" class="pet-form">
-        <input type="hidden" id="petId" name="petId" value="${pet.id || generateId()}">
-        
-        <!-- Existing fields remain the same until exercise level -->
-        
-        <!-- Exercise Level (Updated to dropdown) -->
-        <div class="form-group">
-          <label for="petExerciseLevel">Exercise Level</label>
-          <select id="petExerciseLevel" name="petExerciseLevel" required>
-            <option value="">Select Level</option>
-            <option value="high" ${pet.exerciseLevel === 'high' ? 'selected' : ''}>High</option>
-            <option value="medium" ${pet.exerciseLevel === 'medium' ? 'selected' : ''}>Medium</option>
-            <option value="low" ${pet.exerciseLevel === 'low' ? 'selected' : ''}>Low</option>
-          </select>
-        </div>
-        
-        <!-- Date Field (existing) -->
-        <div class="form-group">
-          <label for="petDate">Date</label>
-          <input type="date" id="petDate" name="petDate" value="${pet.date || ''}" required>
-        </div>
-        
-        <!-- Exercise Duration (existing) -->
-        <div class="form-group">
-          <label for="petExerciseDuration">Exercise Duration (minutes)</label>
-          <input type="number" id="petExerciseDuration" name="petExerciseDuration" value="${pet.exerciseDuration || ''}" min="0" required>
-        </div>
-        
-        <!-- Calories Burnt (existing) -->
-        <div class="form-group">
-          <label for="petCalories">Calories Burnt</label>
-          <input type="number" id="petCalories" name="petCalories" value="${pet.calories || ''}" min="0" required>
-        </div>
-
-        <!-- NEW FIELD: Favorite Exercise -->
-        <div class="form-group">
-          <label for="petFavoriteExercise">Favorite Exercise</label>
-          <select id="petFavoriteExercise" name="petFavoriteExercise">
-            <option value="">Select Favorite</option>
-            <option value="running" ${pet.favoriteExercise === 'running' ? 'selected' : ''}>Running</option>
-            <option value="swimming" ${pet.favoriteExercise === 'swimming' ? 'selected' : ''}>Swimming</option>
-            <option value="fetch" ${pet.favoriteExercise === 'fetch' ? 'selected' : ''}>Fetch</option>
-            <option value="walking" ${pet.favoriteExercise === 'walking' ? 'selected' : ''}>Walking</option>
-            <option value="playing" ${pet.favoriteExercise === 'playing' ? 'selected' : ''}>Playing</option>
-          </select>
-        </div>
-
-        <!-- NEW FIELD: Last Activity -->
-        <div class="form-group">
-          <label for="petLastActivity">Last Activity</label>
-          <select id="petLastActivity" name="petLastActivity">
-            <option value="">Select Activity</option>
-            <option value="running_park" ${pet.lastActivity === 'running_park' ? 'selected' : ''}>Running in park</option>
-            <option value="around_block" ${pet.lastActivity === 'around_block' ? 'selected' : ''}>Around the block</option>
-            <option value="swimming" ${pet.lastActivity === 'swimming' ? 'selected' : ''}>Swimming</option>
-            <option value="house_play" ${pet.lastActivity === 'house_play' ? 'selected' : ''}>Playing around house</option>
-            <option value="companion_play" ${pet.lastActivity === 'companion_play' ? 'selected' : ''}>Playing with companions</option>
-          </select>
-        </div>
-
-        <!-- NEW FIELD: Exercise Location -->
-        <div class="form-group">
-          <label for="petExerciseLocation">Exercise Location</label>
-          <select id="petExerciseLocation" name="petExerciseLocation">
-            <option value="">Select Location</option>
-            <option value="park" ${pet.exerciseLocation === 'park' ? 'selected' : ''}>Park</option>
-            <option value="backyard" ${pet.exerciseLocation === 'backyard' ? 'selected' : ''}>Backyard</option>
-            <option value="indoors" ${pet.exerciseLocation === 'indoors' ? 'selected' : ''}>Indoors</option>
-            <option value="beach" ${pet.exerciseLocation === 'beach' ? 'selected' : ''}>Beach</option>
-            <option value="trail" ${pet.exerciseLocation === 'trail' ? 'selected' : ''}>Trail</option>
-          </select>
-        </div>
-      </form>
-    `;
-}
+    formatDate: (dateStr) => {
+      try {
+        const date = new Date(dateStr);
+        return date.toLocaleDateString('en-US', { 
+          year: 'numeric', month: 'short', day: 'numeric' 
+        });
+      } catch (e) {
+        console.error('Date formatting error:', e);
+        return dateStr;
+      }
+    },
     
-  // Private functions
-  function getPets() {
-    return JSON.parse(localStorage.getItem('pets')) || [];
-  }
-
-  function savePets(pets) {
-    localStorage.setItem('pets', JSON.stringify(pets));
-  }
-
-  function generateId() {
-    return crypto.randomUUID() || Math.random().toString(36).substring(2, 15);
-  }
-
-  // =========================
-  // 8 SAVED PROFILES LIST
-  // =========================
-  function renderSavedProfiles() {
-    const pets = getPets();
-    return `
-      <div class="saved-profiles-list">
-        ${pets.map((pet, index) => `
-          <div class="saved-profile ${activePetIndex === index ? 'active' : ''}">
-            <img src="${pet.image || DEFAULT_IMAGE}" alt="${pet.name}">
-            <h4>${pet.name}</h4>
-            <div class="profile-actions">
-              <button class="edit-btn" data-index="${index}">Edit</button>
-              <button class="delete-btn" data-index="${index}">Delete</button>
-              <button class="print-btn" data-index="${index}">Print</button>
-              <button class="share-btn" data-index="${index}">Share</button>
-              <button class="report-btn" data-index="${index}">Report</button>
-            </div>
-          </div>
-        `).join('')}
-      </div>
-    `;
-  }
-
-  // ======================
-  //9  DASHBOARD LAYOUT     updated
-  // ======================
-function showExerciseLog() {
-    const user = JSON.parse(sessionStorage.getItem('user'));
-
-    AppHelper.showPage(`
-      <div class="dashboard">
-        <header class="dashboard-header">
-          <h1>Pet Exercise Log</h1>
-          <div class="header-actions">
-            <button id="addNewProfileButton" class="add-btn">+ Add Pet</button>
-            <button id="toggleModeButton" class="toggle-btn">Dark Mode</button>
-          </div>
-        </header>
-
-        <div class="dashboard-container"> <div>
-            <div class="section">
-              <h2>Pet Profile</h2>
-              <div id="petFormContainer"></div>
-            </div>
-          </div>
-          
-          <div class="section">
-              <h2>Daily Mood Logs</h2>
-              <div id="moodLogs"></div>
-            </div>
-
-            <div class="section">
-              <h2>Exercise Calendar</h2>
-              <div id="calendarContainer"></div>
-            </div>
-            
-            <div class="section">
-              <h2>Activity Charts</h2>
-              <div id="exerciseCharts"></div>
-            </div>
-          </div>
-        </div>
-        <button id="saveAllButton" class="save-btn">Save All</button>
-        </div>
-
-        <div class="section">
-            <h2>Saved Profiles</h2>
-            <div id="savedProfiles"></div>
-          </div>
-       <button id="logoutButton" class="logout-btn">Logout</button>
-
-        <footer>
-       <p>2024 Pet Exercise Log. All rights reserved.</p>
-        </footer>
-      </div>
-    `);
-   
-  function setupEventListeners() {
-    document.getElementById('petForm')?.addEventListener('submit', handleFormSubmit);
-    document.getElementById('petImage')?.addEventListener('change', handleImageUpload);
-    document.getElementById('toggleModeButton')?.addEventListener('click', toggleMode);
-    document.getElementById('logoutButton')?.addEventListener('click', Auth.logout);
-    document.getElementById('addNewProfileButton')?.addEventListener('click', () => {
-      activePetIndex = null;
-      renderPetForm();
-    });
-  }
-
-  function handleImageUpload(e) {
-    const file = e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      document.getElementById('petImagePreview').src = event.target.result;
-    };
-    reader.readAsDataURL(file);
-  }
-
-
-
-function handleFormSubmit(e) {
-    e.preventDefault();
-    const pets = getPets();
-    const pet = activePetIndex !== null ? pets[activePetIndex] : {};
-
-    // Existing fields
-    pet.name = document.getElementById('petName').value;
-    pet.age = document.getElementById('petAge').value;
-    pet.weight = document.getElementById('petWeight').value;
-    pet.image = document.getElementById('petImagePreview').src;
+    validatePet: (pet) => {
+      const errors = [];
+      if (!pet.name) errors.push('Pet name is required');
+      if (!pet.age || pet.age < 0) errors.push('Valid age is required');
+      if (!pet.weight || pet.weight < 0) errors.push('Valid weight is required');
+      if (!pet.exerciseLevel) errors.push('Exercise level is required');
+      return errors.length ? errors : null;
+    },
     
-    // New fields
-    pet.exerciseLevel = document.getElementById('petExerciseLevel').value;
-    pet.favoriteExercise = document.getElementById('petFavoriteExercise').value;
-    pet.lastActivity = document.getElementById('petLastActivity').value;
-    pet.exerciseLocation = document.getElementById('petExerciseLocation').value;
-
-    // Rest of the function remains the same...
-    if (activePetIndex === null) {
-      if (pets.length >= MAX_PETS) return AppHelper.showError('Maximum pets reached');
-      pets.push(pet);
-      activePetIndex = pets.length - 1;
-    } else {
-      pets[activePetIndex] = pet;
+    handleError: (error, context = '') => {
+      console.error(`Error in ${context}:`, error);
+      AppHelper.showError(`Operation failed: ${error.message}`);
     }
+  };
 
-    localStorage.setItem('pets', JSON.stringify(pets));
-    sessionStorage.setItem('activePetIndex', activePetIndex);
-    loadSavedProfiles();
-    Charts.refresh(pet.exerciseEntries || []);
-}
-
-
-
-  function loadSavedProfiles() {
-    const pets = getPets();
-    const profilesHTML = pets.map((pet, index) => `
-      <div class="profile-card ${index === activePetIndex ? 'active' : ''}">
-        <img src="${pet.image}" alt="${pet.name}">
-        <h4>${pet.name}</h4>
-        <div class="profile-actions">
-          <button class="edit-btn" data-index="${index}">Edit</button>
-          <button class="delete-btn" data-index="${index}">Delete</button>
-          <button class="report-btn" data-index="${index}">Report</button>
-        </div>
-      </div>
-    `).join('');
-
-    document.getElementById('savedProfiles').innerHTML = profilesHTML;
-
-    document.querySelectorAll('.edit-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        activePetIndex = parseInt(e.target.dataset.index);
-        sessionStorage.setItem('activePetIndex', activePetIndex);
-        renderPetForm();
-      });
-    });
-
-    document.querySelectorAll('.delete-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        const index = parseInt(e.target.dataset.index);
-        const pets = getPets();
-        pets.splice(index, 1);
+  // SECTION 5: DATA MANAGEMENT
+  const dataService = {
+    getPets: () => {
+      try {
+        return JSON.parse(localStorage.getItem('pets')) || [];
+      } catch (e) {
+        utils.handleError(e, 'getPets');
+        return [];
+      }
+    },
+    
+    savePets: (pets) => {
+      try {
+        if (pets.length > CONFIG.MAX_PETS) {
+          throw new Error(`Maximum of ${CONFIG.MAX_PETS} pets allowed`);
+        }
         localStorage.setItem('pets', JSON.stringify(pets));
-        loadSavedProfiles();
-      });
-    });
-  }
-
-  function getPets() {
-    return JSON.parse(localStorage.getItem('pets') || '[]');
-  }
-
-  return { showExerciseLog };
-})();
-
-// Helper to update the dashboard view
-  function updateDashboard() {
-    showExerciseLog();
-    // Refresh the charts with the latest data
-    const pets = getPets();
-    if (activePetIndex !== null && pets[activePetIndex]) {
-      Charts.refresh(pets[activePetIndex].exerciseEntries || []);
+      } catch (e) {
+        utils.handleError(e, 'savePets');
+      }
+    },
+    
+    getActivePet: () => {
+      const pets = dataService.getPets();
+      return state.activePetIndex !== null ? pets[state.activePetIndex] : null;
     }
-  }
-  
+  };
+
+  // SECTION 6: RENDER FUNCTIONS
+  const render = {
+    petForm: (editIndex = null) => {
+      try {
+        const pets = dataService.getPets();
+        const pet = editIndex !== null ? pets[editIndex] : {};
+        document.getElementById('petFormContainer').innerHTML = templates.petForm(pet);
+      } catch (e) {
+        utils.handleError(e, 'renderPetForm');
+      }
+    },
+    
+    savedProfiles: () => {
+      try {
+        const pets = dataService.getPets();
+        const html = `
+          <div class="saved-profiles-list">
+            ${pets.map((pet, index) => `
+              <div class="saved-profile ${state.activePetIndex === index ? 'active' : ''}">
+                <img src="${pet.image || CONFIG.DEFAULT_IMAGE}" alt="${pet.name}">
+                <h4>${pet.name}</h4>
+                <div class="profile-actions">
+                  <button class="edit-btn" data-index="${index}">Edit</button>
+                  <button class="delete-btn" data-index="${index}">Delete</button>
+                  <button class="print-btn" data-index="${index}">Print</button>
+                </div>
+              </div>
+            `).join('')}
+          </div>`;
+        document.getElementById('savedProfiles').innerHTML = html;
+      } catch (e) {
+        utils.handleError(e, 'renderSavedProfiles');
+      }
+    },
+    
+    monthlyReport: (pet, month, year) => {
+  // Implementation for monthly report
   // ======================
   //10 MONTHLY REPORT RENDER
   // ======================
@@ -655,13 +533,65 @@ function handleFormSubmit(e) {
     });
     reportWindow.document.getElementById('exportReport').addEventListener('click', () => {
       alert('Export functionality coming soon.');
-    });
-  }
+    });  
+  };
 
-  // ======================
-  // 11 EVENT HANDLERS
-  // ======================
-  function setupEventListeners() {
+  // SECTION 7: EVENT HANDLERS
+  const handlers = {
+    handleImageUpload: (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        document.getElementById('petImagePreview').src = event.target.result;
+      };
+      reader.onerror = (e) => utils.handleError(e, 'imageUpload');
+      reader.readAsDataURL(file);
+    },
+    
+    handleFormSubmit: (e) => {
+      e.preventDefault();
+      try {
+        const pets = dataService.getPets();
+        let pet = state.activePetIndex !== null 
+          ? pets[state.activePetIndex] 
+          : { id: utils.generateId() };
+        
+        // Get form values
+        pet.name = document.getElementById('petName').value;
+        pet.age = parseInt(document.getElementById('petAge').value);
+        pet.weight = parseFloat(document.getElementById('petWeight').value);
+        pet.image = document.getElementById('petImagePreview').src;
+        pet.exerciseLevel = document.getElementById('petExerciseLevel').value;
+        pet.favoriteExercise = document.getElementById('petFavoriteExercise').value;
+        pet.lastActivity = document.getElementById('petLastActivity').value;
+        pet.exerciseLocation = document.getElementById('petExerciseLocation').value;
+        
+        // Validate
+        const errors = utils.validatePet(pet);
+        if (errors) return AppHelper.showError(errors.join('\n'));
+        
+        // Save
+        if (state.activePetIndex === null) {
+          pets.push(pet);
+          state.activePetIndex = pets.length - 1;
+        } else {
+          pets[state.activePetIndex] = pet;
+        }
+        
+        dataService.savePets(pets);
+        sessionStorage.setItem('activePetIndex', state.activePetIndex);
+        render.savedProfiles();
+        Charts.refresh(pet.exerciseEntries || []);
+      } catch (e) {
+        utils.handleError(e, 'formSubmit');
+      }
+    },
+    
+    handleSaveAll: () => {
+      // Implementation for save all
+      function setupEventListeners() {
 // Save All Button
 document.getElementById('saveAllButton')?.addEventListener('click', () => {
     const pets = getPets();
@@ -727,9 +657,8 @@ document.getElementById('saveAllButton')?.addEventListener('click', () => {
       
       savePets(pets);
       updateDashboard();
-    }
-
-// Exercise Toggle Handler added
+      }
+      // Exercise Toggle Handler added
     document.addEventListener('click', (e) => {
       if (e.target.classList.contains('exercise-toggle')) {
         const date = e.target.dataset.date;
@@ -856,11 +785,80 @@ document.querySelectorAll('.print-btn').forEach(button => {
   // Public API
   return {
     showExerciseLog
+  });
+ });
+ }
+
+  // SECTION 8: INITIALIZATION
+  function initEventListeners() {
+    // Form Events
+    document.getElementById('petForm')?.addEventListener('submit', handlers.handleFormSubmit);
+    document.getElementById('petImage')?.addEventListener('change', handlers.handleImageUpload);
+    
+    // Button Events
+    document.getElementById('toggleModeButton')?.addEventListener('click', toggleMode);
+    document.getElementById('logoutButton')?.addEventListener('click', Auth.logout);
+    document.getElementById('addNewProfileButton')?.addEventListener('click', () => {
+      state.activePetIndex = null;
+      render.petForm();
+    });
+    document.getElementById('saveAllButton')?.addEventListener('click', handlers.handleSaveAll);
+    
+    // Dynamic Events
+    document.addEventListener('click', (e) => {
+      if (e.target.classList.contains('edit-btn')) {
+        state.activePetIndex = parseInt(e.target.dataset.index);
+        sessionStorage.setItem('activePetIndex', state.activePetIndex);
+        render.petForm(state.activePetIndex);
+      }
+      
+      if (e.target.classList.contains('delete-btn')) {
+        const index = parseInt(e.target.dataset.index);
+        const pets = dataService.getPets();
+        if (confirm(`Delete ${pets[index].name}?`)) {
+          pets.splice(index, 1);
+          dataService.savePets(pets);
+          render.savedProfiles();
+        }
+      }
+    });
+  }
+
+  function toggleMode() {
+    state.darkMode = !state.darkMode;
+    localStorage.setItem('darkMode', state.darkMode);
+    document.body.classList.toggle('dark-mode');
+    document.getElementById('toggleModeButton').textContent = 
+      state.darkMode ? 'Light Mode' : 'Dark Mode';
+    Charts.updateColors();
+  }
+
+  // SECTION 9: PUBLIC API
+  return {
+    showExerciseLog: () => {
+      AppHelper.showPage(templates.dashboard());
+      render.petForm();
+      initEventListeners();
+      Calendar.init('#calendarContainer');
+      Charts.init('#exerciseCharts');
+      render.savedProfiles();
+      
+      const activePet = dataService.getActivePet();
+      if (activePet) {
+        Charts.refresh(activePet.exerciseEntries || []);
+      }
+    },
+    
+    updateDashboard: () => {
+      this.showExerciseLog();
+    }
   };
 })();
-/*-------------------------------------------------*/
-// 12 Charts
-/*-------------------------------------------------*/
+
+/* ==================== */
+/* Charts Module        */
+/* ==================== */
+// Charts implementation would go here
 const Charts = (function() {
   let durationChart, caloriesChart, activityChart;
 
@@ -978,3 +976,16 @@ const Charts = (function() {
     Charts.init('#exerciseCharts');
     loadSavedProfiles();
   }
+  return {
+    init: () => {},
+    refresh: () => {},
+    updateColors: () => {}
+  };
+})();
+
+/* ==================== */
+/* App Initialization   */
+/* ==================== */
+document.addEventListener('DOMContentLoaded', () => {
+  PetEntry.showExerciseLog();
+});
