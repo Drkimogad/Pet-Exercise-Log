@@ -706,9 +706,3 @@ const Charts = (function() {
   };
 })();
       
-/* ==================== */
-/* App Initialization   */
-/* ==================== */
-document.addEventListener('DOMContentLoaded', () => {
-  PetEntry.showExerciseLog();
-});
