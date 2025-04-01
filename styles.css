@@ -244,6 +244,18 @@ button {
   border-radius: 4px;
 }
 
+/* Add responsive grid */
+.dashboard-container {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .dashboard-container {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
 .image-upload {
   display: flex;
   flex-direction: column;
