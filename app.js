@@ -20,14 +20,20 @@ document.getElementById('installButton').addEventListener('click', async () => {
   }
 });
 
+// ✅ Service Worker Registration
 function registerServiceWorker() {
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/Pet-Exercise-Log/service-worker.js')
-      .then(reg => console.log('SW registered:', reg))
-      .catch(err => console.error('SW registration failed:', err));
-  }
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/Pet-Exercise-Log/service-worker.js', {
+            scope: '/Pet-Exercise-Log/'
+        }).then(reg => {
+            console.log('Service Worker registered with scope:', reg.scope);
+        }).catch(error => {
+            console.error('Service Worker registration failed:', error);
+        });
+    }
 }
 
+// loading content //
 document.addEventListener("DOMContentLoaded", () => {
   registerServiceWorker();
   if (sessionStorage.getItem('user')) {
@@ -291,6 +297,462 @@ const PetEntry = (function() {
     ? parseInt(sessionStorage.getItem('activePetIndex'))
     : null;
 
+// petentry//
+const PetEntry = (function() {
+  let activePetIndex = null;
+  const MAX_PETS = 10;
+  const DEFAULT_IMAGE = '/images/default-pet.png'; 
+const templates = {
+  dashboard: () => `
+    <div class="dashboard-container">
+      <header class="dashboard-header">
+        <button id="addNewProfileButton" class="icon-btn">＋ New Profile</button>
+        <button id="toggleModeButton" class="icon-btn">🌓 Toggle Mode</button>
+        <button id="logoutButton" class="icon-btn">Logout</button>
+      </header>
+      <main class="dashboard-main">
+        <section class="form-section" id="petFormContainer"></section>
+        <section class="data-section">
+          <div class="calendar-container" id="exerciseCalendar"></div>
+          <div class="charts-container" id="exerciseCharts"></div>
+        </section>
+      </main>
+      <aside class="saved-profiles" id="savedProfiles"></aside>
+    </div>`,
+  petForm: () => {
+    const pet = activePetIndex !== null ? PetEntry.getPets()[activePetIndex] : null;
+    return `
+      <form id="exerciseForm" class="pet-form card">
+        <fieldset class="pet-details">
+          <legend>${activePetIndex === null ? 'New Pet' : 'Update Pet'}</legend>
+          <div class="form-group">
+            <label for="petName">Name</label>
+            <input type="text" id="petName" value="${pet ? pet.petDetails.name : ''}" required>
+          </div>
+          <div class="form-group">
+            <label>Image</label>
+            <div class="image-upload">
+              <input type="file" id="petImage" accept="image/*">
+              <img id="petImagePreview" src="${pet ? pet.petDetails.image : DEFAULT_IMAGE}" alt="Pet Preview">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="petCharacteristics">Description</label>
+            <textarea id="petCharacteristics" rows="3">${pet ? pet.petDetails.characteristics : ''}</textarea>
+          </div>
+        </fieldset>
+        <fieldset class="exercise-entry">
+          <legend>Add Exercise</legend>
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="exerciseType">Type</label>
+              <select id="exerciseType" required>
+                <option value="walking">Walking</option>
+                <option value="running">Running</option>
+                <option value="swimming">Swimming</option>
+                <option value="playing">Playing</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="exerciseDuration">Duration (min)</label>
+              <input type="number" id="exerciseDuration" min="1" required>
+            </div>
+            <div class="form-group">
+              <label for="exerciseDate">Date</label>
+              <input type="date" id="exerciseDate" value="${new Date().toISOString().split('T')[0]}" required>
+            </div>
+            <div class="form-group">
+              <label for="caloriesBurned">Calories</label>
+              <input type="number" id="caloriesBurned" min="1" required>
+            </div>
+          </div>
+          <button type="submit" class="primary-btn">
+            ${activePetIndex === null ? 'Create Profile' : 'Add Exercise'}
+          </button>
+
+        
+        
+        
+        
+
+function showExerciseLog() {
+  AppHelper.showPage(templates.dashboard());
+  AppHelper.registerComponent('petFormContainer', () => templates.petForm());
+  AppHelper.refreshComponent('petFormContainer');
+  
+  Calendar.init('#exerciseCalendar');
+  Charts.init('#exerciseCharts');
+  setupEventListeners();
+  loadSavedProfiles();
+  loadActivePetData();
+}
+
+
+  function setupEventListeners() {
+    document.getElementById('exerciseForm')?.addEventListener('submit', handleFormSubmit);
+    document.getElementById('petImage')?.addEventListener('change', handleImageUpload);
+    document.getElementById('toggleModeButton')?.addEventListener('click', toggleDarkMode);
+    document.getElementById('logoutButton')?.addEventListener('click', () => {
+  Auth.logout();
+});
+
+    document.getElementById('addNewProfileButton')?.addEventListener('click', () => {
+      activePetIndex = null;
+      AppHelper.refreshComponent('petFormContainer');
+    });
+  }
+
+  function handleFormSubmit(e) {
+    e.preventDefault();
+    const formData = {
+      petName: document.getElementById('petName').value,
+      petImage: document.getElementById('petImagePreview').src,
+      characteristics: document.getElementById('petCharacteristics').value,
+      exerciseType: document.getElementById('exerciseType').value,
+      duration: document.getElementById('exerciseDuration').value,
+      date: document.getElementById('exerciseDate').value,
+      calories: document.getElementById('caloriesBurned').value
+    };
+
+    const errors = [];
+    if (!formData.petName.trim()) errors.push('Pet name required');
+    if (formData.duration < 1) errors.push('Invalid duration');
+    if (formData.calories < 1) errors.push('Invalid calories');
+    if (errors.length) return AppHelper.showErrors(errors);
+
+    const pets = getPets();
+    const petData = activePetIndex !== null ? pets[activePetIndex] : {
+      petDetails: { name: '', image: DEFAULT_IMAGE, characteristics: '' },
+      exerciseEntries: [],
+      monthlyReports: []  // <-- New property for archived reports
+    };
+
+    petData.petDetails = {
+      name: formData.petName,
+      image: formData.petImage,
+      characteristics: formData.characteristics
+    };
+
+    petData.exerciseEntries.push({
+      exerciseType: formData.exerciseType,
+      duration: Number(formData.duration),
+      date: formData.date,
+      caloriesBurned: Number(formData.calories)
+    });
+
+    if (activePetIndex === null) {
+      if (pets.length >= MAX_PETS) return AppHelper.showError('Maximum profiles reached');
+      pets.push(petData);
+      activePetIndex = pets.length - 1;
+    } else {
+      pets[activePetIndex] = petData;
+    }
+
+    localStorage.setItem('pets', JSON.stringify(pets));
+    sessionStorage.setItem('activePetIndex', activePetIndex);
+    updateDashboard(petData);
+  }
+
+  function updateDashboard(petData) {
+    Calendar.refresh(petData.exerciseEntries);
+    Charts.refresh(petData.exerciseEntries);
+    loadSavedProfiles();
+    AppHelper.refreshComponent('petFormContainer');
+  }
+ // ------------------------------------------
+// load saved pet profiles //
+// --------------------------------------------
+function loadSavedProfiles() {
+  const pets = getPets();
+  const profilesHTML = pets.map((pet, index) => `
+    <div class="profile-card ${index === activePetIndex ? 'active' : ''}">
+      <img src="${pet.petDetails.image}" alt="${pet.petDetails.name}">
+      <h4>${pet.petDetails.name}</h4>
+      <button class="select-btn" data-index="${index}">${index === activePetIndex ? 'Selected' : 'Select'}</button>
+      <div class="profile-controls">
+        <button class="edit-btn" data-index="${index}">Edit</button>
+        <button class="delete-btn" data-index="${index}">Delete</button>
+        <button class="monthly-report-btn" data-index="${index}">Monthly Report</button>
+        <button class="print-profile-btn" data-index="${index}">Print Profile</button>
+      </div>
+    </div>
+  `).join('');
+
+  AppHelper.renderComponent('savedProfiles', profilesHTML);
+
+  // Select button event
+  document.querySelectorAll('.select-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      activePetIndex = parseInt(btn.dataset.index);
+      sessionStorage.setItem('activePetIndex', activePetIndex);
+      updateDashboard(getPets()[activePetIndex]);
+    });
+  });
+
+  // Edit button event
+  document.querySelectorAll('.edit-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      activePetIndex = parseInt(btn.dataset.index);
+      sessionStorage.setItem('activePetIndex', activePetIndex);
+      // Refresh the pet form with current pet details for editing
+      AppHelper.refreshComponent('petFormContainer');
+    });
+  });
+
+  // Delete button event
+  document.querySelectorAll('.delete-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const index = parseInt(btn.dataset.index);
+      const pets = PetEntry.getPets();
+      pets.splice(index, 1);
+      localStorage.setItem('pets', JSON.stringify(pets));
+      if (activePetIndex === index) {
+        activePetIndex = null;
+        sessionStorage.removeItem('activePetIndex');
+      } else if (activePetIndex > index) {
+        activePetIndex--;
+        sessionStorage.setItem('activePetIndex', activePetIndex);
+      }
+      loadSavedProfiles();
+      if (activePetIndex !== null) {
+        updateDashboard(pets[activePetIndex]);
+      }
+    });
+  });
+
+  // Monthly Report button event
+  document.querySelectorAll('.monthly-report-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const index = parseInt(btn.dataset.index);
+      openMonthlyReport(index);
+    });
+  });
+
+  // Print Profile button event
+  document.querySelectorAll('.print-profile-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const index = parseInt(btn.dataset.index);
+      printProfile(index);
+    });
+//------------------------------------------//
+
+function openMonthlyReport(index) {
+  const pets = getPets();
+  const pet = pets[index];
+  const now = new Date();
+  const currentMonth = now.getMonth();
+  const currentYear = now.getFullYear();
+
+  // Build HTML for archived monthly reports.
+  let archivedReportsHTML = '';
+  if (pet.monthlyReports && pet.monthlyReports.length > 0) {
+    archivedReportsHTML = pet.monthlyReports.map(report => {
+      const monthName = new Date(report.year, report.month).toLocaleString('default', { month: 'long' });
+      return `
+        <div class="archived-report">
+          <h3>Archived Report: ${monthName} ${report.year}</h3>
+          <ul>
+            ${report.entries.map(e => `<li>${e.date}: ${e.exerciseType} (${e.duration} min, ${e.caloriesBurned} cal)</li>`).join('')}
+          </ul>
+        </div>
+      `;
+    }).join('');
+  }
+
+  // Filter current month's entries.
+  const currentEntries = pet.exerciseEntries.filter(entry => {
+    const entryDate = new Date(entry.date);
+    return entryDate.getMonth() === currentMonth && entryDate.getFullYear() === currentYear;
+  });
+
+  const currentMonthName = now.toLocaleString('default', { month: 'long' });
+  const reportHTML = `
+    <div class="monthly-report">
+      <h2>Monthly Report for ${pet.petDetails.name}</h2>
+      <div class="pet-details-report">
+        <img src="${pet.petDetails.image}" alt="${pet.petDetails.name}">
+        <p>${pet.petDetails.characteristics}</p>
+      </div>
+      <div class="current-report">
+        <h3>Current Month: ${currentMonthName} ${currentYear}</h3>
+        <div class="monthly-calendar" id="monthlyCalendar">
+          ${currentEntries.length ? `<ul>${currentEntries.map(e => `<li>${e.date} - ${e.exerciseType} (${e.duration} min, ${e.caloriesBurned} cal)</li>`).join('')}</ul>` : '<p>No exercises recorded this month.</p>'}
+        </div>
+        <div class="monthly-charts" id="monthlyCharts">
+          <h3>Exercise Trends</h3>
+          <div class="chart">
+            <canvas id="monthlyDurationChart"></canvas>
+          </div>
+          <div class="chart">
+            <canvas id="monthlyActivityChart"></canvas>
+          </div>
+        </div>
+      </div>
+      <div class="archived-reports">
+        <h3>Archived Monthly Reports</h3>
+        ${archivedReportsHTML ? archivedReportsHTML : '<p>No archived reports.</p>'}
+      </div>
+      <div class="report-controls">
+        <button id="exportReportBtn">Export Report</button>
+        <button id="backToDashboardBtn">Back to Dashboard</button>
+      </div>
+    </div>
+  `;
+  AppHelper.showPage(reportHTML);
+
+  // Initialize charts only if there are current entries.
+  if (currentEntries.length) {
+    initMonthlyCharts(currentEntries);
+  }
+
+  document.getElementById('backToDashboardBtn')?.addEventListener('click', () => {
+    PetEntry.showExerciseLog();
+  });
+  document.getElementById('exportReportBtn')?.addEventListener('click', () => {
+    alert('Export functionality coming soon!');
+  });
+}
+
+// Export functionality //
+document.getElementById('exportReportBtn')?.addEventListener('click', () => {
+  const reportElement = document.querySelector('.monthly-report');
+  if (!reportElement) {
+    alert('Monthly report not found!');
+    return;
+  }
+  html2canvas(reportElement).then(canvas => {
+    const imgData = canvas.toDataURL('image/png');
+    // Using jsPDF from the global window.jspdf namespace
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+    pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+    pdf.save('monthly_report.pdf');
+  }).catch(error => {
+    console.error('Error exporting PDF:', error);
+    alert('Failed to export PDF.');
+  });
+});
+
+// initialize monthly charts //
+function initMonthlyCharts(data) {
+  // Process data for duration and activity charts
+  const durationData = data.reduce((acc, e) => {
+    acc[e.date] = (acc[e.date] || 0) + e.duration;
+    return acc;
+  }, {});
+  const activitiesData = data.reduce((acc, e) => {
+    acc[e.exerciseType] = (acc[e.exerciseType] || 0) + 1;
+    return acc;
+  }, {});
+
+  // Create monthly duration chart (line chart)
+  const ctxDuration = document.getElementById('monthlyDurationChart');
+  new Chart(ctxDuration, {
+    type: 'line',
+    data: {
+      labels: Object.keys(durationData).sort(),
+      datasets: [{
+        label: 'Total Duration (min)',
+        data: Object.keys(durationData).sort().map(date => durationData[date]),
+        borderColor: '#4bc0c0',
+        tension: 0.3
+      }]
+    }
+  });
+
+  // Create monthly activity chart (doughnut chart)
+  const ctxActivity = document.getElementById('monthlyActivityChart');
+  new Chart(ctxActivity, {
+    type: 'doughnut',
+    data: {
+      labels: Object.keys(activitiesData),
+      datasets: [{
+        data: Object.values(activitiesData),
+        backgroundColor: ['#ff6384', '#36a2eb', '#ffce56', '#4bc0c0']
+      }]
+    }
+  });
+}
+
+//---------------------------------------------------
+// reorganize these functions in one section//
+//--------------------------------------------------
+function openMonthlyReport(index) {
+  const pets = getPets();
+  const pet = pets[index];
+  const now = new Date();
+  const currentMonth = now.getMonth();
+  const currentYear = now.getFullYear();
+
+  const reportHTML = `
+    <div class="monthly-report">
+      <h2>Monthly Report for ${pet.petDetails.name}</h2>
+      <div id="monthlyCalendar">
+        <!-- Calendar with ticked days goes here -->
+      </div>
+      <div id="monthlyCharts">
+        <!-- Two charts displaying exercise trends go here -->
+      </div>
+      <button id="exportReportBtn">Export Report</button>
+      <button id="backToDashboardBtn">Back to Dashboard</button>
+    </div>
+  `;
+  AppHelper.showPage(reportHTML);
+  document.getElementById('backToDashboardBtn')?.addEventListener('click', () => {
+    PetEntry.showExerciseLog();
+  });
+  // (If you prefer, you can move the export functionality inside this function)
+}
+
+// -------------------------------------// what functions these are?
+function printProfile(index) {
+  const pets = getPets();
+  const pet = pets[index];
+  const printContent = `
+    <div>
+      <h2>Pet Profile: ${pet.petDetails.name}</h2>
+      <img src="${pet.petDetails.image}" alt="${pet.petDetails.name}">
+      <p>${pet.petDetails.characteristics}</p>
+      <h3>Exercise Entries:</h3>
+      <ul>
+        ${pet.exerciseEntries.map(e => `<li>${e.date}: ${e.exerciseType} for ${e.duration} minutes, ${e.caloriesBurned} calories</li>`).join('')}
+      </ul>
+    </div>
+  `;
+  const printWindow = window.open('', '', 'width=800,height=600');
+  printWindow.document.write(printContent);
+  printWindow.document.close();
+  printWindow.print();
+}
+
+// toggle mode //
+function toggleDarkMode() {
+  document.body.classList.toggle('dark-mode');
+  localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+  Charts.updateColors();
+  Calendar.refresh(PetEntry.getActivePet()?.exerciseEntries || []);
+}
+
+function handleImageUpload(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (event) => {
+    document.getElementById('petImagePreview').src = event.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+return {
+  showExerciseLog,
+  getPets: () => JSON.parse(localStorage.getItem('pets') || '[]'),
+  getActivePet: () => {
+    const pets = JSON.parse(localStorage.getItem('pets') || '[]');
+    return activePetIndex !== null ? pets[activePetIndex] : null;
+  }
+}
   // Private functions
   function getPets() {
     return JSON.parse(localStorage.getItem('pets')) || [];
@@ -305,45 +767,172 @@ const PetEntry = (function() {
   }
 
 // ====================
-  // CALENDAR RENDER    updated
+  // CALENDAR RENDER 
   // ====================
-  function renderCalendar(pet) {
-    const currentDate = new Date();
-    const currentMonth = currentDate.getMonth();
-    const currentYear = currentDate.getFullYear();
-    const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+const Calendar = (function() {
+  let currentMonth = new Date().getMonth();
+  let currentYear = new Date().getFullYear();
+  let exerciseData = [];
 
-    let calendarHTML = '<div class="calendar-grid">';
+  function init(selector) {
+    const container = document.querySelector(selector);
+    if (!container) return;
+    container.innerHTML = '<div class="calendar"></div>';
+    generateCalendar();
+  }
 
-    for (let day = 1; day <= daysInMonth; day++) {
-      const dateStr = `${currentYear}-${(currentMonth + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
-      const exerciseEntry = pet?.exerciseEntries?.find(e => e.date === dateStr);
-      const hasExercise = exerciseEntry ? exerciseEntry.exercised : false; // Check if exercised is true
-      const moodEntry = pet?.moodLogs?.find(m => m.date === dateStr);
+  function generateCalendar() {
+    const container = document.querySelector('.calendar');
+    if (!container) return;
 
+    const date = new Date(currentYear, currentMonth, 1);
+    const monthName = date.toLocaleString('default', { month: 'long' });
+    const startDay = date.getDay();
+    const endDate = new Date(currentYear, currentMonth + 1, 0).getDate();
+
+    let calendarHTML = `
+      <div class="calendar-header">
+        <button class="nav-btn prev">←</button>
+        <h2>${monthName} ${currentYear}</h2>
+        <button class="nav-btn next">→</button>
+      </div>
+      <div class="calendar-grid">
+        ${['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+          .map(day => `<div class="calendar-day header">${day}</div>`)
+          .join('')}
+    `;
+
+    // Empty days
+    for (let i = 0; i < startDay; i++) {
+      calendarHTML += `<div class="calendar-day empty"></div>`;
+    }
+
+    // Actual days
+    for (let day = 1; day <= endDate; day++) {
+      const paddedMonth = String(currentMonth + 1).padStart(2, '0');
+      const dateStr = `${currentYear}-${paddedMonth}-${String(day).padStart(2, '0')}`;
+      const count = exerciseData.filter(e => e.date === dateStr).length;
       calendarHTML += `
-        <div class="day-box" data-date="${dateStr}">
-          <span class="day-number">${day}</span>
-          <div class="exercise-toggle ${hasExercise ? 'exercised' : 'skipped'}" data-date="${dateStr}">
-            ${hasExercise ? 'X' : ''}
-          </div>
-          <div class="emoji-buttons">
-            ${EMOJIS.map(emoji => `
-              <button class="emoji-btn ${moodEntry?.mood === emoji ? 'selected' : ''}"
-                      data-mood="${emoji}"
-                      data-date="${dateStr}">${emoji}</button>
-            `).join('')}
-          </div>
+        <div class="calendar-day ${count ? 'has-exercise' : ''}" data-date="${dateStr}">
+          ${day}
+          ${count ? `<div class="exercise-count">${count}</div>` : ''}
         </div>
       `;
     }
 
     calendarHTML += '</div>';
-    return calendarHTML;
+    container.innerHTML = calendarHTML;
+    addEventListeners();
   }
+
+  function addEventListeners() {
+    document.querySelector('.prev')?.addEventListener('click', () => {
+      currentMonth--;
+      if (currentMonth < 0) {
+        currentMonth = 11;
+        currentYear--;
+      }
+      generateCalendar();
+    });
+
+    document.querySelector('.next')?.addEventListener('click', () => {
+      currentMonth++;
+      if (currentMonth > 11) {
+        currentMonth = 0;
+        currentYear++;
+      }
+      generateCalendar();
+    });
+
+    document.querySelectorAll('.calendar-day:not(.empty)').forEach(day => {
+      day.addEventListener('click', () => {
+        const entries = exerciseData.filter(e => e.date === day.dataset.date);
+        showDayModal(day.dataset.date, entries);
+      });
+    });
+  }
+
+  function showDayModal(date, entries) {
+    const modalHTML = `
+      <div class="calendar-modal">
+        <div class="modal-content">
+          <h3>Exercises for ${date}</h3>
+          ${entries.length ? entries.map(e => `
+            <div class="exercise-entry">
+              <span>${e.exerciseType}</span>
+              <span>${e.duration} mins</span>
+              <span>${e.caloriesBurned} cal</span>
+            </div>
+          `).join('') : '<p>No exercises</p>'}
+          <form id="dayExerciseForm">
+            <input type="hidden" name="date" value="${date}">
+            <div class="form-group">
+              <label for="exerciseTypeDay">Type</label>
+              <select id="exerciseTypeDay" required>
+                <option value="walking">Walking</option>
+                <option value="running">Running</option>
+                <option value="swimming">Swimming</option>
+                <option value="playing">Playing</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="exerciseDurationDay">Duration (min)</label>
+              <input type="number" id="exerciseDurationDay" min="1" required>
+            </div>
+            <div class="form-group">
+              <label for="caloriesBurnedDay">Calories</label>
+              <input type="number" id="caloriesBurnedDay" min="1" required>
+            </div>
+            <button type="submit" class="add-exercise-btn">Add Exercise</button>
+          </form>
+          <button class="close-modal-btn">Close</button>
+        </div>
+      </div>
+    `;
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+    
+    // Add event listener for the form submission
+    document.getElementById('dayExerciseForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const exerciseType = document.getElementById('exerciseTypeDay').value;
+      const duration = Number(document.getElementById('exerciseDurationDay').value);
+      const caloriesBurned = Number(document.getElementById('caloriesBurnedDay').value);
+      const newEntry = {
+        date: date,
+        exerciseType,
+        duration,
+        caloriesBurned
+      };
+      // Get the active pet and update its exercise entries
+      const activePet = PetEntry.getActivePet();
+      if (activePet) {
+        activePet.exerciseEntries.push(newEntry);
+        // Update local storage for persistence
+        const pets = PetEntry.getPets();
+        const activeIndex = parseInt(sessionStorage.getItem('activePetIndex'));
+        pets[activeIndex] = activePet;
+        localStorage.setItem('pets', JSON.stringify(pets));
+        Calendar.refresh(activePet.exerciseEntries);
+      }
+      document.querySelector('.calendar-modal').remove();
+    });
+    
+    // Close modal event listener
+    document.querySelector('.close-modal-btn').addEventListener('click', () => {
+      document.querySelector('.calendar-modal').remove();
+    });
+  }
+    
+  function refresh(data) {
+    exerciseData = data || [];
+    generateCalendar();
+  }
+
+  return { init, refresh };
+})();
   
   // ========================
-  // PET FORM RENDER
+  // PET FORM RENDER   to be added to the top pet form and enhance it. 
   // ========================
   function renderPetForm(editIndex = null) {
     const pets = getPets();
@@ -425,29 +1014,11 @@ const PetEntry = (function() {
   // =========================
   // SAVED PROFILES LIST
   // =========================
-  function renderSavedProfiles() {
-    const pets = getPets();
-    return `
-      <div class="saved-profiles-list">
-        ${pets.map((pet, index) => `
-          <div class="saved-profile ${activePetIndex === index ? 'active' : ''}">
-            <img src="${pet.image || DEFAULT_IMAGE}" alt="${pet.name}">
-            <h4>${pet.name}</h4>
-            <div class="profile-actions">
-              <button class="edit-btn" data-index="${index}">Edit</button>
-              <button class="delete-btn" data-index="${index}">Delete</button>
-              <button class="print-btn" data-index="${index}">Print</button>
-              <button class="share-btn" data-index="${index}">Share</button>
-              <button class="report-btn" data-index="${index}">Report</button>
-            </div>
-          </div>
-        `).join('')}
-      </div>
-    `;
-  }
+to be updated from the top section
+
 
   // ======================
-  // DASHBOARD LAYOUT     updated
+  // DASHBOARD LAYOUT   I NEED THIS DASHBOARD LAYOUT TO REMAIN BUT ENHANCED
   // ======================
 function showExerciseLog() {
     const user = JSON.parse(sessionStorage.getItem('user'));
@@ -498,7 +1069,7 @@ function showExerciseLog() {
       </div>
     `);
 
-    // Initialize components
+    // Initialize components/ TO BE UPDATED BASED ON THE TOP PARTS OF THE CODE
     renderPetForm();
     const pets = getPets();
     if (activePetIndex !== null && pets[activePetIndex]) {
@@ -520,7 +1091,7 @@ function showExerciseLog() {
   }
   
   // ======================
-  // MONTHLY REPORT RENDER
+  // MONTHLY REPORT RENDER  IF IT'S A DUPLICATE REMOVE THIS ONE!
   // ======================
   function renderMonthlyReport(pet, month, year) {
     const daysInMonth = new Date(year, month + 1, 0).getDate();
@@ -752,7 +1323,7 @@ function showExerciseLog() {
 })();
 
 /*-------------------------------------------------*/
-// Charts
+//4// Charts
 /*-------------------------------------------------*/
 const Charts = (function() {
   let durationChart, caloriesChart, activityChart;
@@ -862,3 +1433,5 @@ const Charts = (function() {
 
   return { init, refresh, updateColors };
 })();
+
+// ----- End of second half of app.js -----
