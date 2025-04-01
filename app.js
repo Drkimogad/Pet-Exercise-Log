@@ -1,7 +1,7 @@
 "use strict";
 
 /* ==================== */
-/*  Core Functionality  */
+/* 1  Core Functionality  */
 /* ==================== */
 let deferredPrompt;
 
@@ -29,7 +29,7 @@ function registerServiceWorker() {
 }
 
 /* ==================== */
-/*  Theme Management    */
+/* 2  Theme Management    */
 /* ==================== */
 function toggleMode() {
   const body = document.body;
@@ -45,7 +45,7 @@ function applySavedTheme() {
 }
 
 /* ==================== */
-/*  Initialization      */
+/* 3  Initialization      */
 /* ==================== */
 document.addEventListener('DOMContentLoaded', () => {
   applySavedTheme();
@@ -60,7 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 /* ==================== */
-/*  Auth Module         */
+/*  4 Auth Module         */
 /* ==================== */
 const Auth = (function() {
   let currentUser = null;
@@ -203,7 +203,7 @@ const Auth = (function() {
 })();
 
 /* ==================== */
-/*  App Helper          */
+/* 5 App Helper          */
 /* ==================== */
 const AppHelper = {
   showPage: (content) => {
@@ -230,7 +230,7 @@ const AppHelper = {
 };
 
 /* ==================== */
-/*  PetEntry Module     */
+/* 6 PetEntry Module     */
 /* ==================== */
   const PetEntry = (function() {
   // Constants
@@ -322,9 +322,9 @@ const AppHelper = {
 
 
 // ========================
-  // PET FORM RENDER
-  // ========================
-  function renderPetForm(editIndex = null) {
+// 7 PET FORM RENDER (Updated)
+// ========================
+function renderPetForm(editIndex = null) {
     const pets = getPets();
     const pet = editIndex !== null ? pets[editIndex] : {};
     
@@ -332,79 +332,78 @@ const AppHelper = {
       <form id="petForm" class="pet-form">
         <input type="hidden" id="petId" name="petId" value="${pet.id || generateId()}">
         
-        <div class="form-group">
-          <label for="petName">Pet Name</label>
-          <input type="text" id="petName" name="petName" value="${pet.name || ''}" required>
-        </div>
+        <!-- Existing fields remain the same until exercise level -->
         
-        <!-- Image Upload with Placeholder -->
+        <!-- Exercise Level (Updated to dropdown) -->
         <div class="form-group">
-          <label for="petImage">Pet Image</label>
-          <input type="file" id="petImage" name="petImage" accept="image/*">
-          <img id="petImagePreview" src="${pet.image || DEFAULT_IMAGE}" alt="Pet Image" style="max-width:100px; display:block; margin-top:8px;">
-        </div>
-        
-        <!-- Age Field -->
-        <div class="form-group">
-          <label for="petAge">Age</label>
-          <input type="number" id="petAge" name="petAge" value="${pet.age || ''}" min="0" required>
-        </div>
-        
-        <!-- Weight Field -->
-        <div class="form-group">
-          <label for="petWeight">Weight</label>
-          <input type="number" id="petWeight" name="petWeight" value="${pet.weight || ''}" min="0" required>
-        </div>
-        
-        <!-- Body Condition -->
-        <div class="form-group">
-          <label for="petCondition">Body Condition</label>
-          <select id="petCondition" name="petCondition" required>
-            <option value="">Select Condition</option>
-            <option value="under weight" ${pet.condition === 'under weight' ? 'selected' : ''}>Under Weight</option>
-            <option value="lean" ${pet.condition === 'lean' ? 'selected' : ''}>Lean</option>
-            <option value="over weight" ${pet.condition === 'over weight' ? 'selected' : ''}>Over Weight</option>
-            <option value="obese" ${pet.condition === 'obese' ? 'selected' : ''}>Obese</option>
+          <label for="petExerciseLevel">Exercise Level</label>
+          <select id="petExerciseLevel" name="petExerciseLevel" required>
+            <option value="">Select Level</option>
+            <option value="high" ${pet.exerciseLevel === 'high' ? 'selected' : ''}>High</option>
+            <option value="medium" ${pet.exerciseLevel === 'medium' ? 'selected' : ''}>Medium</option>
+            <option value="low" ${pet.exerciseLevel === 'low' ? 'selected' : ''}>Low</option>
           </select>
         </div>
         
-        <!-- Medical History -->
-        <div class="form-group">
-          <label for="petMedicalHistory">Medical History</label>
-          <textarea id="petMedicalHistory" name="petMedicalHistory" rows="3">${pet.medicalHistory || ''}</textarea>
-        </div>
-        
-        <!-- Exercise Level -->
-        <div class="form-group">
-          <label for="petExerciseLevel">Exercise Level</label>
-          <input type="text" id="petExerciseLevel" name="petExerciseLevel" value="${pet.exerciseLevel || ''}" required> hight , medium, low dropdown menue
-        </div>
-        
-        <!-- Date Field -->
+        <!-- Date Field (existing) -->
         <div class="form-group">
           <label for="petDate">Date</label>
           <input type="date" id="petDate" name="petDate" value="${pet.date || ''}" required>
         </div>
         
-        <!-- Exercise Duration in Minutes -->
+        <!-- Exercise Duration (existing) -->
         <div class="form-group">
           <label for="petExerciseDuration">Exercise Duration (minutes)</label>
           <input type="number" id="petExerciseDuration" name="petExerciseDuration" value="${pet.exerciseDuration || ''}" min="0" required>
         </div>
         
-        <!-- Calories Burnt -->
+        <!-- Calories Burnt (existing) -->
         <div class="form-group">
           <label for="petCalories">Calories Burnt</label>
           <input type="number" id="petCalories" name="petCalories" value="${pet.calories || ''}" min="0" required>
         </div>
 
-// i need to add here favorite exercise field running, swimming, fetch ...etc dropdown menue
-//last activity, running in the park, walking, swimming, playing arounf the house...etcdropdown menue
-// place of exercise park, around the block walking, playing with other companions...etc dropdown menue
-        
+        <!-- NEW FIELD: Favorite Exercise -->
+        <div class="form-group">
+          <label for="petFavoriteExercise">Favorite Exercise</label>
+          <select id="petFavoriteExercise" name="petFavoriteExercise">
+            <option value="">Select Favorite</option>
+            <option value="running" ${pet.favoriteExercise === 'running' ? 'selected' : ''}>Running</option>
+            <option value="swimming" ${pet.favoriteExercise === 'swimming' ? 'selected' : ''}>Swimming</option>
+            <option value="fetch" ${pet.favoriteExercise === 'fetch' ? 'selected' : ''}>Fetch</option>
+            <option value="walking" ${pet.favoriteExercise === 'walking' ? 'selected' : ''}>Walking</option>
+            <option value="playing" ${pet.favoriteExercise === 'playing' ? 'selected' : ''}>Playing</option>
+          </select>
+        </div>
+
+        <!-- NEW FIELD: Last Activity -->
+        <div class="form-group">
+          <label for="petLastActivity">Last Activity</label>
+          <select id="petLastActivity" name="petLastActivity">
+            <option value="">Select Activity</option>
+            <option value="running_park" ${pet.lastActivity === 'running_park' ? 'selected' : ''}>Running in park</option>
+            <option value="around_block" ${pet.lastActivity === 'around_block' ? 'selected' : ''}>Around the block</option>
+            <option value="swimming" ${pet.lastActivity === 'swimming' ? 'selected' : ''}>Swimming</option>
+            <option value="house_play" ${pet.lastActivity === 'house_play' ? 'selected' : ''}>Playing around house</option>
+            <option value="companion_play" ${pet.lastActivity === 'companion_play' ? 'selected' : ''}>Playing with companions</option>
+          </select>
+        </div>
+
+        <!-- NEW FIELD: Exercise Location -->
+        <div class="form-group">
+          <label for="petExerciseLocation">Exercise Location</label>
+          <select id="petExerciseLocation" name="petExerciseLocation">
+            <option value="">Select Location</option>
+            <option value="park" ${pet.exerciseLocation === 'park' ? 'selected' : ''}>Park</option>
+            <option value="backyard" ${pet.exerciseLocation === 'backyard' ? 'selected' : ''}>Backyard</option>
+            <option value="indoors" ${pet.exerciseLocation === 'indoors' ? 'selected' : ''}>Indoors</option>
+            <option value="beach" ${pet.exerciseLocation === 'beach' ? 'selected' : ''}>Beach</option>
+            <option value="trail" ${pet.exerciseLocation === 'trail' ? 'selected' : ''}>Trail</option>
+          </select>
+        </div>
       </form>
     `;
-  }
+}
     
   // Private functions
   function getPets() {
@@ -420,7 +419,7 @@ const AppHelper = {
   }
 
   // =========================
-  // SAVED PROFILES LIST
+  // 8 SAVED PROFILES LIST
   // =========================
   function renderSavedProfiles() {
     const pets = getPets();
@@ -444,7 +443,7 @@ const AppHelper = {
   }
 
   // ======================
-  // DASHBOARD LAYOUT     updated
+  //9  DASHBOARD LAYOUT     updated
   // ======================
 function showExerciseLog() {
     const user = JSON.parse(sessionStorage.getItem('user'));
@@ -518,16 +517,26 @@ function showExerciseLog() {
     reader.readAsDataURL(file);
   }
 
-  function handleFormSubmit(e) {
+
+
+function handleFormSubmit(e) {
     e.preventDefault();
     const pets = getPets();
     const pet = activePetIndex !== null ? pets[activePetIndex] : {};
 
+    // Existing fields
     pet.name = document.getElementById('petName').value;
     pet.age = document.getElementById('petAge').value;
     pet.weight = document.getElementById('petWeight').value;
     pet.image = document.getElementById('petImagePreview').src;
+    
+    // New fields
+    pet.exerciseLevel = document.getElementById('petExerciseLevel').value;
+    pet.favoriteExercise = document.getElementById('petFavoriteExercise').value;
+    pet.lastActivity = document.getElementById('petLastActivity').value;
+    pet.exerciseLocation = document.getElementById('petExerciseLocation').value;
 
+    // Rest of the function remains the same...
     if (activePetIndex === null) {
       if (pets.length >= MAX_PETS) return AppHelper.showError('Maximum pets reached');
       pets.push(pet);
@@ -540,7 +549,9 @@ function showExerciseLog() {
     sessionStorage.setItem('activePetIndex', activePetIndex);
     loadSavedProfiles();
     Charts.refresh(pet.exerciseEntries || []);
-  }
+}
+
+
 
   function loadSavedProfiles() {
     const pets = getPets();
@@ -595,7 +606,7 @@ function showExerciseLog() {
   }
   
   // ======================
-  // MONTHLY REPORT RENDER
+  //10 MONTHLY REPORT RENDER
   // ======================
   function renderMonthlyReport(pet, month, year) {
     const daysInMonth = new Date(year, month + 1, 0).getDate();
@@ -648,43 +659,50 @@ function showExerciseLog() {
   }
 
   // ======================
-  // EVENT HANDLERS
+  // 11 EVENT HANDLERS
   // ======================
   function setupEventListeners() {
-    // Save All Button
 // Save All Button
-    document.getElementById('saveAllButton')?.addEventListener('click', () => {
-      const pets = getPets();
-      let pet = pets[activePetIndex] || {};
+document.getElementById('saveAllButton')?.addEventListener('click', () => {
+    const pets = getPets();
+    let pet = pets[activePetIndex] || {};
 
-      // Update pet data from form
-      const formData = new FormData(document.getElementById('petForm'));
-      pet.name = formData.get('petName');
-      pet.id = formData.get('petId');
-      pet.age = formData.get('petAge');
-      pet.weight = formData.get('petWeight');
-      pet.condition = formData.get('petCondition');
-      pet.medicalHistory = formData.get('petMedicalHistory');
-      pet.exerciseLevel = formData.get('petExerciseLevel');
-      pet.date = formData.get('petDate');
-      pet.exerciseDuration = formData.get('petExerciseDuration');
-      pet.calories = formData.get('petCalories');
+    // Update pet data from form
+    const formData = new FormData(document.getElementById('petForm'));
+    pet.name = formData.get('petName');
+    pet.id = formData.get('petId');
+    pet.age = formData.get('petAge');
+    pet.weight = formData.get('petWeight');
+    pet.condition = formData.get('petCondition');
+    pet.medicalHistory = formData.get('petMedicalHistory');
+    
+    // New fields
+    pet.exerciseLevel = formData.get('petExerciseLevel');
+    pet.favoriteExercise = formData.get('petFavoriteExercise');
+    pet.lastActivity = formData.get('petLastActivity');
+    pet.exerciseLocation = formData.get('petExerciseLocation');
+    
+    // Rest of the handler remains the same...
+    pet.date = formData.get('petDate');
+    pet.exerciseDuration = formData.get('petExerciseDuration');
+    pet.calories = formData.get('petCalories');
 
-      // Handle Image Upload
-      const petImageInput = document.getElementById('petImage');
-      const file = petImageInput.files[0];
-      if (file) {
+    // Handle image upload (existing code)
+    const petImageInput = document.getElementById('petImage');
+    const file = petImageInput.files[0];
+    if (file) {
         const reader = new FileReader();
         reader.onload = (e) => {
-          pet.image = e.target.result; // Store base64 data
-          savePetDataAndContinue(pets, pet);
+            pet.image = e.target.result;
+            savePetDataAndContinue(pets, pet);
         };
         reader.readAsDataURL(file);
-      } else {
-        pet.image = pet.image || DEFAULT_IMAGE; // Keep existing or default
+    } else {
+        pet.image = pet.image || DEFAULT_IMAGE;
         savePetDataAndContinue(pets, pet);
-      }
-    });
+    }
+});
+
 
     function savePetDataAndContinue(pets, pet) {
       if (activePetIndex === null) {
@@ -782,8 +800,8 @@ function showExerciseLog() {
     });
 
     // Print Button Handler
-    document.querySelectorAll('.print-btn').forEach(button => {
-      button.addEventListener('click', (e) => {
+document.querySelectorAll('.print-btn').forEach(button => {
+    button.addEventListener('click', (e) => {
         const index = parseInt(e.target.dataset.index);
         const pets = getPets();
         const pet = pets[index];
@@ -796,15 +814,17 @@ function showExerciseLog() {
               <img src="${pet.image || DEFAULT_IMAGE}" alt="${pet.name}" style="max-width:200px;">
               <p><strong>Age:</strong> ${pet.age}</p>
               <p><strong>Weight:</strong> ${pet.weight}</p>
-              <p><strong>Condition:</strong> ${pet.condition}</p>
-              <p><strong>Medical History:</strong> ${pet.medicalHistory || 'N/A'}</p>
+              <p><strong>Exercise Level:</strong> ${pet.exerciseLevel}</p>
+              <p><strong>Favorite Exercise:</strong> ${pet.favoriteExercise || 'N/A'}</p>
+              <p><strong>Last Activity:</strong> ${pet.lastActivity || 'N/A'}</p>
+              <p><strong>Exercise Location:</strong> ${pet.exerciseLocation || 'N/A'}</p>
             </body>
           </html>
         `);
         printWindow.document.close();
         printWindow.print();
-      });
     });
+});
 
     // Share Button Handler
     document.querySelectorAll('.share-btn').forEach(button => {
@@ -839,7 +859,7 @@ function showExerciseLog() {
   };
 })();
 /*-------------------------------------------------*/
-// Charts
+// 12 Charts
 /*-------------------------------------------------*/
 const Charts = (function() {
   let durationChart, caloriesChart, activityChart;
