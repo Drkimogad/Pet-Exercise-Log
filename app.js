@@ -239,22 +239,8 @@ const AppHelper = {
   const EMOJIS = ['😀', '😐', '😞', '😊', '😠']; // Mood emojis
   // State
   let activePetIndex = sessionStorage.getItem('activePetIndex')
-    ? parseInt(sessionStorage.getItem('activePetIndex'))
-    : null;
-
-  // Private functions
-  function getPets() {
-    return JSON.parse(localStorage.getItem('pets')) || [];
-  }
-
-  function savePets(pets) {
-    localStorage.setItem('pets', JSON.stringify(pets));
-  }
-
-  function generateId() {
-    return crypto.randomUUID() || Math.random().toString(36).substring(2, 15);
-  }
-//------------------   
+    ? parseInt(sessionStorage.getItem('activePetIndex')): null;
+    
   const templates = {
     dashboard: () => `
       <div class="dashboard">
@@ -267,19 +253,22 @@ const AppHelper = {
         </header>
 
         <div class="dashboard-container">
-          <div class="left-column">
             <div class="section">
               <h2>Pet Profile</h2>
               <div id="petFormContainer"></div>
             </div>
           </div>
+          
+        <div class="section">
+              <h2>Mood Logs</h2>
+              <div id="moodLogs"></div>
+            </div>
 
-          <div class="right-column">
-            <div class="section">
+         <div class="section">
               <h2>Exercise Calendar</h2>
               <div id="calendarContainer"></div>
             </div>
-            <div class="section">
+         <div class="section">
               <h2>Activity Charts</h2>
               <div id="exerciseCharts"></div>
             </div>
@@ -291,8 +280,9 @@ const AppHelper = {
           <div id="savedProfiles"></div>
         </div>
 
+        <button id="logoutButton" class="logout-btn">Logout</button>
         <footer>
-          <button id="logoutButton" class="logout-btn">Logout</button>
+          <p>2024 Pet Exercise Log. All rights reserved.</p>
         </footer>
       </div>`,
       
@@ -330,14 +320,6 @@ const AppHelper = {
       </form>`
   };
 
-  function showExerciseLog() {
-    AppHelper.showPage(templates.dashboard());
-    renderPetForm();
-    setupEventListeners();
-    Calendar.init('#calendarContainer');
-    Charts.init('#exerciseCharts');
-    loadSavedProfiles();
-  }
 
 // ========================
   // PET FORM RENDER
@@ -395,7 +377,7 @@ const AppHelper = {
         <!-- Exercise Level -->
         <div class="form-group">
           <label for="petExerciseLevel">Exercise Level</label>
-          <input type="text" id="petExerciseLevel" name="petExerciseLevel" value="${pet.exerciseLevel || ''}" required>
+          <input type="text" id="petExerciseLevel" name="petExerciseLevel" value="${pet.exerciseLevel || ''}" required> hight , medium, low dropdown menue
         </div>
         
         <!-- Date Field -->
@@ -415,10 +397,27 @@ const AppHelper = {
           <label for="petCalories">Calories Burnt</label>
           <input type="number" id="petCalories" name="petCalories" value="${pet.calories || ''}" min="0" required>
         </div>
+
+// i need to add here favorite exercise field running, swimming, fetch ...etc dropdown menue
+//last activity, running in the park, walking, swimming, playing arounf the house...etcdropdown menue
+// place of exercise park, around the block walking, playing with other companions...etc dropdown menue
+        
       </form>
     `;
   }
+    
+  // Private functions
+  function getPets() {
+    return JSON.parse(localStorage.getItem('pets')) || [];
+  }
 
+  function savePets(pets) {
+    localStorage.setItem('pets', JSON.stringify(pets));
+  }
+
+  function generateId() {
+    return crypto.randomUUID() || Math.random().toString(36).substring(2, 15);
+  }
 
   // =========================
   // SAVED PROFILES LIST
@@ -460,22 +459,23 @@ function showExerciseLog() {
           </div>
         </header>
 
-        <div class="dashboard-container"> <div class="left-column">
+        <div class="dashboard-container"> <div>
             <div class="section">
               <h2>Pet Profile</h2>
               <div id="petFormContainer"></div>
             </div>
           </div>
+          
+          <div class="section">
+              <h2>Daily Mood Logs</h2>
+              <div id="moodLogs"></div>
+            </div>
 
-          <div class="right-column">
             <div class="section">
               <h2>Exercise Calendar</h2>
               <div id="calendarContainer"></div>
             </div>
-            <div class="section">
-              <h2>Daily Mood</h2>
-              <div id="moodLogContainer"></div>
-            </div>
+            
             <div class="section">
               <h2>Activity Charts</h2>
               <div id="exerciseCharts"></div>
@@ -489,9 +489,10 @@ function showExerciseLog() {
             <h2>Saved Profiles</h2>
             <div id="savedProfiles"></div>
           </div>
+       <button id="logoutButton" class="logout-btn">Logout</button>
 
         <footer>
-          <button id="logoutButton" class="logout-btn">Logout</button>
+       <p>2024 Pet Exercise Log. All rights reserved.</p>
         </footer>
       </div>
     `);
@@ -948,3 +949,12 @@ const Charts = (function() {
 
   return { init, refresh, updateColors };
 })();
+
+  function showExerciseLog() {
+    AppHelper.showPage(templates.dashboard());
+    renderPetForm();
+    setupEventListeners();
+    Calendar.init('#calendarContainer');
+    Charts.init('#exerciseCharts');
+    loadSavedProfiles();
+  }
