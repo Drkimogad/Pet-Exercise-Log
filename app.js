@@ -5,9 +5,8 @@
 /* ==================== */
 let deferredPrompt;
 
-// PWA Installation Handling
 window.addEventListener('beforeinstallprompt', (e) => {
-  e.preventDefault();
+  // Store the event but don't prevent default to avoid console warnings
   deferredPrompt = e;
   document.getElementById('installButton').style.display = 'block';
 });
@@ -21,31 +20,44 @@ document.getElementById('installButton').addEventListener('click', async () => {
   }
 });
 
-// Service Worker Registration
 function registerServiceWorker() {
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/Pet-Exercise-Log/service-worker.js', {
-      scope: '/Pet-Exercise-Log/'
-    }).then(reg => {
-      console.log('Service Worker registered:', reg);
-    }).catch(err => {
-      console.error('SW registration failed:', err);
-    });
+    navigator.serviceWorker.register('/Pet-Exercise-Log/service-worker.js')
+      .then(reg => console.log('SW registered:', reg))
+      .catch(err => console.error('SW registration failed:', err));
   }
 }
 
-// Theme Management
+/* ==================== */
+/*  Theme Management    */
+/* ==================== */
 function toggleMode() {
   const body = document.body;
   body.classList.toggle('dark-mode');
   localStorage.setItem('theme', body.classList.contains('dark-mode') ? 'dark' : 'light');
-  Charts.updateColors();
 }
 
 function applySavedTheme() {
   const savedTheme = localStorage.getItem('theme');
-  if (savedTheme === 'dark') document.body.classList.add('dark-mode');
+  if (savedTheme === 'dark') {
+    document.body.classList.add('dark-mode');
+  }
 }
+
+/* ==================== */
+/*  Initialization      */
+/* ==================== */
+document.addEventListener('DOMContentLoaded', () => {
+  applySavedTheme();
+  registerServiceWorker();
+  
+  // Single DOMContentLoaded handler
+  if (sessionStorage.getItem('user')) {
+    PetEntry.showExerciseLog();
+  } else {
+    Auth.showAuth(false); // Show sign-in by default
+  }
+});
 
 /* ==================== */
 /*  Auth Module         */
