@@ -5,22 +5,22 @@
 /* ==================== */
 let deferredPrompt;
 
-// In your beforeinstallprompt handler:
+let installButtonAdded = false;
+
 window.addEventListener('beforeinstallprompt', (e) => {
+  if (installButtonAdded) return;
+  
   e.preventDefault();
   deferredPrompt = e;
-  const installBtn = document.getElementById('installButton');
-  if (installBtn) installBtn.style.display = 'block'; 
-  // Only show if not already visible
-});
-
-document.getElementById('installButton').addEventListener('click', async () => {
-  if (deferredPrompt) {
-    await deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
-    console.log('User:', outcome);
-    deferredPrompt = null;
-  }
+  
+  const installBtn = document.createElement('button');
+  installBtn.id = 'installButton';
+  installBtn.textContent = 'Install App';
+  installBtn.className = 'install-btn';
+  installBtn.style.display = 'block';
+  
+  document.querySelector('footer').prepend(installBtn);
+  installButtonAdded = true;
 });
 
 function registerServiceWorker() {
@@ -48,6 +48,24 @@ function applySavedTheme() {
   }
 }
 
+function toggleMode() {
+  const body = document.body;
+  body.classList.toggle('dark-mode');
+  
+  // Persist state
+  const isDark = body.classList.contains('dark-mode');
+  localStorage.setItem('darkMode', isDark);
+  
+  // Update button text
+  const toggleBtn = document.getElementById('toggleModeButton');
+  if (toggleBtn) {
+    toggleBtn.textContent = isDark ? 'Light Mode' : 'Dark Mode';
+  }
+  
+  // Update charts
+  Charts.updateColors();
+}
+
 /* ==================== */
 /* 3  Initialization      */
 /* ==================== */
@@ -55,12 +73,13 @@ document.addEventListener('DOMContentLoaded', () => {
   applySavedTheme();
   registerServiceWorker();
   
-  if (sessionStorage.getItem('user')) {
-    PetEntry.showExerciseLog();
-  } else {
-    Auth.showAuth(false);
-  }
-});
+// Correct initialization sequence
+if (!sessionStorage.getItem('user')) {
+  Auth.showAuth(false); // Show auth first
+} else {
+  // Only load PetEntry if authenticated
+  PetEntry.showExerciseLog(); 
+}
 
 /* ==================== */
 /*  4 Auth Module         */
@@ -245,17 +264,25 @@ const AppHelper = {
 /* ==================== */
 /* PetEntry Module      */
 /* ==================== */
-const PetEntry = (function() {
+ const PetEntry = (function() {
+  // SECTION 1: CONSTANTS AND CONFIGURATION
   const CONFIG = {
     MAX_PETS: 10,
     DEFAULT_IMAGE: 'default-pet.png',
     EMOJIS: ['😀', '😐', '😞', '😊', '😠'],
     EXERCISE_LEVELS: ['high', 'medium', 'low'],
     FAVORITE_EXERCISES: ['running', 'swimming', 'fetch', 'walking', 'playing'],
-    ACTIVITY_TYPES: ['running_park', 'around_block', 'swimming', 'house_play', 'companion_play'],
+    ACTIVITY_TYPES: [
+      'running_park', 
+      'around_block', 
+      'swimming', 
+      'house_play', 
+      'companion_play'
+    ],
     LOCATIONS: ['park', 'backyard', 'indoors', 'beach', 'trail']
   };
 
+  // SECTION 2: STATE MANAGEMENT
   let state = {
     activePetIndex: sessionStorage.getItem('activePetIndex') 
       ? parseInt(sessionStorage.getItem('activePetIndex')) 
@@ -263,37 +290,7 @@ const PetEntry = (function() {
     darkMode: localStorage.getItem('darkMode') === 'true'
   };
 
-  const dataService = {
-    cache: null,
-    getPets: () => {
-      try {
-        if (!dataService.cache) {
-          dataService.cache = JSON.parse(localStorage.getItem('pets')) || [];
-        }
-        return [...dataService.cache];
-      } catch (e) {
-        console.error('Error getting pets:', e);
-        return [];
-      }
-    },
-    savePets: (pets) => {
-      try {
-        if (pets.length > CONFIG.MAX_PETS) {
-          throw new Error(`Maximum of ${CONFIG.MAX_PETS} pets allowed`);
-        }
-        dataService.cache = pets;
-        localStorage.setItem('pets', JSON.stringify(pets));
-        console.log('Pets data saved');
-      } catch (e) {
-        console.error('Error saving pets:', e);
-      }
-    },
-    getActivePet: () => {
-      const pets = dataService.getPets();
-      return state.activePetIndex !== null ? pets[state.activePetIndex] : null;
-    }
-  };
-
+  // SECTION 3: TEMPLATES
   const templates = {
     dashboard: () => `
       <div class="dashboard ${state.darkMode ? 'dark-mode' : ''}">
@@ -327,11 +324,11 @@ const PetEntry = (function() {
             <h2>Activity Charts</h2>
             <div id="exerciseCharts"></div>
           </div>
-        </div>
 
-        <div class="section">
-          <h2>Saved Profiles</h2>
-          <div id="savedProfiles"></div>
+          <div class="section">
+            <h2>Saved Profiles</h2>
+            <div id="savedProfiles"></div>
+          </div>
         </div>
 
         <button id="saveAllButton" class="save-btn">Save All</button>
@@ -417,10 +414,109 @@ const PetEntry = (function() {
           </select>
         </div>
 
+        <!-- RESTORED FIELDS -->
+        <div class="form-group">
+          <label for="petDate">Date</label>
+          <input type="date" id="petDate" value="${pet.date || new Date().toISOString().split('T')[0]}" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="petExerciseDuration">Exercise Duration (minutes)</label>
+          <input type="number" id="petExerciseDuration" 
+                value="${pet.exerciseDuration || '30'}" min="0" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="petCalories">Calories Burnt</label>
+          <input type="number" id="petCalories" 
+                value="${pet.calories || '150'}" min="0" required>
+        </div>
+
+        <div class="form-group mood-selector">
+          <label>Today's Mood:</label>
+          <div class="mood-options">
+            ${CONFIG.EMOJIS.map((emoji, index) => `
+              <button type="button" class="emoji-btn ${pet.mood === index ? 'selected' : ''}" 
+                      data-mood="${index}" data-date="${new Date().toISOString().split('T')[0]}">
+                ${emoji}
+              </button>
+            `).join('')}
+          </div>
+        </div>
+
         <button type="submit" class="save-btn">Save Profile</button>
       </form>`
   };
 
+  // SECTION 4: UTILITY FUNCTIONS
+  const utils = {
+    generateId: () => crypto.randomUUID() || Math.random().toString(36).substring(2, 15),
+    
+    formatDate: (dateStr) => {
+      try {
+        const date = new Date(dateStr);
+        return date.toLocaleDateString('en-US', { 
+          year: 'numeric', month: 'short', day: 'numeric' 
+        });
+      } catch (e) {
+        console.error('Date formatting error:', e);
+        return dateStr;
+      }
+    },
+    
+    validatePet: (pet) => {
+      const errors = [];
+      if (!pet.name) errors.push('Pet name is required');
+      if (!pet.age || pet.age < 0) errors.push('Valid age is required');
+      if (!pet.weight || pet.weight < 0) errors.push('Valid weight is required');
+      if (!pet.exerciseLevel) errors.push('Exercise level is required');
+      if (!pet.date) errors.push('Date is required');
+      if (!pet.exerciseDuration || pet.exerciseDuration < 0) errors.push('Valid duration is required');
+      if (!pet.calories || pet.calories < 0) errors.push('Valid calories is required');
+      return errors.length ? errors : null;
+    },
+    
+    handleError: (error, context = '') => {
+      console.error(`Error in ${context}:`, error);
+      AppHelper.showError(`Operation failed: ${error.message}`);
+    }
+  };
+
+  // SECTION 5: DATA MANAGEMENT
+  const dataService = {
+    cache: null,
+    getPets: () => {
+      try {
+        if (!dataService.cache) {
+          dataService.cache = JSON.parse(localStorage.getItem('pets')) || [];
+        }
+        return [...dataService.cache];
+      } catch (e) {
+        utils.handleError(e, 'getPets');
+        return [];
+      }
+    },
+    
+    savePets: (pets) => {
+      try {
+        if (pets.length > CONFIG.MAX_PETS) {
+          throw new Error(`Maximum of ${CONFIG.MAX_PETS} pets allowed`);
+        }
+        dataService.cache = pets;
+        localStorage.setItem('pets', JSON.stringify(pets));
+        console.log('Pets data saved');
+      } catch (e) {
+        utils.handleError(e, 'savePets');
+      }
+    },
+    
+    getActivePet: () => {
+      const pets = dataService.getPets();
+      return state.activePetIndex !== null ? pets[state.activePetIndex] : null;
+    }
+  };
+
+  // SECTION 6: RENDER FUNCTIONS
   const render = {
     petForm: (editIndex = null) => {
       try {
@@ -428,7 +524,7 @@ const PetEntry = (function() {
         const pet = editIndex !== null ? pets[editIndex] : {};
         document.getElementById('petFormContainer').innerHTML = templates.petForm(pet);
       } catch (e) {
-        console.error('Error rendering pet form:', e);
+        utils.handleError(e, 'renderPetForm');
       }
     },
     
@@ -451,82 +547,202 @@ const PetEntry = (function() {
           </div>`;
         document.getElementById('savedProfiles').innerHTML = html;
       } catch (e) {
-        console.error('Error rendering saved profiles:', e);
+        utils.handleError(e, 'renderSavedProfiles');
+      }
+    },
+    
+    moodLogs: () => {
+      try {
+        const activePet = dataService.getActivePet();
+        if (activePet) {
+          document.getElementById('moodLogs').innerHTML = `
+            <div class="mood-container">
+              ${activePet.moodLogs?.map(log => `
+                <div class="mood-entry">
+                  <span>${utils.formatDate(log.date)}</span>
+                  <span class="mood-emoji">${CONFIG.EMOJIS[log.mood]}</span>
+                </div>
+              `).join('') || '<p>No mood entries yet</p>'}
+            </div>`;
+        }
+      } catch (e) {
+        utils.handleError(e, 'renderMoodLogs');
+      }
+    },
+    
+    calendar: () => {
+      try {
+        document.getElementById('calendarContainer').innerHTML = `
+          <div class="calendar">
+            <div class="calendar-header">
+              <button id="prevMonth">&lt;</button>
+              <h3 id="currentMonth">${new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</h3>
+              <button id="nextMonth">&gt;</button>
+            </div>
+            <div class="calendar-grid" id="calendarGrid"></div>
+          </div>`;
+        
+        // Initialize calendar grid
+        updateCalendar();
+      } catch (e) {
+        utils.handleError(e, 'renderCalendar');
       }
     }
   };
 
-  function handleImageUpload(e) {
-    const file = e.target.files[0];
-    if (!file) return;
+  // SECTION 7: EVENT HANDLERS
+  const handlers = {
+    handleImageUpload: (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        document.getElementById('petImagePreview').src = event.target.result;
+      };
+      reader.onerror = (e) => utils.handleError(e, 'imageUpload');
+      reader.readAsDataURL(file);
+    },
     
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      document.getElementById('petImagePreview').src = event.target.result;
-    };
-    reader.onerror = (e) => console.error('Image upload error:', e);
-    reader.readAsDataURL(file);
-  }
-
-  function handleFormSubmit(e) {
-    e.preventDefault();
-    try {
-      const pets = dataService.getPets();
-      let pet = state.activePetIndex !== null ? pets[state.activePetIndex] : { id: crypto.randomUUID() };
-      
-      pet.name = document.getElementById('petName').value;
-      pet.age = parseInt(document.getElementById('petAge').value);
-      pet.weight = parseFloat(document.getElementById('petWeight').value);
-      pet.image = document.getElementById('petImagePreview').src;
-      pet.exerciseLevel = document.getElementById('petExerciseLevel').value;
-      pet.favoriteExercise = document.getElementById('petFavoriteExercise').value;
-      pet.lastActivity = document.getElementById('petLastActivity').value;
-      pet.exerciseLocation = document.getElementById('petExerciseLocation').value;
-      
-      if (!pet.name || !pet.age || !pet.weight || !pet.exerciseLevel) {
-        throw new Error('Please fill all required fields');
-      }
-      
-      if (state.activePetIndex === null) {
-        pets.push(pet);
-        state.activePetIndex = pets.length - 1;
-      } else {
-        pets[state.activePetIndex] = pet;
-      }
-      
-      dataService.savePets(pets);
-      sessionStorage.setItem('activePetIndex', state.activePetIndex);
-      render.savedProfiles();
-      
-      const chartsSection = document.getElementById('exerciseCharts');
-      if (chartsSection) {
-        Charts.refresh(pet.exerciseEntries || []);
-      }
-    } catch (error) {
-      AppHelper.showError(error.message);
-    }
-  }
-
-  function initCharts() {
-    const chartsSection = document.getElementById('exerciseCharts');
-    if (chartsSection) {
-      const observer = new IntersectionObserver((entries) => {
-        if (entries[0].isIntersecting) {
-          Charts.init('#exerciseCharts');
-          const activePet = dataService.getActivePet();
-          if (activePet) {
-            Charts.refresh(activePet.exerciseEntries || []);
-          }
-          observer.disconnect();
+    handleFormSubmit: (e) => {
+      e.preventDefault();
+      try {
+        const pets = dataService.getPets();
+        let pet = state.activePetIndex !== null 
+          ? pets[state.activePetIndex] 
+          : { id: utils.generateId(), exerciseEntries: [], moodLogs: [] };
+        
+        // Get form values
+        pet.name = document.getElementById('petName').value;
+        pet.age = parseInt(document.getElementById('petAge').value);
+        pet.weight = parseFloat(document.getElementById('petWeight').value);
+        pet.image = document.getElementById('petImagePreview').src;
+        pet.exerciseLevel = document.getElementById('petExerciseLevel').value;
+        pet.favoriteExercise = document.getElementById('petFavoriteExercise').value;
+        pet.lastActivity = document.getElementById('petLastActivity').value;
+        pet.exerciseLocation = document.getElementById('petExerciseLocation').value;
+        pet.date = document.getElementById('petDate').value;
+        pet.exerciseDuration = parseInt(document.getElementById('petExerciseDuration').value);
+        pet.calories = parseInt(document.getElementById('petCalories').value);
+        
+        // Validate
+        const errors = utils.validatePet(pet);
+        if (errors) return AppHelper.showError(errors.join('\n'));
+        
+        // Save
+        if (state.activePetIndex === null) {
+          pets.push(pet);
+          state.activePetIndex = pets.length - 1;
+        } else {
+          pets[state.activePetIndex] = pet;
         }
+        
+        dataService.savePets(pets);
+        sessionStorage.setItem('activePetIndex', state.activePetIndex);
+        render.savedProfiles();
+        render.moodLogs();
+        Charts.refresh(pets[state.activePetIndex].exerciseEntries || []);
+      } catch (e) {
+        utils.handleError(e, 'formSubmit');
+      }
+    },
+    
+    handleMoodSelection: (e) => {
+      if (e.target.classList.contains('emoji-btn')) {
+        const mood = parseInt(e.target.dataset.mood);
+        const date = e.target.dataset.date;
+        const pets = dataService.getPets();
+        let pet = pets[state.activePetIndex] || {};
+        
+        pet.moodLogs = pet.moodLogs || [];
+        pet.moodLogs = pet.moodLogs.filter(m => m.date !== date);
+        pet.moodLogs.push({ date, mood });
+        
+        pets[state.activePetIndex] = pet;
+        dataService.savePets(pets);
+        
+        // Update UI
+        document.querySelectorAll('.emoji-btn').forEach(btn => 
+          btn.classList.remove('selected')
+        );
+        e.target.classList.add('selected');
+        render.moodLogs();
+      }
+    },
+    
+    handleCalendarNavigation: () => {
+      // Implement month navigation
+      document.getElementById('prevMonth')?.addEventListener('click', () => {
+        // Previous month logic
+        updateCalendar();
       });
-      observer.observe(chartsSection);
+      
+      document.getElementById('nextMonth')?.addEventListener('click', () => {
+        // Next month logic
+        updateCalendar();
+      });
+    }
+  };
+
+  // SECTION 8: CALENDAR FUNCTIONS
+  function updateCalendar() {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = now.getMonth();
+    
+    const firstDay = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    
+    const calendarGrid = document.getElementById('calendarGrid');
+    if (calendarGrid) {
+      calendarGrid.innerHTML = '';
+      
+      // Add day headers
+      ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].forEach(day => {
+        const dayHeader = document.createElement('div');
+        dayHeader.className = 'calendar-day-header';
+        dayHeader.textContent = day;
+        calendarGrid.appendChild(dayHeader);
+      });
+      
+      // Add empty cells for days before first day
+      for (let i = 0; i < firstDay; i++) {
+        const emptyCell = document.createElement('div');
+        emptyCell.className = 'calendar-day empty';
+        calendarGrid.appendChild(emptyCell);
+      }
+      
+      // Add days
+      const activePet = dataService.getActivePet();
+      for (let day = 1; day <= daysInMonth; day++) {
+        const dateStr = `${year}-${(month + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+        const dayCell = document.createElement('div');
+        dayCell.className = 'calendar-day';
+        dayCell.textContent = day;
+        
+        // Highlight days with exercise
+        if (activePet?.exerciseEntries?.some(e => e.date === dateStr)) {
+          dayCell.classList.add('has-exercise');
+        }
+        
+        calendarGrid.appendChild(dayCell);
+      }
     }
   }
 
-  function setupEventListeners() {
-    document.getElementById('petForm')?.addEventListener('submit', handleFormSubmit);
-    document.getElementById('petImage')?.addEventListener('change', handleImageUpload);
+  // SECTION 9: INITIALIZATION
+  function initEventListeners() {
+    // Form Events
+    document.getElementById('petForm')?.addEventListener('submit', handlers.handleFormSubmit);
+    document.getElementById('petImage')?.addEventListener('change', handlers.handleImageUpload);
+    
+    // Mood Logs
+    document.addEventListener('click', handlers.handleMoodSelection);
+    
+    // Calendar
+    handlers.handleCalendarNavigation();
+    
+    // Button Events
     document.getElementById('toggleModeButton')?.addEventListener('click', toggleMode);
     document.getElementById('logoutButton')?.addEventListener('click', Auth.logout);
     document.getElementById('addNewProfileButton')?.addEventListener('click', () => {
@@ -534,6 +750,7 @@ const PetEntry = (function() {
       render.petForm();
     });
     
+    // Dynamic Events
     document.addEventListener('click', (e) => {
       if (e.target.classList.contains('edit-btn')) {
         state.activePetIndex = parseInt(e.target.dataset.index);
@@ -557,24 +774,29 @@ const PetEntry = (function() {
     state.darkMode = !state.darkMode;
     localStorage.setItem('darkMode', state.darkMode);
     document.body.classList.toggle('dark-mode');
-    document.getElementById('toggleModeButton').textContent = 
-      state.darkMode ? 'Light Mode' : 'Dark Mode';
+    
+    const toggleBtn = document.getElementById('toggleModeButton');
+    if (toggleBtn) {
+      toggleBtn.textContent = state.darkMode ? 'Light Mode' : 'Dark Mode';
+    }
+    
     Charts.updateColors();
   }
 
+  // SECTION 10: PUBLIC API
   return {
     showExerciseLog: () => {
       AppHelper.showPage(templates.dashboard());
       render.petForm();
-      setupEventListeners();
-      initCharts();
-      render.savedProfiles();
-    },
-    updateDashboard: () => {
-      this.showExerciseLog();
-    }
-  };
-})();
+      render.moodLogs();
+      render.calendar();
+      initEventListeners();
+      
+      const activePet = dataService.getActivePet();
+      if (activePet) {
+        Charts.refresh(activePet.exerciseEntries || []);
+      }
+
 
 /* ==================== */
 /* Charts Module        */
@@ -687,7 +909,28 @@ const Charts = (function() {
 
   return { init, refresh, updateColors };
 })();
-
+      // Initialize charts when visible
+      const chartsSection = document.getElementById('exerciseCharts');
+      if (chartsSection) {
+        const observer = new IntersectionObserver((entries) => {
+          if (entries[0].isIntersecting) {
+            Charts.init('#exerciseCharts');
+            if (activePet) {
+              Charts.refresh(activePet.exerciseEntries || []);
+            }
+            observer.disconnect();
+          }
+        });
+        observer.observe(chartsSection);
+      }
+    },
+    
+    updateDashboard: () => {
+      this.showExerciseLog();
+    }
+  };
+})();
+      
 /* ==================== */
 /* App Initialization   */
 /* ==================== */
