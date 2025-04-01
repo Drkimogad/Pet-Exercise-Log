@@ -231,3 +231,21 @@ button {
   background: var(--success);
   color: white;
 }
+
+/* Add to your CSS to fix form layout */
+.pet-form .form-group {
+  margin-bottom: 1rem;
+}
+
+.pet-form select {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.image-upload {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
