@@ -399,7 +399,18 @@ const PetEntry = (function() {
           <input type="number" id="petCalories"
                  value="${pet.calories || '150'}" min="0" required>
         </div>
-
+//* this should be added to exercise enteries*//
+{
+  exerciseEntries: [{
+    date: "YYYY-MM-DD",
+    duration: Number,
+    calories: Number
+  }],
+  moodLogs: [{
+    date: "YYYY-MM-DD",
+    mood: 0-4
+  }]
+}
         <div class="form-group mood-selector">
           <label>Today's Mood:</label>
           <div class="mood-options">
