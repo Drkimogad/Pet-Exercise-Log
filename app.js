@@ -782,8 +782,8 @@ value\="</span>{pet.exerciseDuration || '30'}" min="0" required>
       <div class="calendar">
         </div>`;
   }
-
-  function initEventListeners() {
+//*-------------------*//
+ function initEventListeners() {
     // Form Events
     document.getElementById('petForm')?.addEventListener('submit', handlers.handleFormSubmit);
     document.getElementById('petImage')?.addEventListener('change', handlers.handleImageUpload);
