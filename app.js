@@ -348,33 +348,33 @@ const PetEntry = (function() {
 
     petForm: (pet = {}) => `
       <form id="petForm" class="pet-form">
-        <input type="hidden" id="petId" value="<span class="math-inline">\{pet\.id \|\| crypto\.randomUUID\(\)\}"\>
-<div class\="form\-group"\>
-<label for\="petName"\>Pet Name</label\>
-<input type\="text" id\="petName" value\="</span>{pet.name || ''}" required>
+        <input type="hidden" id="petId" value="${pet.id || crypto.randomUUID()}">
+        <div class="form-group">
+          <label for="petName">Pet Name</label>
+          <input type="text" id="petName" value="${pet.name || ''}" required>
         </div>
 
         <div class="form-group">
           <label for="petImage">Pet Image</label>
           <div class="image-upload">
             <input type="file" id="petImage" accept="image/*">
-            <img id="petImagePreview" src="<span class="math-inline">\{pet\.image \|\| CONFIG\.DEFAULT\_IMAGE\}"
-alt\="Pet Preview" style\="max\-width\: 150px;"\>
-</div\>
-</div\>
-<div class\="form\-group"\>
-<label for\="petCharacteristics"\>Characteristics</label\>
-<textarea id\="petCharacteristics" rows\="3"\></span>{pet.characteristics || ''}</textarea>
+            <img id="petImagePreview" src="${pet.image || CONFIG.DEFAULT_IMAGE}"
+                 alt="Pet Preview" style="max-width: 150px;">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="petCharacteristics">Characteristics</label>
+          <textarea id="petCharacteristics" rows="3">${pet.characteristics || ''}</textarea>
         </div>
 
         <div class="form-row">
           <div class="form-group">
             <label for="petAge">Age</label>
-            <input type="number" id="petAge" value="<span class="math-inline">\{pet\.age \|\| ''\}" min\="0" required\>
-</div\>
-<div class\="form\-group"\>
-<label for\="petWeight"\>Weight</label\>
-<input type\="number" id\="petWeight" value\="</span>{pet.weight || ''}" min="0" required>
+            <input type="number" id="petAge" value="${pet.age || ''}" min="0" required>
+          </div>
+          <div class="form-group">
+            <label for="petWeight">Weight</label>
+            <input type="number" id="petWeight" value="${pet.weight || ''}" min="0" required>
           </div>
         </div>
 
@@ -449,12 +449,12 @@ alt\="Pet Preview" style\="max\-width\: 150px;"\>
 
         <div class="form-group">
           <label for="petDate">Date</label>
-          <input type="date" id="petDate" value="<span class="math-inline">\{pet\.date \|\| new Date\(\)\.toISOString\(\)\.split\('T'\)\[0\]\}" required\>
-</div\>
-<div class\="form\-group"\>
-<label for\="petExerciseDuration"\>Exercise Duration \(minutes\)</label\>
-<input type\="number" id\="petExerciseDuration"
-value\="</span>{pet.exerciseDuration || '30'}" min="0" required>
+          <input type="date" id="petDate" value="${pet.date || new Date().toISOString().split('T')[0]}" required>
+        </div>
+        <div class="form-group">
+          <label for="petExerciseDuration">Exercise Duration (minutes)</label>
+          <input type="number" id="petExerciseDuration"
+                 value="${pet.exerciseDuration || '30'}" min="0" required>
         </div>
 
         <div class="form-group">
@@ -619,7 +619,7 @@ value\="</span>{pet.exerciseDuration || '30'}" min="0" required>
     }
   };
 
-// SECTION 7: EVENT HANDLERS
+  // SECTION 7: EVENT HANDLERS
   const handlers = {
     handleImageUpload: (e) => {
       const file = e.target.files[0];
@@ -776,14 +776,7 @@ value\="</span>{pet.exerciseDuration || '30'}" min="0" required>
     }
   }
 
-  function initCalendar() {
-    // Initialize your calendar component here
-    document.getElementById('calendarContainer').innerHTML = `
-      <div class="calendar">
-        </div>`;
-  }
-//*-------------------*//
- function initEventListeners() {
+  function initEventListeners() {
     // Form Events
     document.getElementById('petForm')?.addEventListener('submit', handlers.handleFormSubmit);
     document.getElementById('petImage')?.addEventListener('change', handlers.handleImageUpload);
@@ -848,43 +841,36 @@ value\="</span>{pet.exerciseDuration || '30'}" min="0" required>
       Charts.refresh(activePet.exerciseEntries || []);
     }
 
+    // Initialize charts when visible
+    const chartsSection = document.getElementById('exerciseCharts');
+    if (chartsSection) {
+      const observer = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting) {
+          Charts.init('#exerciseCharts');
+          if (activePet) {
+            Charts.refresh(activePet.exerciseEntries || []);
+          }
+          observer.disconnect();
+        }
+      });
+      observer.observe(chartsSection);
+    }
+  }
+
   // SECTION 10: PUBLIC API
   return {
     showExerciseLog: showExerciseLog,
     updateDashboard: () => {
-      this.showExerciseLog();
+      showExerciseLog();
     },
-    init: () => { // Add an init function
-      document.addEventListener('DOMContentLoaded', () => {
-        applySavedTheme();
-        registerServiceWorker();
-
-        if (!sessionStorage.getItem('user')) {
-          Auth.showAuth(true);
-        } else {
-          showExerciseLog(); // Call showExerciseLog directly here
-        }
-      });
+    init: () => {
+      if (!sessionStorage.getItem('user')) {
+        Auth.showAuth(true);
+      } else {
+        showExerciseLog();
+      }
     }
   };
-})();
-
-PetEntry.init(); // Call the init function to set up the DOMContentLoaded listener
-
-  // Initialize charts when visible
-  const chartsSection = document.getElementById('exerciseCharts');
-  if (chartsSection) {
-    const observer = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting) {
-        Charts.init('#exerciseCharts');
-        if (activePet) {
-          Charts.refresh(activePet.exerciseEntries || []);
-        }
-        observer.disconnect();
-      }
-    });
-    observer.observe(chartsSection);
-  }
 })();
 
 /* ==================== */
@@ -998,3 +984,6 @@ const Charts = (function() {
 
   return { init, refresh, updateColors };
 })();
+
+// Initialize the app
+PetEntry.init();
