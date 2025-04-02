@@ -209,19 +209,7 @@ petForm: (pet = {}) => `
       </div>
     </div>
   </form>`     
-
-//* show exercise log *//
-function showExerciseLog() {
-  AppHelper.showPage(templates.dashboard());
-  render.petForm();
-  
-  // Initialize all sections
-  initMoodLogs();
-  initCalendar();
-  initCharts();
-  render.savedProfiles();
-}
-
+//* functions initialization*//
 function initMoodLogs() {
   const pets = dataService.getPets();
   const activePet = dataService.getActivePet();
