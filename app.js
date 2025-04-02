@@ -210,8 +210,7 @@ petForm: (pet = {}) => `
     </div>
   </form>`     
 
-
-// In PetEntry.showExerciseLog():
+//* show exercise log *//
 function showExerciseLog() {
   AppHelper.showPage(templates.dashboard());
   render.petForm();
@@ -583,22 +582,20 @@ function initCalendar() {
     
     Charts.updateColors();
   }
-
-  // SECTION 10: PUBLIC API
-  return {
-    showExerciseLog: () => {
-      AppHelper.showPage(templates.dashboard());
-      render.petForm();
-      render.moodLogs();
-      render.calendar();
-      initEventListeners();
+  
+  //* show exercise log*//
+  function showExerciseLog() {
+    AppHelper.showPage(templates.dashboard());
+    render.petForm();
+    render.moodLogs();
+    render.calendar();
+    initEventListeners();
       
       const activePet = dataService.getActivePet();
       if (activePet) {
         Charts.refresh(activePet.exerciseEntries || []);
       }
-
-
+     
 /* ==================== */
 /* Charts Module        */
 /* ==================== */
@@ -726,9 +723,13 @@ const Charts = (function() {
       }
     },
     
+  // SECTION 10: PUBLIC API
+  return {
+    showExerciseLog: showExerciseLog, // Reference the function defined above
     updateDashboard: () => {
       this.showExerciseLog();
     }
   };
 })();
+
       
