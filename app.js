@@ -847,14 +847,29 @@ value\="</span>{pet.exerciseDuration || '30'}" min="0" required>
     if (activePet) {
       Charts.refresh(activePet.exerciseEntries || []);
     }
-    // SECTION 10: PUBLIC API
-    return {
-      showExerciseLog: showExerciseLog, // Reference the function defined above
-      updateDashboard: () => {
-        this.showExerciseLog();
-      }
-    };
-  }
+
+  // SECTION 10: PUBLIC API
+  return {
+    showExerciseLog: showExerciseLog,
+    updateDashboard: () => {
+      this.showExerciseLog();
+    },
+    init: () => { // Add an init function
+      document.addEventListener('DOMContentLoaded', () => {
+        applySavedTheme();
+        registerServiceWorker();
+
+        if (!sessionStorage.getItem('user')) {
+          Auth.showAuth(true);
+        } else {
+          showExerciseLog(); // Call showExerciseLog directly here
+        }
+      });
+    }
+  };
+})();
+
+PetEntry.init(); // Call the init function to set up the DOMContentLoaded listener
 
   // Initialize charts when visible
   const chartsSection = document.getElementById('exerciseCharts');
