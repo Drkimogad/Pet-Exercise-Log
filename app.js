@@ -519,6 +519,8 @@ const PetEntry = (function() {
                   <button class="edit-btn" data-index="${index}">Edit</button>
                   <button class="delete-btn" data-index="${index}">Delete</button>
                   <button class="print-btn" data-index="${index}">Print</button>
+                  <button class="btn qr-btn" data-index="${index}">🔲 QR Code</button>
+                  <button class="share" data-index="${index}">Share</button>
                 </div>
               </div>
             `).join('')}
@@ -724,7 +726,7 @@ const PetEntry = (function() {
         </div>`;
     }
   }
-
+  
   function initEventListeners() {
     // Form Events
     document.getElementById('petForm')?.addEventListener('submit', handlers.handleFormSubmit);
@@ -744,6 +746,21 @@ const PetEntry = (function() {
       render.petForm();
     });
 
+// Inside PetEntry's initEventListeners
+document.addEventListener('click', (e) => {
+  if (e.target.closest('.qr-btn')) {
+    const index = e.target.dataset.index;
+    const pet = dataService.getPets()[index];
+    generatePetQR(pet);
+  }
+  
+  if (e.target.closest('.report-btn')) {
+    const index = e.target.dataset.index;
+    const pet = dataService.getPets()[index];
+    ReportGenerator.generatePDF(pet);
+  }
+});
+    
     // Dynamic Events
     document.addEventListener('click', (e) => {
       if (e.target.classList.contains('edit-btn')) {
@@ -793,6 +810,33 @@ const PetEntry = (function() {
     updateDashboard: initDashboard
   };
 })();
+
+//* QR code *//
+// Inside PetEntry module
+function generatePetQR(petData) {
+  const qrContent = JSON.stringify({
+    name: petData.name,
+    age: petData.age,
+    lastExercise: petData.exerciseEntries.slice(-1)[0] || 'No recent exercise',
+    healthStatus: petData.healthStatus
+  });
+
+  const qrContainer = document.createElement('div');
+  new QRCode(qrContainer, {
+    text: qrContent,
+    width: 200,
+    height: 200,
+    colorDark: "#000000",
+    colorLight: "#ffffff",
+    correctLevel: QRCode.CorrectLevel.H
+  });
+
+  AppHelper.showModal(`
+    <h3>${petData.name}'s QR Code</h3>
+    <div class="qr-wrapper">${qrContainer.innerHTML}</div>
+    <p class="qr-instructions">Scan to view basic pet info</p>
+  `);
+}
 
 /* ==================== */
 /* 6. Charts Module */
@@ -909,6 +953,54 @@ const Charts = (function() {
     refresh,
     updateColors
   };
+})();
+
+/* ==================== */
+/* Report Generator     */
+/* ==================== */
+const ReportGenerator = (function() {
+  async function generatePDF(petData) {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    const margin = 15;
+    let yPos = margin;
+
+    // Add header
+    doc.setFontSize(22);
+    doc.text(`${petData.name}'s Monthly Report`, margin, yPos);
+    yPos += 15;
+
+    // Add pet info
+    doc.setFontSize(12);
+    doc.text(`Age: ${petData.age} | Weight: ${petData.weight}`, margin, yPos);
+    yPos += 10;
+    
+    // Add calendar
+    const calendar = await html2canvas(document.querySelector('#calendarContainer'));
+    doc.addImage(calendar, 'PNG', margin, yPos, 180, 80);
+    yPos += 90;
+
+    // Add charts
+    const charts = await html2canvas(document.querySelector('#exerciseCharts'));
+    doc.addImage(charts, 'PNG', margin, yPos, 180, 80);
+    yPos += 90;
+
+    // Add summary
+    doc.setFontSize(16);
+    doc.text('Monthly Summary:', margin, yPos);
+    yPos += 10;
+    doc.setFontSize(12);
+    doc.text(`- Exercise Days: ${petData.exerciseEntries.length}`, margin, yPos);
+    yPos += 7;
+    doc.text(`- Total Minutes: ${petData.exerciseEntries.reduce((acc, e) => acc + e.duration, 0)}`, margin, yPos);
+    yPos += 7;
+    doc.text(`- Calories Burned: ${petData.exerciseEntries.reduce((acc, e) => acc + e.calories, 0)}`, margin, yPos);
+
+    // Save PDF
+    doc.save(`${petData.name}_Report_${new Date().toISOString().slice(0,10)}.pdf`);
+  }
+
+  return { generatePDF };
 })();
 
 /* ==================== */
