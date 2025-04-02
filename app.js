@@ -1,15 +1,14 @@
-//----------------part 1-------------------//
+//---------------- COMPLETE app.js ----------------//
 "use strict";
 
 /* ==================== */
-/* 1  Core Functionality  */
+/* 1. Core Functionality */
 /* ==================== */
 let deferredPrompt;
 let installButtonAdded = false;
 
 window.addEventListener('beforeinstallprompt', (e) => {
   if (installButtonAdded) return;
-
   e.preventDefault();
   deferredPrompt = e;
 
@@ -20,9 +19,7 @@ window.addEventListener('beforeinstallprompt', (e) => {
   installBtn.style.display = 'block';
 
   const footer = document.querySelector('footer');
-  if (footer) {
-    footer.prepend(installBtn);
-  }
+  if (footer) footer.prepend(installBtn);
   installButtonAdded = true;
 });
 
@@ -35,59 +32,25 @@ function registerServiceWorker() {
 }
 
 /* ==================== */
-/* 2  Theme Management    */
+/* 2. Theme Management */
 /* ==================== */
 function toggleMode() {
   const body = document.body;
   body.classList.toggle('dark-mode');
-
-  // Persist state
-  const isDark = body.classList.contains('dark-mode');
-  localStorage.setItem('darkMode', isDark);
-
-  // Update button text - Ensure we target the button in the PetEntry dashboard
+  localStorage.setItem('darkMode', body.classList.contains('dark-mode'));
+  
   const toggleBtn = document.getElementById('toggleModeButton');
-  if (toggleBtn) {
-    toggleBtn.textContent = isDark ? 'Light Mode' : 'Dark Mode';
-  }
-
-  // Update charts - Assuming Charts is globally accessible
-  if (typeof Charts !== 'undefined') {
-    Charts.updateColors();
-  }
+  if (toggleBtn) toggleBtn.textContent = body.classList.contains('dark-mode') ? 'Light Mode' : 'Dark Mode';
+  
+  if (typeof Charts !== 'undefined') Charts.updateColors();
 }
 
 function applySavedTheme() {
-  const savedTheme = localStorage.getItem('darkMode');
-  if (savedTheme === 'true') {
-    document.body.classList.add('dark-mode');
-  }
+  if (localStorage.getItem('darkMode') === 'true') document.body.classList.add('dark-mode');
 }
 
 /* ==================== */
-/* 3  Initialization      */
-/* ==================== */
-document.addEventListener('DOMContentLoaded', () => {
-  applySavedTheme();
-  registerServiceWorker();
-
-  if (!sessionStorage.getItem('user')) {
-    Auth.showAuth(true);
-  } else {
-    const checkPetEntry = () => {
-      if (typeof PetEntry !== 'undefined' && PetEntry.showExerciseLog) {
-        PetEntry.showExerciseLog();
-      } else {
-        console.warn('PetEntry module not yet available. Retrying...');
-        setTimeout(checkPetEntry, 100); // Retry after a small delay
-      }
-    };
-    checkPetEntry();
-  }
-});
-
-/* ==================== */
-/* 4 Auth Module         */
+/* 3. Auth Module */
 /* ==================== */
 const Auth = (function() {
   let currentUser = null;
@@ -143,6 +106,7 @@ const Auth = (function() {
     try {
       form.querySelectorAll('.error-text').forEach(el => el.remove());
 
+      // Validation logic
       const email = form.email.value;
       const password = form.password.value;
       const errors = [];
@@ -150,15 +114,11 @@ const Auth = (function() {
       if (isSignUp) {
         const username = form.username?.value;
         const confirmPassword = form.confirmPassword?.value;
-
         if (!username) errors.push('Name is required');
         if (password !== confirmPassword) errors.push('Passwords must match');
       }
 
-      if (!/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(email)) {
-        errors.push('Invalid email format');
-      }
-
+      if (!/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(email)) errors.push('Invalid email format');
       if (password.length < 8) errors.push('Password must be at least 8 characters');
 
       if (errors.length > 0) {
@@ -180,26 +140,25 @@ const Auth = (function() {
         users.push({ email, username: form.username?.value, password: hashedPassword, salt });
         localStorage.setItem('users', JSON.stringify(users));
 
-        const successElement = document.createElement('p');
-        successElement.className = 'success-text';
-        successElement.textContent = 'Account created! Please sign in.';
-        form.appendChild(successElement);
-
-        setTimeout(() => showAuth(false), 1500);
+        AppHelper.showSuccess('Account created! Please sign in.');
+        showAuth(false);
         return;
       }
 
+      // Sign-in logic
       const users = JSON.parse(localStorage.getItem('users') || '[]');
       const user = users.find(u => u.email === email);
-
       if (!user) throw new Error('User not found');
       if (await hashPassword(password, user.salt) !== user.password) throw new Error('Invalid password');
 
-      currentUser = { email: user.email, username: user.username, lastLogin: new Date().toISOString() };
+      currentUser = { 
+        email: user.email, 
+        username: user.username, 
+        lastLogin: new Date().toISOString() 
+      };
       sessionStorage.setItem('user', JSON.stringify(currentUser));
-      // Call PetEntry.showExerciseLog with a small delay
-      setTimeout(PetEntry.showExerciseLog, 50);
-
+      PetEntry.initDashboard();
+      
     } catch (error) {
       const errorElement = document.createElement('p');
       errorElement.className = 'error-text';
@@ -214,15 +173,12 @@ const Auth = (function() {
 
   function showAuth(isSignUp = false) {
     const appContainer = document.getElementById('app');
-    appContainer.innerHTML = '';
-    appContainer.style.opacity = 0;
     appContainer.innerHTML = authTemplate(isSignUp);
-    setTimeout(() => appContainer.style.opacity = 1, 50);
-
+    
     const form = document.getElementById('authForm');
-    form.addEventListener('submit', (e) => handleAuthSubmit(e, isSignUp));
-
-    document.getElementById('switchAuth').addEventListener('click', (e) => {
+    form?.addEventListener('submit', (e) => handleAuthSubmit(e, isSignUp));
+    
+    document.getElementById('switchAuth')?.addEventListener('click', (e) => {
       e.preventDefault();
       showAuth(!isSignUp);
     });
@@ -234,20 +190,23 @@ const Auth = (function() {
       sessionStorage.removeItem('user');
       showAuth(false);
     },
-    toggleMode: toggleMode // Expose toggleMode to be accessible globally
+    toggleMode
   };
 })();
 
 /* ==================== */
-/* 5 App Helper          */
+/* 4. App Helper */
 /* ==================== */
 const AppHelper = {
   showPage: (content) => {
     const app = document.getElementById('app');
     app.style.opacity = 0;
-    app.innerHTML = content;
-    setTimeout(() => app.style.opacity = 1, 50);
+    setTimeout(() => {
+      app.innerHTML = content;
+      app.style.opacity = 1;
+    }, 50);
   },
+
   showModal: (content) => {
     const modal = document.createElement('div');
     modal.className = 'modal';
@@ -259,45 +218,43 @@ const AppHelper = {
     modal.querySelector('.close-modal').addEventListener('click', () => modal.remove());
     document.body.appendChild(modal);
   },
+
   showError: (message) => {
     const error = document.createElement('div');
     error.className = 'error-message';
     error.textContent = message;
     document.body.appendChild(error);
     setTimeout(() => error.remove(), 3000);
+  },
+
+  showSuccess: (message) => {
+    const success = document.createElement('div');
+    success.className = 'success-message';
+    success.textContent = message;
+    document.body.appendChild(success);
+    setTimeout(() => success.remove(), 3000);
   }
 };
-//-----------part 2------------//
+
 /* ==================== */
-/* PetEntry Module      */
+/* 5. PetEntry Module */
 /* ==================== */
 const PetEntry = (function() {
-  // SECTION 1: CONSTANTS AND CONFIGURATION
   const CONFIG = {
     MAX_PETS: 10,
     DEFAULT_IMAGE: 'default-pet.png',
     EMOJIS: ['😀', '😐', '😞', '😊', '😠'],
     EXERCISE_LEVELS: ['high', 'medium', 'low'],
     FAVORITE_EXERCISES: ['running', 'swimming', 'fetch', 'walking', 'playing'],
-    ACTIVITY_TYPES: [
-      'running_park',
-      'around_block',
-      'swimming',
-      'house_play',
-      'companion_play'
-    ],
+    ACTIVITY_TYPES: ['running_park', 'around_block', 'swimming', 'house_play', 'companion_play'],
     LOCATIONS: ['park', 'backyard', 'indoors', 'beach', 'trail']
   };
 
-  // SECTION 2: STATE MANAGEMENT
   let state = {
-    activePetIndex: sessionStorage.getItem('activePetIndex')
-      ? parseInt(sessionStorage.getItem('activePetIndex'))
-      : null,
+    activePetIndex: parseInt(sessionStorage.getItem('activePetIndex')) || null,
     darkMode: localStorage.getItem('darkMode') === 'true'
   };
 
-  // SECTION 3: TEMPLATES
   const templates = {
     dashboard: () => `
       <div class="dashboard ${state.darkMode ? 'dark-mode' : ''}">
@@ -311,36 +268,16 @@ const PetEntry = (function() {
           </div>
         </header>
 
-        <div class="dashboard-container">
-          <div class="section">
-            <h2>Pet Profile</h2>
-            <div id="petFormContainer"></div>
-          </div>
-
-          <div class="section">
-            <h2>Daily Mood Logs</h2>
-            <div id="moodLogs"></div>
-          </div>
-
-          <div class="section">
-            <h2>Exercise Calendar</h2>
-            <div id="calendarContainer"></div>
-          </div>
-
-          <div class="section">
-            <h2>Activity Charts</h2>
-            <div id="exerciseCharts"></div>
-          </div>
-
-          <div class="section">
-            <h2>Saved Profiles</h2>
-            <div id="savedProfiles"></div>
-          </div>
+        <div class="dashboard-grid">
+          <div class="grid-item form-section" id="petFormContainer"></div>
+          <div class="grid-item calendar-section" id="calendarContainer"></div>
+          <div class="grid-item mood-section" id="moodLogs"></div>
+          <div class="grid-item charts-section" id="exerciseCharts"></div>
+          <div class="grid-item profiles-section" id="savedProfiles"></div>
         </div>
 
-        <button id="saveAllButton" class="save-btn">Save All</button>
+        <button id="saveAllButton" class="save-btn">Save All & Update</button>
         <button id="logoutButton" class="logout-btn">Logout</button>
-
         <footer>
           <p>© ${new Date().getFullYear()} Pet Exercise Log. All rights reserved.</p>
         </footer>
@@ -353,8 +290,8 @@ const PetEntry = (function() {
           <label for="petName">Pet Name</label>
           <input type="text" id="petName" value="${pet.name || ''}" required>
         </div>
-
-        <div class="form-group">
+        <!-- Include all other form fields from original code -->
+                <div class="form-group">
           <label for="petImage">Pet Image</label>
           <div class="image-upload">
             <input type="file" id="petImage" accept="image/*">
@@ -477,7 +414,8 @@ const PetEntry = (function() {
       </form>`
   };
 
-  // SECTION 4: UTILITY FUNCTIONS
+  // ... [Include all other PetEntry components from previous implementation] ...
+   // SECTION 4: UTILITY FUNCTIONS
   const utils = {
     generateId: () => crypto.randomUUID() || Math.random().toString(36).substring(2, 15),
 
@@ -829,52 +767,24 @@ const PetEntry = (function() {
   }
 
   //* show exercise log*//
-  function showExerciseLog() {
+  function initDashboard() {
     AppHelper.showPage(templates.dashboard());
     render.petForm();
-    render.moodLogs();
+    render.moodGrid();
     render.calendar();
     initEventListeners();
-
-    const activePet = dataService.getActivePet();
-    if (activePet) {
-      Charts.refresh(activePet.exerciseEntries || []);
-    }
-
-    // Initialize charts when visible
-    const chartsSection = document.getElementById('exerciseCharts');
-    if (chartsSection) {
-      const observer = new IntersectionObserver((entries) => {
-        if (entries[0].isIntersecting) {
-          Charts.init('#exerciseCharts');
-          if (activePet) {
-            Charts.refresh(activePet.exerciseEntries || []);
-          }
-          observer.disconnect();
-        }
-      });
-      observer.observe(chartsSection);
-    }
+    Charts.init('#exerciseCharts');
   }
 
-  // SECTION 10: PUBLIC API
   return {
-    showExerciseLog: showExerciseLog,
-    updateDashboard: () => {
-      showExerciseLog();
-    },
-    init: () => {
-      if (!sessionStorage.getItem('user')) {
-        Auth.showAuth(true);
-      } else {
-        showExerciseLog();
-      }
-    }
+    initDashboard,
+    showExerciseLog: initDashboard,
+    updateDashboard: initDashboard
   };
 })();
 
 /* ==================== */
-/* Charts Module        */
+/* 6. Charts Module */
 /* ==================== */
 const Charts = (function() {
   let durationChart, caloriesChart, activityChart;
@@ -891,10 +801,11 @@ const Charts = (function() {
       </div>
       <div class="chart">
         <canvas id="caloriesChart"></canvas>
-      </div>
-    `;
+      </div>`;
   }
 
+  // ... [Include all Charts functionality from previous implementation] ...
+  
   function refresh(data) {
     if (!data.length) return;
     destroyCharts();
@@ -982,8 +893,23 @@ const Charts = (function() {
     if (caloriesChart) caloriesChart.update();
   }
 
-  return { init, refresh, updateColors };
+  return {
+    init,
+    refresh,
+    updateColors
+  };
 })();
 
-// Initialize the app
-PetEntry.init();
+/* ==================== */
+/* 7. Initialization */
+/* ==================== */
+document.addEventListener('DOMContentLoaded', () => {
+  applySavedTheme();
+  registerServiceWorker();
+
+  if (!sessionStorage.getItem('user')) {
+    Auth.showAuth(true);
+  } else {
+    PetEntry.initDashboard();
+  }
+});
