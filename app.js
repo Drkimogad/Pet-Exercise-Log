@@ -1,5 +1,54 @@
-//---------------- COMPLETE app.js ----------------//
 "use strict";
+
+/* ==================== */
+/* 0. Error Handling Setup */
+/* ==================== */
+const ErrorHandler = {
+  showFatalError: (message) => {
+    document.body.innerHTML = `
+      <div class="fatal-error">
+        <h2>😿 Critical Application Error</h2>
+        <p>${message}</p>
+        <button onclick="location.reload()">Reload App</button>
+        <button onclick="ErrorHandler.clearStorage()">Reset Data</button>
+      </div>
+    `;
+  },
+  
+  clearStorage: () => {
+    try {
+      localStorage.clear();
+      sessionStorage.clear();
+      location.reload();
+    } catch (error) {
+      this.showFatalError(`Storage clearance failed: ${error.message}`);
+    }
+  },
+
+  handle: (error, context = '') => {
+    console.error(`%c[ERROR] ${context}:`, 'color: red;', error);
+    if (!document.body.querySelector('.global-error')) {
+      const errorDiv = document.createElement('div');
+      errorDiv.className = 'global-error';
+      errorDiv.innerHTML = `
+        <div class="error-content">
+          <p>⚠️ ${context}: ${error.message}</p>
+          <button onclick="this.parentElement.remove()">Dismiss</button>
+        </div>
+      `;
+      document.body.appendChild(errorDiv);
+    }
+  }
+};
+
+// Global error listeners
+window.addEventListener('error', (event) => {
+  ErrorHandler.handle(event.error, 'Unhandled Error');
+});
+
+window.addEventListener('unhandledrejection', (event) => {
+  ErrorHandler.handle(event.reason, 'Unhandled Promise Rejection');
+});
 
 /* ==================== */
 /* 1. Core Functionality */
@@ -8,26 +57,37 @@ let deferredPrompt;
 let installButtonAdded = false;
 
 window.addEventListener('beforeinstallprompt', (e) => {
-  if (installButtonAdded) return;
-  e.preventDefault();
-  deferredPrompt = e;
+  try {
+    if (installButtonAdded) return;
+    e.preventDefault();
+    deferredPrompt = e;
 
-  const installBtn = document.createElement('button');
-  installBtn.id = 'installButton';
-  installBtn.textContent = 'Install App';
-  installBtn.className = 'install-btn';
-  installBtn.style.display = 'block';
+    const installBtn = document.createElement('button');
+    installBtn.id = 'installButton';
+    installBtn.textContent = 'Install App';
+    installBtn.className = 'install-btn';
+    installBtn.style.display = 'block';
 
-  const footer = document.querySelector('footer');
-  if (footer) footer.prepend(installBtn);
-  installButtonAdded = true;
+    const footer = document.querySelector('footer');
+    if (footer) footer.prepend(installBtn);
+    installButtonAdded = true;
+  } catch (error) {
+    ErrorHandler.handle(error, 'Install Prompt');
+  }
 });
 
 function registerServiceWorker() {
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/Pet-Exercise-Log/service-worker.js')
-      .then(reg => console.log('SW registered:', reg))
-      .catch(err => console.error('SW registration failed:', err));
+  try {
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/Pet-Exercise-Log/service-worker.js')
+        .then(reg => console.log('SW registered:', reg))
+        .catch(err => {
+          ErrorHandler.handle(err, 'Service Worker Registration');
+          AppHelper.showError('Offline capabilities disabled. Check internet connection.');
+        });
+    }
+  } catch (error) {
+    ErrorHandler.handle(error, 'Service Worker Setup');
   }
 }
 
@@ -35,18 +95,29 @@ function registerServiceWorker() {
 /* 2. Theme Management */
 /* ==================== */
 function toggleMode() {
-  const body = document.body;
-  body.classList.toggle('dark-mode');
-  localStorage.setItem('darkMode', body.classList.contains('dark-mode'));
-  
-  const toggleBtn = document.getElementById('toggleModeButton');
-  if (toggleBtn) toggleBtn.textContent = body.classList.contains('dark-mode') ? 'Light Mode' : 'Dark Mode';
-  
-  if (typeof Charts !== 'undefined') Charts.updateColors();
+  try {
+    const body = document.body;
+    body.classList.toggle('dark-mode');
+    localStorage.setItem('darkMode', body.classList.contains('dark-mode'));
+    
+    const toggleBtn = document.getElementById('toggleModeButton');
+    if (toggleBtn) toggleBtn.textContent = body.classList.contains('dark-mode') ? 'Light Mode' : 'Dark Mode';
+    
+    if (typeof Charts !== 'undefined') Charts.updateColors();
+  } catch (error) {
+    ErrorHandler.handle(error, 'Theme Toggle');
+  }
 }
 
 function applySavedTheme() {
-  if (localStorage.getItem('darkMode') === 'true') document.body.classList.add('dark-mode');
+  try {
+    if (localStorage.getItem('darkMode') === 'true') {
+      document.body.classList.add('dark-mode');
+    }
+  } catch (error) {
+    ErrorHandler.handle(error, 'Theme Initialization');
+    localStorage.removeItem('darkMode');
+  }
 }
 
 /* ==================== */
@@ -56,10 +127,15 @@ const Auth = (function() {
   let currentUser = null;
 
   async function hashPassword(pass, salt) {
-    const encoder = new TextEncoder();
-    const data = encoder.encode(salt ? pass + salt : pass);
-    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-    return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
+    try {
+      const encoder = new TextEncoder();
+      const data = encoder.encode(salt ? pass + salt : pass);
+      const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+      return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
+    } catch (error) {
+      ErrorHandler.handle(error, 'Password Hashing');
+      throw new Error('Password processing failed');
+    }
   }
 
   function authTemplate(isSignUp) {
@@ -100,10 +176,10 @@ const Auth = (function() {
     e.preventDefault();
     const form = e.target;
     const submitBtn = form.querySelector('button[type="submit"]');
-    submitBtn.disabled = true;
-    submitBtn.textContent = 'Processing...';
-
+    
     try {
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Processing...';
       form.querySelectorAll('.error-text').forEach(el => el.remove());
 
       // Validation logic
@@ -123,11 +199,7 @@ const Auth = (function() {
 
       if (errors.length > 0) {
         errors.forEach(error => {
-          const errorElement = document.createElement('p');
-          errorElement.className = 'error-text';
-          errorElement.textContent = error;
-          errorElement.style.color = 'var(--error)';
-          form.appendChild(errorElement);
+          AppHelper.showError(error);
         });
         return;
       }
@@ -137,6 +209,10 @@ const Auth = (function() {
         const hashedPassword = await hashPassword(password, salt);
 
         const users = JSON.parse(localStorage.getItem('users') || '[]');
+        if (users.some(u => u.email === email)) {
+          throw new Error('User already exists');
+        }
+        
         users.push({ email, username: form.username?.value, password: hashedPassword, salt });
         localStorage.setItem('users', JSON.stringify(users));
 
@@ -146,7 +222,7 @@ const Auth = (function() {
       }
 
       // Sign-in logic
-      const users = JSON.parse(localStorage.getItem('users') || '[]');
+      const users = JSON.parse(localStorage.getItem('users') || [];
       const user = users.find(u => u.email === email);
       if (!user) throw new Error('User not found');
       if (await hashPassword(password, user.salt) !== user.password) throw new Error('Invalid password');
@@ -157,14 +233,20 @@ const Auth = (function() {
         lastLogin: new Date().toISOString() 
       };
       sessionStorage.setItem('user', JSON.stringify(currentUser));
-      PetEntry.initDashboard();
+      
+      // Initialize dashboard with error handling
+      try {
+        PetEntry.initDashboard();
+      } catch (dashboardError) {
+        ErrorHandler.handle(dashboardError, 'Dashboard Initialization');
+        sessionStorage.removeItem('user');
+        showAuth(false);
+        AppHelper.showError('Failed to initialize dashboard. Please try again.');
+      }
       
     } catch (error) {
-      const errorElement = document.createElement('p');
-      errorElement.className = 'error-text';
-      errorElement.textContent = error.message || 'Authentication failed';
-      errorElement.style.color = 'var(--error)';
-      form.appendChild(errorElement);
+      AppHelper.showError(error.message || 'Authentication failed');
+      ErrorHandler.handle(error, isSignUp ? 'Signup' : 'Login');
     } finally {
       submitBtn.disabled = false;
       submitBtn.textContent = isSignUp ? 'Sign Up' : 'Sign In';
@@ -172,23 +254,33 @@ const Auth = (function() {
   }
 
   function showAuth(isSignUp = false) {
-    const appContainer = document.getElementById('app');
-    appContainer.innerHTML = authTemplate(isSignUp);
-    
-    const form = document.getElementById('authForm');
-    form?.addEventListener('submit', (e) => handleAuthSubmit(e, isSignUp));
-    
-    document.getElementById('switchAuth')?.addEventListener('click', (e) => {
-      e.preventDefault();
-      showAuth(!isSignUp);
-    });
+    try {
+      const appContainer = document.getElementById('app');
+      appContainer.innerHTML = authTemplate(isSignUp);
+      
+      const form = document.getElementById('authForm');
+      form?.addEventListener('submit', (e) => handleAuthSubmit(e, isSignUp));
+      
+      document.getElementById('switchAuth')?.addEventListener('click', (e) => {
+        e.preventDefault();
+        showAuth(!isSignUp);
+      });
+    } catch (error) {
+      ErrorHandler.handle(error, 'Auth UI Render');
+      ErrorHandler.showFatalError('Authentication system failed. Please reload.');
+    }
   }
 
   return {
     showAuth,
     logout: () => {
-      sessionStorage.removeItem('user');
-      showAuth(false);
+      try {
+        sessionStorage.removeItem('user');
+        showAuth(false);
+      } catch (error) {
+        ErrorHandler.handle(error, 'Logout');
+        location.reload();
+      }
     },
     toggleMode
   };
@@ -1036,12 +1128,22 @@ const ReportGenerator = (function() {
 /* 7. Initialization */
 /* ==================== */
 document.addEventListener('DOMContentLoaded', () => {
-  applySavedTheme();
-  registerServiceWorker();
+  try {
+    applySavedTheme();
+    registerServiceWorker();
 
-  if (!sessionStorage.getItem('user')) {
-    Auth.showAuth(true);
-  } else {
-    PetEntry.initDashboard();
+    if (!sessionStorage.getItem('user')) {
+      Auth.showAuth(true);
+    } else {
+      try {
+        PetEntry.initDashboard();
+      } catch (error) {
+        ErrorHandler.handle(error, 'Initial Dashboard Load');
+        sessionStorage.removeItem('user');
+        Auth.showAuth(true);
+      }
+    }
+  } catch (error) {
+    ErrorHandler.showFatalError(`Application bootstrap failed: ${error.message}`);
   }
 });
