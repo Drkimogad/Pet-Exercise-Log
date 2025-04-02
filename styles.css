@@ -190,6 +190,36 @@ h1, h2, h3, h4 {
   background: var(--input-bg);
 }
 
+/* QR Code Styles */
+.qr-wrapper {
+  display: flex;
+  justify-content: center;
+  margin: 1rem 0;
+  padding: 1rem;
+  background: white;
+  border-radius: 8px;
+}
+
+.qr-instructions {
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  margin-top: 1rem;
+}
+
+/* PDF Loading State */
+.pdf-loading {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--glass-bg);
+  padding: 1rem 2rem;
+  border-radius: var(--border-radius);
+  backdrop-filter: blur(10px);
+}
+
+
 /* ============================================================
     INTERACTIVE ELEMENTS
 ============================================================ */
