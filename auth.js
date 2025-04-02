@@ -70,12 +70,18 @@ document.addEventListener('DOMContentLoaded', () => {
   applySavedTheme();
   registerServiceWorker();
 
-  // Correct initialization sequence: Show signup form if not authenticated
   if (!sessionStorage.getItem('user')) {
-    Auth.showAuth(true); // Show signup form
+    Auth.showAuth(true);
   } else {
-    // Only load PetEntry if authenticated, with a small delay
-    setTimeout(PetEntry.showExerciseLog, 50);
+    const checkPetEntry = () => {
+      if (typeof PetEntry !== 'undefined' && PetEntry.showExerciseLog) {
+        PetEntry.showExerciseLog();
+      } else {
+        console.warn('PetEntry module not yet available. Retrying...');
+        setTimeout(checkPetEntry, 100); // Retry after a small delay
+      }
+    };
+    checkPetEntry();
   }
 });
 
