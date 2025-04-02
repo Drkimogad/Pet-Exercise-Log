@@ -70,16 +70,12 @@ document.addEventListener('DOMContentLoaded', () => {
   applySavedTheme();
   registerServiceWorker();
 
-  // Explicitly clear session storage for testing purposes
-  sessionStorage.clear();
-
   // Correct initialization sequence: Show signup form if not authenticated
   if (!sessionStorage.getItem('user')) {
     Auth.showAuth(true); // Show signup form
   } else {
-    // Only load PetEntry if authenticated
-    // We will handle the toggleMode event listener in app.js now
-    PetEntry.showExerciseLog();
+    // Only load PetEntry if authenticated, with a small delay
+    setTimeout(PetEntry.showExerciseLog, 50);
   }
 });
 
@@ -194,7 +190,8 @@ const Auth = (function() {
 
       currentUser = { email: user.email, username: user.username, lastLogin: new Date().toISOString() };
       sessionStorage.setItem('user', JSON.stringify(currentUser));
-      PetEntry.showExerciseLog();
+      // Call PetEntry.showExerciseLog with a small delay
+      setTimeout(PetEntry.showExerciseLog, 50);
 
     } catch (error) {
       const errorElement = document.createElement('p');
