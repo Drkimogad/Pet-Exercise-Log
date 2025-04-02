@@ -415,18 +415,6 @@ const initialPetStructure = () => ({
           <input type="number" id="petCalories"
                  value="${pet.calories || '150'}" min="0" required>
         </div>
-//* this should be added to exercise enteries*//
-{
-  exerciseEntries: [{
-    date: "YYYY-MM-DD",
-    duration: Number,
-    calories: Number
-  }],
-  moodLogs: [{
-    date: "YYYY-MM-DD",
-    mood: 0-4
-  }]
-}
         <div class="form-group mood-selector">
           <label>Today's Mood:</label>
           <div class="mood-options">
@@ -457,17 +445,21 @@ const initialPetStructure = () => ({
       }
     },
 
-    validatePet: (pet) => {
-      const errors = [];
-      if (!pet.name) errors.push('Pet name is required');
-      if (!pet.age || pet.age < 0) errors.push('Valid age is required');
-      if (!pet.weight || pet.weight < 0) errors.push('Valid weight is required');
-      if (!pet.exerciseLevel) errors.push('Exercise level is required');
-      if (!pet.date) errors.push('Date is required');
-      if (!pet.exerciseDuration || pet.exerciseDuration < 0) errors.push('Valid duration is required');
-      if (!pet.calories || pet.calories < 0) errors.push('Valid calories is required');
-      return errors.length ? errors : null;
-    },
+validatePet: (pet) => {
+  const errors = [];
+  if (!pet.name) errors.push('Pet name is required');
+  if (!pet.age || pet.age < 0) errors.push('Valid age is required');
+  if (!pet.weight || pet.weight < 0) errors.push('Valid weight is required');
+  
+  // Validate exercise entries
+  pet.exerciseEntries.forEach(entry => {
+    if (!entry.date) errors.push('Exercise entry missing date');
+    if (!entry.duration || entry.duration < 0) errors.push('Invalid duration in exercise entry');
+    if (!entry.calories || entry.calories < 0) errors.push('Invalid calories in exercise entry');
+  });
+
+  return errors.length ? errors : null;
+}
 
     handleError: (error, context = '') => {
       console.error(`Error in ${context}:`, error);
