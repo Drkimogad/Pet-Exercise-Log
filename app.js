@@ -209,33 +209,7 @@ petForm: (pet = {}) => `
       </div>
     </div>
   </form>`     
-//* functions initialization*//
-function initMoodLogs() {
-  const pets = dataService.getPets();
-  const activePet = dataService.getActivePet();
-  if (activePet) {
-    document.getElementById('moodLogs').innerHTML = `
-      <div class="mood-container">
-        ${activePet.moodLogs?.map(log => `
-          <div class="mood-entry">
-            <span>${new Date(log.date).toLocaleDateString()}</span>
-            <span class="mood-emoji">${CONFIG.EMOJIS[log.mood]}</span>
-          </div>
-        `).join('') || '<p>No mood entries yet</p>'}
-      </div>`;
-  }
-}
-
-function initCalendar() {
-  // Initialize your calendar component here
-  document.getElementById('calendarContainer').innerHTML = `
-    <div class="calendar">
-      <!-- Calendar implementation -->
-    </div>`;
-}
-
-
-   
+ 
   // SECTION 4: UTILITY FUNCTIONS
   const utils = {
     generateId: () => crypto.randomUUID() || Math.random().toString(36).substring(2, 15),
@@ -518,7 +492,33 @@ function initCalendar() {
     }
   }
 
-  // SECTION 9: INITIALIZATION
+  // SECTION 9: INITIALIZATION //
+
+//* functions initialization*//
+function initMoodLogs() {
+  const pets = dataService.getPets();
+  const activePet = dataService.getActivePet();
+  if (activePet) {
+    document.getElementById('moodLogs').innerHTML = `
+      <div class="mood-container">
+        ${activePet.moodLogs?.map(log => `
+          <div class="mood-entry">
+            <span>${new Date(log.date).toLocaleDateString()}</span>
+            <span class="mood-emoji">${CONFIG.EMOJIS[log.mood]}</span>
+          </div>
+        `).join('') || '<p>No mood entries yet</p>'}
+      </div>`;
+  }
+}
+
+function initCalendar() {
+  // Initialize your calendar component here
+  document.getElementById('calendarContainer').innerHTML = `
+    <div class="calendar">
+      <!-- Calendar implementation -->
+    </div>`;
+}
+  
   function initEventListeners() {
     // Form Events
     document.getElementById('petForm')?.addEventListener('submit', handlers.handleFormSubmit);
@@ -582,9 +582,17 @@ function initCalendar() {
       const activePet = dataService.getActivePet();
       if (activePet) {
         Charts.refresh(activePet.exerciseEntries || []);
-      }
-     
-/* ==================== */
+      } 
+  // SECTION 10: PUBLIC API
+  return {
+    showExerciseLog: showExerciseLog, // Reference the function defined above
+    updateDashboard: () => {
+      this.showExerciseLog();
+    }
+  };
+})();
+
+ /* ==================== */
 /* Charts Module        */
 /* ==================== */
 const Charts = (function() {
@@ -710,14 +718,4 @@ const Charts = (function() {
         observer.observe(chartsSection);
       }
     },
-    
-  // SECTION 10: PUBLIC API
-  return {
-    showExerciseLog: showExerciseLog, // Reference the function defined above
-    updateDashboard: () => {
-      this.showExerciseLog();
-    }
-  };
-})();
-
-      
+ })();
