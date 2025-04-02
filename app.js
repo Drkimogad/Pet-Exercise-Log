@@ -250,10 +250,26 @@ const PetEntry = (function() {
     LOCATIONS: ['park', 'backyard', 'indoors', 'beach', 'trail']
   };
 
-  let state = {
-    activePetIndex: parseInt(sessionStorage.getItem('activePetIndex')) || null,
-    darkMode: localStorage.getItem('darkMode') === 'true'
-  };
+// SECTION 2: STATE MANAGEMENT
+let state = {
+  activePetIndex: sessionStorage.getItem('activePetIndex') 
+    ? parseInt(sessionStorage.getItem('activePetIndex'))
+    : null,
+  darkMode: localStorage.getItem('darkMode') === 'true'
+};
+
+// Add this right after state initialization
+const initialPetStructure = () => ({
+  id: crypto.randomUUID(),
+  name: '',
+  age: 0,
+  weight: 0,
+  image: CONFIG.DEFAULT_IMAGE,
+  characteristics: '',
+  healthStatus: 'healthy',
+  exerciseEntries: [], // <-- Add this array
+  moodLogs: [] // <-- Add this array
+});
 
   const templates = {
     dashboard: () => `
@@ -425,7 +441,6 @@ const PetEntry = (function() {
       </form>`
   };
 
-  // ... [Include all other PetEntry components from previous implementation] ...
    // SECTION 4: UTILITY FUNCTIONS
   const utils = {
     generateId: () => crypto.randomUUID() || Math.random().toString(36).substring(2, 15),
@@ -461,39 +476,61 @@ const PetEntry = (function() {
   };
 
   // SECTION 5: DATA MANAGEMENT
-  const dataService = {
-    cache: null,
-    getPets: () => {
-      try {
-        if (!dataService.cache) {
-          dataService.cache = JSON.parse(localStorage.getItem('pets')) || [];
-        }
-        return [...dataService.cache];
-      } catch (e) {
-        utils.handleError(e, 'getPets');
-        return [];
+// SECTION 5: DATA MANAGEMENT
+const dataService = {
+  cache: null,
+  getPets: () => {
+    try {
+      if (!dataService.cache) {
+        dataService.cache = JSON.parse(localStorage.getItem('pets')) || [];
       }
-    },
-
-    savePets: (pets) => {
-      try {
-        if (pets.length > CONFIG.MAX_PETS) {
-          throw new Error(`Maximum of ${CONFIG.MAX_PETS} pets allowed`);
-        }
-        dataService.cache = pets;
-        localStorage.setItem('pets', JSON.stringify(pets));
-        console.log('Pets data saved');
-      } catch (e) {
-        utils.handleError(e, 'savePets');
-      }
-    },
-
-    getActivePet: () => {
-      const pets = dataService.getPets();
-      return state.activePetIndex !== null ? pets[state.activePetIndex] : null;
+      return [...dataService.cache];
+    } catch (e) {
+      utils.handleError(e, 'getPets');
+      return [];
     }
-  };
+  },
 
+  savePets: (pets) => {
+    try {
+      if (pets.length > CONFIG.MAX_PETS) {
+        throw new Error(`Maximum of ${CONFIG.MAX_PETS} pets allowed`);
+      }
+      dataService.cache = pets;
+      localStorage.setItem('pets', JSON.stringify(pets));
+      console.log('Pets data saved');
+    } catch (e) {
+      utils.handleError(e, 'savePets');
+    }
+  },
+
+  getActivePet: () => {
+    const pets = dataService.getPets();
+    const pet = state.activePetIndex !== null 
+      ? pets[state.activePetIndex]
+      : { 
+          id: utils.generateId(), 
+          exerciseEntries: [], 
+          moodLogs: [],
+          // Add other default fields
+          name: '',
+          age: 0,
+          weight: 0,
+          image: CONFIG.DEFAULT_IMAGE,
+          characteristics: '',
+          healthStatus: 'healthy',
+          exerciseLevel: 'medium',
+          favoriteExercise: 'walking',
+          lastActivity: 'around_block',
+          exerciseLocation: 'park'
+        };
+
+    // Ensure arrays exist
+    pet.exerciseEntries = pet.exerciseEntries || [];
+    pet.moodLogs = pet.moodLogs || [];
+    return pet;
+  }
+};
   // SECTION 6: RENDER FUNCTIONS
   const render = {
     petForm: (editIndex = null) => {
@@ -571,62 +608,62 @@ const PetEntry = (function() {
   };
 
   // SECTION 7: EVENT HANDLERS
-  const handlers = {
-    handleImageUpload: (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
+// SECTION 7: EVENT HANDLERS
+const handlers = {
+  handleFormSubmit: (e) => {
+    e.preventDefault();
+    try {
+      const pets = dataService.getPets();
+      let pet = state.activePetIndex !== null
+        ? pets[state.activePetIndex]
+        : dataService.getActivePet();
 
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        document.getElementById('petImagePreview').src = event.target.result;
+      // Create exercise entry
+      const exerciseEntry = {
+        date: document.getElementById('petDate').value,
+        duration: parseInt(document.getElementById('petExerciseDuration').value),
+        calories: parseInt(document.getElementById('petCalories').value)
       };
-      reader.onerror = (e) => utils.handleError(e, 'imageUpload');
-      reader.readAsDataURL(file);
-    },
 
-    handleFormSubmit: (e) => {
-      e.preventDefault();
-      try {
-        const pets = dataService.getPets();
-        let pet = state.activePetIndex !== null
-          ? pets[state.activePetIndex]
-          : { id: utils.generateId(), exerciseEntries: [], moodLogs: [] };
-
-        // Get form values
-        pet.name = document.getElementById('petName').value;
-        pet.age = parseInt(document.getElementById('petAge').value);
-        pet.weight = parseFloat(document.getElementById('petWeight').value);
-        pet.image = document.getElementById('petImagePreview').src;
-        pet.exerciseLevel = document.getElementById('petExerciseLevel').value;
-        pet.favoriteExercise = document.getElementById('petFavoriteExercise').value;
-        pet.lastActivity = document.getElementById('petLastActivity').value;
-        pet.exerciseLocation = document.getElementById('petExerciseLocation').value;
-        pet.date = document.getElementById('petDate').value;
-        pet.exerciseDuration = parseInt(document.getElementById('petExerciseDuration').value);
-        pet.calories = parseInt(document.getElementById('petCalories').value);
-
-        // Validate
-        const errors = utils.validatePet(pet);
-        if (errors) return AppHelper.showError(errors.join('\n'));
-
-        // Save
-        if (state.activePetIndex === null) {
-          pets.push(pet);
-          state.activePetIndex = pets.length - 1;
-        } else {
-          pets[state.activePetIndex] = pet;
-        }
-
-        dataService.savePets(pets);
-        sessionStorage.setItem('activePetIndex', state.activePetIndex);
-        render.savedProfiles();
-        render.moodLogs();
-        Charts.refresh(pets[state.activePetIndex].exerciseEntries || []);
-      } catch (e) {
-        utils.handleError(e, 'formSubmit');
+      // Update or add exercise entry
+      const existingIndex = pet.exerciseEntries.findIndex(e => e.date === exerciseEntry.date);
+      if (existingIndex > -1) {
+        pet.exerciseEntries[existingIndex] = exerciseEntry;
+      } else {
+        pet.exerciseEntries.push(exerciseEntry);
       }
-    },
 
+      // Update basic pet info
+      pet.name = document.getElementById('petName').value;
+      pet.age = parseInt(document.getElementById('petAge').value);
+      pet.weight = parseFloat(document.getElementById('petWeight').value);
+      pet.image = document.getElementById('petImagePreview').src;
+      pet.exerciseLevel = document.getElementById('petExerciseLevel').value;
+      pet.favoriteExercise = document.getElementById('petFavoriteExercise').value;
+      pet.lastActivity = document.getElementById('petLastActivity').value;
+      pet.exerciseLocation = document.getElementById('petExerciseLocation').value;
+
+      // Validate
+      const errors = utils.validatePet(pet);
+      if (errors) return AppHelper.showError(errors.join('\n'));
+
+      // Save
+      if (state.activePetIndex === null) {
+        pets.push(pet);
+        state.activePetIndex = pets.length - 1;
+      } else {
+        pets[state.activePetIndex] = pet;
+      }
+
+      dataService.savePets(pets);
+      sessionStorage.setItem('activePetIndex', state.activePetIndex);
+      render.savedProfiles();
+      render.moodLogs();
+      Charts.refresh(pet.exerciseEntries);
+    } catch (e) {
+      utils.handleError(e, 'formSubmit');
+    }
+  },
     handleMoodSelection: (e) => {
       if (e.target.classList.contains('emoji-btn')) {
         const mood = parseInt(e.target.dataset.mood);
