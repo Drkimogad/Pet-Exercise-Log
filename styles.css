@@ -63,6 +63,22 @@ button {
 }
 
 
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.mood-grid .grid-container {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.3rem;
+}
+
+.exercised { background: #2196f3 !important; }
+.skipped { background: #f44336 !important; }
+
 /* ============================================================
     AUTH CONTAINER & INSTALL BUTTON
 ============================================================ */
