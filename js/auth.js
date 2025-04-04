@@ -1,3 +1,4 @@
+import * as PetEntry from 'https://drkimogad.github.io/Pet-Exercise-Log/js/petEntry.js';
 import dataService from 'https://drkimogad.github.io/Pet-Exercise-Log/js/dataService.js';
 "use strict";
 
