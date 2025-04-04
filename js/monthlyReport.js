@@ -4,7 +4,7 @@ const CONFIG = {
   EMOJIS: ['😀', '😐', '😞', '😊', '😠'] // Ensure this is consistent with other modules
 };
 
-const ReportGenerator = (function() {
+const Report = (function() {
   const generatePDF = (pet) => {
     const reportWindow = window.open('', '_blank');
     reportWindow.document.write(`
