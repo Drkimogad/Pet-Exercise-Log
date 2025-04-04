@@ -1,4 +1,4 @@
-import dataService from '/Pet-Exercise-Log/js/dataService.js';
+import dataService from 'https://drkimogad.github.io/Pet-Exercise-Log/js/dataService.js';
 
 const ChartsSection = (function() {
   const renderCharts = () => {
