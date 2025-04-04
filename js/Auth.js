@@ -1,3 +1,4 @@
+import dataService from './dataService.js';
 "use strict";
 
 /* ==================== */
