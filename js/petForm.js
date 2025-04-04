@@ -1,3 +1,5 @@
+import dataService from './dataService.js';
+
 const PetFormSection = (function() {
   const CONFIG = {
     DEFAULT_IMAGE: 'default-pet.png',
