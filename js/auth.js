@@ -238,7 +238,7 @@ const Auth = (function() {
 
       // Initialize dashboard with error handling
       try {
-        initDashboard();
+        PetEntry.initDashboard(); // Call the imported function
       } catch (dashboardError) {
         ErrorHandler.handle(dashboardError, 'Dashboard Initialization');
         sessionStorage.removeItem('user');
@@ -339,7 +339,7 @@ registerServiceWorker();
 // Check if user is logged in
 if (sessionStorage.getItem('user')) {
   try {
-    initDashboard();
+    PetEntry.initDashboard(); // Call the imported function
   } catch (error) {
     ErrorHandler.handle(error, 'Dashboard Init on Load');
     Auth.showAuth(false);
