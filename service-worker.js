@@ -3,18 +3,14 @@ const urlsToCache = [
     '/Pet-Exercise-Log/',                // Main page URL
     '/Pet-Exercise-Log/index.html',      // Ensure main HTML page is cached
     '/Pet-Exercise-Log/styles.css',
-    '/Pet-Exercise-Log/auth.js',
-    '/Pet-Exercise-Log/petEntry.js',
-    '/Pet-Exercise-Log/calender.js',
-    '/Pet-Exercise-Log/moodLogs.js',
-    '/Pet-Exercise-Log/charts.js',
-    '/Pet-Exercise-Log/savedProfiles.js',
-    '/Pet-Exercise-Log/monthlyReport.js',
-    '/Pet-Exercise-Log/app.js',
-    '/Pet-Exercise-Log/app.js',
-    '/Pet-Exercise-Log/app.js',
-    '/Pet-Exercise-Log/app.js',
-
+    '/Pet-Exercise-Log/js/auth.js',
+    '/Pet-Exercise-Log/js/petEntry.js',
+    '/Pet-Exercise-Log/js/calender.js',
+    '/Pet-Exercise-Log/js/moodLogs.js',
+    '/Pet-Exercise-Log/js/charts.js',
+    '/Pet-Exercise-Log/js/savedProfiles.js',
+    '/Pet-Exercise-Log/js/monthlyReport.js',
+    '/Pet-Exercise-Log/js/dataService.js',
     '/Pet-Exercise-Log/manifest.json',
     '/Pet-Exercise-Log/icons/icon-192x192.png', // Updated path for icons
     '/Pet-Exercise-Log/favicon.ico',
