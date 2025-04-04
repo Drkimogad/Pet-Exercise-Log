@@ -1,3 +1,5 @@
+import dataService from './dataService.js';
+
 const MoodLogsSection = (function() {
   const CONFIG = {
     EMOJIS: ['😀', '😐', '😞', '😊', '😠']
