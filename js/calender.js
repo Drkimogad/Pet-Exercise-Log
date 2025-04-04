@@ -35,7 +35,6 @@ const CalendarSection = (function() {
         emptyCell.className = 'calendar-day empty';
         calendarGrid.appendChild(emptyCell);
       }
-      // Assuming 'dataService' and 'getActivePet' are available globally or passed as arguments
       const activePet = dataService.getActivePet();
       for (let day = 1; day <= daysInMonth; day++) {
         const dateStr = `${year}-${(month + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
