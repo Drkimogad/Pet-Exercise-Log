@@ -93,12 +93,15 @@ const PetFormSection = (function() {
             ${CONFIG.EMOJIS.map((emoji, index) => `<button type="button" class="emoji-btn ${pet.mood === index ? 'selected' : ''}" data-mood="${index}" data-date="${new Date().toISOString().split('T')[0]}">${emoji}</button>`).join('')}
           </div>
         </div>
+        <button type="submit" class="save-pet-btn">${pet.id ? 'Update Pet' : 'Add New Pet'}</button>
       </form>`
   };
 
   const renderPetForm = (pet = {}) => {
     document.getElementById('petFormContainer').innerHTML = templates.petForm(pet);
     attachImageUploadHandler();
+    attachFormSubmitHandler();
+    attachMoodSelectionListeners();
   };
 
   const handleImageUpload = (e) => {
@@ -114,6 +117,89 @@ const PetFormSection = (function() {
 
   const attachImageUploadHandler = () => {
     document.getElementById('petImage')?.addEventListener('change', handleImageUpload);
+  };
+
+  const attachFormSubmitHandler = () => {
+    const form = document.getElementById('petForm');
+    form?.addEventListener('submit', handlePetFormSubmit);
+  };
+
+  const handlePetFormSubmit = (e) => {
+    e.preventDefault();
+    const form = e.target;
+    const petId = form.petId.value;
+    const name = form.petName.value;
+    const image = document.getElementById('petImagePreview').src === CONFIG.DEFAULT_IMAGE ? null : document.getElementById('petImagePreview').src;
+    const characteristics = form.petCharacteristics.value;
+    const age = parseInt(form.petAge.value);
+    const weight = parseInt(form.petWeight.value);
+    const healthStatus = form.petHealthStatus.value;
+    const allergies = form.petAllergies.value;
+    const exerciseLevel = form.petExerciseLevel.value;
+    const favoriteExercise = form.petFavoriteExercise.value;
+    const lastActivity = form.petLastActivity.value;
+    const exerciseLocation = form.petExerciseLocation.value;
+    const date = form.petDate.value;
+    const exerciseDuration = parseInt(form.petExerciseDuration.value);
+    const calories = parseInt(form.petCalories.value);
+    const mood = form.querySelector('.mood-options button.selected')?.dataset.mood ? parseInt(form.querySelector('.mood-options button.selected').dataset.mood) : null;
+
+    const newPetData = {
+      id: petId,
+      name,
+      image,
+      characteristics,
+      age,
+      weight,
+      healthStatus,
+      allergies,
+      exerciseLevel,
+      favoriteExercise,
+      lastActivity,
+      exerciseLocation,
+      exerciseEntries: [{ date, duration: exerciseDuration, calories }],
+      moodLogs: mood !== null ? [{ date, mood }] : []
+    };
+
+    const pets = dataService.getPets();
+    const existingPetIndex = pets.findIndex(pet => pet.id === petId);
+
+    if (existingPetIndex !== -1) {
+      pets[existingPetIndex] = {
+        ...pets[existingPetIndex],
+        ...newPetData,
+        exerciseEntries: [
+          ...(pets[existingPetIndex].exerciseEntries || []).filter(entry => entry.date !== date),
+          { date, duration: exerciseDuration, calories }
+        ],
+        moodLogs: [
+          ...(pets[existingPetIndex].moodLogs || []).filter(log => log.date !== date),
+          ...(mood !== null ? [{ date, mood }] : [])
+        ]
+      };
+      dataService.savePets(pets);
+    } else {
+      dataService.addPet(newPetData);
+    }
+
+    SavedProfilesSection.renderSavedProfiles(); // Assuming this function exists and is imported
+    CalendarSection.renderCalendar(); // Assuming this function exists and is imported
+    MoodLogsSection.renderMoodLogs(); // Assuming this function exists and is imported
+    ChartsSection.renderCharts(dataService.getActivePet()?.exerciseEntries || []); // Assuming this function exists and is imported
+
+    // Optionally clear the form or provide feedback
+    form.reset();
+    document.getElementById('petImagePreview').src = CONFIG.DEFAULT_IMAGE;
+  };
+
+  const attachMoodSelectionListeners = () => {
+    const moodOptions = document.querySelector('.mood-options');
+    moodOptions?.addEventListener('click', (e) => {
+      if (e.target.classList.contains('emoji-btn')) {
+        document.querySelectorAll('.emoji-btn').forEach(btn => btn.classList.remove('selected'));
+        e.target.classList.add('selected');
+      }
+    });
   };
 
   return {
