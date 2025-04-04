@@ -1,6 +1,10 @@
 import dataService from 'https://drkimogad.github.io/Pet-Exercise-Log/js/dataService.js';
+import * as SavedProfilesSection from 'https://drkimogad.github.io/Pet-Exercise-Log/js/savedProfiles.js';
+import * as CalendarSection from 'https://drkimogad.github.io/Pet-Exercise-Log/js/calendar.js';
+import * as MoodLogsSection from 'https://drkimogad.github.io/Pet-Exercise-Log/js/moodLogs.js';
+import * as ChartsSection from 'https://drkimogad.github.io/Pet-Exercise-Log/js/charts.js';
 
-const PetFormSection = (function() {
+const PetEntry = (function() {
   const CONFIG = {
     DEFAULT_IMAGE: 'default-pet.png',
     EMOJIS: ['😀', '😐', '😞', '😊', '😠'],
@@ -182,10 +186,10 @@ const PetFormSection = (function() {
       dataService.addPet(newPetData);
     }
 
-    SavedProfilesSection.renderSavedProfiles(); // Assuming this function exists and is imported
-    CalendarSection.renderCalendar(); // Assuming this function exists and is imported
-    MoodLogsSection.renderMoodLogs(); // Assuming this function exists and is imported
-    ChartsSection.renderCharts(dataService.getActivePet()?.exerciseEntries || []); // Assuming this function exists and is imported
+    SavedProfilesSection.renderSavedProfiles();
+    CalendarSection.renderCalendar();
+    MoodLogsSection.renderMoodLogs();
+    ChartsSection.renderCharts(dataService.getActivePet()?.exerciseEntries || []);
 
     // Optionally clear the form or provide feedback
     form.reset();
@@ -202,7 +206,20 @@ const PetFormSection = (function() {
     });
   };
 
+  const initDashboard = () => {
+    console.log('Dashboard Initialized');
+    SavedProfilesSection.renderSavedProfiles();
+    renderPetForm(); // Render an empty form for adding a new pet
+    CalendarSection.renderCalendar();
+    MoodLogsSection.renderMoodLogs();
+    ChartsSection.renderCharts(dataService.getActivePet()?.exerciseEntries || []);
+    // Potentially load other dashboard sections here
+  };
+
   return {
-    renderPetForm: renderPetForm
+    renderPetForm: renderPetForm,
+    initDashboard: initDashboard
   };
 })();
+
+export { PetEntry };
