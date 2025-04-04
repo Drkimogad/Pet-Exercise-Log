@@ -238,7 +238,7 @@ const Auth = (function() {
 
       // Initialize dashboard with error handling
       try {
-        PetEntry.initDashboard();
+        initDashboard();
       } catch (dashboardError) {
         ErrorHandler.handle(dashboardError, 'Dashboard Initialization');
         sessionStorage.removeItem('user');
