@@ -1,6 +1,6 @@
 import dataService from 'https://drkimogad.github.io/Pet-Exercise-Log/js/dataService.js';
 
-const MoodLogsSection = (function() {
+const MoodLogs = (function() {
   const CONFIG = {
     EMOJIS: ['😀', '😐', '😞', '😊', '😠']
   };
