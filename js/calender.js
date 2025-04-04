@@ -1,3 +1,4 @@
+import dataService from './dataService.js';
 
 const CalendarSection = (function() {
   const renderCalendar = () => {
