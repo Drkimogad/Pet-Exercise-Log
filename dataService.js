@@ -1,6 +1,6 @@
 // /Pet-Exercise-Log/js/dataService.js
 const dataService = {
-  pets: JSON.parse(localStorage.getItem('pets')) || [],
+  pets: [],
 
   savePets: function() {
     localStorage.setItem('pets', JSON.stringify(this.pets));
