@@ -15,15 +15,17 @@ const dataService = {
     this.savePets();
   },
 
-  updatePet: function(index, updatedPet) {
-    if (index >= 0 && index < this.pets.length) {
+  updatePet: function(id, updatedPet) {
+    const index = this.pets.findIndex(pet => pet.id === id);
+    if (index !== -1) {
       this.pets[index] = updatedPet;
       this.savePets();
     }
   },
 
-  deletePet: function(index) {
-    if (index >= 0 && index < this.pets.length) {
+  deletePet: function(id) {
+    const index = this.pets.findIndex(pet => pet.id === id);
+    if (index !== -1) {
       this.pets.splice(index, 1);
       this.savePets();
     }
@@ -40,6 +42,17 @@ const dataService = {
   getActivePet: function() {
     const index = this.getActivePetIndex();
     return index !== null ? this.pets[index] : null;
+  },
+
+  // --- User Data ---
+  getUsers: function() {
+    return JSON.parse(localStorage.getItem('users')) || [];
+  },
+
+  saveUser: function(user) {
+    const users = this.getUsers();
+    users.push(user);
+    localStorage.setItem('users', JSON.stringify(users));
   }
 };
 
