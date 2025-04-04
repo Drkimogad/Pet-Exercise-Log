@@ -1,4 +1,4 @@
-import dataService from '/Pet-Exercise-Log/dataService.js';
+import dataService from '/Pet-Exercise-Log/js/dataService.js';
 "use strict";
 
 /* ==================== */
