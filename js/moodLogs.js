@@ -6,7 +6,6 @@ const MoodLogsSection = (function() {
   };
 
   const renderMoodLogs = () => {
-    // Assuming 'dataService' and 'getActivePet' are available globally or passed as arguments
     const activePet = dataService.getActivePet();
     if (activePet) {
       document.getElementById('moodLogs').innerHTML = `
@@ -36,16 +35,19 @@ const MoodLogsSection = (function() {
     if (e.target.classList.contains('emoji-btn')) {
       const mood = parseInt(e.target.dataset.mood);
       const date = e.target.dataset.date;
+      const activePetIndex = dataService.getActivePetIndex();
       const pets = dataService.getPets();
-      let pet = pets[state.activePetIndex] || {};
-      pet.moodLogs = pet.moodLogs || [];
-      pet.moodLogs = pet.moodLogs.filter(m => m.date !== date);
-      pet.moodLogs.push({ date, mood });
-      pets[state.activePetIndex] = pet;
-      dataService.savePets(pets);
-      document.querySelectorAll('.emoji-btn').forEach(btn => btn.classList.remove('selected'));
-      e.target.classList.add('selected');
-      renderMoodLogs();
+      if (activePetIndex !== null && pets[activePetIndex]) {
+        let pet = { ...pets[activePetIndex] }; // Create a copy
+        pet.moodLogs = pet.moodLogs || [];
+        pet.moodLogs = pet.moodLogs.filter(m => m.date !== date);
+        pet.moodLogs.push({ date, mood });
+        pets[activePetIndex] = pet;
+        dataService.savePets(pets);
+        document.querySelectorAll('.emoji-btn').forEach(btn => btn.classList.remove('selected'));
+        e.target.classList.add('selected');
+        renderMoodLogs();
+      }
     }
   };
 
