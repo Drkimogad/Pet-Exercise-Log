@@ -1,4 +1,4 @@
-import dataService from './dataService.js';
+import dataService from '/Pet-Exercise-Log/js/dataService.js';
 
 const CONFIG = {
   EMOJIS: ['😀', '😐', '😞', '😊', '😠'] // Ensure this is consistent with other modules
