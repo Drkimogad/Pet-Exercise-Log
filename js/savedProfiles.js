@@ -1,6 +1,6 @@
 import dataService from 'https://drkimogad.github.io/Pet-Exercise-Log/js/dataService.js';
-import * as PetFormSection from 'https://drkimogad.github.io/Pet-Exercise-Log/js/petEntry.js'; // Import PetFormSection
-import * as ReportGenerator from 'https://drkimogad.github.io/Pet-Exercise-Log/js/monthlyReport.js'; // Import ReportGenerator
+import * as PetEntry from 'https://drkimogad.github.io/Pet-Exercise-Log/js/petEntry.js'; // Import PetFormSection
+import * as Report from 'https://drkimogad.github.io/Pet-Exercise-Log/js/monthlyReport.js'; // Import ReportGenerator
 
 const SavedProfiles = (function() {
   const renderSavedProfiles = () => {
