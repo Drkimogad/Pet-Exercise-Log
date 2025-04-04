@@ -1,8 +1,8 @@
 import dataService from 'https://drkimogad.github.io/Pet-Exercise-Log/js/dataService.js';
-import * as SavedProfilesSection from 'https://drkimogad.github.io/Pet-Exercise-Log/js/savedProfiles.js';
-import * as CalendarSection from 'https://drkimogad.github.io/Pet-Exercise-Log/js/calendar.js';
-import * as MoodLogsSection from 'https://drkimogad.github.io/Pet-Exercise-Log/js/moodLogs.js';
-import * as ChartsSection from 'https://drkimogad.github.io/Pet-Exercise-Log/js/charts.js';
+import * as SavedProfiles from 'https://drkimogad.github.io/Pet-Exercise-Log/js/savedProfiles.js';
+import * as Calendar from 'https://drkimogad.github.io/Pet-Exercise-Log/js/calendar.js';
+import * as MoodLogs from 'https://drkimogad.github.io/Pet-Exercise-Log/js/moodLogs.js';
+import * as Charts from 'https://drkimogad.github.io/Pet-Exercise-Log/js/charts.js';
 
 const PetEntry = (function() {
   const CONFIG = {
