@@ -1,3 +1,5 @@
+import dataService from './dataService.js';
+
 const SavedProfilesSection = (function() {
   const renderSavedProfiles = () => {
     const pets = dataService.getPets();
