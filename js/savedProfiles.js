@@ -1,12 +1,15 @@
 import dataService from './dataService.js';
+import * as PetFormSection from './petEntry.js'; // Import PetFormSection
+import * as ReportGenerator from './monthlyReport.js'; // Import ReportGenerator
 
 const SavedProfilesSection = (function() {
   const renderSavedProfiles = () => {
     const pets = dataService.getPets();
+    const activePetIndex = dataService.getActivePetIndex();
     const html = `
       <div class="saved-profiles-list">
         ${pets.map((pet, index) => `
-          <div class="saved-profile ${state.activePetIndex === index ? 'active' : ''}">
+          <div class="saved-profile ${activePetIndex === index ? 'active' : ''}">
             <img src="${pet.image || 'default-pet.png'}" alt="${pet.name}">
             <h4>${pet.name}</h4>
             <div class="profile-actions">
@@ -26,8 +29,7 @@ const SavedProfilesSection = (function() {
   const handleProfileAction = (e) => {
     if (e.target.classList.contains('edit-btn')) {
       const index = parseInt(e.target.dataset.index);
-      state.activePetIndex = index;
-      sessionStorage.setItem('activePetIndex', index);
+      dataService.setActivePetIndex(index);
       PetFormSection.renderPetForm(dataService.getPets()[index]);
     } else if (e.target.classList.contains('delete-btn')) {
       const index = parseInt(e.target.dataset.index);
@@ -36,6 +38,11 @@ const SavedProfilesSection = (function() {
         pets.splice(index, 1);
         dataService.savePets(pets);
         renderSavedProfiles();
+        // Optionally clear active pet if the deleted one was active
+        if (dataService.getActivePetIndex() === index) {
+          dataService.setActivePetIndex(null);
+          PetFormSection.renderPetForm(); // Render an empty form
+        }
       }
     } else if (e.target.classList.contains('qr-btn')) {
       const index = parseInt(e.target.dataset.index);
@@ -67,7 +74,13 @@ const SavedProfilesSection = (function() {
     } else {
         alert('Sharing not supported on this device');
     }
-  }
+  };
+
+  // Placeholder for QR code generation function (implementation needed)
+  const generatePetQR = (pet) => {
+    alert(`QR code functionality for ${pet.name} will be implemented here.`);
+    // You would typically use a library like qrcode.js to generate and display the QR code
+  };
 
   return {
     renderSavedProfiles: renderSavedProfiles
