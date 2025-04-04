@@ -15,7 +15,7 @@ const ErrorHandler = {
       </div>
     `;
   },
-  
+
   clearStorage: () => {
     try {
       localStorage.clear();
@@ -100,10 +100,10 @@ function toggleMode() {
     const body = document.body;
     body.classList.toggle('dark-mode');
     localStorage.setItem('darkMode', body.classList.contains('dark-mode'));
-    
+
     const toggleBtn = document.getElementById('toggleModeButton');
     if (toggleBtn) toggleBtn.textContent = body.classList.contains('dark-mode') ? 'Light Mode' : 'Dark Mode';
-    
+
     if (typeof Charts !== 'undefined') Charts.updateColors();
   } catch (error) {
     ErrorHandler.handle(error, 'Theme Toggle');
@@ -177,7 +177,7 @@ const Auth = (function() {
     e.preventDefault();
     const form = e.target;
     const submitBtn = form.querySelector('button[type="submit"]');
-    
+
     try {
       submitBtn.disabled = true;
       submitBtn.textContent = 'Processing...';
@@ -209,13 +209,13 @@ const Auth = (function() {
         const salt = crypto.getRandomValues(new Uint8Array(16)).join('');
         const hashedPassword = await hashPassword(password, salt);
 
-        const users = JSON.parse(localStorage.getItem('users') || '[]');
+        const users = dataService.getUsers() || []; // Use dataService
         if (users.some(u => u.email === email)) {
           throw new Error('User already exists');
         }
-        
-        users.push({ email, username: form.username?.value, password: hashedPassword, salt });
-        localStorage.setItem('users', JSON.stringify(users));
+
+        const newUser = { email, username: form.username?.value, password: hashedPassword, salt };
+        dataService.saveUser(newUser); // Use dataService
 
         AppHelper.showSuccess('Account created! Please sign in.');
         showAuth(false);
@@ -223,18 +223,18 @@ const Auth = (function() {
       }
 
       // Sign-in logic
-      const users = JSON.parse(localStorage.getItem('users') || [];
+      const users = dataService.getUsers() || []; // Use dataService
       const user = users.find(u => u.email === email);
       if (!user) throw new Error('User not found');
       if (await hashPassword(password, user.salt) !== user.password) throw new Error('Invalid password');
 
-      currentUser = { 
-        email: user.email, 
-        username: user.username, 
-        lastLogin: new Date().toISOString() 
+      currentUser = {
+        email: user.email,
+        username: user.username,
+        lastLogin: new Date().toISOString()
       };
       sessionStorage.setItem('user', JSON.stringify(currentUser));
-      
+
       // Initialize dashboard with error handling
       try {
         PetEntry.initDashboard();
@@ -244,7 +244,7 @@ const Auth = (function() {
         showAuth(false);
         AppHelper.showError('Failed to initialize dashboard. Please try again.');
       }
-      
+
     } catch (error) {
       AppHelper.showError(error.message || 'Authentication failed');
       ErrorHandler.handle(error, isSignUp ? 'Signup' : 'Login');
@@ -258,10 +258,10 @@ const Auth = (function() {
     try {
       const appContainer = document.getElementById('app');
       appContainer.innerHTML = authTemplate(isSignUp);
-      
+
       const form = document.getElementById('authForm');
       form?.addEventListener('submit', (e) => handleAuthSubmit(e, isSignUp));
-      
+
       document.getElementById('switchAuth')?.addEventListener('click', (e) => {
         e.preventDefault();
         showAuth(!isSignUp);
@@ -272,17 +272,19 @@ const Auth = (function() {
     }
   }
 
+  function logout() {
+    try {
+      sessionStorage.removeItem('user');
+      showAuth(false);
+    } catch (error) {
+      ErrorHandler.handle(error, 'Logout');
+      location.reload();
+    }
+  }
+
   return {
     showAuth,
-    logout: () => {
-      try {
-        sessionStorage.removeItem('user');
-        showAuth(false);
-      } catch (error) {
-        ErrorHandler.handle(error, 'Logout');
-        location.reload();
-      }
-    },
+    logout,
     toggleMode
   };
 })();
@@ -328,21 +330,20 @@ const AppHelper = {
     setTimeout(() => success.remove(), 3000);
   }
 };
-// Initialization//
-// In petEntry.js (at the end)
-import * as calendarModule from './calendar.js';
-import * as moodLogsModule from './moodLogs.js';
-import * as chartsModule from './charts.js';
-import * as savedProfilesModule from './savedProfiles.js';
 
-function initApp() {
-  calendarModule.renderCalendar();
-  moodLogsModule.renderMoodLogs();
-  chartsModule.renderCharts(dataService.getActivePet()?.exerciseEntries || []);
-  savedProfilesModule.renderSavedProfiles();
-  // Initialise pet form rendering as well if needed
-  // PetFormSection.renderPetForm(); // Assuming PetFormSection is still defined
+// Initialization
+applySavedTheme();
+registerServiceWorker();
+
+// Check if user is logged in
+if (sessionStorage.getItem('user')) {
+  try {
+    PetEntry.initDashboard();
+  } catch (error) {
+    ErrorHandler.handle(error, 'Dashboard Init on Load');
+    Auth.showAuth(false);
+    AppHelper.showError('Failed to load dashboard.');
+  }
+} else {
+  Auth.showAuth(false);
 }
-
-// Call the initialisation function when the module loads
-document.addEventListener('DOMContentLoaded', initApp);
