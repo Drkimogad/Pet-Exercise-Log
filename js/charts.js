@@ -1,7 +1,9 @@
 import dataService from './dataService.js';
 
 const ChartsSection = (function() {
-  const renderCharts = (exerciseEntries) => {
+  const renderCharts = () => {
+    const activePet = dataService.getActivePet();
+    const exerciseEntries = activePet?.exerciseEntries || [];
     document.getElementById('exerciseCharts').innerHTML = `<canvas id="exerciseChart"></canvas>`;
     initCharts(exerciseEntries);
   };
