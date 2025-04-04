@@ -1,5 +1,9 @@
 import dataService from './dataService.js';
 
+const CONFIG = {
+  EMOJIS: ['😀', '😐', '😞', '😊', '😠'] // Ensure this is consistent with other modules
+};
+
 const ReportGenerator = (function() {
   const generatePDF = (pet) => {
     const reportWindow = window.open('', '_blank');
