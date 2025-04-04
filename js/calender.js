@@ -1,6 +1,6 @@
 import dataService from 'https://drkimogad.github.io/Pet-Exercise-Log/js/dataService.js';
 
-const CalendarSection = (function() {
+const Calendar = (function() {
   const renderCalendar = () => {
     document.getElementById('calendarContainer').innerHTML = `
       <div class="calendar">
