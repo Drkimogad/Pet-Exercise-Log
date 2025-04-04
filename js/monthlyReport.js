@@ -1,3 +1,5 @@
+import dataService from './dataService.js';
+
 const ReportGenerator = (function() {
   const generatePDF = (pet) => {
     const reportWindow = window.open('', '_blank');
