@@ -339,7 +339,7 @@ registerServiceWorker();
 // Check if user is logged in
 if (sessionStorage.getItem('user')) {
   try {
-    PetEntry.initDashboard();
+    initDashboard();
   } catch (error) {
     ErrorHandler.handle(error, 'Dashboard Init on Load');
     Auth.showAuth(false);
