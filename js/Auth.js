@@ -328,3 +328,21 @@ const AppHelper = {
     setTimeout(() => success.remove(), 3000);
   }
 };
+// Initialization//
+// In petEntry.js (at the end)
+import * as calendarModule from './calendar.js';
+import * as moodLogsModule from './moodLogs.js';
+import * as chartsModule from './charts.js';
+import * as savedProfilesModule from './savedProfiles.js';
+
+function initApp() {
+  calendarModule.renderCalendar();
+  moodLogsModule.renderMoodLogs();
+  chartsModule.renderCharts(dataService.getActivePet()?.exerciseEntries || []);
+  savedProfilesModule.renderSavedProfiles();
+  // Initialise pet form rendering as well if needed
+  // PetFormSection.renderPetForm(); // Assuming PetFormSection is still defined
+}
+
+// Call the initialisation function when the module loads
+document.addEventListener('DOMContentLoaded', initApp);
