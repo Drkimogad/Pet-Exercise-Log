@@ -1,3 +1,5 @@
+import dataService from './dataService.js';
+
 const ChartsSection = (function() {
   const renderCharts = (exerciseEntries) => {
     document.getElementById('exerciseCharts').innerHTML = `<canvas id="exerciseChart"></canvas>`;
