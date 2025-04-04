@@ -1,6 +1,6 @@
 import dataService from 'https://drkimogad.github.io/Pet-Exercise-Log/js/dataService.js';
 
-const ChartsSection = (function() {
+const Charts = (function() {
   const renderCharts = () => {
     const activePet = dataService.getActivePet();
     const exerciseEntries = activePet?.exerciseEntries || [];
