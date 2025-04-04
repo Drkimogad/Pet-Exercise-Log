@@ -2,7 +2,7 @@ import dataService from 'https://drkimogad.github.io/Pet-Exercise-Log/js/dataSer
 import * as PetFormSection from 'https://drkimogad.github.io/Pet-Exercise-Log/js/petEntry.js'; // Import PetFormSection
 import * as ReportGenerator from 'https://drkimogad.github.io/Pet-Exercise-Log/js/monthlyReport.js'; // Import ReportGenerator
 
-const SavedProfilesSection = (function() {
+const SavedProfiles = (function() {
   const renderSavedProfiles = () => {
     const pets = dataService.getPets();
     const activePetIndex = dataService.getActivePetIndex();
