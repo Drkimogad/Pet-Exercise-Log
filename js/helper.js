@@ -172,7 +172,6 @@ export function saveProfiles(profileData) {
 /* ==================== */
 export {
   getPetData,
-  savePetData,
   toggleMode,
   applySavedTheme,
   registerServiceWorker
