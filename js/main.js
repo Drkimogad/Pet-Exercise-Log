@@ -1,9 +1,5 @@
-// main.js
-// Importing helper functions from other modules
-import { signIn, signOut, getCurrentUser } from './auth.js';  // auth handling
-import { getPetData, savePetData } from './dataService.js';  // data handling
-import { updateCharts } from './charts.js';  // chart updates
-import { saveProfile } from './savedProfiles.js';  // saving profiles
+import { signIn, signOut, getCurrentUser } from './js/auth.js';  // auth handling
+import { getPetData, savePetData, updateCharts, saveProfile } from './js/helper.js';  // 
 
 // setting up main logic //
 
