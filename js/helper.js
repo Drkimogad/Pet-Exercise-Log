@@ -1,3 +1,5 @@
+import { SavedProfiles } from 'https://drkimogad.github.io/Pet-Exercise-Log/js/savedProfiles.js';
+
 "use strict";
 
 /* ==================== */
@@ -171,7 +173,6 @@ export {
   getPetData,
   savePetData,
   updateCharts,
-  saveProfiles,
   toggleMode,
   applySavedTheme,
   registerServiceWorker
