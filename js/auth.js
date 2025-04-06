@@ -114,7 +114,11 @@ const Auth = (function() {
         username: user.username,
         lastLogin: new Date().toISOString()
       };
-      sessionStorage.setItem('user', JSON.stringify(currentUser));
+      localStorage.setItem("currentUser", JSON.stringify({
+      isLoggedIn: true,
+      name: "Pet Lover"
+      }));
+
 
       // Initialize dashboard with error handling
       try {
