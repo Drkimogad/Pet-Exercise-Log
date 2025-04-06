@@ -167,13 +167,17 @@ const Auth = (function() {
   }
 
 // Handling getting the current user
- export function getCurrentUser() {
+export function getCurrentUser() {
   console.log("Fetching current user");
-  // Your getCurrentUser logic here
-  return {
-    showAuth,
-    logout
+
+  const user = JSON.parse(localStorage.getItem("currentUser"));
+  
+  if (user && user.isLoggedIn) {
+    return user;
+  } else {
+    return null;
   }
+}
 
 /* ==================== */
 /* 4. Exporting the Module */
