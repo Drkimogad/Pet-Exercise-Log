@@ -1,5 +1,13 @@
 import { signIn, signOut, getCurrentUser } from './js/auth.js';  // auth handling
-import { getPetData, savePetData, updateCharts, saveProfile } from './js/helper.js';  // 
+import { 
+  getPetData,
+  savePetData,
+  updateCharts,
+  saveProfile,
+  toggleMode,
+  applySavedTheme,
+  registerServiceWorker
+} from './js/helper.js';  // 
 
 // setting up main logic //
 
