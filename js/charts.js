@@ -1,5 +1,4 @@
-import dataService from 'https://drkimogad.github.io/Pet-Exercise-Log/js/dataService.js';
-
+//* Charts *//
 const Charts = (function() {
   const renderCharts = () => {
     const activePet = dataService.getActivePet();
@@ -68,3 +67,5 @@ const Charts = (function() {
     updateChartColors: updateChartColors
   };
 })();
+export { Charts };
+
