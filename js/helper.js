@@ -151,8 +151,8 @@ import { renderCharts } from 'https://drkimogad.github.io/Pet-Exercise-Log/js/ch
   renderCharts(data);        // Update chart with latest data
   }
 
-//saveProfile(profileData)
-export function saveProfile(profileData) {
+// Function to save user profile
+export function saveProfiles(profileData) {
   console.log("Saving user profile:", profileData);
   try {
     localStorage.setItem("userProfile", JSON.stringify(profileData));
@@ -160,12 +160,13 @@ export function saveProfile(profileData) {
     ErrorHandler.handle(error, 'Save Profile');
   }
 }
+
 //* exportation*//
 export {
   getPetData,
   savePetData,
   updateCharts,
-  saveProfile,
+  saveProfiles, // Corrected export name
   toggleMode,
   applySavedTheme,
   registerServiceWorker
