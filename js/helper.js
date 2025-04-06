@@ -1,12 +1,6 @@
 // helper.js
 // Function to get pet data
-export function getPetData() {
-  console.log("Fetching pet data...");
-  return { name: "Rex", breed: "Labrador" };  // Sample data, replace with actual implementation
-}
-
-
-    export function getPetData() {
+  export function getPetData() {
   console.log("Fetching pet data...");
   try {
     const data = JSON.parse(localStorage.getItem("petData"));
@@ -16,8 +10,9 @@ export function getPetData() {
     return [];
   }
 }
+
 // Function to save pet data
-export function savePetData(data) {
+ export function savePetData(data) {
   console.log("Saving pet data:", data);
   try {
     localStorage.setItem("petData", JSON.stringify(data));
@@ -26,21 +21,13 @@ export function savePetData(data) {
   }
 }
 
-
 // Function to update charts
   // You’ll replace this later with actual chart update logic
-  import { renderCharts } from './charts.js';
+import { renderCharts } from './charts.js';
  export function updateCharts() {
   const data = getPetData(); // Get current data
   renderCharts(data);        // Update chart with latest data
   }
-}
-
-
-// Function to save user profile
-export function saveProfile(profileData) {
-  console.log("Saving user profile:", profileData);
-  // Logic to save profile data
 }
 
 //saveProfile(profileData)
@@ -52,8 +39,6 @@ export function saveProfile(profileData) {
     ErrorHandler.handle(error, 'Save Profile');
   }
 }
-
-
 
 "use strict";
 
