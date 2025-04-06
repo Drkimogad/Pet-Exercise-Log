@@ -1,5 +1,4 @@
-import dataService from 'https://drkimogad.github.io/Pet-Exercise-Log/js/dataService.js';
-
+//* MOODLOGS*//
 const MoodLogs = (function() {
   const CONFIG = {
     EMOJIS: ['😀', '😐', '😞', '😊', '😠']
