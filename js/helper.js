@@ -150,7 +150,6 @@ import { renderCharts } from './charts.js';
   const data = getPetData(); // Get current data
   renderCharts(data);        // Update chart with latest data
   }
-}
 
 //saveProfile(profileData)
 export function saveProfiles(profileData) {
