@@ -1,4 +1,4 @@
-import { auth } from './js/auth.js';  // auth handling
+import { signIn, signOut, getCurrentUser } from './js/auth.js'; // Correct import for named exports
 import { 
   getPetData,
   savePetData,
