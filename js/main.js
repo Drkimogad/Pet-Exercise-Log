@@ -3,7 +3,6 @@ import {
   getPetData,
   savePetData,
   updateCharts,
-  saveProfile,
   toggleMode,
   applySavedTheme,
   registerServiceWorker
