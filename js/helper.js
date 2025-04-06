@@ -171,7 +171,6 @@ export function saveProfiles(profileData) {
 /*  Exports for Use in Other Modules */
 /* ==================== */
 export {
-  getPetData,
   toggleMode,
   applySavedTheme,
   registerServiceWorker
