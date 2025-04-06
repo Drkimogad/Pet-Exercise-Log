@@ -260,16 +260,16 @@ const Auth = (function() {
       const appContainer = document.getElementById('app');
       appContainer.innerHTML = authTemplate(isSignUp);
 
-      const form = document.getElementById('authForm');
-      form?.addEventListener('submit', (e) => handleAuthSubmit(e, isSignUp));
-
-      document.getElementById('switchAuth')?.addEventListener('click', (e) => {
+      const switchAuth = document.getElementById('switchAuth');
+      switchAuth?.addEventListener('click', (e) => {
         e.preventDefault();
         showAuth(!isSignUp);
       });
+
+      const authForm = document.getElementById('authForm');
+      authForm?.addEventListener('submit', (e) => handleAuthSubmit(e, isSignUp));
     } catch (error) {
-      ErrorHandler.handle(error, 'Auth UI Render');
-      ErrorHandler.showFatalError('Authentication system failed. Please reload.');
+      ErrorHandler.handle(error, 'Show Authentication');
     }
   }
 
@@ -279,72 +279,16 @@ const Auth = (function() {
       showAuth(false);
     } catch (error) {
       ErrorHandler.handle(error, 'Logout');
-      location.reload();
     }
   }
 
   return {
     showAuth,
-    logout,
-    toggleMode
+    logout
   };
 })();
 
 /* ==================== */
-/* 4. App Helper */
+/* 4. Exporting the Module */
 /* ==================== */
-const AppHelper = {
-  showPage: (content) => {
-    const app = document.getElementById('app');
-    app.style.opacity = 0;
-    setTimeout(() => {
-      app.innerHTML = content;
-      app.style.opacity = 1;
-    }, 50);
-  },
-
-  showModal: (content) => {
-    const modal = document.createElement('div');
-    modal.className = 'modal';
-    modal.innerHTML = `
-      <div class="modal-content">
-        ${content}
-        <button class="close-modal">Close</button>
-      </div>`;
-    modal.querySelector('.close-modal').addEventListener('click', () => modal.remove());
-    document.body.appendChild(modal);
-  },
-
-  showError: (message) => {
-    const error = document.createElement('div');
-    error.className = 'error-message';
-    error.textContent = message;
-    document.body.appendChild(error);
-    setTimeout(() => error.remove(), 3000);
-  },
-
-  showSuccess: (message) => {
-    const success = document.createElement('div');
-    success.className = 'success-message';
-    success.textContent = message;
-    document.body.appendChild(success);
-    setTimeout(() => success.remove(), 3000);
-  }
-};
-
-// Initialization
-applySavedTheme();
-registerServiceWorker();
-
-// Check if user is logged in
-if (sessionStorage.getItem('user')) {
-  try {
-    PetEntry.initDashboard(); // Call the imported function
-  } catch (error) {
-    ErrorHandler.handle(error, 'Dashboard Init on Load');
-    Auth.showAuth(false);
-    AppHelper.showError('Failed to load dashboard.');
-  }
-} else {
-  Auth.showAuth(false);
-}
+export { Auth, toggleMode, applySavedTheme, registerServiceWorker };
