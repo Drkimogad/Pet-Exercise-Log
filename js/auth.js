@@ -1,3 +1,29 @@
+// auth.js
+
+// Function to sign the user in
+export function signIn() {
+  console.log("User signed in");
+  // Your signIn logic here
+}
+
+// Function to sign out
+export function signOut() {
+  console.log("User signed out");
+  // Your signOut logic here
+}
+
+// Handling getting the current user
+export function getCurrentUser() {
+  console.log("Fetching current user");
+  // Your getCurrentUser logic here
+  return { name: "John Doe" }; // Replace with actual user data
+}
+
+
+
+
+
+
 import * as PetEntry from 'https://drkimogad.github.io/Pet-Exercise-Log/js/petEntry.js';
 import dataService from 'https://drkimogad.github.io/Pet-Exercise-Log/js/dataService.js';
 "use strict";
