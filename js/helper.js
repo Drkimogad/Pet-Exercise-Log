@@ -152,7 +152,7 @@ import { renderCharts } from 'https://drkimogad.github.io/Pet-Exercise-Log/js/ch
   }
 
 //saveProfile(profileData)
-export function saveProfiles(profileData) {
+export function saveProfile(profileData) {
   console.log("Saving user profile:", profileData);
   try {
     localStorage.setItem("userProfile", JSON.stringify(profileData));
@@ -165,7 +165,7 @@ export {
   getPetData,
   savePetData,
   updateCharts,
-  saveProfiles,
+  saveProfile,
   toggleMode,
   applySavedTheme,
   registerServiceWorker
