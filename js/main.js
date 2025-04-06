@@ -1,4 +1,4 @@
-import { signIn, signOut, getCurrentUser } from 'https://drkimogad.github.io/Pet-Exercise-Log/js/auth.js'; // Correct import for named exports
+import { Auth } from 'https://drkimogad.github.io/Pet-Exercise-Log/js/auth.js'; // Correct import for named exports
 import { 
   getPetData,
   savePetData,
