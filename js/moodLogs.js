@@ -58,3 +58,4 @@ const MoodLogs = (function() {
     renderMoodLogs: renderMoodLogs
   };
 })();
+export { MoodLogs };
