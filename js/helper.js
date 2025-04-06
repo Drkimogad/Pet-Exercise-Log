@@ -5,23 +5,55 @@ export function getPetData() {
   return { name: "Rex", breed: "Labrador" };  // Sample data, replace with actual implementation
 }
 
+
+    export function getPetData() {
+  console.log("Fetching pet data...");
+  try {
+    const data = JSON.parse(localStorage.getItem("petData"));
+    return data || []; // Return an empty array if nothing is found
+  } catch (error) {
+    ErrorHandler.handle(error, 'Get Pet Data');
+    return [];
+  }
+}
 // Function to save pet data
 export function savePetData(data) {
   console.log("Saving pet data:", data);
-  // Your save data logic here
+  try {
+    localStorage.setItem("petData", JSON.stringify(data));
+  } catch (error) {
+    ErrorHandler.handle(error, 'Save Pet Data');
+  }
 }
 
+
 // Function to update charts
-export function updateCharts() {
-  console.log("Updating charts...");
-  // Logic for updating the charts
+  // You’ll replace this later with actual chart update logic
+  import { renderCharts } from './charts.js';
+ export function updateCharts() {
+  const data = getPetData(); // Get current data
+  renderCharts(data);        // Update chart with latest data
+  }
 }
+
 
 // Function to save user profile
 export function saveProfile(profileData) {
   console.log("Saving user profile:", profileData);
   // Logic to save profile data
 }
+
+//saveProfile(profileData)
+export function saveProfile(profileData) {
+  console.log("Saving user profile:", profileData);
+  try {
+    localStorage.setItem("userProfile", JSON.stringify(profileData));
+  } catch (error) {
+    ErrorHandler.handle(error, 'Save Profile');
+  }
+}
+
+
 
 "use strict";
 
@@ -144,3 +176,5 @@ function applySavedTheme() {
     localStorage.removeItem('darkMode');
   }
 }
+export { toggleMode, applySavedTheme, registerServiceWorker };
+
