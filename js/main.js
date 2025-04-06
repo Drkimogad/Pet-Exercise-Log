@@ -2,7 +2,6 @@ import { Auth } from 'https://drkimogad.github.io/Pet-Exercise-Log/js/auth.js'; 
 import { 
   getPetData,
   savePetData,
-  updateCharts,
   toggleMode,
   applySavedTheme,
   registerServiceWorker
