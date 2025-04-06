@@ -1,5 +1,5 @@
 import { SavedProfiles } from 'https://drkimogad.github.io/Pet-Exercise-Log/js/savedProfiles.js';
-import { charts } from 'https://drkimogad.github.io/Pet-Exercise-Log/js/charts.js';
+import { updatecharts } from 'https://drkimogad.github.io/Pet-Exercise-Log/js/charts.js';
 
 "use strict";
 
