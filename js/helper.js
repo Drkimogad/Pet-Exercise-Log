@@ -79,7 +79,7 @@ window.addEventListener('beforeinstallprompt', (e) => {
 function registerServiceWorker() {
   try {
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/Pet-Exercise-Log/service-worker.js')
+      navigator.serviceWorker.register('https://drkimogad.github.io/Pet-Exercise-Log/service-worker.js')
         .then(reg => console.log('SW registered:', reg))
         .catch(err => {
           ErrorHandler.handle(err, 'Service Worker Registration');
@@ -145,7 +145,7 @@ function applySavedTheme() {
 
 // Function to update charts
   // You’ll replace this later with actual chart update logic
-import { renderCharts } from './charts.js';
+import { renderCharts } from 'https://drkimogad.github.io/Pet-Exercise-Log/js/charts.js';
  export function updateCharts() {
   const data = getPetData(); // Get current data
   renderCharts(data);        // Update chart with latest data
