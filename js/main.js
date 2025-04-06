@@ -1,4 +1,4 @@
-import { auth } from './auth.js';  // auth handling
+import { auth } from './js/auth.js';  // auth handling
 import { 
   getPetData,
   savePetData,
@@ -7,11 +7,11 @@ import {
   toggleMode,
   applySavedTheme,
   registerServiceWorker
-} from './helper.js';  // helper functions
+} from './js/helper.js';  // helper functions
 
 import { Calendar } from './js/calendar.js';  // Import Calendar from calendar.js
 import { Report } from './js/monthlyReport.js';  // Import Report from monthlyReport.js
-import { renderMoodLogs } from './js/moodLogs.js';  // Import MoodLogs from moodLogs.js
+import { MoodLogs } from './js/moodLogs.js';  // Import MoodLogs from moodLogs.js
 
 
 // setting up main logic //
