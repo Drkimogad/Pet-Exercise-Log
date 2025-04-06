@@ -11,7 +11,7 @@ import {
 
 import { Calendar } from './js/calendar.js';  // Import Calendar from calendar.js
 import { Report } from './js/monthlyReport.js';  // Import Report from monthlyReport.js
-import { MoodLogs } from './js/moodLogs.js';  // Import MoodLogs from moodLogs.js
+import { renderMoodLogs } from './js/moodLogs.js';  // Import MoodLogs from moodLogs.js
 
 
 // setting up main logic //
