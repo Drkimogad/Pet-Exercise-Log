@@ -1,4 +1,4 @@
-import { signIn, signOut, getCurrentUser } from './auth.js';  // auth handling
+import { auth } from './auth.js';  // auth handling
 import { 
   getPetData,
   savePetData,
