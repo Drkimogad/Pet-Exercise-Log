@@ -1,45 +1,3 @@
-// helper.js
-// Function to get pet data
-  export function getPetData() {
-  console.log("Fetching pet data...");
-  try {
-    const data = JSON.parse(localStorage.getItem("petData"));
-    return data || []; // Return an empty array if nothing is found
-  } catch (error) {
-    ErrorHandler.handle(error, 'Get Pet Data');
-    return [];
-  }
-}
-
-// Function to save pet data
- export function savePetData(data) {
-  console.log("Saving pet data:", data);
-  try {
-    localStorage.setItem("petData", JSON.stringify(data));
-  } catch (error) {
-    ErrorHandler.handle(error, 'Save Pet Data');
-  }
-}
-
-// Function to update charts
-  // You’ll replace this later with actual chart update logic
-import { renderCharts } from './charts.js';
- export function updateCharts() {
-  const data = getPetData(); // Get current data
-  renderCharts(data);        // Update chart with latest data
-  }
-}
-
-//saveProfile(profileData)
-export function saveProfiles(profileData) {
-  console.log("Saving user profile:", profileData);
-  try {
-    localStorage.setItem("userProfile", JSON.stringify(profileData));
-  } catch (error) {
-    ErrorHandler.handle(error, 'Save Profile');
-  }
-}
-
 "use strict";
 
 /* ==================== */
@@ -162,6 +120,48 @@ function applySavedTheme() {
   }
 }
 
+//* helper functions*//
+// Function to get pet data
+  export function getPetData() {
+  console.log("Fetching pet data...");
+  try {
+    const data = JSON.parse(localStorage.getItem("petData"));
+    return data || []; // Return an empty array if nothing is found
+  } catch (error) {
+    ErrorHandler.handle(error, 'Get Pet Data');
+    return [];
+  }
+}
+
+// Function to save pet data
+ export function savePetData(data) {
+  console.log("Saving pet data:", data);
+  try {
+    localStorage.setItem("petData", JSON.stringify(data));
+  } catch (error) {
+    ErrorHandler.handle(error, 'Save Pet Data');
+  }
+}
+
+// Function to update charts
+  // You’ll replace this later with actual chart update logic
+import { renderCharts } from './charts.js';
+ export function updateCharts() {
+  const data = getPetData(); // Get current data
+  renderCharts(data);        // Update chart with latest data
+  }
+}
+
+//saveProfile(profileData)
+export function saveProfiles(profileData) {
+  console.log("Saving user profile:", profileData);
+  try {
+    localStorage.setItem("userProfile", JSON.stringify(profileData));
+  } catch (error) {
+    ErrorHandler.handle(error, 'Save Profile');
+  }
+}
+//* exportation*//
 export {
   getPetData,
   savePetData,
