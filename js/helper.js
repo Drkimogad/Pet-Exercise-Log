@@ -31,7 +31,7 @@ import { renderCharts } from './charts.js';
 }
 
 //saveProfile(profileData)
-export function saveProfile(profileData) {
+export function saveProfiles(profileData) {
   console.log("Saving user profile:", profileData);
   try {
     localStorage.setItem("userProfile", JSON.stringify(profileData));
@@ -166,7 +166,7 @@ export {
   getPetData,
   savePetData,
   updateCharts,
-  saveProfile,
+  saveProfiles,
   toggleMode,
   applySavedTheme,
   registerServiceWorker
