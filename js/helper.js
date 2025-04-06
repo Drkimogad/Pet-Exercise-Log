@@ -1,5 +1,5 @@
 import { SavedProfiles } from 'https://drkimogad.github.io/Pet-Exercise-Log/js/savedProfiles.js';
-import { updatecharts } from 'https://drkimogad.github.io/Pet-Exercise-Log/js/charts.js';
+import { charts } from 'https://drkimogad.github.io/Pet-Exercise-Log/js/charts.js';
 
 "use strict";
 
@@ -171,6 +171,7 @@ export function saveProfiles(profileData) {
 /*  Exports for Use in Other Modules */
 /* ==================== */
 export {
+  Charts,
   getPetData,
   savePetData,
   toggleMode,
