@@ -1,24 +1,3 @@
-// auth.js
-
-// Function to sign the user in
-export function signIn() {
-  console.log("User signed in");
-  // Your signIn logic here
-}
-
-// Function to sign out
-export function signOut() {
-  console.log("User signed out");
-  // Your signOut logic here
-}
-
-// Handling getting the current user
-export function getCurrentUser() {
-  console.log("Fetching current user");
-  // Your getCurrentUser logic here
-  return { name: "John Doe" }; // Replace with actual user data
-}
-
 /* ==================== */
 /*  Auth Module */
 /* ==================== */
@@ -120,6 +99,10 @@ const Auth = (function() {
         return;
       }
 
+
+      // Function to sign the user in
+      export function signIn() {
+      console.log("User signed in");
       // Sign-in logic
       const users = dataService.getUsers() || []; // Use dataService
       const user = users.find(u => u.email === email);
@@ -170,6 +153,10 @@ const Auth = (function() {
     }
   }
 
+  // Function to sign out
+ export function signOut() {
+  console.log("User signed out");
+  // Your signOut logic here
   function logout() {
     try {
       sessionStorage.removeItem('user');
@@ -179,13 +166,16 @@ const Auth = (function() {
     }
   }
 
+// Handling getting the current user
+ export function getCurrentUser() {
+  console.log("Fetching current user");
+  // Your getCurrentUser logic here
   return {
     showAuth,
     logout
-  };
-})();
+  }
 
 /* ==================== */
 /* 4. Exporting the Module */
 /* ==================== */
-export { Auth, toggleMode, applySavedTheme, registerServiceWorker };
+export { Auth };
