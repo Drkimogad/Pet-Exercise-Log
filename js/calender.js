@@ -57,3 +57,5 @@ const Calendar = (function() {
     renderCalendar: renderCalendar
   };
 })();
+
+export { Calendar };
