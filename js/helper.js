@@ -176,5 +176,14 @@ function applySavedTheme() {
     localStorage.removeItem('darkMode');
   }
 }
-export { toggleMode, applySavedTheme, registerServiceWorker };
+
+export {
+  getPetData,
+  savePetData,
+  updateCharts,
+  saveProfile,
+  toggleMode,
+  applySavedTheme,
+  registerServiceWorker
+};
 
