@@ -1,5 +1,3 @@
-import { SavedProfiles } from 'https://drkimogad.github.io/Pet-Exercise-Log/js/savedProfiles.js';
-import { Charts } from 'https://drkimogad.github.io/Pet-Exercise-Log/js/charts.js';
 
 "use strict";
 
@@ -151,13 +149,14 @@ export function savePetData(data) {
 
 // Function to update charts
 // You’ll replace this later with actual chart update logic
-import { renderCharts } from 'https://drkimogad.github.io/Pet-Exercise-Log/js/charts.js';
+import { Charts } from 'https://drkimogad.github.io/Pet-Exercise-Log/js/charts.js';
 export function updateCharts() {
   const data = getPetData(); // Get current data
   renderCharts(data);        // Update chart with latest data
 }
 
 // Function to save user profile
+import { SavedProfiles } from 'https://drkimogad.github.io/Pet-Exercise-Log/js/savedProfiles.js';
 export function saveProfiles(profileData) {
   console.log("Saving user profile:", profileData);
   try {
@@ -170,8 +169,4 @@ export function saveProfiles(profileData) {
 /* ==================== */
 /*  Exports for Use in Other Modules */
 /* ==================== */
-export {
-  toggleMode,
-  applySavedTheme,
-  registerServiceWorker
-};
+export { toggleMode, applySavedTheme, registerServiceWorker };
