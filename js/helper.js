@@ -120,9 +120,12 @@ function applySavedTheme() {
   }
 }
 
-//* helper functions*//
+/* ==================== */
+/*  Helper Functions for Pet Data and Profiles */
+/* ==================== */
+
 // Function to get pet data
-  export function getPetData() {
+export function getPetData() {
   console.log("Fetching pet data...");
   try {
     const data = JSON.parse(localStorage.getItem("petData"));
@@ -134,7 +137,7 @@ function applySavedTheme() {
 }
 
 // Function to save pet data
- export function savePetData(data) {
+export function savePetData(data) {
   console.log("Saving pet data:", data);
   try {
     localStorage.setItem("petData", JSON.stringify(data));
@@ -144,12 +147,12 @@ function applySavedTheme() {
 }
 
 // Function to update charts
-  // You’ll replace this later with actual chart update logic
+// You’ll replace this later with actual chart update logic
 import { renderCharts } from 'https://drkimogad.github.io/Pet-Exercise-Log/js/charts.js';
- export function updateCharts() {
+export function updateCharts() {
   const data = getPetData(); // Get current data
   renderCharts(data);        // Update chart with latest data
-  }
+}
 
 // Function to save user profile
 export function saveProfiles(profileData) {
@@ -161,14 +164,15 @@ export function saveProfiles(profileData) {
   }
 }
 
-//* exportation*//
+/* ==================== */
+/*  Exports for Use in Other Modules */
+/* ==================== */
 export {
   getPetData,
   savePetData,
   updateCharts,
-  saveProfiles, // Corrected export name
+  saveProfiles,
   toggleMode,
   applySavedTheme,
   registerServiceWorker
 };
-
