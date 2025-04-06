@@ -12,12 +12,8 @@ import {
 import { Calendar } from 'https://drkimogad.github.io/Pet-Exercise-Log/js/calendar.js';  // Import Calendar from calendar.js
 import { Report } from 'https://drkimogad.github.io/Pet-Exercise-Log/js/monthlyReport.js';  // Import Report from monthlyReport.js
 import { MoodLogs } from 'https://drkimogad.github.io/Pet-Exercise-Log/js/moodLogs.js';  // Import MoodLogs from moodLogs.js
-import { SavedProfiles } from 'https://drkimogad.github.io/Pet-Exercise-Log/js/savedProfiles.js';
-
-
 
 // setting up main logic //
-
 // Function to sign the user in
 function handleSignIn() {
   signIn();  // Calls signIn function from auth.js
