@@ -99,36 +99,37 @@ const Auth = (function() {
         return;
       }
 
-
       // Function to sign the user in
-      export function signIn() {
-      console.log("User signed in");
-      // Sign-in logic
-      const users = dataService.getUsers() || []; // Use dataService
-      const user = users.find(u => u.email === email);
-      if (!user) throw new Error('User not found');
-      if (await hashPassword(password, user.salt) !== user.password) throw new Error('Invalid password');
+      async function signIn() {
+        console.log("User signed in");
+        // Sign-in logic
+        const users = dataService.getUsers() || []; // Use dataService
+        const user = users.find(u => u.email === email);
+        if (!user) throw new Error('User not found');
+        if (await hashPassword(password, user.salt) !== user.password) throw new Error('Invalid password');
 
-      currentUser = {
-        email: user.email,
-        username: user.username,
-        lastLogin: new Date().toISOString()
-      };
-      localStorage.setItem("currentUser", JSON.stringify({
-      isLoggedIn: true,
-      name: "Pet Lover"
-      }));
+        currentUser = {
+          email: user.email,
+          username: user.username,
+          lastLogin: new Date().toISOString()
+        };
+        localStorage.setItem("currentUser", JSON.stringify({
+          isLoggedIn: true,
+          name: "Pet Lover"
+        }));
 
-
-      // Initialize dashboard with error handling
-      try {
-        PetEntry.initDashboard(); // Call the imported function
-      } catch (dashboardError) {
-        ErrorHandler.handle(dashboardError, 'Dashboard Initialization');
-        sessionStorage.removeItem('user');
-        showAuth(false);
-        AppHelper.showError('Failed to initialize dashboard. Please try again.');
+        // Initialize dashboard with error handling
+        try {
+          PetEntry.initDashboard(); // Call the imported function
+        } catch (dashboardError) {
+          ErrorHandler.handle(dashboardError, 'Dashboard Initialization');
+          sessionStorage.removeItem('user');
+          showAuth(false);
+          AppHelper.showError('Failed to initialize dashboard. Please try again.');
+        }
       }
+
+      signIn();
 
     } catch (error) {
       AppHelper.showError(error.message || 'Authentication failed');
@@ -158,32 +159,40 @@ const Auth = (function() {
   }
 
   // Function to sign out
- export function signOut() {
-  console.log("User signed out");
-  // Your signOut logic here
-  function logout() {
-    try {
-      sessionStorage.removeItem('user');
-      showAuth(false);
-    } catch (error) {
-      ErrorHandler.handle(error, 'Logout');
+  function signOut() {
+    console.log("User signed out");
+    // Your signOut logic here
+    function logout() {
+      try {
+        sessionStorage.removeItem('user');
+        showAuth(false);
+      } catch (error) {
+        ErrorHandler.handle(error, 'Logout');
+      }
+    }
+
+  }
+
+  // Handling getting the current user
+  function getCurrentUser() {
+    console.log("Fetching current user");
+
+    const user = JSON.parse(localStorage.getItem("currentUser"));
+
+    if (user && user.isLoggedIn) {
+      return user;
+    } else {
+      return null;
     }
   }
 
-// Handling getting the current user
-export function getCurrentUser() {
-  console.log("Fetching current user");
+  /* ==================== */
+  /* 4. Exporting the Module */
+  /* ==================== */
+  return { signIn, signOut, getCurrentUser };
 
-  const user = JSON.parse(localStorage.getItem("currentUser"));
-  
-  if (user && user.isLoggedIn) {
-    return user;
-  } else {
-    return null;
-  }
-}
+})();
 
 /* ==================== */
-/* 4. Exporting the Module */
-/* ==================== */
-export { signIn, signOut, getCurrentUser };
+/* Export the Auth Module */
+export { Auth };
