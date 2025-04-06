@@ -1,7 +1,7 @@
 import { Auth } from 'https://drkimogad.github.io/Pet-Exercise-Log/js/auth.js'; // Correct import for named exports
 import { 
-  getPETData,
-  savePETData,
+  getPetData,
+  savePetData,
   updateCharts,
   saveProfiles,
   toggleMode,
