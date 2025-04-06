@@ -67,5 +67,5 @@ const Charts = (function() {
     updateChartColors: updateChartColors
   };
 })();
-export { Charts };
+export { updateCharts };
 
