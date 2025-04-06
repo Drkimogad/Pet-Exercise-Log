@@ -4,50 +4,34 @@
 const Auth = (function() {
   let currentUser = null;
 
-  async function hashPassword(pass, salt) {
-    try {
-      const encoder = new TextEncoder();
-      const data = encoder.encode(salt ? pass + salt : pass);
-      const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-      return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
-    } catch (error) {
-      ErrorHandler.handle(error, 'Password Hashing');
-      throw new Error('Password processing failed');
-    }
-  }
+  // Move signIn function to the outer scope
+  async function signIn(email, password) {
+    console.log("User signed in");
+    // Sign-in logic
+    const users = dataService.getUsers() || []; // Use dataService
+    const user = users.find(u => u.email === email);
+    if (!user) throw new Error('User not found');
+    if (await hashPassword(password, user.salt) !== user.password) throw new Error('Invalid password');
 
-  function authTemplate(isSignUp) {
-    return `
-      <div class="auth-container">
-        <div class="auth-card">
-          <h2>${isSignUp ? 'Create Account' : 'Sign In'}</h2>
-          <form id="authForm" class="auth-form">
-            ${isSignUp ? `
-              <div class="form-group">
-                <label for="username">Name</label>
-                <input type="text" id="username" name="username" required>
-              </div>` : ''}
-            <div class="form-group">
-              <label for="email">Email</label>
-              <input type="email" id="email" name="email" required>
-            </div>
-            <div class="form-group">
-              <label for="password">Password</label>
-              <input type="password" id="password" name="password" required minlength="8">
-            </div>
-            ${isSignUp ? `
-              <div class="form-group">
-                <label for="confirmPassword">Confirm Password</label>
-                <input type="password" id="confirmPassword" name="confirmPassword" required>
-              </div>` : ''}
-            <button type="submit" class="auth-btn">${isSignUp ? 'Sign Up' : 'Sign In'}</button>
-          </form>
-          <div class="auth-switch">
-            ${isSignUp ? 'Have an account?' : 'New user?'}
-            <a href="#" id="switchAuth">${isSignUp ? 'Sign In' : 'Sign Up'}</a>
-          </div>
-        </div>
-      </div>`;
+    currentUser = {
+      email: user.email,
+      username: user.username,
+      lastLogin: new Date().toISOString()
+    };
+    localStorage.setItem("currentUser", JSON.stringify({
+      isLoggedIn: true,
+      name: "Pet Lover"
+    }));
+
+    // Initialize dashboard with error handling
+    try {
+      PetEntry.initDashboard(); // Call the imported function
+    } catch (dashboardError) {
+      ErrorHandler.handle(dashboardError, 'Dashboard Initialization');
+      sessionStorage.removeItem('user');
+      showAuth(false);
+      AppHelper.showError('Failed to initialize dashboard. Please try again.');
+    }
   }
 
   async function handleAuthSubmit(e, isSignUp) {
@@ -99,37 +83,8 @@ const Auth = (function() {
         return;
       }
 
-      // Function to sign the user in
-      async function signIn() {
-        console.log("User signed in");
-        // Sign-in logic
-        const users = dataService.getUsers() || []; // Use dataService
-        const user = users.find(u => u.email === email);
-        if (!user) throw new Error('User not found');
-        if (await hashPassword(password, user.salt) !== user.password) throw new Error('Invalid password');
-
-        currentUser = {
-          email: user.email,
-          username: user.username,
-          lastLogin: new Date().toISOString()
-        };
-        localStorage.setItem("currentUser", JSON.stringify({
-          isLoggedIn: true,
-          name: "Pet Lover"
-        }));
-
-        // Initialize dashboard with error handling
-        try {
-          PetEntry.initDashboard(); // Call the imported function
-        } catch (dashboardError) {
-          ErrorHandler.handle(dashboardError, 'Dashboard Initialization');
-          sessionStorage.removeItem('user');
-          showAuth(false);
-          AppHelper.showError('Failed to initialize dashboard. Please try again.');
-        }
-      }
-
-      signIn();
+      // Call the signIn function
+      await signIn(email, password);
 
     } catch (error) {
       AppHelper.showError(error.message || 'Authentication failed');
