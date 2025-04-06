@@ -1,4 +1,4 @@
-import { signIn, signOut, getCurrentUser } from 'https://drkimogad.github.io/Pet-Exercise-Log//js/auth.js'; // Correct import for named exports
+import { signIn, signOut, getCurrentUser } from 'https://drkimogad.github.io/Pet-Exercise-Log/js/auth.js'; // Correct import for named exports
 import { 
   getPetData,
   savePetData,
@@ -7,7 +7,7 @@ import {
   toggleMode,
   applySavedTheme,
   registerServiceWorker
-} from './js/helper.js';  // helper functions
+} from 'https://drkimogad.github.io/Pet-Exercise-Log/js/helper.js';  // helper functions
 
 import { Calendar } from 'https://drkimogad.github.io/Pet-Exercise-Log//js/calendar.js';  // Import Calendar from calendar.js
 import { Report } from 'https://drkimogad.github.io/Pet-Exercise-Log//js/monthlyReport.js';  // Import Report from monthlyReport.js
