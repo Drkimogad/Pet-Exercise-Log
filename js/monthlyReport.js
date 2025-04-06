@@ -1,5 +1,3 @@
-import dataService from 'https://drkimogad.github.io/Pet-Exercise-Log/js/dataService.js';
-
 const CONFIG = {
   EMOJIS: ['😀', '😐', '😞', '😊', '😠'] // Ensure this is consistent with other modules
 };
@@ -118,3 +116,4 @@ const Report = (function() {
     generatePDF: generatePDF
   };
 })();
+export { Report };
