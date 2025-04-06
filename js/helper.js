@@ -173,7 +173,6 @@ export function saveProfiles(profileData) {
 export {
   getPetData,
   savePetData,
-  updateCharts,
   toggleMode,
   applySavedTheme,
   registerServiceWorker
