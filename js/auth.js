@@ -186,4 +186,4 @@ export function getCurrentUser() {
 /* ==================== */
 /* 4. Exporting the Module */
 /* ==================== */
-export { Auth };
+export { signIn, signOut, getCurrentUser };
