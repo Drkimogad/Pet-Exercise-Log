@@ -13,6 +13,25 @@ import { Calendar } from 'https://drkimogad.github.io/Pet-Exercise-Log/js/calend
 import { Report } from 'https://drkimogad.github.io/Pet-Exercise-Log/js/monthlyReport.js';  // Import Report from monthlyReport.js
 import { MoodLogs } from 'https://drkimogad.github.io/Pet-Exercise-Log/js/moodLogs.js';  // Import MoodLogs from moodLogs.js
 
+// Set up EVENT DELEGATION for dynamic elements
+document.body.addEventListener('click', (e) => {
+  // Handle click events for dynamically added buttons
+  if (e.target.matches('#signInButton')) {
+    handleSignIn();
+  }
+  if (e.target.matches('#signOutButton')) {
+    handleSignOut();
+  }
+  if (e.target.matches('#savePetDataButton')) {
+    const petData = collectPetData();
+    savePetDataHandler(petData);
+  }
+  if (e.target.matches('#saveUserProfileButton')) {
+    const profileData = collectProfileData();
+    saveUserProfile(profileData);
+  }
+});
+
 // setting up main logic //
 // Function to sign the user in
 function handleSignIn() {
