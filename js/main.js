@@ -51,14 +51,27 @@ function saveUserProfile(profileData) {
 }
 
 // Event Listeners//
-// Add event listeners for the buttons
-document.querySelector("#signInButton").addEventListener("click", handleSignIn);
-document.querySelector("#signOutButton").addEventListener("click", handleSignOut);
-document.querySelector("#savePetDataButton").addEventListener("click", () => {
-  const petData = collectPetData();  // Function that collects pet data (from a form, etc.)
-  savePetDataHandler(petData);
-});
-document.querySelector("#saveUserProfileButton").addEventListener("click", () => {
-  const profileData = collectProfileData();  // Function that collects user profile data
-  saveUserProfile(profileData);
+// Add this wrapper around your event listeners
+document.addEventListener('DOMContentLoaded', () => {
+  // Helper function to safely add listeners
+  function safeAddListener(selector, event, handler) {
+    const element = document.querySelector(selector);
+    if (element) {
+      element.addEventListener(event, handler);
+    } else {
+      console.warn(`Element ${selector} not found!`);
+    }
+  }
+
+  // Add listeners safely
+  safeAddListener("#signInButton", "click", handleSignIn);
+  safeAddListener("#signOutButton", "click", handleSignOut);
+  safeAddListener("#savePetDataButton", "click", () => {
+    const petData = collectPetData();
+    savePetDataHandler(petData);
+  });
+  safeAddListener("#saveUserProfileButton", "click", () => {
+    const profileData = collectProfileData();
+    saveUserProfile(profileData);
+  });
 });
