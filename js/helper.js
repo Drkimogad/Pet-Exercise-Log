@@ -80,7 +80,7 @@ window.addEventListener('beforeinstallprompt', (e) => {
 function registerServiceWorker() {
   try {
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('https://drkimogad.github.io/Pet-Exercise-Log/service-worker.js')
+      navigator.serviceWorker.register('/service-worker.js')
         .then(reg => console.log('SW registered:', reg))
         .catch(err => {
           ErrorHandler.handle(err, 'Service Worker Registration');
