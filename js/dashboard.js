@@ -1,17 +1,3 @@
-import { Auth } from './auth.js'; // Correct import for named exports
-import { 
-  getPetData,
-  savePetData,
-  updateCharts,
-  saveProfiles,
-  toggleMode,
-  applySavedTheme,
-  registerServiceWorker
-} from './helper.js';  // helper functions
-
-import { Calendar } from './calendar.js';  // Import Calendar from calendar.js
-import { Report } from './monthlyReport.js';  // Import Report from monthlyReport.js
-import { MoodLogs } from './moodLogs.js';  // Import MoodLogs from moodLogs.js
 
 // Set up EVENT DELEGATION for dynamic elements
 document.body.addEventListener('click', (e) => {
