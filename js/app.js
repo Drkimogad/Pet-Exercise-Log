@@ -10,47 +10,9 @@ const CONFIG = {
     LOCATIONS: ['park', 'backyard', 'indoors', 'beach', 'trail']
 };
 
-// ============ DATA SERVICE FUNCTIONS ============
-function getPets() {
-    try {
-        const pets = JSON.parse(localStorage.getItem('petData'));
-        return pets || [];
-    } catch (error) {
-        console.error('Error fetching pets:', error);
-        return [];
-    }
-}
 
-function savePets(pets) {
-    try {
-        localStorage.setItem('petData', JSON.stringify(pets));
-    } catch (error) {
-        console.error('Error saving pets:', error);
-    }
-}
 
-function getActivePetIndex() {
-    try {
-        return parseInt(localStorage.getItem('activePetIndex')) || null;
-    } catch (error) {
-        console.error('Error fetching active pet index:', error);
-        return null;
-    }
-}
 
-function setActivePetIndex(index) {
-    try {
-        localStorage.setItem('activePetIndex', index);
-    } catch (error) {
-        console.error('Error setting active pet index:', error);
-    }
-}
-
-function getActivePet() {
-    const pets = getPets();
-    const activeIndex = getActivePetIndex();
-    return activeIndex !== null ? pets[activeIndex] : null;
-}
 
 // ============ PET ENTRY/TEMPLATE FUNCTIONS ============
 const templates = {
@@ -170,6 +132,20 @@ function addPet(petData) {
     savePets(pets);
 }
 
+
+function formatDisplayDate(dateStr) {
+  try {
+    const date = new Date(dateStr);
+    return date.toLocaleDateString('en-US', { 
+      year: 'numeric', 
+      month: 'short', 
+      day: 'numeric' 
+    });
+  } catch (e) {
+    console.error('Date formatting error:', e);
+    return dateStr;
+  }
+}
 // ============ MOOD LOGS FUNCTIONS ============
 function renderMoodLogs() {
     const activePet = getActivePet();
