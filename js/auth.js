@@ -1,251 +1,212 @@
-// auth.js - Vanilla JS Authentication
-/* ==================== */
-/*  Authentication Functions */
-/* ==================== */
+// ====================
+// auth.js - Pet Exercise Log Authentication
+// ====================
 
 let currentUser = null;
 
-// Initialize authentication
-function initAuth() {
-    // Check if user is already logged in
-    const savedUser = localStorage.getItem("currentUser");
-    if (savedUser) {
-        currentUser = JSON.parse(savedUser);
-        updateUIForAuthState(true);
-    }
-    
-    // Set up auth event listeners
-    setupAuthEventListeners();
-}
-
-// Set up authentication event listeners
-function setupAuthEventListeners() {
-    // Sign in button
-    document.addEventListener('click', function(e) {
-        if (e.target && e.target.id === 'signInButton') {
-            handleSignIn();
-        }
-    });
-    
-    // Sign out button
-    document.addEventListener('click', function(e) {
-        if (e.target && e.target.id === 'signOutButton') {
-            handleSignOut();
-        }
-    });
-    
-    // Auth form submission
-    document.addEventListener('submit', function(e) {
-        if (e.target && e.target.id === 'authForm') {
-            e.preventDefault();
-            const isSignUp = e.target.querySelector('input[name="username"]') !== null;
-            handleAuthSubmit(e, isSignUp);
-        }
-    });
-}
-
-// Handle sign in
-function handleSignIn() {
-    try {
-        console.log("User signed in");
-        
-        // For demo purposes - replace with actual authentication
-        currentUser = {
-            email: "user@example.com",
-            username: "Pet Lover",
-            lastLogin: new Date().toISOString()
-        };
-        
-        localStorage.setItem("currentUser", JSON.stringify(currentUser));
-        updateUIForAuthState(true);
-        
-    } catch (error) {
-        console.error("Sign in error:", error);
-        if (window.ErrorHandler) {
-            window.ErrorHandler.handle(error, 'Sign In');
-        }
-    }
-}
-
-// Handle sign out
-function handleSignOut() {
-    try {
-        console.log("User signed out");
-        localStorage.removeItem("currentUser");
-        currentUser = null;
-        updateUIForAuthState(false);
-    } catch (error) {
-        console.error("Sign out error:", error);
-        if (window.ErrorHandler) {
-            window.ErrorHandler.handle(error, 'Sign Out');
-        }
-    }
-}
-
-// Get current user
-function getCurrentUser() {
-    if (!currentUser) {
-        const savedUser = localStorage.getItem("currentUser");
-        if (savedUser) {
-            currentUser = JSON.parse(savedUser);
-        }
-    }
-    return currentUser;
-}
-
-// Check if user is authenticated
-function isAuthenticated() {
-    return getCurrentUser() !== null;
-}
-
-// Update UI based on authentication state
-function updateUIForAuthState(isLoggedIn) {
-    const signInBtn = document.getElementById('signInButton');
-    const signOutBtn = document.getElementById('signOutButton');
-    const userWelcome = document.getElementById('userWelcome');
-    
-    if (signInBtn) signInBtn.style.display = isLoggedIn ? 'none' : 'block';
-    if (signOutBtn) signOutBtn.style.display = isLoggedIn ? 'block' : 'none';
-    
-    if (userWelcome && isLoggedIn) {
-        const user = getCurrentUser();
-        userWelcome.textContent = `Welcome, ${user.username || 'User'}!`;
-        userWelcome.style.display = 'block';
-    } else if (userWelcome) {
-        userWelcome.style.display = 'none';
-    }
-}
-
-// Handle auth form submission
-function handleAuthSubmit(e, isSignUp) {
-    const form = e.target;
-    const submitBtn = form.querySelector('button[type="submit"]');
-    
-    try {
-        submitBtn.disabled = true;
-        submitBtn.textContent = 'Processing...';
-        
-        // Clear previous errors
-        const errorElements = form.querySelectorAll('.error-text');
-        errorElements.forEach(el => el.remove());
-        
-        // Get form values
-        const email = form.email.value;
-        const simplePin = form.pin ? form.pin.value : '';
-        
-        // Simple validation
-        if (!email) {
-            showFormError(form, 'Email is required');
-            return;
-        }
-        
-        if (isSignUp) {
-            const username = form.username.value;
-            if (!username) {
-                showFormError(form, 'Name is required');
-                return;
-            }
-            
-            // For demo - create a simple user account
-            const users = getUsers();
-            if (users.some(u => u.email === email)) {
-                showFormError(form, 'User already exists');
-                return;
-            }
-            
-            const newUser = { 
-                email, 
-                username, 
-                pin: simplePin // In real app, this would be hashed
-            };
-            
-            saveUser(newUser);
-            showAuthSuccess('Account created! Please sign in.');
-            showAuthForm(false);
-            
-        } else {
-            // Sign in logic
-            const users = getUsers();
-            const user = users.find(u => u.email === email);
-            
-            if (!user) {
-                showFormError(form, 'User not found');
-                return;
-            }
-            
-            if (user.pin !== simplePin) {
-                showFormError(form, 'Invalid PIN');
-                return;
-            }
-            
-            // Successful login
-            currentUser = {
-                email: user.email,
-                username: user.username,
-                lastLogin: new Date().toISOString()
-            };
-            
-            localStorage.setItem("currentUser", JSON.stringify(currentUser));
-            updateUIForAuthState(true);
-        }
-        
-    } catch (error) {
-        console.error("Auth submit error:", error);
-        showFormError(form, error.message || 'Authentication failed');
-        
-    } finally {
-        submitBtn.disabled = false;
-        submitBtn.textContent = isSignUp ? 'Sign Up' : 'Sign In';
-    }
-}
-
-// Helper function to show form error
-function showFormError(form, message) {
-    const errorDiv = document.createElement('div');
-    errorDiv.className = 'error-text';
-    errorDiv.style.color = 'red';
-    errorDiv.textContent = message;
-    form.appendChild(errorDiv);
-}
-
-// Show auth success message
-function showAuthSuccess(message) {
-    // You can implement a toast or message display here
-    alert(message); // Simple alert for demo
-}
-
-// Show/hide auth form
-function showAuthForm(show) {
-    const authForm = document.getElementById('authFormContainer');
-    if (authForm) {
-        authForm.style.display = show ? 'block' : 'none';
-    }
-}
-
-// Get users from storage
-function getUsers() {
-    try {
-        return JSON.parse(localStorage.getItem('users')) || [];
-    } catch (error) {
-        console.error("Error getting users:", error);
-        return [];
-    }
-}
-
-// Save user to storage
-function saveUser(user) {
-    try {
-        const users = getUsers();
-        users.push(user);
-        localStorage.setItem('users', JSON.stringify(users));
-        return true;
-    } catch (error) {
-        console.error("Error saving user:", error);
-        return false;
-    }
-}
-
-// Initialize auth when DOM is loaded
-document.addEventListener('DOMContentLoaded', function() {
-    initAuth();
+// --- Initialization ---
+document.addEventListener("DOMContentLoaded", () => {
+  initAuth();
 });
+
+// Initialize authentication system
+function initAuth() {
+  // Try to load saved user session
+  const savedUser = localStorage.getItem("currentUser");
+  if (savedUser) {
+    currentUser = JSON.parse(savedUser);
+    updateUIForAuthState(true);
+  } else {
+    updateUIForAuthState(false);
+  }
+
+  // Attach listeners
+  setupAuthEventListeners();
+}
+
+// --- Event Listeners ---
+function setupAuthEventListeners() {
+  // Sign In
+  document.addEventListener("click", (e) => {
+    if (e.target.id === "signInButton") {
+      showAuthForm(true); // show login form
+    }
+  });
+
+  // Sign Out
+  document.addEventListener("click", (e) => {
+    if (e.target.id === "signOutButton") {
+      handleSignOut();
+    }
+  });
+
+  // Auth form submit
+  document.addEventListener("submit", (e) => {
+    if (e.target && e.target.id === "authForm") {
+      e.preventDefault();
+      const mode = e.target.dataset.mode; // "signin" or "signup"
+      handleAuthSubmit(e, mode);
+    }
+  });
+}
+
+// --- Auth Actions ---
+function handleSignIn(email, pin) {
+  const users = getUsers();
+  const user = users.find((u) => u.email === email && u.pin === pin);
+
+  if (!user) {
+    alert("Invalid credentials");
+    return;
+  }
+
+  currentUser = {
+    email: user.email,
+    username: user.username,
+    lastLogin: new Date().toISOString(),
+  };
+
+  localStorage.setItem("currentUser", JSON.stringify(currentUser));
+  updateUIForAuthState(true);
+}
+
+function handleSignUp(username, email, pin) {
+  const users = getUsers();
+  if (users.some((u) => u.email === email)) {
+    alert("User already exists. Please sign in.");
+    return;
+  }
+
+  const newUser = { username, email, pin };
+  users.push(newUser);
+  localStorage.setItem("users", JSON.stringify(users));
+
+  alert("Account created! Please sign in.");
+  showAuthForm(true, "signin");
+}
+
+function handleSignOut() {
+  currentUser = null;
+  localStorage.removeItem("currentUser");
+  updateUIForAuthState(false);
+}
+
+// --- UI Updates ---
+function updateUIForAuthState(isLoggedIn) {
+  const authSection = document.getElementById("authSection");
+  const dashboardSection = document.getElementById("dashboardSection");
+  const signInBtn = document.getElementById("signInButton");
+  const signOutBtn = document.getElementById("signOutButton");
+  const userWelcome = document.getElementById("userWelcome");
+
+  if (isLoggedIn) {
+    // Toggle visibility
+    authSection.style.display = "none";
+    dashboardSection.style.display = "block";
+    signInBtn.style.display = "none";
+    signOutBtn.style.display = "block";
+
+    if (userWelcome) {
+      const user = getCurrentUser();
+      userWelcome.textContent = `Welcome, ${user.username}!`;
+      userWelcome.style.display = "block";
+    }
+
+    // Init dashboard
+    if (typeof initDashboard === "function") {
+      initDashboard();
+    }
+  } else {
+    // Toggle visibility
+    authSection.style.display = "block";
+    dashboardSection.style.display = "none";
+    signInBtn.style.display = "block";
+    signOutBtn.style.display = "none";
+    userWelcome.style.display = "none";
+
+    // Show sign-in form by default
+    showAuthForm(true, "signin");
+  }
+}
+
+// --- Auth Form Rendering ---
+function showAuthForm(show, mode = "signin") {
+  const container = document.getElementById("authFormContainer");
+  if (!container) return;
+
+  if (!show) {
+    container.style.display = "none";
+    return;
+  }
+
+  container.style.display = "block";
+
+  if (mode === "signin") {
+    container.innerHTML = `
+      <form id="authForm" data-mode="signin">
+        <h3>Sign In</h3>
+        <input type="email" name="email" placeholder="Email" required />
+        <input type="password" name="pin" placeholder="PIN" required />
+        <button type="submit">Sign In</button>
+        <p>Don't have an account? 
+          <a href="#" id="goToSignUp">Sign Up</a>
+        </p>
+      </form>
+    `;
+  } else {
+    container.innerHTML = `
+      <form id="authForm" data-mode="signup">
+        <h3>Sign Up</h3>
+        <input type="text" name="username" placeholder="Name" required />
+        <input type="email" name="email" placeholder="Email" required />
+        <input type="password" name="pin" placeholder="PIN" required />
+        <button type="submit">Sign Up</button>
+        <p>Already have an account? 
+          <a href="#" id="goToSignIn">Sign In</a>
+        </p>
+      </form>
+    `;
+  }
+
+  // Handle switch links
+  document.getElementById("goToSignUp")?.addEventListener("click", (e) => {
+    e.preventDefault();
+    showAuthForm(true, "signup");
+  });
+
+  document.getElementById("goToSignIn")?.addEventListener("click", (e) => {
+    e.preventDefault();
+    showAuthForm(true, "signin");
+  });
+}
+
+// --- Auth Form Handling ---
+function handleAuthSubmit(e, mode) {
+  const form = e.target;
+  const email = form.email.value.trim();
+  const pin = form.pin.value.trim();
+
+  if (mode === "signup") {
+    const username = form.username.value.trim();
+    handleSignUp(username, email, pin);
+  } else {
+    handleSignIn(email, pin);
+  }
+}
+
+// --- Helpers ---
+function getCurrentUser() {
+  if (!currentUser) {
+    const saved = localStorage.getItem("currentUser");
+    if (saved) currentUser = JSON.parse(saved);
+  }
+  return currentUser;
+}
+
+function getUsers() {
+  try {
+    return JSON.parse(localStorage.getItem("users")) || [];
+  } catch {
+    return [];
+  }
+}
