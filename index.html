@@ -29,28 +29,41 @@
   <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 </head>
 <body>
-  <!-- Authentication Section -->
+  <!-- ================= Authentication Section ================= -->
   <div id="authSection">
-    <div id="authFormContainer" style="display:none;">
-      <!-- Auth forms (sign in / sign up) will be injected here -->
-    </div>
+    <!-- Auth form container (sign in / sign up will be injected here) -->
+    <div id="authFormContainer"></div>
+
+    <!-- Default controls -->
     <button id="signInButton">Sign In</button>
     <button id="signOutButton" style="display:none;">Sign Out</button>
     <p id="userWelcome" style="display:none;"></p>
   </div>
 
-  <!-- Main App Section -->
+  <!-- ================= Dashboard Section ================= -->
   <div id="dashboardSection" style="display:none;">
+    <h2>Pet Exercise Dashboard</h2>
+
+    <!-- Pet Profile Form -->
     <div id="petFormContainer"></div>
+
+    <!-- Saved Pet Profiles -->
     <div id="savedProfiles"></div>
+
+    <!-- Calendar -->
     <div id="calendarContainer"></div>
+
+    <!-- Mood Logs -->
     <div id="moodLogs"></div>
+
+    <!-- Exercise Charts -->
     <div id="exerciseCharts"></div>
   </div>
 
-  <!-- App Scripts - CORRECTED SYNTAX -->
+  <!-- ================= Scripts ================= -->
   <script src="js/auth.js" defer></script>
   <script src="js/utils.js" defer></script>
   <script src="js/app.js" defer></script>
 </body>
+
 </html>
