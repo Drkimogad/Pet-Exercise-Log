@@ -574,5 +574,5 @@ function initDashboard() {
     renderCharts();
 }
 
-// Initialize the dashboard when DOM is loaded
-document.addEventListener('DOMContentLoaded', initDashboard);
+//Make initDashboard globally accessible
+window.initDashboard = initDashboard;
