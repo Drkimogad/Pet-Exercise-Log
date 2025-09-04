@@ -29,9 +29,23 @@
   <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 </head>
 <body>
-  <!-- App Root -->
-  <div id="app">
-    <!-- The dynamic dashboard will be injected here by app.js -->
+  <!-- Authentication Section -->
+  <div id="authSection">
+    <div id="authFormContainer" style="display:none;">
+      <!-- Auth forms (sign in / sign up) will be injected here -->
+    </div>
+    <button id="signInButton">Sign In</button>
+    <button id="signOutButton" style="display:none;">Sign Out</button>
+    <p id="userWelcome" style="display:none;"></p>
+  </div>
+
+  <!-- Main App Section -->
+  <div id="dashboardSection" style="display:none;">
+    <div id="petFormContainer"></div>
+    <div id="savedProfiles"></div>
+    <div id="calendarContainer"></div>
+    <div id="moodLogs"></div>
+    <div id="exerciseCharts"></div>
   </div>
 
   <!-- App Scripts - CORRECTED SYNTAX -->
