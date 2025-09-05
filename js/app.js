@@ -16,11 +16,43 @@ const CONFIG = {
 
 // ============ PET ENTRY/TEMPLATE FUNCTIONS ============
 const templates = {
-    petForm: (pet = {}) => `
-      <form id="petForm" class="pet-form">
-        <!-- Form template code from your original file -->
-      </form>`
+  petForm: (pet = {}) => `
+    <form id="petForm" class="pet-form">
+      <h3>${pet.id ? "Update Pet Profile" : "Create Pet Profile"}</h3>
+
+      <label for="petName">Name</label>
+      <input type="text" id="petName" name="petName" value="${pet.name || ""}" required />
+
+      <label for="petAge">Age</label>
+      <input type="number" id="petAge" name="petAge" value="${pet.age || ""}" />
+
+      <label for="petWeight">Weight</label>
+      <input type="number" id="petWeight" name="petWeight" value="${pet.weight || ""}" />
+
+      <label for="petCharacteristics">Characteristics</label>
+      <textarea id="petCharacteristics" name="petCharacteristics">${pet.characteristics || ""}</textarea>
+
+      <label for="petImage">Photo</label>
+      <input type="file" id="petImage" name="petImage" accept="image/*" />
+      <img id="petImagePreview" src="${pet.image || CONFIG.DEFAULT_IMAGE}" alt="Pet Image Preview" />
+
+      <!-- Mood selection -->
+      <div class="mood-options">
+        ${CONFIG.EMOJIS.map((emoji, i) => `
+          <button type="button" class="emoji-btn ${pet.mood === i ? "selected" : ""}" data-mood="${i}">
+            ${emoji}
+          </button>
+        `).join("")}
+      </div>
+
+      <button type="submit">${pet.id ? "Update Profile" : "Save Profile"}</button>
+    </form>
+  `
 };
+
+
+
+
 
 function renderPetForm(pet = {}) {
     document.getElementById('petFormContainer').innerHTML = templates.petForm(pet);
