@@ -1,89 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#ffffff" />
-  <meta name="description" content="Track your pet's exercise routine and health metrics" />
-  
-  <!-- PWA Manifest -->
-  <link rel="manifest" href="./manifest.json" />
-  
-  <!-- iOS PWA Support -->
-  <meta name="mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <link rel="apple-touch-icon" href="./icons/icon-192x192.png" />
-  
-  <title>Pet Exercise Log</title>
-  <link rel="icon" href="./favicon.ico" type="image/x-icon" />
-  <link rel="stylesheet" href="./styles.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  
-  <!-- Chart.js -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <!-- QR Code Generator -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-  <!-- PDF Export -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#ffffff">
+    <meta name="description" content="Track your pet's exercise routine and health metrics">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="https://drkimogad.github.io/Pet-Exercise-Log/manifest.json">
+    
+    <!-- iOS PWA Support -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="https://drkimogad.github.io/Pet-Exercise-Log/icon-192x192.png">
+
+    <title>Pet Exercise Log</title>
+    <link rel="icon" href="https://drkimogad.github.io/Pet-Exercise-Log/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="styles.css">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-  <!-- ================= Authentication Section ================= -->
-<div id="authenticationPage">
-  
-  <!-- Auth Header/Footer (use it as you like later) -->
-  <div id="authHeaderFooter">
-    <h2>🐾 Welcome to Pet Exercise Log</h2>
-    <!-- You can put a logo, tagline, or links here -->
-  </div>
+    <!-- Header -->
+    <header id="main-header">
+        <h1>Your Pet Exercise Log</h1>
+        <p>Track your pet's exercise routine and health metrics</p>
+    </header>
 
-  <!-- Auth form container (sign in / sign up will be injected here) -->
-  <div id="authFormContainer"></div>
+    <!-- Auth Container (required for sign-in flow) -->
+    <div id="auth-container"></div>
 
-  <!-- Default controls -->
-  <button id="signInButton">Sign In</button>
-  <button id="signOutButton" style="display:none;">Sign Out</button>
-  <p id="userWelcome" style="display:none;"></p>
-</div>
+    <!-- Main App Container -->
+    <div id="app-container">
+        <div id="app">
+            <!-- Content managed by app.js -->
+        </div>
 
+        <!-- Notifications System -->
+        <div id="notifications" class="notifications-container"></div>
+    </div>
 
-  <!-- ================= Dashboard Section ================= -->
-<div id="dashboard" style="display:none;">
+    <!-- PWA Install Button -->
+    <button id="installButton" style="display: none;">Install App</button>
 
-  <!-- Dashboard Header -->
-  <div id="dashboardHeader">
-    <h2>🐾 Pet Exercise Dashboard</h2>
-    <button id="createProfileButton" class="dashboard-btn">+ Create Profile</button>
-  </div>
+    <!-- Footer -->
+    <footer id="main-footer">
+        <p>&copy; 2025 Pet Exercise Log. All Rights Reserved.</p>
+    </footer>
 
-  <!-- Pet Entry / Form -->
-  <div id="petFormContainer"></div>
-
-  <!-- Mood Logs -->
-  <div id="moodLogs"></div>
-
-  <!-- Calendar -->
-  <div id="calendarContainer"></div>
-
-  <!-- Charts -->
-  <div id="exerciseCharts"></div>
-
-  <!-- Saved Profiles (rendered list of existing pets) -->
-  <div id="savedProfiles"></div>
-
-  <!-- Dashboard Footer -->
-  <div id="dashboardFooter">
-    <button id="logoutButton" class="dashboard-btn danger">Log Out</button>
-  </div>
-
-</div>
-
-
-  <!-- ================= Scripts ================= -->
-  <script src="js/auth.js" defer></script>
-  <script src="js/utils.js" defer></script>
-  <script src="js/app.js" defer></script>
+    <!-- Single Script Import -->
+    <script src="app.js"></script>
 </body>
-
 </html>
