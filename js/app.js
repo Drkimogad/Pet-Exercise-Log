@@ -1,4 +1,42 @@
 // dashboard.js - Reorganized with Functional Grouping Approach
+// app.js - ADD THESE FUNCTIONS AT THE TOP LEVEL
+
+// ============ UI SECTION MANAGEMENT ============
+function showAuthenticationPage() {
+    document.getElementById('authenticationPage').style.display = 'block';
+    document.getElementById('dashboard').style.display = 'none';
+}
+
+function showDashboardPage() {
+    document.getElementById('authenticationPage').style.display = 'none';
+    document.getElementById('dashboard').style.display = 'block';
+    
+    // Once the dashboard is shown, initialize its components (your existing initDashboard function)
+    initDashboard();
+}
+
+// ============ INITIALIZE THE APP ============
+// This function starts everything. Call this when the page loads.
+function initializeApp() {
+    console.log("App initializing...");
+    
+    // 1. Check if a user is already signed in (You will add Firebase logic here later)
+    const userIsSignedIn = false; // CHANGE THIS LATER TO REAL CHECK
+    
+    // 2. Show the correct page based on sign-in status
+    if (userIsSignedIn) {
+        showDashboardPage();
+    } else {
+        showAuthenticationPage();
+    }
+    
+    // 3. Apply saved theme, register service worker, etc.
+    if (typeof applySavedTheme === 'function') applySavedTheme();
+    if (typeof registerServiceWorker === 'function') registerServiceWorker();
+}
+
+// Start the app when the DOM is fully loaded
+document.addEventListener('DOMContentLoaded', initializeApp);
 
 // ============ CONSTANTS & CONFIGURATION ============
 const CONFIG = {
