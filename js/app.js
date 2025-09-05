@@ -12,7 +12,7 @@ const CONFIG = {
     LOCATIONS: ['park', 'backyard', 'indoors', 'beach', 'trail']
 };
 
-// ============ PET ENTRY/TEMPLATE FUNCTIONS ============
+// ============ CORE PETFORM FUNCTIONS ============
 const templates = {
   petForm: (pet = {}) => `
     <form id="petForm" class="pet-form">
