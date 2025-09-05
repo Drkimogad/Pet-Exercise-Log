@@ -10,46 +10,69 @@ const CONFIG = {
     LOCATIONS: ['park', 'backyard', 'indoors', 'beach', 'trail']
 };
 
-
-
-
-
 // ============ PET ENTRY/TEMPLATE FUNCTIONS ============
 const templates = {
   petForm: (pet = {}) => `
     <form id="petForm" class="pet-form">
       <h3>${pet.id ? "Update Pet Profile" : "Create Pet Profile"}</h3>
 
-      <label for="petName">Name</label>
-      <input type="text" id="petName" name="petName" value="${pet.name || ""}" required />
-
-      <label for="petAge">Age</label>
-      <input type="number" id="petAge" name="petAge" value="${pet.age || ""}" />
-
-      <label for="petWeight">Weight</label>
-      <input type="number" id="petWeight" name="petWeight" value="${pet.weight || ""}" />
-
-      <label for="petCharacteristics">Characteristics</label>
-      <textarea id="petCharacteristics" name="petCharacteristics">${pet.characteristics || ""}</textarea>
+      <!-- Basic Info -->
+      <label for="petName">Name *</label>
+      <input type="text" id="petName" name="petName" value="${pet.name || ''}" required />
 
       <label for="petImage">Photo</label>
       <input type="file" id="petImage" name="petImage" accept="image/*" />
-      <img id="petImagePreview" src="${pet.image || CONFIG.DEFAULT_IMAGE}" alt="Pet Image Preview" />
+      <img id="petImagePreview" src="${pet.imageUrl || CONFIG.DEFAULT_IMAGE}" alt="Pet Image Preview" />
 
-      <!-- Mood selection -->
-      <div class="mood-options">
-        ${CONFIG.EMOJIS.map((emoji, i) => `
-          <button type="button" class="emoji-btn ${pet.mood === i ? "selected" : ""}" data-mood="${i}">
-            ${emoji}
-          </button>
-        `).join("")}
-      </div>
+      <label for="petAge">Age (years)</label>
+      <input type="number" id="petAge" name="petAge" min="0" step="0.1" value="${pet.age || ''}" />
+
+      <label for="petWeight">Weight (lbs or kg)</label>
+      <input type="number" id="petWeight" name="petWeight" min="0" step="0.1" value="${pet.weight || ''}" />
+
+      <label for="petBreed">Breed</label>
+      <input type="text" id="petBreed" name="petBreed" value="${pet.breed || ''}" />
+
+      <label for="petGender">Gender</label>
+      <select id="petGender" name="petGender">
+        <option value="">Select Gender</option>
+        <option value="male" ${pet.gender === 'male' ? 'selected' : ''}>Male</option>
+        <option value="female" ${pet.gender === 'female' ? 'selected' : ''}>Female</option>
+      </select>
+
+      <!-- Health & Behavior -->
+      <label for="petDiet">Diet</label>
+      <textarea id="petDiet" name="petDiet" placeholder="What and how much do they eat?">${pet.diet || ''}</textarea>
+
+      <label for="petHealthStatus">Health Status</label>
+      <input type="text" id="petHealthStatus" name="petHealthStatus" value="${pet.healthStatus || ''}" />
+
+      <label for="petAllergies">Allergies</label>
+      <input type="text" id="petAllergies" name="petAllergies" value="${pet.allergies || ''}" />
+
+      <label for="petBehavior">General Behavior</label>
+      <select id="petBehavior" name="petBehavior">
+        <option value="">Select Behavior</option>
+        <option value="friendly" ${pet.behavior === 'friendly' ? 'selected' : ''}>Friendly</option>
+        <option value="aggressive" ${pet.behavior === 'aggressive' ? 'selected' : ''}>Aggressive</option>
+        <option value="skittish" ${pet.behavior === 'skittish' ? 'selected' : ''}>Skittish</option>
+        <option value="playful" ${pet.behavior === 'playful' ? 'selected' : ''}>Playful</option>
+        <option value="anxious" ${pet.behavior === 'anxious' ? 'selected' : ''}>Anxious</option>
+        <option value="calm" ${pet.behavior === 'calm' ? 'selected' : ''}>Calm</option>
+      </select>
+
+      <label for="petFavoriteExercise">Favorite Exercise</label>
+      <select id="petFavoriteExercise" name="petFavoriteExercise">
+        <option value="">Select Favorite</option>
+        ${CONFIG.FAVORITE_EXERCISES.map(exercise => `
+          <option value="${exercise}" ${pet.favoriteExercise === exercise ? 'selected' : ''}>${exercise.charAt(0).toUpperCase() + exercise.slice(1)}</option>
+        `).join('')}
+      </select>
 
       <button type="submit">${pet.id ? "Update Profile" : "Save Profile"}</button>
     </form>
   `
 };
-
 
 
 
@@ -84,39 +107,90 @@ function attachFormSubmitHandler() {
 function handlePetFormSubmit(e) {
     e.preventDefault();
     const form = e.target;
-    const petId = form.petId.value;
+
+    // --- GET VALUES FROM THE UPDATED FORM ---
     const name = form.petName.value;
     const image = document.getElementById('petImagePreview').src === CONFIG.DEFAULT_IMAGE ? null : document.getElementById('petImagePreview').src;
-    const characteristics = form.petCharacteristics.value;
-    const age = parseInt(form.petAge.value);
-    const weight = parseInt(form.petWeight.value);
+    // characteristics field removed, replaced by more specific fields
+    const age = parseInt(form.petAge.value) || 0; // Added fallback for parsing
+    const weight = parseInt(form.petWeight.value) || 0; // Added fallback for parsing
+    // --- NEW PROFILE FIELDS ---
+    const breed = form.petBreed.value;
+    const gender = form.petGender.value;
+    const diet = form.petDiet.value;
     const healthStatus = form.petHealthStatus.value;
     const allergies = form.petAllergies.value;
-    const exerciseLevel = form.petExerciseLevel.value;
+    const behavior = form.petBehavior.value;
     const favoriteExercise = form.petFavoriteExercise.value;
-    const lastActivity = form.petLastActivity.value;
-    const exerciseLocation = form.petExerciseLocation.value;
-    const date = form.petDate.value;
-    const exerciseDuration = parseInt(form.petExerciseDuration.value);
-    const calories = parseInt(form.petCalories.value);
-    const mood = form.querySelector('.mood-options button.selected')?.dataset.mood ? parseInt(form.querySelector('.mood-options button.selected').dataset.mood) : null;
+    // --- END OF NEW FIELDS ---
+
+    // --- REMOVED LINES: Getting values for daily log fields ---
+    // const exerciseLevel = form.petExerciseLevel.value;
+    // const lastActivity = form.petLastActivity.value;
+    // const exerciseLocation = form.petExerciseLocation.value;
+    // const date = form.petDate.value;
+    // const exerciseDuration = parseInt(form.petExerciseDuration.value);
+    // const calories = parseInt(form.petCalories.value);
+    // const mood = form.querySelector('.mood-options button.selected')?.dataset.mood ? parseInt(form.querySelector('.mood-options button.selected').dataset.mood) : null;
+    // --- END OF REMOVED LINES ---
+
+    // Check if we are updating an existing pet or creating a new one
+    const pets = getPets();
+    const activePetIndex = getActivePetIndex();
+    const isEditing = activePetIndex !== null;
 
     const newPetData = {
-        id: petId,
+        // If editing, keep the old ID, otherwise generate a new one
+        id: isEditing ? pets[activePetIndex].id : crypto.randomUUID(),
         name,
-        image,
-        characteristics,
+        imageUrl: image, // Changed key from 'image' to 'imageUrl' for clarity
+        // characteristics removed from here
         age,
         weight,
+        // --- NEW PROFILE FIELDS ADDED TO THE OBJECT ---
+        breed,
+        gender,
+        diet,
         healthStatus,
         allergies,
-        exerciseLevel,
+        behavior,
         favoriteExercise,
-        lastActivity,
-        exerciseLocation,
-        exerciseEntries: [{ date, duration: exerciseDuration, calories }],
-        moodLogs: mood !== null ? [{ date, mood }] : []
+        // --- END OF NEW FIELDS ---
+
+        // --- Initialize or preserve arrays for future daily logs ---
+        // If editing, keep the existing logs, otherwise start with empty arrays
+        exerciseEntries: isEditing ? (pets[activePetIndex].exerciseEntries || []) : [],
+        moodLogs: isEditing ? (pets[activePetIndex].moodLogs || []) : [],
+        bcsLogs: isEditing ? (pets[activePetIndex].bcsLogs || []) : [] // Added for Body Condition Score
+        // --- REMOVED: Creating a new exercise/mood entry from this form ---
+        // exerciseEntries: [{ date, duration: exerciseDuration, calories }],
+        // moodLogs: mood !== null ? [{ date, mood }] : []
     };
+
+    if (isEditing) {
+        // Update the existing pet with the new profile data
+        pets[activePetIndex] = {
+            ...pets[activePetIndex], // Keep all existing data (including logs!)
+            ...newPetData  // Overwrite with the new profile data
+        };
+        savePets(pets);
+    } else {
+        // Add the new pet to the array
+        addPet(newPetData);
+    }
+
+    // Update the UI
+    renderSavedProfiles();
+    // The calendar and charts rely on the log arrays, which we just preserved.
+    renderCalendar();
+    renderMoodLogs();
+    renderCharts(getActivePet()?.exerciseEntries || []);
+
+    // Reset the form and image preview
+    form.reset();
+    document.getElementById('petImagePreview').src = CONFIG.DEFAULT_IMAGE;
+}
+
 
     const pets = getPets();
     const existingPetIndex = pets.findIndex(pet => pet.id === petId);
