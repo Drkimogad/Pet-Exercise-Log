@@ -106,10 +106,92 @@ function attachFormSubmitHandler() {
     form?.addEventListener('submit', handlePetFormSubmit);
 }
 
+function handlePetFormSubmit(e) {
+    e.preventDefault();
+    const form = e.target;
 
+    // --- GET VALUES FROM THE UPDATED FORM ---
+    const name = form.petName.value;
+    const image = document.getElementById('petImagePreview').src === CONFIG.DEFAULT_IMAGE ? null : document.getElementById('petImagePreview').src;
+    // characteristics field removed, replaced by more specific fields
+    const age = parseInt(form.petAge.value) || 0; // Added fallback for parsing
+    const weight = parseInt(form.petWeight.value) || 0; // Added fallback for parsing
+    // --- NEW PROFILE FIELDS ---
+    const breed = form.petBreed.value;
+    const gender = form.petGender.value;
+    const diet = form.petDiet.value;
+    const healthStatus = form.petHealthStatus.value;
+    const allergies = form.petAllergies.value;
+    const behavior = form.petBehavior.value;
+    const favoriteExercise = form.petFavoriteExercise.value;
+    // --- END OF NEW FIELDS ---
 
+    // --- REMOVED LINES: Getting values for daily log fields ---
+    // const exerciseLevel = form.petExerciseLevel.value;
+    // const lastActivity = form.petLastActivity.value;
+    // const exerciseLocation = form.petExerciseLocation.value;
+    // const date = form.petDate.value;
+    // const exerciseDuration = parseInt(form.petExerciseDuration.value);
+    // const calories = parseInt(form.petCalories.value);
+    // const mood = form.querySelector('.mood-options button.selected')?.dataset.mood ? parseInt(form.querySelector('.mood-options button.selected').dataset.mood) : null;
+    // --- END OF REMOVED LINES ---
 
+    // Check if we are updating an existing pet or creating a new one
+    const pets = getPets();
+    const activePetIndex = getActivePetIndex();
+    const isEditing = activePetIndex !== null;
 
+    const newPetData = {
+        // If editing, keep the old ID, otherwise generate a new one
+        id: isEditing ? pets[activePetIndex].id : crypto.randomUUID(),
+        name,
+        imageUrl: image, // Changed key from 'image' to 'imageUrl' for clarity
+        // characteristics removed from here
+        age,
+        weight,
+        // --- NEW PROFILE FIELDS ADDED TO THE OBJECT ---
+        breed,
+        gender,
+        diet,
+        healthStatus,
+        allergies,
+        behavior,
+        favoriteExercise,
+        // --- END OF NEW FIELDS ---
+
+        // --- Initialize or preserve arrays for future daily logs ---
+        // If editing, keep the existing logs, otherwise start with empty arrays
+        exerciseEntries: isEditing ? (pets[activePetIndex].exerciseEntries || []) : [],
+        moodLogs: isEditing ? (pets[activePetIndex].moodLogs || []) : [],
+        bcsLogs: isEditing ? (pets[activePetIndex].bcsLogs || []) : [] // Added for Body Condition Score
+        // --- REMOVED: Creating a new exercise/mood entry from this form ---
+        // exerciseEntries: [{ date, duration: exerciseDuration, calories }],
+        // moodLogs: mood !== null ? [{ date, mood }] : []
+    };
+
+    if (isEditing) {
+        // Update the existing pet with the new profile data
+        pets[activePetIndex] = {
+            ...pets[activePetIndex], // Keep all existing data (including logs!)
+            ...newPetData  // Overwrite with the new profile data
+        };
+        savePets(pets);
+    } else {
+        // Add the new pet to the array
+        addPet(newPetData);
+    }
+
+    // Update the UI
+    renderSavedProfiles();
+    // The calendar and charts rely on the log arrays, which we just preserved.
+    renderCalendar();
+    renderMoodLogs();
+    renderCharts(getActivePet()?.exerciseEntries || []);
+
+    // Reset the form and image preview
+    form.reset();
+    document.getElementById('petImagePreview').src = CONFIG.DEFAULT_IMAGE;
+}
 
     const pets = getPets();
     const existingPetIndex = pets.findIndex(pet => pet.id === petId);
@@ -141,36 +223,7 @@ function attachFormSubmitHandler() {
     document.getElementById('petImagePreview').src = CONFIG.DEFAULT_IMAGE;
 }
 
-function attachMoodSelectionListeners() {
-    const moodOptions = document.querySelector('.mood-options');
-    moodOptions?.addEventListener('click', (e) => {
-        if (e.target.classList.contains('emoji-btn')) {
-            document.querySelectorAll('.emoji-btn').forEach(btn => btn.classList.remove('selected'));
-            e.target.classList.add('selected');
-        }
-    });
-}
 
-function addPet(petData) {
-    const pets = getPets();
-    pets.push(petData);
-    savePets(pets);
-}
-
-
-function formatDisplayDate(dateStr) {
-  try {
-    const date = new Date(dateStr);
-    return date.toLocaleDateString('en-US', { 
-      year: 'numeric', 
-      month: 'short', 
-      day: 'numeric' 
-    });
-  } catch (e) {
-    console.error('Date formatting error:', e);
-    return dateStr;
-  }
-}
 // ============ MOOD LOGS FUNCTIONS ============
 function renderMoodLogs() {
     const activePet = getActivePet();
@@ -221,7 +274,36 @@ function handleMoodSelection(e) {
 function attachMoodSelectionHandler() {
     document.addEventListener('click', handleMoodSelection);
 }
+function attachMoodSelectionListeners() {
+    const moodOptions = document.querySelector('.mood-options');
+    moodOptions?.addEventListener('click', (e) => {
+        if (e.target.classList.contains('emoji-btn')) {
+            document.querySelectorAll('.emoji-btn').forEach(btn => btn.classList.remove('selected'));
+            e.target.classList.add('selected');
+        }
+    });
+}
 
+function addPet(petData) {
+    const pets = getPets();
+    pets.push(petData);
+    savePets(pets);
+}
+
+
+function formatDisplayDate(dateStr) {
+  try {
+    const date = new Date(dateStr);
+    return date.toLocaleDateString('en-US', { 
+      year: 'numeric', 
+      month: 'short', 
+      day: 'numeric' 
+    });
+  } catch (e) {
+    console.error('Date formatting error:', e);
+    return dateStr;
+  }
+}
 // ============ CALENDAR FUNCTIONS ============
 function renderCalendar() {
     document.getElementById('calendarContainer').innerHTML = `
@@ -568,92 +650,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
-function handlePetFormSubmit(e) {
-    e.preventDefault();
-    const form = e.target;
 
-    // --- GET VALUES FROM THE UPDATED FORM ---
-    const name = form.petName.value;
-    const image = document.getElementById('petImagePreview').src === CONFIG.DEFAULT_IMAGE ? null : document.getElementById('petImagePreview').src;
-    // characteristics field removed, replaced by more specific fields
-    const age = parseInt(form.petAge.value) || 0; // Added fallback for parsing
-    const weight = parseInt(form.petWeight.value) || 0; // Added fallback for parsing
-    // --- NEW PROFILE FIELDS ---
-    const breed = form.petBreed.value;
-    const gender = form.petGender.value;
-    const diet = form.petDiet.value;
-    const healthStatus = form.petHealthStatus.value;
-    const allergies = form.petAllergies.value;
-    const behavior = form.petBehavior.value;
-    const favoriteExercise = form.petFavoriteExercise.value;
-    // --- END OF NEW FIELDS ---
-
-    // --- REMOVED LINES: Getting values for daily log fields ---
-    // const exerciseLevel = form.petExerciseLevel.value;
-    // const lastActivity = form.petLastActivity.value;
-    // const exerciseLocation = form.petExerciseLocation.value;
-    // const date = form.petDate.value;
-    // const exerciseDuration = parseInt(form.petExerciseDuration.value);
-    // const calories = parseInt(form.petCalories.value);
-    // const mood = form.querySelector('.mood-options button.selected')?.dataset.mood ? parseInt(form.querySelector('.mood-options button.selected').dataset.mood) : null;
-    // --- END OF REMOVED LINES ---
-
-    // Check if we are updating an existing pet or creating a new one
-    const pets = getPets();
-    const activePetIndex = getActivePetIndex();
-    const isEditing = activePetIndex !== null;
-
-    const newPetData = {
-        // If editing, keep the old ID, otherwise generate a new one
-        id: isEditing ? pets[activePetIndex].id : crypto.randomUUID(),
-        name,
-        imageUrl: image, // Changed key from 'image' to 'imageUrl' for clarity
-        // characteristics removed from here
-        age,
-        weight,
-        // --- NEW PROFILE FIELDS ADDED TO THE OBJECT ---
-        breed,
-        gender,
-        diet,
-        healthStatus,
-        allergies,
-        behavior,
-        favoriteExercise,
-        // --- END OF NEW FIELDS ---
-
-        // --- Initialize or preserve arrays for future daily logs ---
-        // If editing, keep the existing logs, otherwise start with empty arrays
-        exerciseEntries: isEditing ? (pets[activePetIndex].exerciseEntries || []) : [],
-        moodLogs: isEditing ? (pets[activePetIndex].moodLogs || []) : [],
-        bcsLogs: isEditing ? (pets[activePetIndex].bcsLogs || []) : [] // Added for Body Condition Score
-        // --- REMOVED: Creating a new exercise/mood entry from this form ---
-        // exerciseEntries: [{ date, duration: exerciseDuration, calories }],
-        // moodLogs: mood !== null ? [{ date, mood }] : []
-    };
-
-    if (isEditing) {
-        // Update the existing pet with the new profile data
-        pets[activePetIndex] = {
-            ...pets[activePetIndex], // Keep all existing data (including logs!)
-            ...newPetData  // Overwrite with the new profile data
-        };
-        savePets(pets);
-    } else {
-        // Add the new pet to the array
-        addPet(newPetData);
-    }
-
-    // Update the UI
-    renderSavedProfiles();
-    // The calendar and charts rely on the log arrays, which we just preserved.
-    renderCalendar();
-    renderMoodLogs();
-    renderCharts(getActivePet()?.exerciseEntries || []);
-
-    // Reset the form and image preview
-    form.reset();
-    document.getElementById('petImagePreview').src = CONFIG.DEFAULT_IMAGE;
-}
 
 
 // ============ UI SECTION MANAGEMENT ============
