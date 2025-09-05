@@ -7,7 +7,7 @@ function showAuthenticationPage() {
     document.getElementById('dashboard').style.display = 'none';
 }
 
-function showDashboardPage() {
+function showDashboard() {
     document.getElementById('authenticationPage').style.display = 'none';
     document.getElementById('dashboard').style.display = 'block';
     
@@ -17,7 +17,7 @@ function showDashboardPage() {
 
 // ============ INITIALIZE THE APP ============
 // This function starts everything. Call this when the page loads.
-function initializeApp() {
+function initDashboard() {
     console.log("App initializing...");
     
     // 1. Check if a user is already signed in (You will add Firebase logic here later)
@@ -25,7 +25,7 @@ function initializeApp() {
     
     // 2. Show the correct page based on sign-in status
     if (userIsSignedIn) {
-        showDashboardPage();
+        showDashboard();
     } else {
         showAuthenticationPage();
     }
@@ -36,7 +36,7 @@ function initializeApp() {
 }
 
 // Start the app when the DOM is fully loaded
-document.addEventListener('DOMContentLoaded', initializeApp);
+document.addEventListener('DOMContentLoaded', initializeDashboard);
 
 // ============ CONSTANTS & CONFIGURATION ============
 const CONFIG = {
