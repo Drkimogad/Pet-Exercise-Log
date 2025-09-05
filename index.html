@@ -30,35 +30,55 @@
 </head>
 <body>
   <!-- ================= Authentication Section ================= -->
-  <div id="authSection">
-    <!-- Auth form container (sign in / sign up will be injected here) -->
-    <div id="authFormContainer"></div>
-
-    <!-- Default controls -->
-    <button id="signInButton">Sign In</button>
-    <button id="signOutButton" style="display:none;">Sign Out</button>
-    <p id="userWelcome" style="display:none;"></p>
+<div id="authSection">
+  
+  <!-- Auth Header/Footer (use it as you like later) -->
+  <div id="authHeaderFooter">
+    <h2>🐾 Welcome to Pet Exercise Log</h2>
+    <!-- You can put a logo, tagline, or links here -->
   </div>
+
+  <!-- Auth form container (sign in / sign up will be injected here) -->
+  <div id="authFormContainer"></div>
+
+  <!-- Default controls -->
+  <button id="signInButton">Sign In</button>
+  <button id="signOutButton" style="display:none;">Sign Out</button>
+  <p id="userWelcome" style="display:none;"></p>
+</div>
+
 
   <!-- ================= Dashboard Section ================= -->
-  <div id="dashboardSection" style="display:none;">
-    <h2>Pet Exercise Dashboard</h2>
+<div id="dashboardSection" style="display:none;">
 
-    <!-- Pet Profile Form -->
-    <div id="petFormContainer"></div>
-
-    <!-- Saved Pet Profiles -->
-    <div id="savedProfiles"></div>
-
-    <!-- Calendar -->
-    <div id="calendarContainer"></div>
-
-    <!-- Mood Logs -->
-    <div id="moodLogs"></div>
-
-    <!-- Exercise Charts -->
-    <div id="exerciseCharts"></div>
+  <!-- Dashboard Header -->
+  <div id="dashboardHeader">
+    <h2>🐾 Pet Exercise Dashboard</h2>
+    <button id="createProfileButton" class="dashboard-btn">+ Create Profile</button>
   </div>
+
+  <!-- Pet Entry / Form -->
+  <div id="petFormContainer"></div>
+
+  <!-- Mood Logs -->
+  <div id="moodLogs"></div>
+
+  <!-- Calendar -->
+  <div id="calendarContainer"></div>
+
+  <!-- Charts -->
+  <div id="exerciseCharts"></div>
+
+  <!-- Saved Profiles (rendered list of existing pets) -->
+  <div id="savedProfiles"></div>
+
+  <!-- Dashboard Footer -->
+  <div id="dashboardFooter">
+    <button id="logoutButton" class="dashboard-btn danger">Log Out</button>
+  </div>
+
+</div>
+
 
   <!-- ================= Scripts ================= -->
   <script src="js/auth.js" defer></script>
