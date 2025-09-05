@@ -94,16 +94,16 @@ function handleSignOut() {
 
 // --- UI Updates ---
 function updateUIForAuthState(isLoggedIn) {
-  const authSection = document.getElementById("authSection");
-  const dashboardSection = document.getElementById("dashboardSection");
+  const authSection = document.getElementById("authenticationPage");
+  const dashboardSection = document.getElementById("dashboard");
   const signInBtn = document.getElementById("signInButton");
   const signOutBtn = document.getElementById("signOutButton");
   const userWelcome = document.getElementById("userWelcome");
 
   if (isLoggedIn) {
     // Toggle visibility
-    authSection.style.display = "none";
-    dashboardSection.style.display = "block";
+    authenticationPage.style.display = "none";
+    dashboard.style.display = "block";
     signInBtn.style.display = "none";
     signOutBtn.style.display = "block";
 
@@ -119,8 +119,8 @@ function updateUIForAuthState(isLoggedIn) {
     }
   } else {
     // Toggle visibility
-    authSection.style.display = "block";
-    dashboardSection.style.display = "none";
+    authenticationPage.style.display = "block";
+    dashboard.style.display = "none";
     signInBtn.style.display = "block";
     signOutBtn.style.display = "none";
     userWelcome.style.display = "none";
