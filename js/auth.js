@@ -34,11 +34,12 @@ function setupAuthEventListeners() {
   });
 
   // Sign Out
-  document.addEventListener("click", (e) => {
-    if (e.target.id === "signOutButton") {
-      handleSignOut();
-    }
-  });
+document.addEventListener("click", (e) => {
+  if (e.target.id === "signOutButton" || e.target.id === "logoutButton") {
+    handleSignOut();
+  }
+});
+
 
   // Auth form submit
   document.addEventListener("submit", (e) => {
