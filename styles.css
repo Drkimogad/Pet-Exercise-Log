@@ -714,3 +714,144 @@ footer {
 ::-webkit-scrollbar-thumb:hover {
   background: var(--primary-mustard);
 }
+
+
+/*================================
+     Mood Logs Styles
+============================*/
+.mood-container {
+  background-color: var(--white);
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--container-border);
+}
+
+.dark-mode .mood-container {
+  background-color: var(--dark-charcoal);
+  border-color: var(--light-purple);
+}
+
+.mood-container h3 {
+  color: var(--dark-purple);
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+}
+
+.dark-mode .mood-container h3 {
+  color: var(--primary-yellow);
+}
+
+.mood-selector {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+}
+
+.emoji-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.75rem;
+  border: 2px solid var(--input-border);
+  border-radius: 8px;
+  background-color: var(--off-white);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 1.5rem;
+}
+
+.dark-mode .emoji-btn {
+  background-color: var(--light-charcoal);
+  border-color: var(--light-purple);
+}
+
+.emoji-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+  border-color: var(--primary-mustard);
+}
+
+.emoji-btn.selected {
+  border-color: var(--primary-mustard);
+  background-color: var(--primary-yellow);
+  transform: scale(1.05);
+}
+
+.mood-label {
+  font-size: 0.75rem;
+  margin-top: 0.5rem;
+  color: var(--light-charcoal);
+  font-weight: 500;
+}
+
+.dark-mode .mood-label {
+  color: var(--off-white);
+}
+
+.emoji-btn.selected .mood-label {
+  color: var(--dark-purple);
+  font-weight: 600;
+}
+
+.mood-history {
+  max-height: 300px;
+  overflow-y: auto;
+  padding-right: 0.5rem;
+}
+
+.mood-entry {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem;
+  margin-bottom: 0.5rem;
+  background-color: var(--off-white);
+  border-radius: 6px;
+  border-left: 4px solid var(--primary-yellow);
+}
+
+.dark-mode .mood-entry {
+  background-color: var(--light-charcoal);
+  border-left-color: var(--light-purple);
+}
+
+.mood-date {
+  flex: 1;
+  font-size: 0.9rem;
+  color: var(--light-charcoal);
+}
+
+.dark-mode .mood-date {
+  color: var(--off-white);
+}
+
+.mood-emoji {
+  font-size: 1.2rem;
+  margin: 0 0.5rem;
+}
+
+.no-entries {
+  text-align: center;
+  color: var(--light-charcoal);
+  font-style: italic;
+  padding: 2rem;
+}
+
+.dark-mode .no-entries {
+  color: var(--off-white);
+}
+
+/* Scrollbar for mood history */
+.mood-history::-webkit-scrollbar {
+  width: 6px;
+}
+
+.mood-history::-webkit-scrollbar-thumb {
+  background: var(--primary-yellow);
+  border-radius: 3px;
+}
+
+.mood-history::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-mustard);
+}
