@@ -20,6 +20,26 @@
   --shadow-md: 0 4px 6px rgba(0,0,0,0.15);
 }
 
+/* Global Styles */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.6;
+  color: var(--light-charcoal);
+  background-color: var(--container-bg);
+  transition: background-color 0.3s, color 0.3s;
+}
+
+body.dark-mode {
+  background-color: var(--dark-charcoal);
+  color: var(--off-white);
+}
+
 /* ============================================================
     HEADER & FOOTER STYLING
 ============================================================ */
@@ -45,17 +65,6 @@ footer {
     font-size: 1rem;
 }
 
-/* Header disappears on scroll in dashboard */
-.dashboard header {
-    position: absolute;
-    top: 0;
-    width: 100%;
-    transition: transform 0.3s ease-in-out;
-}
-
-.dashboard.scrolled header {
-    transform: translateY(-100%);
-}
 
 /* ============================================================
     AUTHENTICATION FORM STYLING
@@ -110,20 +119,35 @@ footer {
     DASHBOARD CONTAINER STYLING
 ============================================================ */
 .dashboard-container {
-    background: var(--off-white);
-    border: 2px solid var(--primary-mustard);
-    padding: 2rem;
-    box-shadow: var(--shadow-md);
+  display: grid;
+  grid-template-areas: 
+    "header header"
+    "sidebar main";
+  grid-template-columns: 300px 1fr;
+  grid-template-rows: auto 1fr;
+  gap: 1.5rem;
+  padding: 1rem;
+  max-width: 1600px;
+  margin: 0 auto;
 }
 
-/* Dashboard elements */
-.dashboard .container {
-    background: var(--light-purple);
-    border: 2px solid var(--dark-purple);
-    padding: 1rem;
-    border-radius: 1rem;
-    box-shadow: var(--shadow-sm);
+.dashboard-header {
+  grid-area: header;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background-color: var(--white);
+  border-radius: 8px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--container-border);
 }
+
+.dark-mode .dashboard-header {
+  background-color: var(--dark-charcoal);
+  border-color: var(--light-purple);
+}
+
 
 /* ============================================================
     RESPONSIVE ADJUSTMENTS
@@ -153,4 +177,540 @@ footer {
         padding: 0.5rem 1rem;
         font-size: 0.9rem;
     }
+}
+
+/* Sidebar - Saved Profiles */
+.saved-profiles {
+  grid-area: sidebar;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-height: calc(100vh - 120px);
+  overflow-y: auto;
+  padding-right: 0.5rem;
+}
+
+.profile-card {
+  background-color: var(--white);
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--container-border);
+  transition: transform 0.2s, box-shadow 0.2s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.dark-mode .profile-card {
+  background-color: var(--dark-charcoal);
+  border-color: var(--light-purple);
+}
+
+.profile-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.profile-card.active {
+  border: 2px solid var(--primary-mustard);
+}
+
+.profile-card img {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 0.5rem;
+  border: 2px solid var(--primary-yellow);
+}
+
+.profile-info {
+  flex: 1;
+  margin-bottom: 0.5rem;
+}
+
+.profile-info h4 {
+  margin-bottom: 0.25rem;
+  color: var(--dark-purple);
+}
+
+.dark-mode .profile-info h4 {
+  color: var(--primary-yellow);
+}
+
+.profile-info p {
+  margin: 0.1rem 0;
+  font-size: 0.85rem;
+  color: var(--light-charcoal);
+}
+
+.dark-mode .profile-info p {
+  color: var(--off-white);
+}
+
+/* Main Content Area */
+.dashboard-main {
+  grid-area: main;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  gap: 1.5rem;
+}
+
+.form-section {
+  background-color: var(--white);
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--container-border);
+}
+
+.dark-mode .form-section {
+  background-color: var(--dark-charcoal);
+  border-color: var(--light-purple);
+}
+
+.data-section {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.calendar-container, .charts-container {
+  background-color: var(--white);
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--container-border);
+}
+
+.dark-mode .calendar-container,
+.dark-mode .charts-container {
+  background-color: var(--dark-charcoal);
+  border-color: var(--light-purple);
+}
+
+/* Form Styles */
+.pet-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.pet-form fieldset {
+  border: 1px solid var(--primary-yellow);
+  border-radius: 8px;
+  padding: 1.5rem;
+  background-color: var(--off-white);
+}
+
+.dark-mode .pet-form fieldset {
+  border-color: var(--light-purple);
+  background-color: var(--dark-charcoal);
+}
+
+.pet-form legend {
+  font-weight: bold;
+  padding: 0 0.5rem;
+  color: var(--dark-purple);
+}
+
+.dark-mode .pet-form legend {
+  color: var(--primary-yellow);
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1rem;
+}
+
+.form-group label {
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: var(--dark-purple);
+}
+
+.dark-mode .form-group label {
+  color: var(--primary-yellow);
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  padding: 0.75rem;
+  border: 1px solid var(--input-border);
+  border-radius: 4px;
+  background-color: var(--input-bg);
+  font-size: 1rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.dark-mode .form-group input,
+.dark-mode .form-group select,
+.dark-mode .form-group textarea {
+  background-color: var(--light-charcoal);
+  color: var(--off-white);
+  border-color: var(--light-purple);
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 3px rgba(255, 183, 0, 0.2);
+}
+
+/* Image Upload */
+.image-upload {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.image-upload img {
+  width: 120px;
+  height: 120px;
+  border-radius: 8px;
+  object-fit: cover;
+  border: 2px solid var(--primary-yellow);
+}
+
+/* Buttons */
+.icon-btn, .primary-btn, .select-btn {
+  padding: 0.75rem 1.25rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.2s, transform 0.2s;
+}
+
+.icon-btn {
+  background-color: var(--primary-yellow);
+  color: var(--dark-purple);
+}
+
+.icon-btn:hover {
+  background-color: var(--primary-mustard);
+  transform: translateY(-2px);
+}
+
+.primary-btn {
+  background-color: var(--dark-purple);
+  color: var(--white);
+  align-self: flex-start;
+}
+
+.primary-btn:hover {
+  background-color: var(--light-purple);
+  transform: translateY(-2px);
+}
+
+.select-btn {
+  background-color: var(--light-purple);
+  color: var(--white);
+  font-size: 0.85rem;
+  padding: 0.5rem 1rem;
+}
+
+.select-btn:hover {
+  background-color: var(--dark-purple);
+}
+
+/* Calendar Styles */
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.calendar-header h2 {
+  color: var(--dark-purple);
+}
+
+.dark-mode .calendar-header h2 {
+  color: var(--primary-yellow);
+}
+
+.nav-btn {
+  background-color: var(--primary-yellow);
+  border: none;
+  border-radius: 4px;
+  padding: 0.5rem;
+  cursor: pointer;
+  color: var(--dark-purple);
+}
+
+.nav-btn:hover {
+  background-color: var(--primary-mustard);
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.25rem;
+}
+
+.calendar-day {
+  padding: 0.5rem;
+  text-align: center;
+  border-radius: 4px;
+  background-color: var(--off-white);
+  min-height: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.dark-mode .calendar-day {
+  background-color: var(--light-charcoal);
+}
+
+.calendar-day.header {
+  font-weight: bold;
+  background-color: var(--primary-yellow);
+  color: var(--dark-purple);
+}
+
+.calendar-day.empty {
+  background-color: transparent;
+}
+
+.calendar-day.has-exercise {
+  background-color: var(--light-purple);
+  color: var(--white);
+  cursor: pointer;
+}
+
+.calendar-day.has-exercise:hover {
+  background-color: var(--dark-purple);
+}
+
+.exercise-count {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  background-color: var(--primary-mustard);
+  color: var(--dark-purple);
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  font-size: 0.7rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Modal Styles */
+.calendar-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: var(--white);
+  border-radius: 8px;
+  padding: 1.5rem;
+  max-width: 500px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow-md);
+}
+
+.dark-mode .modal-content {
+  background-color: var(--dark-charcoal);
+}
+
+.modal-content h3 {
+  margin-bottom: 1rem;
+  color: var(--dark-purple);
+}
+
+.dark-mode .modal-content h3 {
+  color: var(--primary-yellow);
+}
+
+.exercise-entry {
+  background-color: var(--off-white);
+  border-radius: 4px;
+  padding: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.dark-mode .exercise-entry {
+  background-color: var(--light-charcoal);
+}
+
+.exercise-entry h4 {
+  color: var(--dark-purple);
+  margin-bottom: 0.25rem;
+}
+
+.dark-mode .exercise-entry h4 {
+  color: var(--primary-yellow);
+}
+
+.add-exercise-btn, .close-modal-btn {
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.add-exercise-btn {
+  background-color: var(--primary-yellow);
+  color: var(--dark-purple);
+  margin-right: 0.5rem;
+}
+
+.add-exercise-btn:hover {
+  background-color: var(--primary-mustard);
+}
+
+.close-modal-btn {
+  background-color: var(--light-charcoal);
+  color: var(--white);
+}
+
+.close-modal-btn:hover {
+  background-color: var(--dark-charcoal);
+}
+
+/* Chart Container Styles */
+.charts-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.chart {
+  background-color: var(--off-white);
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.dark-mode .chart {
+  background-color: var(--light-charcoal);
+}
+
+/* Error Messages */
+.error-message {
+  background-color: #fee;
+  color: #c33;
+  padding: 0.75rem;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  border-left: 4px solid #c33;
+}
+
+.dark-mode .error-message {
+  background-color: #422;
+  color: #f88;
+}
+
+/* Logout Message */
+.logout-message {
+  text-align: center;
+  padding: 2rem;
+  font-size: 1.5rem;
+  color: var(--dark-purple);
+}
+
+.dark-mode .logout-message {
+  color: var(--primary-yellow);
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .dashboard-container {
+    grid-template-columns: 250px 1fr;
+  }
+  
+  .data-section {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 900px) {
+  .dashboard-container {
+    grid-template-areas: 
+      "header"
+      "main"
+      "sidebar";
+    grid-template-columns: 1fr;
+  }
+  
+  .saved-profiles {
+    max-height: none;
+    flex-direction: row;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+  }
+  
+  .profile-card {
+    min-width: 200px;
+  }
+}
+
+@media (max-width: 600px) {
+  .dashboard-header {
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: stretch;
+  }
+  
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .charts-container {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--off-white);
+}
+
+.dark-mode ::-webkit-scrollbar-track {
+  background: var(--dark-charcoal);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--primary-yellow);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-mustard);
 }
