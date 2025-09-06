@@ -217,12 +217,16 @@ const Auth = (function() {
 })();
 
 //===================================
-    // petentry
+    // petentry UPDATED
 //======================
 const PetEntry = (function() {
   let activePetIndex = null;
   const MAX_PETS = 10;
   const DEFAULT_IMAGE = '/images/default-pet.png';
+  const FAVORITE_EXERCISES = ['walking', 'running', 'swimming', 'playing', 'fetch', 'agility'];
+  const PET_TYPES = ['dog', 'cat', 'bird', 'rabbit', 'hamster', 'reptile', 'other'];
+  const ENERGY_LEVELS = ['low', 'medium', 'high', 'very high'];
+  const HEALTH_STATUSES = ['excellent', 'good', 'fair', 'poor', 'under treatment'];
     
   const templates = {
     dashboard: () => `
@@ -230,6 +234,7 @@ const PetEntry = (function() {
         <header class="dashboard-header">
           <button id="addNewProfileButton" class="icon-btn">＋ New Profile</button>
           <button id="toggleModeButton" class="icon-btn">🌓 Toggle Mode</button>
+          <button id="logoutButton" class="icon-btn">🚪 Logout</button>
         </header>
         <main class="dashboard-main">
           <section class="form-section" id="petFormContainer"></section>
@@ -241,36 +246,156 @@ const PetEntry = (function() {
         <aside class="saved-profiles" id="savedProfiles"></aside>
       </div>`,
     
-    petForm: () => `
+    petForm: (pet = {}) => {
+      const petDetails = pet.petDetails || {};
+      return `
       <form id="exerciseForm" class="pet-form card">
         <fieldset class="pet-details">
           <legend>${activePetIndex === null ? 'New Pet' : 'Update Pet'}</legend>
+          
           <div class="form-group">
-            <label for="petName">Name</label>
-            <input type="text" id="petName" required>
+            <label for="petType">Pet Type *</label>
+            <select id="petType" required>
+              <option value="">Select Type</option>
+              ${PET_TYPES.map(type => `
+                <option value="${type}" ${petDetails.type === type ? 'selected' : ''}>
+                  ${type.charAt(0).toUpperCase() + type.slice(1)}
+                </option>
+              `).join('')}
+            </select>
           </div>
+          
+          <div class="form-group">
+            <label for="petName">Name *</label>
+            <input type="text" id="petName" value="${petDetails.name || ''}" required>
+          </div>
+          
           <div class="form-group">
             <label>Image</label>
             <div class="image-upload">
               <input type="file" id="petImage" accept="image/*">
-              <img id="petImagePreview" src="${DEFAULT_IMAGE}" alt="Pet Preview">
+              <img id="petImagePreview" src="${petDetails.image || DEFAULT_IMAGE}" alt="Pet Preview">
             </div>
           </div>
+          
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="petAge">Age (years)</label>
+              <input type="number" id="petAge" min="0" step="0.1" value="${petDetails.age || ''}">
+            </div>
+            
+            <div class="form-group">
+              <label for="petWeight">Weight (lbs or kg)</label>
+              <input type="number" id="petWeight" min="0" step="0.1" value="${petDetails.weight || ''}">
+            </div>
+          </div>
+          
           <div class="form-group">
-            <label for="petCharacteristics">Description</label>
-            <textarea id="petCharacteristics" rows="3"></textarea>
+            <label for="petBreed">Breed</label>
+            <input type="text" id="petBreed" value="${petDetails.breed || ''}" placeholder="e.g., Labrador, Siamese">
+          </div>
+          
+          <div class="form-group">
+            <label for="petGender">Gender</label>
+            <select id="petGender">
+              <option value="">Select Gender</option>
+              <option value="male" ${petDetails.gender === 'male' ? 'selected' : ''}>Male</option>
+              <option value="female" ${petDetails.gender === 'female' ? 'selected' : ''}>Female</option>
+              <option value="unknown" ${petDetails.gender === 'unknown' ? 'selected' : ''}>Unknown</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label for="petColor">Color/Markings</label>
+            <input type="text" id="petColor" value="${petDetails.color || ''}" placeholder="e.g., Black with white paws">
+          </div>
+          
+          <div class="form-group">
+            <label for="petMicrochip">Microchip ID</label>
+            <input type="text" id="petMicrochip" value="${petDetails.microchip || ''}" placeholder="15-digit microchip number">
+          </div>
+          
+          <div class="form-group">
+            <label for="petEnergyLevel">Energy Level</label>
+            <select id="petEnergyLevel">
+              <option value="">Select Energy Level</option>
+              ${ENERGY_LEVELS.map(level => `
+                <option value="${level}" ${petDetails.energyLevel === level ? 'selected' : ''}>
+                  ${level.charAt(0).toUpperCase() + level.slice(1)}
+                </option>
+              `).join('')}
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label for="petHealthStatus">Health Status</label>
+            <select id="petHealthStatus">
+              <option value="">Select Health Status</option>
+              ${HEALTH_STATUSES.map(status => `
+                <option value="${status}" ${petDetails.healthStatus === status ? 'selected' : ''}>
+                  ${status.charAt(0).toUpperCase() + status.slice(1)}
+                </option>
+              `).join('')}
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label for="petVetInfo">Veterinarian Information</label>
+            <textarea id="petVetInfo" rows="2" placeholder="Vet name, clinic, and contact info">${petDetails.vetInfo || ''}</textarea>
+          </div>
+          
+          <div class="form-group">
+            <label for="petVaccinations">Vaccination Records</label>
+            <textarea id="petVaccinations" rows="2" placeholder="Vaccination types and dates">${petDetails.vaccinations || ''}</textarea>
+          </div>
+          
+          <div class="form-group">
+            <label for="petMedications">Medications</label>
+            <textarea id="petMedications" rows="2" placeholder="Current medications and dosage">${petDetails.medications || ''}</textarea>
+          </div>
+          
+          <div class="form-group">
+            <label for="petAllergies">Allergies/Sensitivities</label>
+            <textarea id="petAllergies" rows="2" placeholder="Food, environmental, or medication allergies">${petDetails.allergies || ''}</textarea>
+          </div>
+          
+          <div class="form-group">
+            <label for="petDiet">Diet & Feeding Schedule</label>
+            <textarea id="petDiet" rows="2" placeholder="What, how much, and when they eat">${petDetails.diet || ''}</textarea>
+          </div>
+          
+          <div class="form-group">
+            <label for="petBehavior">Temperament & Behavior</label>
+            <textarea id="petBehavior" rows="2" placeholder="General behavior, training, socialization">${petDetails.behavior || ''}</textarea>
+          </div>
+          
+          <div class="form-group">
+            <label for="petFavoriteExercise">Favorite Exercise/Activity</label>
+            <select id="petFavoriteExercise">
+              <option value="">Select Favorite</option>
+              ${FAVORITE_EXERCISES.map(exercise => `
+                <option value="${exercise}" ${petDetails.favoriteExercise === exercise ? 'selected' : ''}>
+                  ${exercise.charAt(0).toUpperCase() + exercise.slice(1)}
+                </option>
+              `).join('')}
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label for="petNotes">Additional Notes</label>
+            <textarea id="petNotes" rows="3" placeholder="Any other important information">${petDetails.notes || ''}</textarea>
           </div>
         </fieldset>
+        
         <fieldset class="exercise-entry">
           <legend>Add Exercise</legend>
           <div class="form-grid">
             <div class="form-group">
               <label for="exerciseType">Type</label>
               <select id="exerciseType" required>
-                <option value="walking">Walking</option>
-                <option value="running">Running</option>
-                <option value="swimming">Swimming</option>
-                <option value="playing">Playing</option>
+                ${FAVORITE_EXERCISES.map(exercise => `
+                  <option value="${exercise}">${exercise.charAt(0).toUpperCase() + exercise.slice(1)}</option>
+                `).join('')}
               </select>
             </div>
             <div class="form-group">
@@ -282,15 +407,31 @@ const PetEntry = (function() {
               <input type="date" id="exerciseDate" required>
             </div>
             <div class="form-group">
-              <label for="caloriesBurned">Calories</label>
+              <label for="caloriesBurned">Calories Burned</label>
               <input type="number" id="caloriesBurned" min="1" required>
             </div>
           </div>
+          
+          <div class="form-group">
+            <label for="exerciseIntensity">Intensity Level</label>
+            <select id="exerciseIntensity">
+              <option value="low">Low</option>
+              <option value="medium" selected>Medium</option>
+              <option value="high">High</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label for="exerciseNotes">Exercise Notes</label>
+            <textarea id="exerciseNotes" rows="2" placeholder="Weather conditions, route, behavior during exercise"></textarea>
+          </div>
+          
           <button type="submit" class="primary-btn">
             ${activePetIndex === null ? 'Create Profile' : 'Add Exercise'}
           </button>
         </fieldset>
-      </form>`
+      </form>`;
+    }
   };
 
   function showExerciseLog() {
@@ -314,42 +455,107 @@ const PetEntry = (function() {
       AppHelper.refreshComponent('petFormContainer');
     });
   }
-
+    
+//==================================
+    // HANDLEFORM SUBMIT 
+//===========================
   function handleFormSubmit(e) {
     e.preventDefault();
+    
+    // Collect all form data
     const formData = {
+      petType: document.getElementById('petType').value,
       petName: document.getElementById('petName').value,
       petImage: document.getElementById('petImagePreview').src,
-      characteristics: document.getElementById('petCharacteristics').value,
+      petAge: document.getElementById('petAge').value,
+      petWeight: document.getElementById('petWeight').value,
+      petBreed: document.getElementById('petBreed').value,
+      petGender: document.getElementById('petGender').value,
+      petColor: document.getElementById('petColor').value,
+      petMicrochip: document.getElementById('petMicrochip').value,
+      petEnergyLevel: document.getElementById('petEnergyLevel').value,
+      petHealthStatus: document.getElementById('petHealthStatus').value,
+      petVetInfo: document.getElementById('petVetInfo').value,
+      petVaccinations: document.getElementById('petVaccinations').value,
+      petMedications: document.getElementById('petMedications').value,
+      petAllergies: document.getElementById('petAllergies').value,
+      petDiet: document.getElementById('petDiet').value,
+      petBehavior: document.getElementById('petBehavior').value,
+      petFavoriteExercise: document.getElementById('petFavoriteExercise').value,
+      petNotes: document.getElementById('petNotes').value,
       exerciseType: document.getElementById('exerciseType').value,
       duration: document.getElementById('exerciseDuration').value,
       date: document.getElementById('exerciseDate').value,
-      calories: document.getElementById('caloriesBurned').value
+      calories: document.getElementById('caloriesBurned').value,
+      exerciseIntensity: document.getElementById('exerciseIntensity').value,
+      exerciseNotes: document.getElementById('exerciseNotes').value
     };
 
+    // Validate required fields
     const errors = [];
-    if (!formData.petName.trim()) errors.push('Pet name required');
+    if (!formData.petType) errors.push('Pet type is required');
+    if (!formData.petName.trim()) errors.push('Pet name is required');
     if (formData.duration < 1) errors.push('Invalid duration');
     if (formData.calories < 1) errors.push('Invalid calories');
     if (errors.length) return AppHelper.showErrors(errors);
 
     const pets = getPets();
     const petData = activePetIndex !== null ? pets[activePetIndex] : {
-      petDetails: { name: '', image: DEFAULT_IMAGE, characteristics: '' },
+      petDetails: { 
+        type: '',
+        name: '', 
+        image: DEFAULT_IMAGE, 
+        age: '',
+        weight: '',
+        breed: '',
+        gender: '',
+        color: '',
+        microchip: '',
+        energyLevel: '',
+        healthStatus: '',
+        vetInfo: '',
+        vaccinations: '',
+        medications: '',
+        allergies: '',
+        diet: '',
+        behavior: '',
+        favoriteExercise: '',
+        notes: ''
+      },
       exerciseEntries: []
     };
 
+    // Update pet details with all form fields
     petData.petDetails = {
+      type: formData.petType,
       name: formData.petName,
       image: formData.petImage,
-      characteristics: formData.characteristics
+      age: formData.petAge,
+      weight: formData.petWeight,
+      breed: formData.petBreed,
+      gender: formData.petGender,
+      color: formData.petColor,
+      microchip: formData.petMicrochip,
+      energyLevel: formData.petEnergyLevel,
+      healthStatus: formData.petHealthStatus,
+      vetInfo: formData.petVetInfo,
+      vaccinations: formData.petVaccinations,
+      medications: formData.petMedications,
+      allergies: formData.petAllergies,
+      diet: formData.petDiet,
+      behavior: formData.petBehavior,
+      favoriteExercise: formData.petFavoriteExercise,
+      notes: formData.petNotes
     };
 
+    // Add exercise entry with new fields
     petData.exerciseEntries.push({
       exerciseType: formData.exerciseType,
       duration: Number(formData.duration),
       date: formData.date,
-      caloriesBurned: Number(formData.calories)
+      caloriesBurned: Number(formData.calories),
+      intensity: formData.exerciseIntensity,
+      notes: formData.exerciseNotes
     });
 
     if (activePetIndex === null) {
@@ -364,7 +570,10 @@ const PetEntry = (function() {
     sessionStorage.setItem('activePetIndex', activePetIndex);
     updateDashboard(petData);
   }
-
+    
+//============================================
+    // UPDATE DASHBOARD
+//=====================================
   function updateDashboard(petData) {
     Calendar.refresh(petData.exerciseEntries);
     Charts.refresh(petData.exerciseEntries);
@@ -372,12 +581,21 @@ const PetEntry = (function() {
     AppHelper.refreshComponent('petFormContainer');
   }
 
+//=================================
+// LOAD SAVED PROFILES
+//===========================
   function loadSavedProfiles() {
     const pets = getPets();
     const profilesHTML = pets.map((pet, index) => `
       <div class="profile-card ${index === activePetIndex ? 'active' : ''}">
         <img src="${pet.petDetails.image}" alt="${pet.petDetails.name}">
-        <h4>${pet.petDetails.name}</h4>
+        <div class="profile-info">
+          <h4>${pet.petDetails.name}</h4>
+          <p>${pet.petDetails.type ? pet.petDetails.type.charAt(0).toUpperCase() + pet.petDetails.type.slice(1) : 'Unknown type'}</p>
+          <p>${pet.petDetails.breed || 'Unknown breed'}</p>
+          <p>Age: ${pet.petDetails.age || 'Unknown'}</p>
+          <p>Exercises: ${pet.exerciseEntries.length}</p>
+        </div>
         <button class="select-btn" data-index="${index}">
           ${index === activePetIndex ? 'Selected' : 'Select'}
         </button>
@@ -394,6 +612,9 @@ const PetEntry = (function() {
     });
   }
 
+//===============================
+    // ACTVE PET DATA
+//==============================
   function loadActivePetData() {
     const savedIndex = sessionStorage.getItem('activePetIndex');
     if (savedIndex !== null) {
@@ -510,7 +731,10 @@ const Calendar = (function() {
       });
     });
   }
-
+    
+//========================================
+//SHOW DAY MODAL FUNCTION    UPDATED
+//==================================
   function showDayModal(date, entries) {
     const modalHTML = `
       <div class="calendar-modal">
@@ -518,9 +742,11 @@ const Calendar = (function() {
           <h3>Exercises for ${date}</h3>
           ${entries.length ? entries.map(e => `
             <div class="exercise-entry">
-              <span>${e.exerciseType}</span>
-              <span>${e.duration} mins</span>
-              <span>${e.caloriesBurned} cal</span>
+              <h4>${e.exerciseType.charAt(0).toUpperCase() + e.exerciseType.slice(1)}</h4>
+              <p>Duration: ${e.duration} mins</p>
+              <p>Calories: ${e.caloriesBurned} cal</p>
+              <p>Intensity: ${e.intensity || 'Not specified'}</p>
+              ${e.notes ? `<p>Notes: ${e.notes}</p>` : ''}
             </div>
           `).join('') : '<p>No exercises</p>'}
           <button class="add-exercise-btn" data-date="${date}">Add Exercise</button>
@@ -535,7 +761,8 @@ const Calendar = (function() {
         date: e.target.dataset.date,
         exerciseType: 'walking',
         duration: 30,
-        caloriesBurned: 150
+        caloriesBurned: 150,
+        intensity: 'medium'
       });
       Calendar.refresh(PetEntry.getActivePet().exerciseEntries);
       document.querySelector('.calendar-modal').remove();
@@ -545,6 +772,8 @@ const Calendar = (function() {
     });
   }
 
+
+    
   function refresh(data) {
     exerciseData = data || [];
     generateCalendar();
@@ -552,11 +781,16 @@ const Calendar = (function() {
 
   return { init, refresh };
 })();
-// Charts //
-    // Charts //
+
+//=======================================
+            // Charts //
+//=============================================
     const Charts = (function() {
       let durationChart, caloriesChart, activityChart;
 
+// ================================================
+// INIT SELECTOR FUNCTION                UPDATED
+//====================================================
       function init(selector) {
         const container = document.querySelector(selector);
         if (!container) return;
@@ -570,9 +804,16 @@ const Calendar = (function() {
           <div class="chart">
             <canvas id="caloriesChart"></canvas>
           </div>
+          <div class="chart">
+            <canvas id="intensityChart"></canvas>
+          </div>
         `;
       }
 
+
+//====================================
+// REFRESH DATA FUNCTION     UPDATED
+//=====================================
       function refresh(data) {
         if (!data.length) return;
         destroyCharts();
@@ -581,8 +822,12 @@ const Calendar = (function() {
         createDurationChart(processed);
         createActivityChart(processed);
         createCaloriesChart(processed);
+        createIntensityChart(processed);
       }
 
+//=========================================
+// PROCESS DATA FUNCTION
+//===========================
       function processData(data) {
         return {
           labels: [...new Set(data.map(e => e.date))].sort(),
@@ -597,10 +842,45 @@ const Calendar = (function() {
           activities: data.reduce((acc, e) => {
             acc[e.exerciseType] = (acc[e.exerciseType] || 0) + 1;
             return acc;
+          }, {}),
+          intensity: data.reduce((acc, e) => {
+            acc[e.intensity] = (acc[e.intensity] || 0) + 1;
+            return acc;
           }, {})
         };
       }
 
+//==========================================
+// NEW FUNCTION FOR INTENSITY RECENTLY ADDED
+//============================================
+      function createIntensityChart(data) {
+        const ctx = document.getElementById('intensityChart');
+        if (!ctx) return;
+        
+        intensityChart = new Chart(ctx, {
+          type: 'pie',
+          data: {
+            labels: Object.keys(data.intensity),
+            datasets: [{
+              data: Object.values(data.intensity),
+              backgroundColor: ['#36a2eb', '#ffce56', '#ff6384']
+            }]
+          },
+          options: {
+            plugins: {
+              title: {
+                display: true,
+                text: 'Exercise Intensity Distribution'
+              }
+            }
+          }
+        });
+      }
+
+
+//===========================================
+// CREATE DURATION CHART FUNCTION
+//======================================
       function createDurationChart(data) {
         const ctx = document.getElementById('durationChart');
         durationChart = new Chart(ctx, {
