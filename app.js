@@ -626,50 +626,205 @@ function updateDashboard(petData) {
 //=================================
 // LOAD SAVED PROFILES.  enhanced 
 //===========================
+//=================================
+// LOAD SAVED PROFILES - Enhanced with full CRUD operations
+//===========================
 function loadSavedProfiles() {
   const pets = getPets();
   const profilesHTML = pets.map((pet, index) => `
-    <div class="profile-card ${index === activePetIndex ? 'active' : ''}">
+    <div class="profile-card ${index === activePetIndex ? 'active' : ''}" data-pet-index="${index}">
       <img src="${pet.petDetails.image}" alt="${pet.petDetails.name}">
       <div class="profile-info">
         <h4>${pet.petDetails.name}</h4>
-        <p>${pet.petDetails.type ? pet.petDetails.type.charAt(0).toUpperCase() + pet.petDetails.type.slice(1) : 'Unknown type'}</p>
-        <p>${pet.petDetails.breed || 'Unknown breed'}</p>
-        <p>Age: ${pet.petDetails.age || 'Unknown'}</p>
-        <p>Exercises: ${pet.exerciseEntries.length}</p>
-        ${pet.moodLogs ? `<p>Mood Entries: ${pet.moodLogs.length}</p>` : ''}
+        <p>Type: ${pet.petDetails.type ? pet.petDetails.type.charAt(0).toUpperCase() + pet.petDetails.type.slice(1) : 'Unknown'}</p>
+        <p>Breed: ${pet.petDetails.breed || 'Unknown'}</p>
+        <p>Age: ${pet.petDetails.age || 'Unknown'} years</p>
+        <p>Weight: ${pet.petDetails.weight || 'Unknown'}</p>
+        <div class="profile-stats">
+          <span class="stat-badge">${pet.exerciseEntries.length} exercises</span>
+          ${pet.moodLogs ? `<span class="stat-badge">${pet.moodLogs.length} moods</span>` : ''}
+        </div>
       </div>
-      <button class="select-btn" data-index="${index}">
-        ${index === activePetIndex ? 'Selected' : 'Select'}
-      </button>
-      <button class="report-btn" data-index="${index}">
-        📊 Report
-      </button>
+      <div class="profile-actions">
+        <button class="select-btn" data-index="${index}" title="Select this pet">
+          ${index === activePetIndex ? '✅ Selected' : '👉 Select'}
+        </button>
+        <button class="edit-btn" data-index="${index}" title="Edit pet details">
+          ✏️ Edit
+        </button>
+        <button class="delete-btn" data-index="${index}" title="Delete this pet">
+          🗑️ Delete
+        </button>
+        <button class="report-btn" data-index="${index}" title="Generate report">
+          📊 Report
+        </button>
+        <button class="share-btn" data-index="${index}" title="Share pet profile">
+          📤 Share
+        </button>
+      </div>
     </div>
   `).join('');
 
   AppHelper.renderComponent('savedProfiles', profilesHTML);
   
-  // Add event listeners
+  // Add event listeners for all buttons
+  setupProfileEventListeners();
+}
+
+//=================================
+// SETUP PROFILE EVENT LISTENERS
+//===========================
+function setupProfileEventListeners() {
+  // Select button
   document.querySelectorAll('.select-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      activePetIndex = parseInt(btn.dataset.index);
-      sessionStorage.setItem('activePetIndex', activePetIndex);
-      updateDashboard(getPets()[activePetIndex]);
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const index = parseInt(btn.dataset.index);
+      selectPetProfile(index);
     });
   });
 
-  // ADD REPORT BUTTON LISTENERS
+  // Edit button
+  document.querySelectorAll('.edit-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const index = parseInt(btn.dataset.index);
+      editPetProfile(index);
+    });
+  });
+
+  // Delete button
+  document.querySelectorAll('.delete-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const index = parseInt(btn.dataset.index);
+      deletePetProfile(index);
+    });
+  });
+
+  // Report button
   document.querySelectorAll('.report-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const petIndex = parseInt(btn.dataset.index);
-      const pet = getPets()[petIndex];
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const index = parseInt(btn.dataset.index);
+      const pet = getPets()[index];
       if (pet) {
         Report.generatePDF(pet);
       }
     });
   });
+
+  // Share button
+  document.querySelectorAll('.share-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const index = parseInt(btn.dataset.index);
+      sharePetProfile(index);
+    });
+  });
+
+  // Click anywhere on card to select
+  document.querySelectorAll('.profile-card').forEach(card => {
+    card.addEventListener('click', (e) => {
+      if (!e.target.closest('.profile-actions')) {
+        const index = parseInt(card.dataset.petIndex);
+        selectPetProfile(index);
+      }
+    });
+  });
 }
+
+//=================================
+// PROFILE ACTION FUNCTIONS
+//===========================
+function selectPetProfile(index) {
+  activePetIndex = index;
+  sessionStorage.setItem('activePetIndex', activePetIndex);
+  updateDashboard(getPets()[activePetIndex]);
+  loadSavedProfiles(); // Refresh to show selected state
+}
+
+function editPetProfile(index) {
+  activePetIndex = index;
+  sessionStorage.setItem('activePetIndex', activePetIndex);
+  
+  // Load the pet data into the form
+  const pet = getPets()[index];
+  if (pet) {
+    AppHelper.refreshComponent('petFormContainer');
+    
+    // Fill form fields with existing data (you may need to add this functionality)
+    setTimeout(() => {
+      if (document.getElementById('petName')) {
+        document.getElementById('petName').value = pet.petDetails.name || '';
+        document.getElementById('petType').value = pet.petDetails.type || '';
+        document.getElementById('petAge').value = pet.petDetails.age || '';
+        document.getElementById('petWeight').value = pet.petDetails.weight || '';
+        document.getElementById('petBreed').value = pet.petDetails.breed || '';
+        document.getElementById('petGender').value = pet.petDetails.gender || '';
+        document.getElementById('petColor').value = pet.petDetails.color || '';
+        document.getElementById('petCharacteristics').value = pet.petDetails.characteristics || '';
+        document.getElementById('petDiet').value = pet.petDetails.diet || '';
+        document.getElementById('petHealthStatus').value = pet.petDetails.healthStatus || '';
+        document.getElementById('petAllergies').value = pet.petDetails.allergies || '';
+        document.getElementById('petBehavior').value = pet.petDetails.behavior || '';
+        document.getElementById('petFavoriteExercise').value = pet.petDetails.favoriteExercise || '';
+        document.getElementById('petNotes').value = pet.petDetails.notes || '';
+        
+        if (pet.petDetails.image && document.getElementById('petImagePreview')) {
+          document.getElementById('petImagePreview').src = pet.petDetails.image;
+        }
+      }
+    }, 100);
+  }
+}
+
+function deletePetProfile(index) {
+  if (confirm('Are you sure you want to delete this pet profile? This action cannot be undone.')) {
+    const pets = getPets();
+    pets.splice(index, 1);
+    localStorage.setItem('pets', JSON.stringify(pets));
+    
+    if (activePetIndex === index) {
+      activePetIndex = null;
+      sessionStorage.removeItem('activePetIndex');
+      AppHelper.refreshComponent('petFormContainer');
+    }
+    
+    loadSavedProfiles();
+    AppHelper.showError('Profile deleted successfully');
+  }
+}
+
+function sharePetProfile(index) {
+  const pet = getPets()[index];
+  if (!pet) return;
+  
+  const shareData = {
+    title: `${pet.petDetails.name}'s Profile`,
+    text: `Check out ${pet.petDetails.name}'s pet profile on Pet Exercise Log!`,
+    url: window.location.href
+  };
+  
+  if (navigator.share) {
+    navigator.share(shareData)
+      .then(() => console.log('Profile shared successfully'))
+      .catch(error => console.log('Error sharing:', error));
+  } else {
+    // Fallback: copy to clipboard
+    const profileText = `Pet: ${pet.petDetails.name}\nType: ${pet.petDetails.type}\nBreed: ${pet.petDetails.breed}\nAge: ${pet.petDetails.age}`;
+    navigator.clipboard.writeText(profileText)
+      .then(() => {
+        AppHelper.showError('Profile details copied to clipboard!');
+      })
+      .catch(err => {
+        console.error('Failed to copy: ', err);
+        AppHelper.showError('Sharing not supported on this browser');
+      });
+  }
+}
+
+    
 
 //===============================
     // ACTVE PET DATA
