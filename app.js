@@ -481,16 +481,34 @@ function showExerciseLog() {
   loadSavedProfiles();
   loadActivePetData();
 }
-
-  function setupEventListeners() {
-    document.getElementById('exerciseForm')?.addEventListener('submit', handleFormSubmit);
-    document.getElementById('petImage')?.addEventListener('change', handleImageUpload);
-    document.getElementById('toggleModeButton')?.addEventListener('click', toggleDarkMode);
-    document.getElementById('addNewProfileButton')?.addEventListener('click', () => {
+//===============================
+// Setup eventlisteners function 
+//===========≈===================
+function setupEventListeners() {
+  // Use event delegation for dynamically created buttons
+  document.addEventListener('click', function(e) {
+    // Logout button handler
+    if (e.target.id === 'logoutButton' || e.target.closest('#logoutButton')) {
+      e.preventDefault();
+      Auth.logout();
+    }
+    
+    // New Profile button handler
+    if (e.target.id === 'addNewProfileButton' || e.target.closest('#addNewProfileButton')) {
+      e.preventDefault();
       activePetIndex = null;
       AppHelper.refreshComponent('petFormContainer');
-    });
-  }
+      
+      // Also clear any selected state in profiles
+      loadSavedProfiles();
+    }
+  });
+
+  // Existing form and image listeners (they work because they're re-attached on refresh)
+  document.getElementById('exerciseForm')?.addEventListener('submit', handleFormSubmit);
+  document.getElementById('petImage')?.addEventListener('change', handleImageUpload);
+  document.getElementById('toggleModeButton')?.addEventListener('click', toggleDarkMode);
+}
     
 //==================================
     // HANDLEFORM SUBMIT 
