@@ -241,6 +241,7 @@ const PetEntry = (function() {
           <section class="data-section">
             <div class="calendar-container" id="exerciseCalendar"></div>
             <div class="charts-container" id="exerciseCharts"></div>
+            <div class="mood-container" id="moodLogs"></div> <!-- ADD THIS LINE -->
           </section>
         </main>
         <aside class="saved-profiles" id="savedProfiles"></aside>
