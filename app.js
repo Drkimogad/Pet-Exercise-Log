@@ -435,17 +435,21 @@ const PetEntry = (function() {
     }
   };
 
-  function showExerciseLog() {
-    AppHelper.showPage(templates.dashboard());
-    AppHelper.registerComponent('petFormContainer', () => templates.petForm());
-    AppHelper.refreshComponent('petFormContainer');
-    
-    Calendar.init('#exerciseCalendar');
-    Charts.init('#exerciseCharts');
-    setupEventListeners();
-    loadSavedProfiles();
-    loadActivePetData();
-  }
+//==================
+ // show exercise log function 
+ //========================
+function showExerciseLog() {
+  AppHelper.showPage(templates.dashboard());
+  AppHelper.registerComponent('petFormContainer', () => templates.petForm(currentPet));
+  AppHelper.refreshComponent('petFormContainer');
+  
+  Calendar.init('#exerciseCalendar');
+  Charts.init('#exerciseCharts');
+  MoodLogs.renderMoodLogs(); // <-- ADD THIS LINE
+  setupEventListeners();
+  loadSavedProfiles();
+  loadActivePetData();
+}
 
   function setupEventListeners() {
     document.getElementById('exerciseForm')?.addEventListener('submit', handleFormSubmit);
