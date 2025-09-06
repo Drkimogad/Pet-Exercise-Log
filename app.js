@@ -644,11 +644,174 @@ const PetEntry = (function() {
   return {
     showExerciseLog,
     getPets: () => JSON.parse(localStorage.getItem('pets') || '[]'),
+    getActivePetIndex: () => activePetIndex,  // <-- ADD THIS LINE HERE FOR MOOD
     getActivePet: () => activePetIndex !== null ? this.getPets()[activePetIndex] : null
   };
 })();
 
-// Calendar //
+
+//=====================================
+   //     MOOD LOGS
+//=======================================
+// MOODLOGS - Enhanced Version
+const MoodLogs = (function() {
+  const MOOD_OPTIONS = [
+    { value: 0, emoji: '😀', label: 'Happy' },
+    { value: 1, emoji: '😊', label: 'Content' },
+    { value: 2, emoji: '😐', label: 'Neutral' },
+    { value: 3, emoji: '😞', label: 'Sad' },
+    { value: 4, emoji: '😠', label: 'Angry' },
+    { value: 5, emoji: '🤢', label: 'Sick' },
+    { value: 6, emoji: '😤', label: 'Aggressive' },
+    { value: 7, emoji: '😔', label: 'Depressed' },
+    { value: 8, emoji: '😴', label: 'Tired' },
+    { value: 9, emoji: '😰', label: 'Anxious' }
+  ];
+
+  function renderMoodLogs() {
+    const activePetIndex = PetEntry.getActivePetIndex();
+    const pets = PetEntry.getPets();
+    
+    if (activePetIndex !== null && pets[activePetIndex]) {
+      const activePet = pets[activePetIndex];
+      const moodLogs = activePet.moodLogs || [];
+      
+      const today = new Date().toISOString().split('T')[0];
+      
+      const html = `
+        <div class="mood-container">
+          <h3>Today's Mood</h3>
+          <div class="mood-selector">
+            ${MOOD_OPTIONS.map(mood => `
+              <button class="emoji-btn" data-mood="${mood.value}" data-date="${today}" 
+                      title="${mood.label}">
+                ${mood.emoji}
+                <span class="mood-label">${mood.label}</span>
+              </button>
+            `).join('')}
+          </div>
+          
+          <h3>Mood History</h3>
+          <div class="mood-history">
+            ${moodLogs.length > 0 ? moodLogs.map(log => {
+              const mood = MOOD_OPTIONS.find(m => m.value === log.mood) || MOOD_OPTIONS[0];
+              return `
+                <div class="mood-entry">
+                  <span class="mood-date">${formatDate(log.date)}</span>
+                  <span class="mood-emoji">${mood.emoji}</span>
+                  <span class="mood-label">${mood.label}</span>
+                </div>
+              `;
+            }).join('') : '<p class="no-entries">No mood entries yet</p>'}
+          </div>
+        </div>
+      `;
+      
+      const moodContainer = document.getElementById('moodLogs');
+      if (moodContainer) {
+        moodContainer.innerHTML = html;
+        attachMoodSelectionHandler();
+        
+        // Highlight today's mood if already logged
+        const todayMood = moodLogs.find(log => log.date === today);
+        if (todayMood) {
+          const todayBtn = moodContainer.querySelector(`.emoji-btn[data-mood="${todayMood.mood}"]`);
+          if (todayBtn) todayBtn.classList.add('selected');
+        }
+      }
+    }
+  }
+
+  function formatDate(dateStr) {
+    try {
+      const date = new Date(dateStr);
+      return date.toLocaleDateString('en-US', { 
+        weekday: 'short', 
+        month: 'short', 
+        day: 'numeric' 
+      });
+    } catch (e) {
+      console.error('Date formatting error:', e);
+      return dateStr;
+    }
+  }
+
+  function handleMoodSelection(e) {
+    if (e.target.classList.contains('emoji-btn') || 
+        e.target.closest('.emoji-btn')) {
+      
+      const btn = e.target.classList.contains('emoji-btn') ? 
+                 e.target : e.target.closest('.emoji-btn');
+      
+      const moodValue = parseInt(btn.dataset.mood);
+      const date = btn.dataset.date;
+      
+      const activePetIndex = PetEntry.getActivePetIndex();
+      const pets = PetEntry.getPets();
+      
+      if (activePetIndex !== null && pets[activePetIndex]) {
+        // Create a copy to avoid direct mutation
+        const updatedPets = [...pets];
+        let pet = { ...updatedPets[activePetIndex] };
+        
+        // Initialize moodLogs array if it doesn't exist
+        pet.moodLogs = pet.moodLogs || [];
+        
+        // Remove any existing mood log for today
+        pet.moodLogs = pet.moodLogs.filter(log => log.date !== date);
+        
+        // Add the new mood log
+        pet.moodLogs.push({ 
+          date: date, 
+          mood: moodValue,
+          timestamp: new Date().toISOString()
+        });
+        
+        // Sort by date (newest first)
+        pet.moodLogs.sort((a, b) => new Date(b.date) - new Date(a.date));
+        
+        updatedPets[activePetIndex] = pet;
+        
+        // Save back to localStorage
+        localStorage.setItem('pets', JSON.stringify(updatedPets));
+        
+        // Update UI
+        document.querySelectorAll('.emoji-btn').forEach(btn => 
+          btn.classList.remove('selected')
+        );
+        btn.classList.add('selected');
+        
+        // Re-render mood logs
+        renderMoodLogs();
+      }
+    }
+  }
+
+  function attachMoodSelectionHandler() {
+    const moodContainer = document.getElementById('moodLogs');
+    if (moodContainer) {
+      moodContainer.addEventListener('click', handleMoodSelection);
+    }
+  }
+
+  // Initialize when DOM is ready
+  document.addEventListener('DOMContentLoaded', function() {
+    // Check if mood logs container exists and user is logged in
+    if (document.getElementById('moodLogs') && sessionStorage.getItem('user')) {
+      setTimeout(renderMoodLogs, 100); // Small delay to ensure pets are loaded
+    }
+  });
+
+  return {
+    renderMoodLogs: renderMoodLogs
+  };
+})();
+
+
+
+//======================================
+        // Calendar //
+//=================================
 const Calendar = (function() {
   let currentMonth = new Date().getMonth();
   let currentYear = new Date().getFullYear();
