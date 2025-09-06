@@ -216,6 +216,36 @@ const Auth = (function() {
   };
 })();
 
+//=================================
+//Add This Helper Method to PetEntry:
+//==================================
+function initializeNewPet() {
+  return {
+    petDetails: { 
+      type: '',
+      name: '', 
+      image: DEFAULT_IMAGE, 
+      age: '',
+      weight: '',
+      breed: '',
+      gender: '',
+      color: '',
+      microchip: '',
+      energyLevel: '',
+      healthStatus: '',
+      vetInfo: '',
+      vaccinations: '',
+      medications: '',
+      allergies: '',
+      diet: '',
+      behavior: '',
+      favoriteExercise: '',
+      notes: ''
+    },
+    exerciseEntries: [],
+    moodLogs: []  // Ensure moodLogs array is initialized
+  };
+}
 //===================================
     // petentry UPDATED
 //======================
@@ -428,8 +458,9 @@ const PetEntry = (function() {
           </div>
           
           <button type="submit" class="primary-btn">
-            ${activePetIndex === null ? 'Create Profile' : 'Add Exercise'}
-          </button>
+             ${activePetIndex === null ? 'Create Complete Profile' : 'Add Exercise & Update Profile'}
+           </button>
+          
         </fieldset>
       </form>`;
     }
@@ -495,7 +526,9 @@ function showExerciseLog() {
       exerciseIntensity: document.getElementById('exerciseIntensity').value,
       exerciseNotes: document.getElementById('exerciseNotes').value
     };
+    
 
+      
     // Validate required fields
     const errors = [];
     if (!formData.petType) errors.push('Pet type is required');
@@ -505,30 +538,8 @@ function showExerciseLog() {
     if (errors.length) return AppHelper.showErrors(errors);
 
     const pets = getPets();
-    const petData = activePetIndex !== null ? pets[activePetIndex] : {
-      petDetails: { 
-        type: '',
-        name: '', 
-        image: DEFAULT_IMAGE, 
-        age: '',
-        weight: '',
-        breed: '',
-        gender: '',
-        color: '',
-        microchip: '',
-        energyLevel: '',
-        healthStatus: '',
-        vetInfo: '',
-        vaccinations: '',
-        medications: '',
-        allergies: '',
-        diet: '',
-        behavior: '',
-        favoriteExercise: '',
-        notes: ''
-      },
-      exerciseEntries: []
-    };
+    const petData = activePetIndex !== null ? pets[activePetIndex] : initializeNewPet();
+      // it retrieves everything via the helper
 
     // Update pet details with all form fields
     petData.petDetails = {
@@ -554,14 +565,17 @@ function showExerciseLog() {
     };
 
     // Add exercise entry with new fields
-    petData.exerciseEntries.push({
-      exerciseType: formData.exerciseType,
-      duration: Number(formData.duration),
-      date: formData.date,
-      caloriesBurned: Number(formData.calories),
-      intensity: formData.exerciseIntensity,
-      notes: formData.exerciseNotes
-    });
+// Only add exercise if we're updating an existing profile
+if (activePetIndex !== null) {
+  petData.exerciseEntries.push({
+    exerciseType: formData.exerciseType,
+    duration: Number(formData.duration),
+    date: formData.date,
+    caloriesBurned: Number(formData.calories),
+    intensity: formData.exerciseIntensity,
+    notes: formData.exerciseNotes
+  });
+}
 
     if (activePetIndex === null) {
       if (pets.length >= MAX_PETS) return AppHelper.showError('Maximum profiles reached');
@@ -579,12 +593,15 @@ function showExerciseLog() {
 //============================================
     // UPDATE DASHBOARD
 //=====================================
-  function updateDashboard(petData) {
-    Calendar.refresh(petData.exerciseEntries);
-    Charts.refresh(petData.exerciseEntries);
-    loadSavedProfiles();
-    AppHelper.refreshComponent('petFormContainer');
+function updateDashboard(petData) {
+  Calendar.refresh(petData.exerciseEntries || []);
+  Charts.refresh(petData.exerciseEntries || []);
+  if (typeof MoodLogs !== 'undefined' && MoodLogs.renderMoodLogs) {
+    MoodLogs.renderMoodLogs();
   }
+  loadSavedProfiles();
+  AppHelper.refreshComponent('petFormContainer');
+}
 
 //=================================
 // LOAD SAVED PROFILES
@@ -647,11 +664,12 @@ function showExerciseLog() {
   }
 
   return {
-    showExerciseLog,
-    getPets: () => JSON.parse(localStorage.getItem('pets') || '[]'),
-    getActivePetIndex: () => activePetIndex,  // <-- ADD THIS LINE HERE FOR MOOD
-    getActivePet: () => activePetIndex !== null ? this.getPets()[activePetIndex] : null
-  };
+  showExerciseLog,
+  getPets: () => JSON.parse(localStorage.getItem('pets') || '[]'),
+  getActivePetIndex: () => activePetIndex,
+  getActivePet: () => activePetIndex !== null ? this.getPets()[activePetIndex] : null,
+  initializeNewPet  // Add this if you need it externally
+};
 })();
 
 
