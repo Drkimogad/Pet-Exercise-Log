@@ -782,11 +782,13 @@ const Calendar = (function() {
   return { init, refresh };
 })();
 
+
 //=======================================
+// Everything related to CHARTS IS HERE
             // Charts //
 //=============================================
     const Charts = (function() {
-      let durationChart, caloriesChart, activityChart;
+  let durationChart, caloriesChart, activityChart, intensityChart;
 
 // ================================================
 // INIT SELECTOR FUNCTION                UPDATED
@@ -926,19 +928,28 @@ const Calendar = (function() {
         });
       }
         
+//===========================================
+// DESTROYER CHART FUNCTION         UPDATED
+//============================================
       function destroyCharts() {
-         if (durationChart) durationChart.destroy();
-         if (activityChart) durationChart.destroy();
-         if (caloriesChart) durationChart.destroy();
-       }
-     
-       function updateColors() {
-         const textColor = document.body.classList.contains('dark-mode') ? '#fff' : '#374151';
-         Chart.defaults.color = textColor;
-         if (durationChart) durationChart.update();
-         if (activityChart) durationChart.update();
-         if (caloriesChart) durationChart.update();
-       }
+        if (durationChart) durationChart.destroy();
+        if (activityChart) activityChart.destroy();
+        if (caloriesChart) caloriesChart.destroy();
+        if (intensityChart) intensityChart.destroy();
+      }
+
+        
+//============================================
+// COLOR FUNCTION              UPDATED
+//=====================================================
+      function updateColors() {
+        const textColor = document.body.classList.contains('dark-mode') ? '#fff' : '#374151';
+        Chart.defaults.color = textColor;
+        if (durationChart) durationChart.update();
+        if (activityChart) activityChart.update();
+        if (caloriesChart) caloriesChart.update();
+        if (intensityChart) intensityChart.update();
+      }
 
       return { init, refresh, updateColors };  
     })(); // ✅ Properly close IIFE
