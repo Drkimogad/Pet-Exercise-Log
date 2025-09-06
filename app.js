@@ -216,7 +216,9 @@ const Auth = (function() {
   };
 })();
 
-// petentry//
+//===================================
+    // petentry
+//======================
 const PetEntry = (function() {
   let activePetIndex = null;
   const MAX_PETS = 10;
