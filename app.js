@@ -42,6 +42,8 @@ window.addEventListener('beforeinstallprompt', (event) => {
     }
 });
 
+// Add this near the top of your app.js, after your other constants
+const MOOD_EMOJIS = ['😀', '😊', '😐', '😞', '😠', '🤢', '😤', '😔', '😴', '😰'];
 
 // ✅ Service Worker Registration
 function registerServiceWorker() {
@@ -622,35 +624,52 @@ function updateDashboard(petData) {
 }
 
 //=================================
-// LOAD SAVED PROFILES
+// LOAD SAVED PROFILES.  enhanced 
 //===========================
-  function loadSavedProfiles() {
-    const pets = getPets();
-    const profilesHTML = pets.map((pet, index) => `
-      <div class="profile-card ${index === activePetIndex ? 'active' : ''}">
-        <img src="${pet.petDetails.image}" alt="${pet.petDetails.name}">
-        <div class="profile-info">
-          <h4>${pet.petDetails.name}</h4>
-          <p>${pet.petDetails.type ? pet.petDetails.type.charAt(0).toUpperCase() + pet.petDetails.type.slice(1) : 'Unknown type'}</p>
-          <p>${pet.petDetails.breed || 'Unknown breed'}</p>
-          <p>Age: ${pet.petDetails.age || 'Unknown'}</p>
-          <p>Exercises: ${pet.exerciseEntries.length}</p>
-        </div>
-        <button class="select-btn" data-index="${index}">
-          ${index === activePetIndex ? 'Selected' : 'Select'}
-        </button>
+function loadSavedProfiles() {
+  const pets = getPets();
+  const profilesHTML = pets.map((pet, index) => `
+    <div class="profile-card ${index === activePetIndex ? 'active' : ''}">
+      <img src="${pet.petDetails.image}" alt="${pet.petDetails.name}">
+      <div class="profile-info">
+        <h4>${pet.petDetails.name}</h4>
+        <p>${pet.petDetails.type ? pet.petDetails.type.charAt(0).toUpperCase() + pet.petDetails.type.slice(1) : 'Unknown type'}</p>
+        <p>${pet.petDetails.breed || 'Unknown breed'}</p>
+        <p>Age: ${pet.petDetails.age || 'Unknown'}</p>
+        <p>Exercises: ${pet.exerciseEntries.length}</p>
+        ${pet.moodLogs ? `<p>Mood Entries: ${pet.moodLogs.length}</p>` : ''}
       </div>
-    `).join('');
+      <button class="select-btn" data-index="${index}">
+        ${index === activePetIndex ? 'Selected' : 'Select'}
+      </button>
+      <button class="report-btn" data-index="${index}">
+        📊 Report
+      </button>
+    </div>
+  `).join('');
 
-    AppHelper.renderComponent('savedProfiles', profilesHTML);
-    document.querySelectorAll('.select-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        activePetIndex = parseInt(btn.dataset.index);
-        sessionStorage.setItem('activePetIndex', activePetIndex);
-        updateDashboard(getPets()[activePetIndex]);
-      });
+  AppHelper.renderComponent('savedProfiles', profilesHTML);
+  
+  // Add event listeners
+  document.querySelectorAll('.select-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      activePetIndex = parseInt(btn.dataset.index);
+      sessionStorage.setItem('activePetIndex', activePetIndex);
+      updateDashboard(getPets()[activePetIndex]);
     });
-  }
+  });
+
+  // ADD REPORT BUTTON LISTENERS
+  document.querySelectorAll('.report-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const petIndex = parseInt(btn.dataset.index);
+      const pet = getPets()[petIndex];
+      if (pet) {
+        Report.generatePDF(pet);
+      }
+    });
+  });
+}
 
 //===============================
     // ACTVE PET DATA
@@ -848,7 +867,269 @@ const MoodLogs = (function() {
   };
 })();
 
+//============================================
+// REPORT GENERATOR - Add this after MoodLogs
+//============================================
+const Report = (function() {
+  const generatePDF = (pet) => {
+    const reportWindow = window.open('', '_blank');
+    reportWindow.document.write(`
+      <html>
+        <head>
+          <title>Monthly Pet Report: ${pet.petDetails.name}</title>
+          <style>
+            body { font-family: sans-serif; padding: 20px; }
+            h1, h2 { text-align: center; color: #301934; }
+            table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+            th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
+            .calendar-grid { 
+              display: grid; 
+              grid-template-columns: repeat(7, 1fr); 
+              gap: 5px; 
+              margin: 15px 0;
+            }
+            .calendar-day { 
+              padding: 10px; 
+              border: 1px solid #ddd; 
+              text-align: center;
+              min-height: 40px;
+            }
+            .mood-emoji { font-size: 1.5em; }
+            .chart-container { width: 100%; height: 300px; margin: 20px 0; }
+            .summary-stats { 
+              display: grid; 
+              grid-template-columns: repeat(3, 1fr); 
+              gap: 15px; 
+              margin: 20px 0;
+            }
+            .stat-box { 
+              background: #f0f0f0; 
+              padding: 15px; 
+              border-radius: 8px; 
+              text-align: center;
+            }
+            .button-container { 
+              text-align: center; 
+              margin: 20px 0;
+            }
+            button { 
+              padding: 10px 20px; 
+              margin: 0 10px; 
+              background: #301934; 
+              color: white; 
+              border: none; 
+              border-radius: 4px; 
+              cursor: pointer;
+            }
+            button:hover { background: #4a235a; }
+          </style>
+        </head>
+        <body>
+          <h1>Monthly Pet Report: ${pet.petDetails.name}</h1>
+          ${generatePetDetails(pet)}
+          ${generateExerciseSummary(pet.exerciseEntries)}
+          ${generateExerciseCalendar(pet)}
+          ${pet.moodLogs && pet.moodLogs.length > 0 ? generateMoodCalendar(pet) : ''}
+          ${pet.exerciseEntries && pet.exerciseEntries.length > 0 ? generateExerciseCharts(pet.exerciseEntries) : ''}
+          <div class="button-container">
+            <button onclick="window.print()">Print Report</button>
+            <button onclick="window.close()">Close</button>
+          </div>
+        </body>
+      </html>
+    `);
+    reportWindow.document.close();
+  };
 
+  const generatePetDetails = (pet) => {
+    return `
+      <div>
+        <h2>Pet Details</h2>
+        <table>
+          <tr><th>Name</th><th>Age</th><th>Weight</th><th>Breed</th><th>Gender</th></tr>
+          <tr>
+            <td>${pet.petDetails.name || 'N/A'}</td>
+            <td>${pet.petDetails.age || 'N/A'}</td>
+            <td>${pet.petDetails.weight || 'N/A'}</td>
+            <td>${pet.petDetails.breed || 'N/A'}</td>
+            <td>${pet.petDetails.gender || 'N/A'}</td>
+          </tr>
+        </table>
+      </div>
+    `;
+  };
+
+  const generateExerciseCalendar = (pet) => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = now.getMonth();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const firstDay = new Date(year, month, 1).getDay();
+    
+    let calendarHtml = `
+      <h2>Exercise Calendar - ${now.toLocaleString('default', { month: 'long', year: 'numeric' })}</h2>
+      <div class="calendar-grid">
+      ${['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => 
+        `<div class="calendar-day" style="font-weight:bold;">${day}</div>`
+      ).join('')}
+    `;
+    
+    // Empty days for the first week
+    for (let i = 0; i < firstDay; i++) {
+      calendarHtml += '<div class="calendar-day"></div>';
+    }
+    
+    for (let day = 1; day <= daysInMonth; day++) {
+      const dateStr = `${year}-${(month + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+      const hasExercise = pet.exerciseEntries?.some(entry => entry.date === dateStr);
+      calendarHtml += `<div class="calendar-day">${day} ${hasExercise ? '✅' : ''}</div>`;
+    }
+    
+    calendarHtml += '</div>';
+    return calendarHtml;
+  };
+
+  const generateMoodCalendar = (pet) => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = now.getMonth();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const firstDay = new Date(year, month, 1).getDay();
+    
+    let moodHtml = `
+      <h2>Mood Calendar - ${now.toLocaleString('default', { month: 'long', year: 'numeric' })}</h2>
+      <div class="calendar-grid">
+      ${['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => 
+        `<div class="calendar-day" style="font-weight:bold;">${day}</div>`
+      ).join('')}
+    `;
+    
+    // Empty days for the first week
+    for (let i = 0; i < firstDay; i++) {
+      moodHtml += '<div class="calendar-day"></div>';
+    }
+    
+    for (let day = 1; day <= daysInMonth; day++) {
+      const dateStr = `${year}-${(month + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+      const moodEntry = pet.moodLogs?.find(log => log.date === dateStr);
+      const moodEmoji = moodEntry ? MOOD_EMOJIS[moodEntry.mood] || '❓' : '';
+      moodHtml += `<div class="calendar-day mood-emoji">${moodEmoji}</div>`;
+    }
+    
+    moodHtml += '</div>';
+    return moodHtml;
+  };
+
+  const generateExerciseCharts = (exerciseEntries) => {
+    if (!exerciseEntries || exerciseEntries.length === 0) return '<p>No exercise data available.</p>';
+    
+    const labels = [...new Set(exerciseEntries.map(entry => entry.date))].sort();
+    const durationData = labels.map(date => 
+      exerciseEntries.filter(entry => entry.date === date)
+                     .reduce((sum, entry) => sum + entry.duration, 0)
+    );
+    
+    const caloriesData = labels.map(date => 
+      exerciseEntries.filter(entry => entry.date === date)
+                     .reduce((sum, entry) => sum + entry.caloriesBurned, 0)
+    );
+
+    return `
+      <h2>Exercise Charts</h2>
+      <div class="chart-container">
+        <canvas id="durationChart"></canvas>
+      </div>
+      <div class="chart-container">
+        <canvas id="caloriesChart"></canvas>
+      </div>
+      <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+      <script>
+        setTimeout(function() {
+          new Chart(document.getElementById('durationChart').getContext('2d'), { 
+            type: 'bar', 
+            data: { 
+              labels: ${JSON.stringify(labels)}, 
+              datasets: [{ 
+                label: 'Duration (minutes)', 
+                data: ${JSON.stringify(durationData)}, 
+                backgroundColor: 'rgba(54, 162, 235, 0.5)', 
+                borderColor: 'rgba(54, 162, 235, 1)', 
+                borderWidth: 1 
+              }] 
+            }, 
+            options: { 
+              responsive: true,
+              scales: { y: { beginAtZero: true } } 
+            } 
+          });
+          
+          new Chart(document.getElementById('caloriesChart').getContext('2d'), { 
+            type: 'line', 
+            data: { 
+              labels: ${JSON.stringify(labels)}, 
+              datasets: [{ 
+                label: 'Calories Burned', 
+                data: ${JSON.stringify(caloriesData)}, 
+                backgroundColor: 'rgba(255, 99, 132, 0.2)', 
+                borderColor: 'rgba(255, 99, 132, 1)', 
+                borderWidth: 2,
+                tension: 0.3
+              }] 
+            }, 
+            options: { 
+              responsive: true,
+              scales: { y: { beginAtZero: true } } 
+            } 
+          });
+        }, 100);
+      </script>
+    `;
+  };
+
+  const generateExerciseSummary = (exerciseEntries) => {
+    if (!exerciseEntries || exerciseEntries.length === 0) return '<p>No exercise data available.</p>';
+    
+    const totalDays = new Set(exerciseEntries.map(entry => entry.date)).size;
+    const totalDuration = exerciseEntries.reduce((sum, entry) => sum + entry.duration, 0);
+    const totalCalories = exerciseEntries.reduce((sum, entry) => sum + entry.caloriesBurned, 0);
+    const avgDuration = totalDuration / exerciseEntries.length;
+    const avgCalories = totalCalories / exerciseEntries.length;
+
+    return `
+      <h2>Exercise Summary</h2>
+      <div class="summary-stats">
+        <div class="stat-box">
+          <h3>${totalDays}</h3>
+          <p>Days Exercised</p>
+        </div>
+        <div class="stat-box">
+          <h3>${totalDuration} min</h3>
+          <p>Total Duration</p>
+        </div>
+        <div class="stat-box">
+          <h3>${totalCalories}</h3>
+          <p>Total Calories</p>
+        </div>
+        <div class="stat-box">
+          <h3>${avgDuration.toFixed(1)} min</h3>
+          <p>Avg. per Session</p>
+        </div>
+        <div class="stat-box">
+          <h3>${avgCalories.toFixed(0)}</h3>
+          <p>Avg. Calories</p>
+        </div>
+        <div class="stat-box">
+          <h3>${exerciseEntries.length}</h3>
+          <p>Total Sessions</p>
+        </div>
+      </div>
+    `;
+  };
+
+  return {
+    generatePDF: generatePDF
+  };
+})();
 
 //======================================
         // Calendar //
