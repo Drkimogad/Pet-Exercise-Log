@@ -1,5 +1,7 @@
 "use strict";
 
+// At the top of PetEntry module
+let pets = []; // define it and use it in functions without Const
 let deferredPrompt; // Store the install event
 
 // ✅ Automatically Show Install Banner
@@ -488,7 +490,7 @@ function showExerciseLog() {
   AppHelper.showPage(templates.dashboard());
   
   // Get current pet data if editing existing pet
-  const pets = PetEntry.getPets();
+  pets = PetEntry.getPets();
   const currentPet = activePetIndex !== null && pets[activePetIndex] ? pets[activePetIndex] : {};
   
   AppHelper.registerComponent('petFormContainer', () => templates.petForm(currentPet));
@@ -542,7 +544,7 @@ function setupEventListeners() {
     e.preventDefault();
     
     // Collect all form data
-    const pets = PetEntry.getPets(); // ← FIXED
+    pets = PetEntry.getPets(); // ← FIXED
     const formData = {
       petType: document.getElementById('petType').value,
       petName: document.getElementById('petName').value,
@@ -581,7 +583,7 @@ function setupEventListeners() {
     if (formData.calories < 1) errors.push('Invalid calories');
     if (errors.length) return AppHelper.showErrors(errors);
 
-    const pets = getPets();
+    pets = getPets();
     const petData = activePetIndex !== null ? pets[activePetIndex] : initializeNewPet();
       // it retrieves everything via the helper
 
@@ -654,7 +656,7 @@ function updateDashboard(petData) {
 // LOAD SAVED PROFILES - Enhanced with full CRUD operations
 //===========================
 function loadSavedProfiles() {
-  const pets = PetEntry.getPets(); // ← FIXED
+  pets = PetEntry.getPets(); // ← FIXED
   const profilesHTML = pets.map((pet, index) => `
     <div class="profile-card ${index === activePetIndex ? 'active' : ''}" data-pet-index="${index}">
       <img src="${pet.petDetails.image}" alt="${pet.petDetails.name}">
@@ -857,7 +859,7 @@ function loadActivePetData() {
   const savedIndex = sessionStorage.getItem('activePetIndex');
   if (savedIndex !== null) {
     activePetIndex = parseInt(savedIndex);
-    const pets = PetEntry.getPets(); // ← ADD THIS LINE
+    pets = PetEntry.getPets(); // ← ADD THIS LINE
     const petData = pets[activePetIndex]; // ← CHANGE THIS
     if (petData) updateDashboard(petData);
   }
