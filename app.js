@@ -1,3 +1,5 @@
+//Yes, you have one app.js file with 4 separate modules (PetEntry, Calendar, Charts, MoodLogs). This is called the module pattern.
+
 "use strict";
 
 // At the top of PetEntry module
@@ -233,38 +235,9 @@ async function handleAuthSubmit(e, isSignUp) {
   };
 })();
 
-//=================================
-//Add This Helper Method to PetEntry:
-//==================================
-function initializeNewPet() {
-  return {
-    petDetails: { 
-      type: '',
-      name: '', 
-      image: DEFAULT_IMAGE, 
-      age: '',
-      weight: '',
-      breed: '',
-      gender: '',
-      color: '',
-      microchip: '',
-      energyLevel: '',
-      healthStatus: '',
-      vetInfo: '',
-      vaccinations: '',
-      medications: '',
-      allergies: '',
-      diet: '',
-      behavior: '',
-      favoriteExercise: '',
-      notes: ''
-    },
-    exerciseEntries: [],
-    moodLogs: []  // Ensure moodLogs array is initialized
-  };
-}
+
 //===================================
-    // petentry UPDATED
+// 1. Module petEntry UPDATED
 //======================
 const PetEntry = (function() {
   let activePetIndex = null;
@@ -514,14 +487,6 @@ const PetEntry = (function() {
    };   // ← KEEP THIS BRACE (closes the templates object)
 }  // ← YOU ARE MISSING THIS BRACE! This closes the PetEntry function body
 
-  return {
-  showExerciseLog,
-  getPets: () => JSON.parse(localStorage.getItem('pets') || '[]'),
-  getActivePetIndex: () => activePetIndex,
-  getActivePet: () => activePetIndex !== null ? this.getPets()[activePetIndex] : null,
-  initializeNewPet  // Add this if you need it externally
-};
-})(); // ← This closes and executes the IIFE
 
     
 //==================
@@ -690,9 +655,6 @@ function updateDashboard(petData) {
   AppHelper.refreshComponent('petFormContainer');
 }
 
-//=================================
-// LOAD SAVED PROFILES.  enhanced 
-//===========================
 //=================================
 // LOAD SAVED PROFILES - Enhanced with full CRUD operations
 //===========================
@@ -924,18 +886,18 @@ function loadActivePetData() {
     reader.readAsDataURL(file);
   }
 
-/*  return {
+// THIS RETURN HAS TO BE AT THE END OF EVERYTHING RELATED TO PRTENTRY
+  return {
   showExerciseLog,
   getPets: () => JSON.parse(localStorage.getItem('pets') || '[]'),
   getActivePetIndex: () => activePetIndex,
   getActivePet: () => activePetIndex !== null ? this.getPets()[activePetIndex] : null,
   initializeNewPet  // Add this if you need it externally
 };
-})();*/
-
+})(); // ← This closes and executes the IIFE
 
 //=====================================
-   //     MOOD LOGS
+   // Module 2   MOOD LOGS
 //=======================================
 // MOODLOGS - Enhanced Version
 const MoodLogs = (function() {
@@ -1089,10 +1051,10 @@ const MoodLogs = (function() {
   return {
     renderMoodLogs: renderMoodLogs
   };
-})();
+})(); // closes life 
 
 //============================================
-// REPORT GENERATOR - Add this after MoodLogs
+// MODULE 3 REPORT GENERATOR - Add this after MoodLogs
 //============================================
 const Report = (function() {
   const generatePDF = (pet) => {
@@ -1356,7 +1318,7 @@ const Report = (function() {
 })();
 
 //======================================
-        // Calendar //
+        // MODULE 4  Calendar //
 //=================================
 const Calendar = (function() {
   let currentMonth = new Date().getMonth();
@@ -1494,7 +1456,7 @@ const Calendar = (function() {
 
 //=======================================
 // Everything related to CHARTS IS HERE
-            // Charts //
+            // MODULE 5 Charts //
 //=============================================
     const Charts = (function() {
   let durationChart, caloriesChart, activityChart, intensityChart;
