@@ -271,27 +271,35 @@ footer {
   border-color: var(--light-purple);
 }
 
+/* data section */
 .data-section {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 1.5rem;
+  margin-top: 1.5rem;
 }
 
-.calendar-container, .charts-container {
+.calendar-container, 
+.charts-container, 
+.mood-container {
   background-color: var(--white);
   border-radius: 8px;
   padding: 1.5rem;
   box-shadow: var(--shadow-sm);
   border: 1px solid var(--container-border);
+  min-height: 400px;
 }
 
 .dark-mode .calendar-container,
-.dark-mode .charts-container {
+.dark-mode .charts-container,
+.dark-mode .mood-container {
   background-color: var(--dark-charcoal);
   border-color: var(--light-purple);
 }
 
-/* Form Styles */
+/* =============================
+       Form Styles
+=====================================*/
 .pet-form {
   display: flex;
   flex-direction: column;
