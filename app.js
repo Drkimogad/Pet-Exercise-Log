@@ -291,7 +291,7 @@ const PetEntry = (function() {
           <section class="data-section">
             <div class="calendar-container" id="exerciseCalendar"></div>
             <div class="charts-container" id="exerciseCharts"></div>
-            <div class="mood-container" id="moodLogs"></div> <!-- ADD THIS LINE -->
+          <div class="mood-container" id="moodLogsContainer"></div> <!-- Changed ID -->
           </section>
         </main>
         <aside class="saved-profiles" id="savedProfiles"></aside>
@@ -484,11 +484,8 @@ const PetEntry = (function() {
         </fieldset>
       </form>`;
     }  // ← KEEP THIS BRACE (closes the petForm function)
-   };   // ← KEEP THIS BRACE (closes the templates object)
-}  // ← YOU ARE MISSING THIS BRACE! This closes the PetEntry function body
-
-
-    
+   };   // ← KEEP THIS BRACE (closes Dashboard templates object)
+ 
 //==================
  // show exercise log function     UPDATED
  //========================
@@ -853,8 +850,6 @@ function sharePetProfile(index) {
   }
 }
 
-    
-
 //===============================
     // ACTVE PET DATA   UPDATED
 //==============================
@@ -953,7 +948,7 @@ const MoodLogs = (function() {
         </div>
       `;
       
-      const moodContainer = document.getElementById('moodLogs');
+    const moodContainer = document.getElementById('moodLogsContainer'); // Updated ID
       if (moodContainer) {
         moodContainer.innerHTML = html;
         attachMoodSelectionHandler();
