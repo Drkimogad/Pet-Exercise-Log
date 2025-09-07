@@ -583,7 +583,7 @@ function setupEventListeners() {
     if (formData.calories < 1) errors.push('Invalid calories');
     if (errors.length) return AppHelper.showErrors(errors);
 
-    pets = getPets();
+ //   pets = getPets();
     const petData = activePetIndex !== null ? pets[activePetIndex] : initializeNewPet();
       // it retrieves everything via the helper
 
