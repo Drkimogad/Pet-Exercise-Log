@@ -126,79 +126,92 @@ const Auth = (function() {
     return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
   }
 
-  function authTemplate(isSignUp) {
-    return `
-      <div class="auth-container">
-        <div class="auth-card">
-          <h2>${isSignUp ? 'Create Account' : 'Sign In'}</h2>
-          <form id="authForm">
-            ${isSignUp ? `
-              <div class="form-group">
-                <label for="username">Name</label>
-                <input type="text" id="username" required>
-              </div>` : ''}
+//=============================================
+// auth template signup function
+//===============================================
+function authTemplate(isSignUp) {
+  return `
+    <div class="auth-container">
+      <div class="auth-card">
+        <h2>${isSignUp ? 'Create Account' : 'Sign In'}</h2>
+        <form id="authForm">
+          ${isSignUp ? `
             <div class="form-group">
-              <label for="email">Email</label>
-              <input type="email" id="email" required>
-            </div>
-            <div class="form-group">
-              <label for="password">Password</label>
-              <input type="password" id="password" required minlength="8">
-            </div>
-            ${isSignUp ? `
-              <div class="form-group">
-                <label for="confirmPassword">Confirm Password</label>
-                <input type="password" id="confirmPassword" required>
-              </div>` : ''}
-            <button type="submit" class="auth-btn">${isSignUp ? 'Sign Up' : 'Sign In'}</button>
-          </form>
-          <div class="auth-switch">
-            ${isSignUp ? 'Have an account?' : 'New user?'}
-            <a href="#" id="switchAuth">${isSignUp ? 'Sign In' : 'Sign Up'}</a>
+              <label for="username">Name</label>
+              <input type="text" id="username" required autocomplete="name">
+            </div>` : ''}
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" required autocomplete="email">
           </div>
+          <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" required minlength="8" autocomplete="current-password">
+          </div>
+          ${isSignUp ? `
+            <div class="form-group">
+              <label for="confirmPassword">Confirm Password</label>
+              <input type="password" id="confirmPassword" required autocomplete="new-password">
+            </div>` : ''}
+          <button type="submit" class="auth-btn">${isSignUp ? 'Sign Up' : 'Sign In'}</button>
+        </form>
+        <div class="auth-switch">
+          ${isSignUp ? 'Have an account?' : 'New user?'}
+          <a href="#" id="switchAuth">${isSignUp ? 'Sign In' : 'Sign Up'}</a>
         </div>
-      </div>`;
-  }
+      </div>
+    </div>`;
+}
 
-  async function handleAuthSubmit(e, isSignUp) {
-    e.preventDefault();
-    const formData = {
-      email: document.getElementById('email').value,
-      password: document.getElementById('password').value,
-      ...(isSignUp && {
-        username: document.getElementById('username').value,
-        confirmPassword: document.getElementById('confirmPassword')?.value
-      })
+
+//=========================================
+// Hanle auth submit function
+//========================================  
+async function handleAuthSubmit(e, isSignUp) {
+  e.preventDefault();
+  const formData = {
+    email: document.getElementById('email').value,
+    password: document.getElementById('password').value,
+    ...(isSignUp && {
+      username: document.getElementById('username').value,
+      confirmPassword: document.getElementById('confirmPassword')?.value
+    })
+  };
+
+  const errors = [];
+  if (isSignUp && !formData.username?.trim()) errors.push('Name required');
+  if (!/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(formData.email)) errors.push('Invalid email');
+  if (formData.password.length < 8) errors.push('Password must be 8+ chars');
+  if (isSignUp && formData.password !== formData.confirmPassword) errors.push('Passwords mismatch');
+
+  if (errors.length) return AppHelper.showErrors(errors);
+
+  try {
+    const salt = crypto.getRandomValues(new Uint8Array(16)).join('');
+    const userData = {
+      ...(isSignUp && { username: formData.username }),
+      email: formData.email,
+      password: await hashPassword(formData.password, salt),
+      salt,
+      lastLogin: new Date().toISOString()
     };
-
-    const errors = [];
-    if (isSignUp && !formData.username?.trim()) errors.push('Name required');
-    if (!/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(formData.email)) errors.push('Invalid email');
-    if (formData.password.length < 8) errors.push('Password must be 8+ chars');
-    if (isSignUp && formData.password !== formData.confirmPassword) errors.push('Passwords mismatch');
-
-    if (errors.length) return AppHelper.showErrors(errors);
-
-    try {
-      const salt = crypto.getRandomValues(new Uint8Array(16)).join('');
-      const userData = {
-        ...(isSignUp && { username: formData.username }),
-        email: formData.email,
-        password: await hashPassword(formData.password, salt),
-        salt,
-        lastLogin: new Date().toISOString()
-      };
-      
-      currentUser = userData;
-      sessionStorage.setItem('user', JSON.stringify(userData));
-      console.log('Stored user data:', JSON.parse(sessionStorage.getItem('user')));
-      isSignUp ? showAuth(false) : PetEntry.showExerciseLog(); // Changed PetEntryModule to PetEntry
-    } catch (error) {
-      AppHelper.showError('Authentication failed');
-      console.error(error);
+    
+    currentUser = userData;
+    sessionStorage.setItem('user', JSON.stringify(userData));
+    console.log('Stored user data:', JSON.parse(sessionStorage.getItem('user')));
+    
+    // FIXED: Check if PetEntry exists before calling it
+    if (typeof PetEntry !== 'undefined' && PetEntry.showExerciseLog) {
+      PetEntry.showExerciseLog();
+    } else {
+      console.error('PetEntry module not available');
+      AppHelper.showError('Failed to load dashboard. Please refresh the page.');
     }
+  } catch (error) {
+    console.error('Authentication error:', error);
+    AppHelper.showError('Authentication failed. Please try again.');
   }
-
+}
   function showAuth(isSignUp = false) {
     AppHelper.showPage(authTemplate(isSignUp));
     document.getElementById('authForm').addEventListener('submit', e => handleAuthSubmit(e, isSignUp));
@@ -469,16 +482,26 @@ const PetEntry = (function() {
   };
 
 //==================
- // show exercise log function 
+ // show exercise log function     UPDATED
  //========================
 function showExerciseLog() {
   AppHelper.showPage(templates.dashboard());
+  
+  // Get current pet data if editing existing pet
+  const pets = PetEntry.getPets();
+  const currentPet = activePetIndex !== null && pets[activePetIndex] ? pets[activePetIndex] : {};
+  
   AppHelper.registerComponent('petFormContainer', () => templates.petForm(currentPet));
   AppHelper.refreshComponent('petFormContainer');
   
   Calendar.init('#exerciseCalendar');
   Charts.init('#exerciseCharts');
-  MoodLogs.renderMoodLogs(); // <-- ADD THIS LINE
+  
+  // Initialize mood logs if available
+  if (typeof MoodLogs !== 'undefined' && MoodLogs.renderMoodLogs) {
+    MoodLogs.renderMoodLogs();
+  }
+  
   setupEventListeners();
   loadSavedProfiles();
   loadActivePetData();
