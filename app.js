@@ -267,7 +267,7 @@ function initializeNewPet() {
 const PetEntry = (function() {
   let activePetIndex = null;
   const MAX_PETS = 10;
-  const DEFAULT_IMAGE = '/images/default-pet.png';
+  const DEFAULT_IMAGE = 'https://drkimogad.github.io/Pet-Exercise-Log/images/default-pet.png'; // ← FIXED
   const FAVORITE_EXERCISES = ['walking', 'running', 'swimming', 'playing', 'fetch', 'agility'];
   const PET_TYPES = ['dog', 'cat', 'bird', 'rabbit', 'hamster', 'reptile', 'other'];
   const ENERGY_LEVELS = ['low', 'medium', 'high', 'very high'];
@@ -542,6 +542,7 @@ function setupEventListeners() {
     e.preventDefault();
     
     // Collect all form data
+    const pets = PetEntry.getPets(); // ← FIXED
     const formData = {
       petType: document.getElementById('petType').value,
       petName: document.getElementById('petName').value,
@@ -637,8 +638,8 @@ if (activePetIndex !== null) {
     // UPDATE DASHBOARD
 //=====================================
 function updateDashboard(petData) {
-  Calendar.refresh(petData.exerciseEntries || []);
-  Charts.refresh(petData.exerciseEntries || []);
+  Calendar.refresh(petData.exerciseEntries || []); // ← ADDED NULL CHECK
+  Charts.refresh(petData.exerciseEntries || []);   // ← ADDED NULL CHECK
   if (typeof MoodLogs !== 'undefined' && MoodLogs.renderMoodLogs) {
     MoodLogs.renderMoodLogs();
   }
@@ -653,7 +654,7 @@ function updateDashboard(petData) {
 // LOAD SAVED PROFILES - Enhanced with full CRUD operations
 //===========================
 function loadSavedProfiles() {
-  const pets = getPets();
+  const pets = PetEntry.getPets(); // ← FIXED
   const profilesHTML = pets.map((pet, index) => `
     <div class="profile-card ${index === activePetIndex ? 'active' : ''}" data-pet-index="${index}">
       <img src="${pet.petDetails.image}" alt="${pet.petDetails.name}">
@@ -850,16 +851,18 @@ function sharePetProfile(index) {
     
 
 //===============================
-    // ACTVE PET DATA
+    // ACTVE PET DATA   UPDATED
 //==============================
-  function loadActivePetData() {
-    const savedIndex = sessionStorage.getItem('activePetIndex');
-    if (savedIndex !== null) {
-      activePetIndex = parseInt(savedIndex);
-      const petData = getPets()[activePetIndex];
-      if (petData) updateDashboard(petData);
-    }
+function loadActivePetData() {
+  const savedIndex = sessionStorage.getItem('activePetIndex');
+  if (savedIndex !== null) {
+    activePetIndex = parseInt(savedIndex);
+    const pets = PetEntry.getPets(); // ← ADD THIS LINE
+    const petData = pets[activePetIndex]; // ← CHANGE THIS
+    if (petData) updateDashboard(petData);
   }
+}
+    
 // toggle mode //
   function toggleDarkMode() {
     document.body.classList.toggle('dark-mode');
@@ -1323,7 +1326,7 @@ const Calendar = (function() {
     container.innerHTML = '<div class="calendar"></div>';
     generateCalendar();
   }
-
+    
   function generateCalendar() {
     const container = document.querySelector('.calendar');
     if (!container) return;
@@ -1480,7 +1483,7 @@ const Calendar = (function() {
 // REFRESH DATA FUNCTION     UPDATED
 //=====================================
       function refresh(data) {
-        if (!data.length) return;
+       if (!data || !data.length) return; // ← ADDED NULL CHECK
         destroyCharts();
         
         const processed = processData(data);
