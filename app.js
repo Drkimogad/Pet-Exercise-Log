@@ -274,6 +274,36 @@ const PetEntry = (function() {
   const PET_TYPES = ['dog', 'cat', 'bird', 'rabbit', 'hamster', 'reptile', 'other'];
   const ENERGY_LEVELS = ['low', 'medium', 'high', 'very high'];
   const HEALTH_STATUSES = ['excellent', 'good', 'fair', 'poor', 'under treatment'];
+
+     // ▼▼▼ ADD initializeNewPet FUNCTION RIGHT HERE ▼▼▼
+  function initializeNewPet() {
+    return {
+      petDetails: { 
+        type: '',
+        name: '', 
+        image: DEFAULT_IMAGE, // ← NOW IT CAN ACCESS DEFAULT_IMAGE!
+        age: '',
+        weight: '',
+        breed: '',
+        gender: '',
+        color: '',
+        microchip: '',
+        energyLevel: '',
+        healthStatus: '',
+        vetInfo: '',
+        vaccinations: '',
+        medications: '',
+        allergies: '',
+        diet: '',
+        behavior: '',
+        favoriteExercise: '',
+        notes: ''
+      },
+      exerciseEntries: [],
+      moodLogs: []
+    };
+  }
+  // ▲▲▲ RIGHT AFTER THE CONSTANTS ▲▲▲
     
   const templates = {
     dashboard: () => `
@@ -480,9 +510,20 @@ const PetEntry = (function() {
           
         </fieldset>
       </form>`;
-    }
-  };
+    }  // ← KEEP THIS BRACE (closes the petForm function)
+   };   // ← KEEP THIS BRACE (closes the templates object)
+}  // ← YOU ARE MISSING THIS BRACE! This closes the PetEntry function body
 
+  return {
+  showExerciseLog,
+  getPets: () => JSON.parse(localStorage.getItem('pets') || '[]'),
+  getActivePetIndex: () => activePetIndex,
+  getActivePet: () => activePetIndex !== null ? this.getPets()[activePetIndex] : null,
+  initializeNewPet  // Add this if you need it externally
+};
+})(); // ← This closes and executes the IIFE
+
+    
 //==================
  // show exercise log function     UPDATED
  //========================
@@ -883,14 +924,14 @@ function loadActivePetData() {
     reader.readAsDataURL(file);
   }
 
-  return {
+/*  return {
   showExerciseLog,
   getPets: () => JSON.parse(localStorage.getItem('pets') || '[]'),
   getActivePetIndex: () => activePetIndex,
   getActivePet: () => activePetIndex !== null ? this.getPets()[activePetIndex] : null,
   initializeNewPet  // Add this if you need it externally
 };
-})();
+})();*/
 
 
 //=====================================
