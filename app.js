@@ -323,7 +323,7 @@ dashboard: () => `
     </section>
      <!-- Create Profile Button -->
   <div class="create-profile-btn-container">
-    <button id="createProfileBtn" class="primary-btn">Create Profile</button>
+   <button type="submit" id="createProfileBtn" class="primary-btn">Create Profile</button>
   </div>
   </main>
     
@@ -590,7 +590,8 @@ function setupEventListeners() {
 //===========================
   function handleFormSubmit(e) {
     e.preventDefault();
-    
+    console.log('FORM SUBMIT CALLED!'); // ← Add this line
+
     // Collect all form data
     pets = PetEntry.getPets(); // ← FIXED
     const formData = {
