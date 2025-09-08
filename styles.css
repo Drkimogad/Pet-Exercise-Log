@@ -18,6 +18,8 @@
   --container-border: var(--primary-mustard);
   --shadow-sm: 0 2px 4px rgba(0,0,0,0.1);
   --shadow-md: 0 4px 6px rgba(0,0,0,0.15);
+  --dark-mustard: #E5A500; /* ADD THIS - darker shade of mustard */
+  --header-text: var(--primary-yellow); /* ADD THIS */
 }
 
 /* Global Styles */
@@ -41,28 +43,40 @@ body.dark-mode {
 }
 
 /* ============================================================
-    HEADER & FOOTER STYLING
+    HEADER & FOOTER STYLING - FIXED
 ============================================================ */
-header {
-    background: var(--light-charcoal);
-    color: var(--dark-mustard);
-    border-bottom: 3px solid var(--primary-mustard);
-    padding: 1.5rem;
-    text-align: center;
-    font-size: 1.5rem;
+#main-header, #main-footer {
+  background: var(--dark-purple);
+  color: var(--primary-yellow);
+  padding: 1.5rem;
+  text-align: center;
 }
 
-header h1 {
-    font-size: 2rem;
+#main-header {
+  border-bottom: 3px solid var(--primary-mustard);
 }
 
-footer {
-    background: var(--light-charcoal);
-    color: var(--dark-mustard);
-    border-top: 3px solid var(--primary-mustard);
-    padding: 1.5rem;
-    text-align: center;
-    font-size: 1rem;
+#main-footer {
+  border-top: 3px solid var(--primary-mustard);
+}
+
+#main-header h1 {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+  color: var(--primary-yellow);
+}
+
+#main-header p {
+  font-size: 1.1rem;
+  color: var(--primary-yellow);
+  opacity: 0.9;
+}
+
+/* Dark mode support */
+.dark-mode #main-header,
+.dark-mode #main-footer {
+  background: var(--dark-charcoal);
+  border-color: var(--primary-mustard);
 }
 
 
@@ -137,17 +151,27 @@ footer {
   justify-content: space-between;
   align-items: center;
   padding: 1rem;
-  background-color: var(--white);
+  background-color: var(--dark-purple);
+  color: var(--primary-yellow);
   border-radius: 8px;
   box-shadow: var(--shadow-sm);
-  border: 1px solid var(--container-border);
-  color: var(--dark-mustard) !important;
-  font-size: 2rem;
+  border: 2px solid var(--primary-mustard);
 }
 
 .dark-mode .dashboard-header {
   background-color: var(--dark-charcoal);
-  border-color: var(--light-purple);
+  border-color: var(--primary-mustard);
+  color: var(--primary-yellow);
+}
+
+.dashboard-header .icon-btn {
+  color: var(--primary-yellow);
+  border: 1px solid var(--primary-yellow);
+}
+
+.dashboard-header .icon-btn:hover {
+  background-color: var(--primary-yellow);
+  color: var(--dark-purple);
 }
 
 .dashboard-footer {
