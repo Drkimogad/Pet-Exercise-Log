@@ -564,11 +564,9 @@ function setupEventListeners() {
       e.preventDefault();
       activePetIndex = null;
       
-      // SHOW DASHBOARD WHEN BUTTON IS CLICKED - Add these lines
-      const dashboard = document.querySelector('.dashboard-container');
-      if (dashboard.style.display === 'none') {
-        dashboard.style.display = 'flex'; // or 'block' depending on your CSS
-      }
+      // SHOW ONLY THE MAIN CONTENT (not entire dashboard)
+      document.querySelector('.dashboard-main').style.display = 'flex';
+
       
       AppHelper.refreshComponent('petFormContainer');
       
