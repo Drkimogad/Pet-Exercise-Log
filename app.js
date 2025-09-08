@@ -1479,11 +1479,12 @@ const Calendar = (function() {
       });
       Calendar.refresh(PetEntry.getActivePet().exerciseEntries);
       document.querySelector('.calendar-modal').remove();
-    });
+      } // ← ADD THIS CLOSING BRACE for the if statement
+    }); // ← This parenthesis closes the event listener (no extra parenthesis)
     document.querySelector('.close-modal-btn').addEventListener('click', () => {
       document.querySelector('.calendar-modal').remove();
     });
-  }
+  } // closes the function???
 
 
     
