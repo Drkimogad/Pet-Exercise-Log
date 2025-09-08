@@ -525,7 +525,7 @@ function showExerciseLog() {
   AppHelper.showPage(templates.dashboard());
     
      // HIDE DASHBOARD INITIALLY - Add this line
-  document.querySelector('.dashboard-container').style.display = 'none';
+  document.querySelector('.dashboard-main').style.display = 'none';
   
   // Get current pet data if editing existing pet
   pets = PetEntry.getPets();
