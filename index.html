@@ -18,7 +18,8 @@
     <title>Pet Exercise Log</title>
     <link rel="icon" href="https://drkimogad.github.io/Pet-Exercise-Log/favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="styles.css">
-    
+    <!-- Lottie Player -->
+<script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
@@ -28,6 +29,18 @@
         <h1>Your Pet Exercise Log</h1>
         <p>Track your pet's exercise routine and health metrics</p>
     </header>
+
+    <body>
+    <!-- Lottie Background Banner -->
+    <div id="lottie-banner">
+        <lottie-player 
+            src="https://assets1.lottiefiles.com/packages/lf20_vybwn7df.json" 
+            background="transparent" 
+            speed="1" 
+            loop 
+            autoplay>
+        </lottie-player>
+    </div>
 
     <!-- Auth Container (required for sign-in flow) -->
     <div id="auth-container"></div>
