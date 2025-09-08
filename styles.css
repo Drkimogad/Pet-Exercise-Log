@@ -252,49 +252,59 @@ footer {
 
 /* Main Content Area */
 .dashboard-main {
-  grid-area: main;
-  display: grid;
-  grid-template-rows: auto 1fr;
-  gap: 1.5rem;
+  display: none; /* Hidden initially */
+  flex-direction: row; /* Will show as flex when visible */
+  gap: 30px;
+  min-height: 70vh;
 }
 
 .form-section {
-  background-color: var(--white);
-  border-radius: 8px;
-  padding: 1.5rem;
-  box-shadow: var(--shadow-sm);
-  border: 1px solid var(--container-border);
+  flex: 1;
+  max-width: 50%;
 }
 
-.dark-mode .form-section {
-  background-color: var(--dark-charcoal);
-  border-color: var(--light-purple);
-}
-
-/* data section */
 .data-section {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 1.5rem;
-  margin-top: 1.5rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 50%;
 }
 
-.calendar-container, 
-.charts-container, 
-.mood-container {
-  background-color: var(--white);
+.component-container, .chart-container {
+  border: 1px solid #e0e0e0;
   border-radius: 8px;
-  padding: 1.5rem;
-  box-shadow: var(--shadow-sm);
-  border: 1px solid var(--container-border);
-  min-height: 400px;
+  padding: 15px;
+  background: #fff;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-.dark-mode .calendar-container,
-.dark-mode .charts-container,
-.dark-mode .mood-container {
-  background-color: var(--dark-charcoal);
-  border-color: var(--light-purple);
+.component-container h3, .chart-container h3 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  color: #333;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 8px;
+}
+
+.create-profile-btn-container {
+  text-align: center;
+  margin: 25px 0;
+}
+
+.primary-btn {
+  background: #4a90e2;
+  color: white;
+  padding: 12px 25px;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.primary-btn:hover {
+  background: #357abD;
 }
 
 /* =============================
@@ -1054,66 +1064,3 @@ footer {
   }
 }
 
-
-/* added last layout*/
-.dashboard-container {
-  display: flex;
-  flex-direction: column;
-  padding: 20px;
-  gap: 20px;
-}
-
-.dashboard-main {
-  display: flex;
-  gap: 30px;
-  min-height: 70vh;
-}
-
-.form-section {
-  flex: 1;
-  max-width: 50%;
-}
-
-.data-section {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  max-width: 50%;
-}
-
-.component-container, .chart-container {
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  padding: 15px;
-  background: #fff;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.component-container h3, .chart-container h3 {
-  margin-top: 0;
-  margin-bottom: 15px;
-  color: #333;
-  border-bottom: 1px solid #eee;
-  padding-bottom: 8px;
-}
-
-.create-profile-btn-container {
-  text-align: center;
-  margin: 25px 0;
-}
-
-.primary-btn {
-  background: #4a90e2;
-  color: white;
-  padding: 12px 25px;
-  border: none;
-  border-radius: 5px;
-  font-size: 16px;
-  cursor: pointer;
-  transition: background 0.3s;
-}
-
-.primary-btn:hover {
-  background: #357abD;
-}
