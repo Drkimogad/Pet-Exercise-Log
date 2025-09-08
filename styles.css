@@ -322,6 +322,16 @@ footer {
   background: #357abD;
 }
 
+
+/* no profiles message */
+.no-profiles-message {
+  text-align: center;
+  padding: 40px;
+  color: #666;
+  font-style: italic;
+  border: 2px dashed #ddd;
+  border-radius: 8px;
+}
 /* =============================
        Form Styles
 =====================================*/
