@@ -535,7 +535,12 @@ function showExerciseLog() {
   
   Calendar.init('#exerciseCalendar');
   Charts.init('#exerciseCharts');
-  
+
+
+ // In your showExerciseLog() function, add:
+ console.log('Mood Logs container exists:', !!document.getElementById('moodLogsContainer'));
+ console.log('MoodLogs module available:', typeof MoodLogs !== 'undefined');
+ console.log('renderMoodLogs function available:', MoodLogs && typeof MoodLogs.renderMoodLogs === 'function');
   // Initialize mood logs if available
   if (typeof MoodLogs !== 'undefined' && MoodLogs.renderMoodLogs) {
     MoodLogs.renderMoodLogs();
@@ -908,7 +913,7 @@ function loadActivePetData() {
     document.body.classList.toggle('dark-mode');
     localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
     Charts.updateColors();
-    Calendar.refresh(getActivePet()?.exerciseEntries || []);
+    Calendar.refresh(PetEntry.getActivePet()?.exerciseEntries || []);
   }
 
   function handleImageUpload(e) {
@@ -1463,7 +1468,9 @@ const Calendar = (function() {
 
     document.body.insertAdjacentHTML('beforeend', modalHTML);
     document.querySelector('.add-exercise-btn').addEventListener('click', (e) => {
-      PetEntry.getActivePet().exerciseEntries.push({
+    activePet = PetEntry.getActivePet();
+    if (activePet) {
+     activePet.exerciseEntries.push({
         date: e.target.dataset.date,
         exerciseType: 'walking',
         duration: 30,
