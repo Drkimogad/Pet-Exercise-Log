@@ -141,7 +141,7 @@ footer {
   border-radius: 8px;
   box-shadow: var(--shadow-sm);
   border: 1px solid var(--container-border);
-  color: var(--dark-mustard);
+  color: var(--dark-mustard) !important;
   font-size: 2rem;
 }
 
@@ -152,7 +152,7 @@ footer {
 
 .dashboard-footer {
     background: var(--light-charcoal);
-    color: var(--dark-mustard);
+    color: var(--dark-mustard) !important;
     border-top: 3px solid var(--primary-mustard);
     padding: 1.5rem;
     text-align: center;
