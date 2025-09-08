@@ -218,7 +218,7 @@ async function handleAuthSubmit(e, isSignUp) {
 }
   function showAuth(isSignUp = false) {
       // Show Lottie banner - ADD THIS LINE
-  document.getElementById('lottie-banner')?.style.display?.('block')
+document.getElementById('lottie-banner').style.display = 'block';
       
     AppHelper.showPage(authTemplate(isSignUp));
     document.getElementById('authForm').addEventListener('submit', e => handleAuthSubmit(e, isSignUp));
@@ -232,7 +232,7 @@ async function handleAuthSubmit(e, isSignUp) {
     showAuth,
     logout: () => {
         // Show Lottie banner on logout - ADD THIS LINE
-    document.getElementById('lottie-banner')?.style.display?.('block')
+document.getElementById('lottie-banner').style.display = 'block';
         
       sessionStorage.removeItem('user');
       AppHelper.showPage('<div class="logout-message">Logged out</div>');
