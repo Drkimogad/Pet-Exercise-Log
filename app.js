@@ -1468,7 +1468,7 @@ const Calendar = (function() {
 
     document.body.insertAdjacentHTML('beforeend', modalHTML);
     document.querySelector('.add-exercise-btn').addEventListener('click', (e) => {
-    activePet = PetEntry.getActivePet();
+    const activePet = PetEntry.getActivePet(); // Local scope only
     if (activePet) {
      activePet.exerciseEntries.push({
         date: e.target.dataset.date,
