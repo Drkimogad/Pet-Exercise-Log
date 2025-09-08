@@ -279,23 +279,50 @@ const PetEntry = (function() {
   // ▲▲▲ RIGHT AFTER THE CONSTANTS ▲▲▲
     
   const templates = {
-    dashboard: () => `
-      <div class="dashboard-container">
-        <header class="dashboard-header">
-          <button id="addNewProfileButton" class="icon-btn">＋ New Profile</button>
-          <button id="toggleModeButton" class="icon-btn">🌓 Toggle Mode</button>
-          <button id="logoutButton" class="icon-btn">🚪 Logout</button>
-        </header>
-        <main class="dashboard-main">
-          <section class="form-section" id="petFormContainer"></section>
-          <section class="data-section">
-            <div class="calendar-container" id="exerciseCalendar"></div>
-            <div class="charts-container" id="exerciseCharts"></div>
-          <div class="mood-container" id="moodLogsContainer"></div> <!-- Changed ID -->
-          </section>
-        </main>
-        <aside class="saved-profiles" id="savedProfiles"></aside>
-      </div>`,
+dashboard: () => `
+<div class="dashboard-container">
+  <header class="dashboard-header">
+    <button id="addNewProfileButton" class="icon-btn">＋ New Profile</button>
+    <button id="toggleModeButton" class="icon-btn">🌓 Toggle Mode</button>
+    <button id="logoutButton" class="icon-btn">🚪 Logout</button>
+  </header>
+  
+  <main class="dashboard-main">
+    <!-- Left: Pet Form -->
+    <section class="form-section" id="petFormContainer"></section>
+    
+    <!-- Right: Data Visualization -->
+    <section class="data-section">
+      <div class="top-row">
+        <div class="calendar-container" id="exerciseCalendar"></div>
+        <div class="mood-container" id="moodLogsContainer"></div>
+      </div>
+      
+      <div class="charts-row">
+        <div class="chart-box" id="durationChartContainer">
+          <h4>Duration</h4>
+          <canvas id="durationChart"></canvas>
+        </div>
+        <div class="chart-box" id="caloriesChartContainer">
+          <h4>Calories</h4>
+          <canvas id="caloriesChart"></canvas>
+        </div>
+        <div class="chart-box" id="intensityChartContainer">
+          <h4>Intensity</h4>
+          <canvas id="intensityChart"></canvas>
+        </div>
+      </div>
+    </section>
+  </main>
+  
+  <!-- Create Profile Button -->
+  <div class="create-profile-btn-container">
+    <button id="createProfileBtn" class="primary-btn">Create Complete Profile</button>
+  </div>
+  
+  <!-- Saved Profiles -->
+  <aside class="saved-profiles" id="savedProfiles"></aside>
+</div>`,
     
     petForm: (pet = {}) => {
       const petDetails = pet.petDetails || {};
