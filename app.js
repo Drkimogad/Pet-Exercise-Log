@@ -217,6 +217,9 @@ async function handleAuthSubmit(e, isSignUp) {
   }
 }
   function showAuth(isSignUp = false) {
+      // Show Lottie banner - ADD THIS LINE
+  document.getElementById('lottie-banner')?.style.display?.('block')
+      
     AppHelper.showPage(authTemplate(isSignUp));
     document.getElementById('authForm').addEventListener('submit', e => handleAuthSubmit(e, isSignUp));
     document.getElementById('switchAuth').addEventListener('click', e => {
@@ -228,6 +231,9 @@ async function handleAuthSubmit(e, isSignUp) {
   return {
     showAuth,
     logout: () => {
+        // Show Lottie banner on logout - ADD THIS LINE
+    document.getElementById('lottie-banner')?.style.display?.('block')
+        
       sessionStorage.removeItem('user');
       AppHelper.showPage('<div class="logout-message">Logged out</div>');
       setTimeout(() => showAuth(false), 2000);
@@ -527,6 +533,11 @@ function showExerciseLog() {
   
   // HIDE FORM SECTION INITIALLY
   document.querySelector('.dashboard-main').style.display = 'none';
+    // Hide Lottie banner when dashboard shows
+  const lottieBanner = document.getElementById('lottie-banner');
+  if (lottieBanner) {
+    lottieBanner.style.display = 'none';
+  }
   
   // Show saved profiles always
   loadSavedProfiles();
