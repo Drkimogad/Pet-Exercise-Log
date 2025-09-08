@@ -321,13 +321,12 @@ dashboard: () => `
         <canvas id="intensityChart"></canvas>
       </div>
     </section>
-  </main>
-  
-  <!-- Create Profile Button -->
+     <!-- Create Profile Button -->
   <div class="create-profile-btn-container">
-    <button id="createProfileBtn" class="primary-btn">Create Complete Profile</button>
+    <button id="createProfileBtn" class="primary-btn">Create Profile</button>
   </div>
-  
+  </main>
+    
   <!-- Saved Profiles -->
   <aside class="saved-profiles" id="savedProfiles"></aside>
 </div>`,
