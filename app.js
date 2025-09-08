@@ -520,38 +520,28 @@ dashboard: () => `
    };   // ← KEEP THIS BRACE (closes Dashboard templates object)
  
 //==================
- // show exercise log function     UPDATED
+ // show exercise log function  INITIAL STATE
  //========================
 function showExerciseLog() {
-    // fetch dashboard template first
   AppHelper.showPage(templates.dashboard());
-    
-     // HIDE DASHBOARD INITIALLY - Add this line
+  
+  // HIDE FORM SECTION INITIALLY
   document.querySelector('.dashboard-main').style.display = 'none';
   
-  // Get current pet data if editing existing pet
+  // Show saved profiles always
+  loadSavedProfiles();
+  
+  // If no pets, show message
   pets = PetEntry.getPets();
-  const currentPet = activePetIndex !== null && pets[activePetIndex] ? pets[activePetIndex] : {};
-  
-  AppHelper.registerComponent('petFormContainer', () => templates.petForm(currentPet));
-  AppHelper.refreshComponent('petFormContainer');
-  
-  Calendar.init('#exerciseCalendar');
-  Charts.init('#exerciseCharts');
-
-
- // In your showExerciseLog() function, add:
- console.log('Mood Logs container exists:', !!document.getElementById('moodLogsContainer'));
- console.log('MoodLogs module available:', typeof MoodLogs !== 'undefined');
- console.log('renderMoodLogs function available:', MoodLogs && typeof MoodLogs.renderMoodLogs === 'function');
-  // Initialize mood logs if available
-  if (typeof MoodLogs !== 'undefined' && MoodLogs.renderMoodLogs) {
-    MoodLogs.renderMoodLogs();
+  if (pets.length === 0) {
+    AppHelper.renderComponent('savedProfiles', `
+      <div class="no-profiles-message">
+        <p>No saved profiles yet. Please create a profile!</p>
+      </div>
+    `);
   }
   
   setupEventListeners();
-  loadSavedProfiles();
-  loadActivePetData();
 }
     
 //===============================
@@ -627,7 +617,7 @@ function setupEventListeners() {
     
 
       
-    // Validate required fields
+    // Validate required fields Validation code
     const errors = [];
     if (!formData.petType) errors.push('Pet type is required');
     if (!formData.petName.trim()) errors.push('Pet name is required');
@@ -639,7 +629,7 @@ function setupEventListeners() {
     const petData = activePetIndex !== null ? pets[activePetIndex] : initializeNewPet();
       // it retrieves everything via the helper
 
-    // Update pet details with all form fields
+    // Update pet details with all form fields data processing
     petData.petDetails = {
       type: formData.petType,
       name: formData.petName,
@@ -683,10 +673,20 @@ if (activePetIndex !== null) {
       pets[activePetIndex] = petData;
     }
 
-    localStorage.setItem('pets', JSON.stringify(pets));
-    sessionStorage.setItem('activePetIndex', activePetIndex);
-    updateDashboard(petData);
-  }
+      // Save to localStorage
+  localStorage.setItem('pets', JSON.stringify(pets));
+  sessionStorage.setItem('activePetIndex', activePetIndex);
+  
+  // STEP 2: HIDE FORM AND SHOW SAVED PROFILES
+  document.querySelector('.dashboard-main').style.display = 'none'; // Hide form section
+  loadSavedProfiles(); // Refresh the saved profiles list
+  
+  // Optional: Show success message
+  AppHelper.showError('Profile saved successfully!');
+  
+  // Your existing dashboard updates (keep these too)
+  updateDashboard(petData);
+}
     
 //============================================
     // UPDATE DASHBOARD
@@ -706,6 +706,16 @@ function updateDashboard(petData) {
 //===========================
 function loadSavedProfiles() {
   pets = PetEntry.getPets(); // ← FIXED
+// if no profiles, show the message to users. 
+    if (pets.length === 0) {
+    AppHelper.renderComponent('savedProfiles', `
+      <div class="no-profiles-message">
+        <p>No saved profiles yet. Click "New Profile" to create one!</p>
+      </div>
+    `);
+    return;
+  }
+   
   const profilesHTML = pets.map((pet, index) => `
     <div class="profile-card ${index === activePetIndex ? 'active' : ''}" data-pet-index="${index}">
       <img src="${pet.petDetails.image}" alt="${pet.petDetails.name}">
