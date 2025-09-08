@@ -512,10 +512,6 @@ dashboard: () => `
             <textarea id="exerciseNotes" rows="2" placeholder="Weather conditions, route, behavior during exercise"></textarea>
           </div>
           
-          <button type="submit" class="primary-btn">
-             ${activePetIndex === null ? 'Create Complete Profile' : 'Add Exercise & Update Profile'}
-           </button>
-          
         </fieldset>
       </form>`;
     }  // ← KEEP THIS BRACE (closes the petForm function)
@@ -525,7 +521,11 @@ dashboard: () => `
  // show exercise log function     UPDATED
  //========================
 function showExerciseLog() {
+    // fetch dashboard template first
   AppHelper.showPage(templates.dashboard());
+    
+     // HIDE DASHBOARD INITIALLY - Add this line
+  document.querySelector('.dashboard-container').style.display = 'none';
   
   // Get current pet data if editing existing pet
   pets = PetEntry.getPets();
@@ -546,8 +546,9 @@ function showExerciseLog() {
   loadSavedProfiles();
   loadActivePetData();
 }
+    
 //===============================
-// Setup eventlisteners function 
+// Setup eventlisteners function    UI CONTROL
 //===========≈===================
 function setupEventListeners() {
   // Use event delegation for dynamically created buttons
@@ -558,10 +559,17 @@ function setupEventListeners() {
       Auth.logout();
     }
     
-    // New Profile button handler
+    // New Profile button handler - MODIFY THIS SECTION
     if (e.target.id === 'addNewProfileButton' || e.target.closest('#addNewProfileButton')) {
       e.preventDefault();
       activePetIndex = null;
+      
+      // SHOW DASHBOARD WHEN BUTTON IS CLICKED - Add these lines
+      const dashboard = document.querySelector('.dashboard-container');
+      if (dashboard.style.display === 'none') {
+        dashboard.style.display = 'flex'; // or 'block' depending on your CSS
+      }
+      
       AppHelper.refreshComponent('petFormContainer');
       
       // Also clear any selected state in profiles
