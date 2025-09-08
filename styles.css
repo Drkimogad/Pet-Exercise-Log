@@ -52,8 +52,12 @@ body.dark-mode {
   text-align: center;
 }
 
+
+/* Also make sure header stays above Lottie */
 #main-header {
-  border-bottom: 3px solid var(--primary-mustard);
+    position: relative;
+     border-bottom: 3px solid var(--primary-mustard);
+    z-index: 5; /* Above Lottie but below auth container */
 }
 
 #main-footer {
@@ -129,7 +133,7 @@ body:has(#auth-container:not([style*="display: none"])) footer {
 /* Ensure auth container stays above lottie */
 #auth-container {
     position: relative;
-    z-index: 1; /* Above lottie background */
+    z-index: 10; /* Above lottie background */
 }
 
 /* Dark mode adjustment */
