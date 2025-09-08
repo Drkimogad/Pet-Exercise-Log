@@ -98,12 +98,15 @@ body.dark-mode {
     margin-bottom: 1rem;
 }
 
-/* Center Footer in Auth Pages */
-.auth-page footer {
+/* Alternative if .auth-page class isn't applied */
+body:has(#auth-container:not([style*="display: none"])) footer {
     position: fixed;
     bottom: 0;
+    left: 0;
     width: 100%;
+    z-index: 2;
 }
+
 /* ============================================================
     LOTTIEFILES BACKGROUND BANNER
 ============================================================ */
