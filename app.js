@@ -288,29 +288,37 @@ dashboard: () => `
   </header>
   
   <main class="dashboard-main">
-    <!-- Left: Pet Form -->
+    <!-- Left: Pet Form (50% width) -->
     <section class="form-section" id="petFormContainer"></section>
     
-    <!-- Right: Data Visualization -->
+    <!-- Right: Vertical Stack of Components (50% width) -->
     <section class="data-section">
-      <div class="top-row">
-        <div class="calendar-container" id="exerciseCalendar"></div>
-        <div class="mood-container" id="moodLogsContainer"></div>
+      <!-- Calendar -->
+      <div class="component-container">
+        <h3>Exercise Calendar</h3>
+        <div id="exerciseCalendar"></div>
       </div>
       
-      <div class="charts-row">
-        <div class="chart-box" id="durationChartContainer">
-          <h4>Duration</h4>
-          <canvas id="durationChart"></canvas>
-        </div>
-        <div class="chart-box" id="caloriesChartContainer">
-          <h4>Calories</h4>
-          <canvas id="caloriesChart"></canvas>
-        </div>
-        <div class="chart-box" id="intensityChartContainer">
-          <h4>Intensity</h4>
-          <canvas id="intensityChart"></canvas>
-        </div>
+      <!-- Mood Logs -->
+      <div class="component-container">
+        <h3>Mood Tracker</h3>
+        <div id="moodLogsContainer"></div>
+      </div>
+      
+      <!-- Charts - Stacked Vertically -->
+      <div class="chart-container">
+        <h3>Duration</h3>
+        <canvas id="durationChart"></canvas>
+      </div>
+      
+      <div class="chart-container">
+        <h3>Calories Burned</h3>
+        <canvas id="caloriesChart"></canvas>
+      </div>
+      
+      <div class="chart-container">
+        <h3>Intensity Distribution</h3>
+        <canvas id="intensityChart"></canvas>
       </div>
     </section>
   </main>
