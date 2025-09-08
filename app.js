@@ -321,11 +321,7 @@ dashboard: () => `
         <canvas id="intensityChart"></canvas>
       </div>
     </section>
-     <!-- Create Profile Button -->
-  <div class="create-profile-btn-container">
-   <button type="submit" id="createProfileBtn" class="primary-btn">Create Profile</button>
-  </div>
-  </main>
+      </main>
     
   <!-- Saved Profiles -->
   <aside class="saved-profiles" id="savedProfiles"></aside>
@@ -509,9 +505,16 @@ dashboard: () => `
           <div class="form-group">
             <label for="exerciseNotes">Exercise Notes</label>
             <textarea id="exerciseNotes" rows="2" placeholder="Weather conditions, route, behavior during exercise"></textarea>
-          </div>
-          
+          </div>       
         </fieldset>
+
+            <!-- CREATE PROFILE BUTTON INSIDE THE FORM -->
+    <div class="create-profile-btn-container">
+      <button type="submit" class="primary-btn">
+        ${activePetIndex === null ? 'Create Complete Profile' : 'Update Profile'}
+      </button>
+    </div>
+        
       </form>`;
     }  // ← KEEP THIS BRACE (closes the petForm function)
    };   // ← KEEP THIS BRACE (closes Dashboard templates object)
