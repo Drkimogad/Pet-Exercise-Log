@@ -1055,7 +1055,7 @@ footer {
 }
 
 
-/* added last*/
+/* added last layout*/
 .dashboard-container {
   display: flex;
   flex-direction: column;
@@ -1065,7 +1065,8 @@ footer {
 
 .dashboard-main {
   display: flex;
-  gap: 20px;
+  gap: 30px;
+  min-height: 70vh;
 }
 
 .form-section {
@@ -1078,35 +1079,41 @@ footer {
   display: flex;
   flex-direction: column;
   gap: 20px;
+  max-width: 50%;
 }
 
-.top-row {
-  display: flex;
-  gap: 20px;
-}
-
-.calendar-container, .mood-container {
-  flex: 1;
-}
-
-.charts-row {
-  display: flex;
-  gap: 15px;
-}
-
-.chart-box {
-  flex: 1;
-  border: 1px solid #ddd;
+.component-container, .chart-container {
+  border: 1px solid #e0e0e0;
   border-radius: 8px;
   padding: 15px;
-  background: white;
+  background: #fff;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.component-container h3, .chart-container h3 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  color: #333;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 8px;
 }
 
 .create-profile-btn-container {
   text-align: center;
-  margin: 20px 0;
+  margin: 25px 0;
 }
 
-.saved-profiles {
-  /* Styles for your saved profiles sidebar */
+.primary-btn {
+  background: #4a90e2;
+  color: white;
+  padding: 12px 25px;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.primary-btn:hover {
+  background: #357abD;
 }
