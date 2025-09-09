@@ -245,21 +245,8 @@ document.getElementById('lottie-banner').style.display = 'block';
 //===================================
 // 1. Module petEntry UPDATED
 //======================
-const PetEntry = (function() {
-  let activePetIndex = null;
-  const MAX_PETS = 10;
-  const DEFAULT_IMAGE = 'https://drkimogad.github.io/Pet-Exercise-Log/images/default-pet.png'; // ← FIXED
-  const FAVORITE_EXERCISES = ['walking', 'running', 'swimming', 'playing', 'fetch', 'agility'];
-  const PET_TYPES = ['dog', 'cat', 'bird', 'rabbit', 'hamster', 'reptile', 'other'];
-  const ENERGY_LEVELS = ['low', 'medium', 'high', 'very high'];
-  const HEALTH_STATUSES = ['excellent', 'good', 'fair', 'poor', 'under treatment'];
-  // ADD UI STATE MANAGEMENT
-  const UIState = {
-    VIEW_PROFILES: 'view-profiles',
-    CREATE_PROFILE: 'create-profile',
-    EDIT_PROFILE: 'edit-profile'
-  };
-    
+//  UI UPDATE FUNCTION
+
     function setUIState(state) {
     const dashboardMain = document.querySelector('.dashboard-main');
     const savedProfiles = document.getElementById('savedProfiles');
@@ -279,6 +266,22 @@ const PetEntry = (function() {
         break;
     }
   }
+
+const PetEntry = (function() {
+  let activePetIndex = null;
+  const MAX_PETS = 10;
+  const DEFAULT_IMAGE = 'https://drkimogad.github.io/Pet-Exercise-Log/images/default-pet.png'; // ← FIXED
+  const FAVORITE_EXERCISES = ['walking', 'running', 'swimming', 'playing', 'fetch', 'agility'];
+  const PET_TYPES = ['dog', 'cat', 'bird', 'rabbit', 'hamster', 'reptile', 'other'];
+  const ENERGY_LEVELS = ['low', 'medium', 'high', 'very high'];
+  const HEALTH_STATUSES = ['excellent', 'good', 'fair', 'poor', 'under treatment'];
+  // ADD UI STATE MANAGEMENT
+  const UIState = {
+    VIEW_PROFILES: 'view-profiles',
+    CREATE_PROFILE: 'create-profile',
+    EDIT_PROFILE: 'edit-profile'
+  };
+    
      // ▼▼▼ ADD initializeNewPet FUNCTION RIGHT HERE ▼▼▼
   function initializeNewPet() {
     return {
