@@ -359,10 +359,9 @@ dashboard: () => `
   </header>
   
   <main class="dashboard-main">
-    <!-- Left: Pet Form (50% width) -->
+    <!-- Full width sections for vertical stacking -->
     <section class="form-section" id="petFormContainer"></section>
     
-    <!-- Right: Vertical Stack of Components (50% width) -->
     <section class="data-section">
       <!-- Calendar -->
       <div class="component-container">
@@ -376,25 +375,25 @@ dashboard: () => `
         <div id="moodLogsContainer"></div>
       </div>
       
-      <!-- Charts - Stacked Vertically -->
-      <div class="chart-container">
-        <h3>Duration</h3>
-        <canvas id="durationChart"></canvas>
-      </div>
-      
-      <div class="chart-container">
-        <h3>Calories Burned</h3>
-        <canvas id="caloriesChart"></canvas>
-      </div>
-      
-      <div class="chart-container">
-        <h3>Intensity Distribution</h3>
-        <canvas id="intensityChart"></canvas>
+      <!-- Charts -->
+      <div class="charts-container">
+        <div class="chart-container">
+          <h3>Duration</h3>
+          <canvas id="durationChart"></canvas>
+        </div>
+        <div class="chart-container">
+          <h3>Calories Burned</h3>
+          <canvas id="caloriesChart"></canvas>
+        </div>
+        <div class="chart-container">
+          <h3>Intensity Distribution</h3>
+          <canvas id="intensityChart"></canvas>
+        </div>
       </div>
     </section>
-      </main>
-    
-  <!-- Saved Profiles -->
+  </main>
+  
+  <!-- Saved Profiles - Always visible -->
   <aside class="saved-profiles" id="savedProfiles"></aside>
 </div>`,
     
@@ -590,19 +589,20 @@ dashboard: () => `
     }  // ← KEEP THIS BRACE (closes the petForm function)
    };   // ← KEEP THIS BRACE (closes Dashboard templates object)
  
-//==================
- // show exercise log function  INITIAL STATE
- //========================
+//==========================================
+ // show exercise log function  for UI
+ //=========================================
 function showExerciseLog() {
   AppHelper.showPage(templates.dashboard());
   
   // Hide Lottie banner
   document.getElementById('lottie-banner').style.display = 'none';
   
-  // Set initial UI state
-  setUIState(UIState.VIEW_PROFILES);
+  // HIDE dashboard-main initially, SHOW savedProfiles
+  document.querySelector('.dashboard-main').style.display = 'none';
+  document.getElementById('savedProfiles').style.display = 'block';
   
-  // Load profiles
+  // Load profiles (will show message if empty)
   loadSavedProfiles();
   setupEventListeners();
 }
@@ -623,16 +623,19 @@ function setupEventListeners() {
    if (e.target.id === 'addNewProfileButton' || e.target.closest('#addNewProfileButton')) {
   e.preventDefault();
   EventBus.emit('SHOW_CREATE_PROFILE');
-}
   activePetIndex = null;
 
     // Set UI state to create profile
-  setUIState(UIState.CREATE_PROFILE);
+ // setUIState(UIState.CREATE_PROFILE);
              
+  // SHOW dashboard-main, KEEP savedProfiles visible
+  document.querySelector('.dashboard-main').style.display = 'flex';
+  document.getElementById('savedProfiles').style.display = 'block';
+  
   AppHelper.refreshComponent('petFormContainer');
-  loadSavedProfiles(); // Keep this to refresh any selection states
-  }
-});
+  loadSavedProfiles(); // Refresh to clear any selections
+ }
+}
 
   // Existing form and image listeners (they work because they're re-attached on refresh)
   document.getElementById('exerciseForm')?.addEventListener('submit', handleFormSubmit);
@@ -742,10 +745,14 @@ if (activePetIndex !== null) {
   // Return to view profiles state
   setUIState(UIState.VIEW_PROFILES);
   
-  // Refresh and show success
-  loadSavedProfiles();
-  AppHelper.showError('Profile saved successfully!');
-  updateDashboard(petData);
+ // HIDE dashboard-main, KEEP savedProfiles visible
+document.querySelector('.dashboard-main').style.display = 'none';
+document.getElementById('savedProfiles').style.display = 'block';
+
+// Refresh and show success
+loadSavedProfiles();
+AppHelper.showError('Profile saved successfully!');
+updateDashboard(petData);
 }
 
     
