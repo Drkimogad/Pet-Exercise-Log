@@ -81,13 +81,11 @@ document.addEventListener("DOMContentLoaded", () => {
         document.body.classList.add('dark-mode');
     }
 
-    // Check if user is logged in
+    // Check if user is logged in - SIMPLIFIED
     if (sessionStorage.getItem('user')) {
-    if (typeof PetEntry !== "undefined" && typeof PetEntry.showExerciseLog === "function") {
-        PetEntry.showExerciseLog();
-    } else {
-        console.error("❌ PetEntry or showExerciseLog function is missing!");
-    }
+        // EventBus will automatically trigger PetEntry.showExerciseLog()
+        // No direct call needed anymore!
+        EventBus.emit('USER_LOGGED_IN', JSON.parse(sessionStorage.getItem('user')));
     } else {
         Auth.showAuth();
     }
@@ -118,6 +116,27 @@ const AppHelper = (function() {
     showErrors: (msgs) => msgs.forEach(msg => AppHelper.showError(msg))
   };
 })();
+
+// ============================================================
+// EVENT BUS - CENTRAL COMMUNICATION SYSTEM
+// ============================================================
+const EventBus = {
+  events: {},
+  
+  // Listen for events
+  on(event, callback) {
+    this.events[event] = this.events[event] || [];
+    this.events[event].push(callback);
+  },
+  
+  // Emit events
+  emit(event, data) {
+    if (this.events[event]) {
+      this.events[event].forEach(callback => callback(data));
+    }
+  }
+};
+
 
 // authentication//
 const Auth = (function() {
@@ -204,9 +223,9 @@ async function handleAuthSubmit(e, isSignUp) {
     sessionStorage.setItem('user', JSON.stringify(userData));
     console.log('Stored user data:', JSON.parse(sessionStorage.getItem('user')));
     
-    // FIXED: Check if PetEntry exists before calling it
-    if (typeof PetEntry !== 'undefined' && PetEntry.showExerciseLog) {
-      PetEntry.showExerciseLog();
+    // FIXED: Check if PetEntry exists/CALL EVENTBUS HERE
+    EventBus.emit('USER_LOGGED_IN', userData);
+      
     } else {
       console.error('PetEntry module not available');
       AppHelper.showError('Failed to load dashboard. Please refresh the page.');
@@ -231,8 +250,9 @@ document.getElementById('lottie-banner').style.display = 'block';
   return {
     showAuth,
     logout: () => {
+      EventBus.emit('USER_LOGGED_OUT'); // ADD THIS LINE
         // Show Lottie banner on logout - ADD THIS LINE
-document.getElementById('lottie-banner').style.display = 'block';
+    document.getElementById('lottie-banner').style.display = 'block';
         
       sessionStorage.removeItem('user');
       AppHelper.showPage('<div class="logout-message">Logged out</div>');
@@ -246,6 +266,25 @@ document.getElementById('lottie-banner').style.display = 'block';
 // 1. Module petEntry UPDATED
 //======================
 const PetEntry = (function() {
+   // Listen for login events
+  EventBus.on('USER_LOGGED_IN', () => {
+    showExerciseLog();
+  });
+     // Listen for new profile events
+  EventBus.on('SHOW_CREATE_PROFILE', () => {
+    activePetIndex = null;
+    document.querySelector('.dashboard-main').style.display = 'flex';
+    AppHelper.refreshComponent('petFormContainer');
+    loadSavedProfiles();
+  });
+    
+// In PetEntry, add this with the other EventBus.on listeners:
+ EventBus.on('USER_LOGGED_OUT', () => {
+  // Hide any dashboard elements if needed
+  document.querySelector('.dashboard-main').style.display = 'none';
+});
+    
+// Then your existing variables and functions continue here...
   let activePetIndex = null;
   const MAX_PETS = 10;
   const DEFAULT_IMAGE = 'https://drkimogad.github.io/Pet-Exercise-Log/images/default-pet.png'; // ← FIXED
@@ -579,10 +618,12 @@ function setupEventListeners() {
       e.preventDefault();
       Auth.logout();
     }
-    
-    // New Profile button handler - MODIFY THIS SECTION
-    if (e.target.id === 'addNewProfileButton' || e.target.closest('#addNewProfileButton')) {
+      
+// Update UI Event Handlers to Emit Events
+   if (e.target.id === 'addNewProfileButton' || e.target.closest('#addNewProfileButton')) {
   e.preventDefault();
+  EventBus.emit('SHOW_CREATE_PROFILE');
+}
   activePetIndex = null;
 
     // Set UI state to create profile
