@@ -338,25 +338,36 @@ body:has(#auth-container:not([style*="display: none"])) footer {
 
 /* Main Content Area */
 .dashboard-main {
-  display: none; /* Hidden initially */
-  flex-direction: row; /* Will show as flex when visible */
-  gap: 30px;
-  min-height: 70vh;
+  display: none; /* Hidden by default */
+  flex-direction: column; /* Changed from row to column for vertical layout */
+  gap: 20px;
+}
+.dashboard-main[style*="display: flex"] {
+  /* When shown, use flex layout */
+  display: flex !important;
 }
 
+.saved-profiles {
+  display: block; /* Always visible */
+}
+
+/* Ensure form section takes full width */
 .form-section {
+  width: 100%;
   flex: 1;
-  max-width: 50%;
+  flex-direction: column;
+  max-width: none; /* Remove the 50% restriction */
 }
 
+/* Stack data-section vertically */
 .data-section {
-  flex: 1;
+  width: 100%;
+  max-width: none; /* Remove the 50% restriction */
+ flex: 1;
   display: flex;
   flex-direction: column;
   gap: 20px;
-  max-width: 50%;
 }
-
 .component-container, .chart-container {
   border: 1px solid #e0e0e0;
   border-radius: 8px;
