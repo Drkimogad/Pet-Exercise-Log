@@ -273,7 +273,9 @@ const PetEntry = (function() {
      // Listen for new profile events
   EventBus.on('SHOW_CREATE_PROFILE', () => {
     activePetIndex = null;
-    document.querySelector('.dashboard-main').style.display = 'flex';
+    setUIState(UIState.CREATE_PROFILE); // ← USING UI STATE
+  //  document.querySelector('.dashboard-main').style.display = 'flex';
+ //   document.getElementById('savedProfiles').style.display = 'block';
     AppHelper.refreshComponent('petFormContainer');
     loadSavedProfiles();
   });
@@ -301,24 +303,24 @@ const PetEntry = (function() {
     //  UI UPDATE FUNCTION
 
     function setUIState(state) {
-    const dashboardMain = document.querySelector('.dashboard-main');
-    const savedProfiles = document.getElementById('savedProfiles');
-    
-    switch(state) {
-      case UIState.VIEW_PROFILES:
-        dashboardMain.style.display = 'none';
-        savedProfiles.style.display = 'block';
-        break;
-      case UIState.CREATE_PROFILE:
-        dashboardMain.style.display = 'flex';
-        savedProfiles.style.display = 'block';
-        break;
-      case UIState.EDIT_PROFILE:
-        dashboardMain.style.display = 'flex';
-        savedProfiles.style.display = 'block';
-        break;
-    }
+  const dashboardMain = document.querySelector('.dashboard-main');
+  const savedProfiles = document.getElementById('savedProfiles');
+  
+  switch(state) {
+    case UIState.VIEW_PROFILES:
+      dashboardMain.style.display = 'none';
+      savedProfiles.style.display = 'block';
+      break;
+    case UIState.CREATE_PROFILE:
+      dashboardMain.style.display = 'flex';
+      savedProfiles.style.display = 'block';
+      break;
+    case UIState.EDIT_PROFILE:
+      dashboardMain.style.display = 'flex';
+      savedProfiles.style.display = 'block';
+      break;
   }
+}
      // ▼▼▼ ADD initializeNewPet FUNCTION RIGHT HERE ▼▼▼
   function initializeNewPet() {
     return {
@@ -618,26 +620,15 @@ function setupEventListeners() {
       e.preventDefault();
       Auth.logout();
     }
-      
-// Update UI Event Handlers to Emit Events
-   if (e.target.id === 'addNewProfileButton' || e.target.closest('#addNewProfileButton')) {
-  e.preventDefault();
-  EventBus.emit('SHOW_CREATE_PROFILE');
-  activePetIndex = null;
+    
+    // New Profile button handler - EVENTBUS ONLY
+    if (e.target.id === 'addNewProfileButton' || e.target.closest('#addNewProfileButton')) {
+      e.preventDefault();
+      EventBus.emit('SHOW_CREATE_PROFILE'); // ← ONLY THIS LINE
+    }
+  });
 
-    // Set UI state to create profile
- // setUIState(UIState.CREATE_PROFILE);
-             
-  // SHOW dashboard-main, KEEP savedProfiles visible
-  document.querySelector('.dashboard-main').style.display = 'flex';
-  document.getElementById('savedProfiles').style.display = 'block';
-  
-  AppHelper.refreshComponent('petFormContainer');
-  loadSavedProfiles(); // Refresh to clear any selections
- }
-}
-
-  // Existing form and image listeners (they work because they're re-attached on refresh)
+  // Existing form and image listeners
   document.getElementById('exerciseForm')?.addEventListener('submit', handleFormSubmit);
   document.getElementById('petImage')?.addEventListener('change', handleImageUpload);
   document.getElementById('toggleModeButton')?.addEventListener('click', toggleDarkMode);
@@ -738,16 +729,12 @@ if (activePetIndex !== null) {
       pets[activePetIndex] = petData;
     }
 
-  // AFTER SUCCESSFUL SAVE:
-  localStorage.setItem('pets', JSON.stringify(pets));
-  sessionStorage.setItem('activePetIndex', activePetIndex);
-  
-  // Return to view profiles state
-  setUIState(UIState.VIEW_PROFILES);
-  
- // HIDE dashboard-main, KEEP savedProfiles visible
-document.querySelector('.dashboard-main').style.display = 'none';
-document.getElementById('savedProfiles').style.display = 'block';
+// AFTER SUCCESSFUL SAVE:
+localStorage.setItem('pets', JSON.stringify(pets));
+sessionStorage.setItem('activePetIndex', activePetIndex);
+
+// Return to view profiles state - USING UI STATE
+setUIState(UIState.VIEW_PROFILES); // ← ONLY THIS LINE
 
 // Refresh and show success
 loadSavedProfiles();
