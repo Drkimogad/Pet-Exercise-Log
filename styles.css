@@ -224,6 +224,17 @@ body:has(#auth-container:not([style*="display: none"])) footer {
   border-color: var(--light-purple);
 }
 
+/* TO ENSURE VISIBILITY*/
+.dashboard-main, #savedProfiles {
+  transition: opacity 0.3s ease;
+}
+
+/* Ensure saved profiles has proper layout */
+.saved-profiles {
+  display: grid;
+  gap: 1rem;
+  padding: 1rem;
+}
 /* ============================================================
     RESPONSIVE ADJUSTMENTS
 ============================================================ */
