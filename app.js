@@ -253,7 +253,32 @@ const PetEntry = (function() {
   const PET_TYPES = ['dog', 'cat', 'bird', 'rabbit', 'hamster', 'reptile', 'other'];
   const ENERGY_LEVELS = ['low', 'medium', 'high', 'very high'];
   const HEALTH_STATUSES = ['excellent', 'good', 'fair', 'poor', 'under treatment'];
-
+  // ADD UI STATE MANAGEMENT
+  const UIState = {
+    VIEW_PROFILES: 'view-profiles',
+    CREATE_PROFILE: 'create-profile',
+    EDIT_PROFILE: 'edit-profile'
+  };
+    
+    function setUIState(state) {
+    const dashboardMain = document.querySelector('.dashboard-main');
+    const savedProfiles = document.getElementById('savedProfiles');
+    
+    switch(state) {
+      case UIState.VIEW_PROFILES:
+        dashboardMain.style.display = 'none';
+        savedProfiles.style.display = 'block';
+        break;
+      case UIState.CREATE_PROFILE:
+        dashboardMain.style.display = 'flex';
+        savedProfiles.style.display = 'block';
+        break;
+      case UIState.EDIT_PROFILE:
+        dashboardMain.style.display = 'flex';
+        savedProfiles.style.display = 'block';
+        break;
+    }
+  }
      // ▼▼▼ ADD initializeNewPet FUNCTION RIGHT HERE ▼▼▼
   function initializeNewPet() {
     return {
@@ -531,27 +556,14 @@ dashboard: () => `
 function showExerciseLog() {
   AppHelper.showPage(templates.dashboard());
   
-  // HIDE FORM SECTION INITIALLY
-  document.querySelector('.dashboard-main').style.display = 'none';
-    // Hide Lottie banner when dashboard shows
-  const lottieBanner = document.getElementById('lottie-banner');
-  if (lottieBanner) {
-    lottieBanner.style.display = 'none';
-  }
+  // Hide Lottie banner
+  document.getElementById('lottie-banner').style.display = 'none';
   
-  // Show saved profiles always
+  // Set initial UI state
+  setUIState(UIState.VIEW_PROFILES);
+  
+  // Load profiles
   loadSavedProfiles();
-  
-  // If no pets, show message
-  pets = PetEntry.getPets();
-  if (pets.length === 0) {
-    AppHelper.renderComponent('savedProfiles', `
-      <div class="no-profiles-message">
-        <p>No saved profiles yet. Please create a profile!</p>
-      </div>
-    `);
-  }
-  
   setupEventListeners();
 }
     
@@ -569,19 +581,16 @@ function setupEventListeners() {
     
     // New Profile button handler - MODIFY THIS SECTION
     if (e.target.id === 'addNewProfileButton' || e.target.closest('#addNewProfileButton')) {
-      e.preventDefault();
-      activePetIndex = null;
-      
-      // SHOW ONLY THE MAIN CONTENT (not entire dashboard)
-      document.querySelector('.dashboard-main').style.display = 'flex';
+  e.preventDefault();
+  activePetIndex = null;
 
-      
-      AppHelper.refreshComponent('petFormContainer');
-      
-      // Also clear any selected state in profiles
-      loadSavedProfiles();
-    }
-  });
+    // Set UI state to create profile
+  setUIState(UIState.CREATE_PROFILE);
+             
+  AppHelper.refreshComponent('petFormContainer');
+  loadSavedProfiles(); // Keep this to refresh any selection states
+  }
+});
 
   // Existing form and image listeners (they work because they're re-attached on refresh)
   document.getElementById('exerciseForm')?.addEventListener('submit', handleFormSubmit);
@@ -684,20 +693,19 @@ if (activePetIndex !== null) {
       pets[activePetIndex] = petData;
     }
 
-      // Save to localStorage
+  // AFTER SUCCESSFUL SAVE:
   localStorage.setItem('pets', JSON.stringify(pets));
   sessionStorage.setItem('activePetIndex', activePetIndex);
   
-  // STEP 2: HIDE FORM AND SHOW SAVED PROFILES
-  document.querySelector('.dashboard-main').style.display = 'none'; // Hide form section
-  loadSavedProfiles(); // Refresh the saved profiles list
+  // Return to view profiles state
+  setUIState(UIState.VIEW_PROFILES);
   
-  // Optional: Show success message
+  // Refresh and show success
+  loadSavedProfiles();
   AppHelper.showError('Profile saved successfully!');
-  
-  // Your existing dashboard updates (keep these too)
   updateDashboard(petData);
 }
+
     
 //============================================
     // UPDATE DASHBOARD
@@ -836,6 +844,7 @@ function setupProfileEventListeners() {
 function selectPetProfile(index) {
   activePetIndex = index;
   sessionStorage.setItem('activePetIndex', activePetIndex);
+  setUIState(UIState.VIEW_PROFILES); // Stay in view mode
   updateDashboard(getPets()[activePetIndex]);
   loadSavedProfiles(); // Refresh to show selected state
 }
@@ -843,7 +852,8 @@ function selectPetProfile(index) {
 function editPetProfile(index) {
   activePetIndex = index;
   sessionStorage.setItem('activePetIndex', activePetIndex);
-  
+    setUIState(UIState.EDIT_PROFILE); // Switch to edit mode
+
   // Load the pet data into the form
   const pet = getPets()[index];
   if (pet) {
