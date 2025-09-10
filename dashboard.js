@@ -10,12 +10,45 @@ const PET_TYPES = ['dog', 'cat', 'bird', 'rabbit', 'hamster', 'reptile', 'other'
 const ENERGY_LEVELS = ['low', 'medium', 'high', 'very high'];
 const HEALTH_STATUSES = ['excellent', 'good', 'fair', 'poor', 'under treatment'];
 
+// Calendar variables
+let currentMonth = new Date().getMonth();
+let currentYear = new Date().getFullYear();
+let exerciseData = [];
+
+// Charts variables
+let durationChart, caloriesChart, activityChart, intensityChart;
+
+// Mood options
+const MOOD_OPTIONS = [
+    { value: 0, emoji: '😀', label: 'Happy' },
+    { value: 1, emoji: '😊', label: 'Content' },
+    { value: 2, emoji: '😐', label: 'Neutral' },
+    { value: 3, emoji: '😞', label: 'Sad' },
+    { value: 4, emoji: '😠', label: 'Angry' },
+    { value: 5, emoji: '🤢', label: 'Sick' },
+    { value: 6, emoji: '😤', label: 'Aggressive' },
+    { value: 7, emoji: '😔', label: 'Depressed' },
+    { value: 8, emoji: '😴', label: 'Tired' },
+    { value: 9, emoji: '😰', label: 'Anxious' }
+];
+
 // Initialize dashboard
 document.addEventListener('DOMContentLoaded', function() {
     if (sessionStorage.getItem('user')) {
         showExerciseLog();
     }
 });
+
+// ==================== PET ENTRY FUNCTIONS ====================
+function showExerciseLog() {
+    document.getElementById('app').innerHTML = dashboardTemplate();
+    document.getElementById('lottie-banner').style.display = 'none';
+    document.querySelector('.dashboard-main').style.display = 'none';
+    document.getElementById('savedProfiles').style.display = 'block';
+    loadSavedProfiles();
+    setupEventListeners();
+}
+
 
 // Dashboard template
 function dashboardTemplate() {
@@ -104,16 +137,6 @@ function petFormTemplate(pet = {}) {
             </div>
         </fieldset>
     </form>`;
-}
-
-// Show exercise log
-function showExerciseLog() {
-    document.getElementById('app').innerHTML = dashboardTemplate();
-    document.getElementById('lottie-banner').style.display = 'none';
-    document.querySelector('.dashboard-main').style.display = 'none';
-    document.getElementById('savedProfiles').style.display = 'block';
-    loadSavedProfiles();
-    setupEventListeners();
 }
 
 // Setup event listeners
