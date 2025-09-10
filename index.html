@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#ffffff">
+    <meta name="description" content="Track your pet's exercise routine and health metrics">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="https://drkimogad.github.io/Pet-Exercise-Log/manifest.json">
+    
+    <!-- iOS PWA Support -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="https://drkimogad.github.io/Pet-Exercise-Log/icon-192x192.png">
+
+    <title>Pet Exercise Log</title>
+    <link rel="icon" href="https://drkimogad.github.io/Pet-Exercise-Log/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="styles.css">
+    
+    <!-- Lottie Player -->
+    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- Header -->
+    <header id="main-header">
+        <h1>Your Pet Exercise Log</h1>
+        <p>Track your pet's exercise routine and health metrics</p>
+    </header>
+
+    <!-- Lottie Background Banner -->
+    <div id="lottie-banner">
+        <lottie-player 
+            src="https://drkimogad.github.io/Pet-Exercise-Log/lottie/dogtreadmilling.json" 
+            background="transparent" 
+            speed="1" 
+            loop 
+            autoplay>
+        </lottie-player>
+    </div>
+
+    <!-- Auth Container -->
+    <div id="auth-container">
+        <!-- Sign In Form -->
+        <div class="auth-container" id="signinForm">
+            <div class="auth-card">
+                <h2>Sign In</h2>
+                <form id="authForm">
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" required autocomplete="email">
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" required minlength="8" autocomplete="current-password">
+                    </div>
+                    <button type="submit" class="auth-btn">Sign In</button>
+                </form>
+                <div class="auth-switch">
+                    New user? <a href="#" id="switchAuth">Sign Up</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sign Up Form -->
+        <div class="auth-container" id="signupForm" style="display: none;">
+            <div class="auth-card">
+                <h2>Create Account</h2>
+                <form id="signupFormElement">
+                    <div class="form-group">
+                        <label for="username">Name</label>
+                        <input type="text" id="username" required autocomplete="name">
+                    </div>
+                    <div class="form-group">
+                        <label for="signupEmail">Email</label>
+                        <input type="email" id="signupEmail" required autocomplete="email">
+                    </div>
+                    <div class="form-group">
+                        <label for="signupPassword">Password</label>
+                        <input type="password" id="signupPassword" required minlength="8" autocomplete="new-password">
+                    </div>
+                    <div class="form-group">
+                        <label for="confirmPassword">Confirm Password</label>
+                        <input type="password" id="confirmPassword" required autocomplete="new-password">
+                    </div>
+                    <button type="submit" class="auth-btn">Sign Up</button>
+                </form>
+                <div class="auth-switch">
+                    Have an account? <a href="#" id="switchToSignin">Sign In</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard Templates (hidden by default) -->
+    <template id="dashboard-template">
+        <div class="dashboard-container">
+            <header class="dashboard-header">
+                <button id="addNewProfileButton" class="icon-btn">＋ New Profile</button>
+                <button id="toggleModeButton" class="icon-btn">🌓 Toggle Mode</button>
+                <button id="logoutButton" class="icon-btn">🚪 Logout</button>
+            </header>
+            
+            <main class="dashboard-main">
+                <section class="form-section" id="petFormContainer"></section>
+                
+                <section class="data-section">
+                    <div class="component-container">
+                        <h3>Exercise Calendar</h3>
+                        <div id="exerciseCalendar"></div>
+                    </div>
+                    
+                    <div class="component-container">
+                        <h3>Mood Tracker</h3>
+                        <div id="moodLogsContainer"></div>
+                    </div>
+                    
+                    <div class="charts-container">
+                        <div class="chart-container">
+                            <h3>Duration</h3>
+                            <canvas id="durationChart"></canvas>
+                        </div>
+                        <div class="chart-container">
+                            <h3>Calories Burned</h3>
+                            <canvas id="caloriesChart"></canvas>
+                        </div>
+                        <div class="chart-container">
+                            <h3>Intensity Distribution</h3>
+                            <canvas id="intensityChart"></canvas>
+                        </div>
+                    </div>
+                </section>
+            </main>
+            
+            <aside class="saved-profiles" id="savedProfiles"></aside>
+        </div>
+    </template>
+
+    <!-- Pet Form Template -->
+    <template id="pet-form-template">
+        <form id="exerciseForm" class="pet-form card">
+            <fieldset class="pet-details">
+                <legend data-bind="title">New Pet</legend>
+                
+                <div class="form-group">
+                    <label for="petType">Pet Type *</label>
+                    <select id="petType" required>
+                        <option value="">Select Type</option>
+                        <option value="dog">Dog</option>
+                        <option value="cat">Cat</option>
+                        <option value="bird">Bird</option>
+                        <option value="rabbit">Rabbit</option>
+                        <option value="hamster">Hamster</option>
+                        <option value="reptile">Reptile</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="petName">Name *</label>
+                    <input type="text" id="petName" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Image</label>
+                    <div class="image-upload">
+                        <input type="file" id="petImage" accept="image/*">
+                        <img id="petImagePreview" src="https://drkimogad.github.io/Pet-Exercise-Log/images/default-pet.png" alt="Pet Preview">
+                    </div>
+                </div>
+                
+                <!-- Add other form fields as needed -->
+                
+                <div class="create-profile-btn-container">
+                    <button type="submit" class="primary-btn" data-bind="buttonText">Create Complete Profile</button>
+                </div>
+            </fieldset>
+        </form>
+    </template>
+
+    <!-- Calendar Template -->
+    <template id="calendar-template">
+        <div class="calendar">
+            <div class="calendar-header">
+                <button class="nav-btn prev">←</button>
+                <h2 data-bind="monthYear">Month Year</h2>
+                <button class="nav-btn next">→</button>
+            </div>
+            <div class="calendar-grid">
+                <div class="calendar-day header">Sun</div>
+                <div class="calendar-day header">Mon</div>
+                <div class="calendar-day header">Tue</div>
+                <div class="calendar-day header">Wed</div>
+                <div class="calendar-day header">Thu</div>
+                <div class="calendar-day header">Fri</div>
+                <div class="calendar-day header">Sat</div>
+                <!-- Days will be populated dynamically -->
+            </div>
+        </div>
+    </template>
+
+    <!-- Mood Logs Template -->
+    <template id="mood-logs-template">
+        <div class="mood-container">
+            <h3>Today's Mood</h3>
+            <div class="mood-selector">
+                <!-- Mood buttons will be populated dynamically -->
+            </div>
+            
+            <h3>Mood History</h3>
+            <div class="mood-history">
+                <!-- Mood history will be populated dynamically -->
+            </div>
+        </div>
+    </template>
+
+    <!-- Main App Container -->
+    <div id="app-container">
+        <div id="app">
+            <!-- Content managed by JavaScript -->
+        </div>
+
+        <!-- Notifications System -->
+        <div id="notifications" class="notifications-container"></div>
+    </div>
+
+    <!-- PWA Install Button -->
+    <button id="installButton" style="display: none;">Install App</button>
+
+    <!-- Footer -->
+    <footer id="main-footer">
+        <p>&copy; 2025 Pet Exercise Log. All Rights Reserved.</p>
+    </footer>
+
+    <!-- Script Imports -->
+    <script src="utils.js" defer></script>
+    <script src="auth.js" defer></script>
+    <script src="dashboard.js" defer></script>
+</body>
+</html>
