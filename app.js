@@ -274,12 +274,16 @@ const PetEntry = (function() {
   });
      // Listen for new profile events
   EventBus.on('SHOW_CREATE_PROFILE', () => {
-    activePetIndex = null;
-    setUIState(UIState.CREATE_PROFILE); // ← USING UI STATE
-  //  document.querySelector('.dashboard-main').style.display = 'flex';
- //   document.getElementById('savedProfiles').style.display = 'block';
+    activePetIndex = null;    
+// HIDE the "no profiles" message and SHOW the dashboard
+   // setUIState(UIState.CREATE_PROFILE); // ← USING UI STATE
+    document.querySelector('.dashboard-main').style.display = 'flex';
+    document.getElementById('savedProfiles').style.display = 'block';
     AppHelper.refreshComponent('petFormContainer');
-    loadSavedProfiles();
+  loadSavedProfiles(); // This will now show profiles if any exist
+        // RE-ATTACH EVENT LISTENERS FOR THE NEW FORM
+  document.getElementById('exerciseForm')?.addEventListener('submit', handleFormSubmit);
+  document.getElementById('petImage')?.addEventListener('change', handleImageUpload);
   });
     
 // In PetEntry, add this with the other EventBus.on listeners:
