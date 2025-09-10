@@ -439,3 +439,409 @@ function refreshCalendar(data) {
     generateCalendar();
 }
 
+
+
+// Charts functionality
+let durationChart, caloriesChart, activityChart, intensityChart;
+
+function initCharts(selector) {
+    const container = document.querySelector(selector);
+    if (!container) return;
+    container.innerHTML = `
+        <div class="chart">
+            <canvas id="durationChart"></canvas>
+        </div>
+        <div class="chart">
+            <canvas id="activityChart"></canvas>
+        </div>
+        <div class="chart">
+            <canvas id="caloriesChart"></canvas>
+        </div>
+        <div class="chart">
+            <canvas id="intensityChart"></canvas>
+        </div>
+    `;
+}
+
+function refreshCharts(data) {
+    if (!data || !data.length) return;
+    destroyCharts();
+    
+    const processed = processChartData(data);
+    createDurationChart(processed);
+    createActivityChart(processed);
+    createCaloriesChart(processed);
+    createIntensityChart(processed);
+}
+
+function processChartData(data) {
+    return {
+        labels: [...new Set(data.map(e => e.date))].sort(),
+        duration: data.reduce((acc, e) => {
+            acc[e.date] = (acc[e.date] || 0) + e.duration;
+            return acc;
+        }, {}),
+        calories: data.reduce((acc, e) => {
+            acc[e.date] = (acc[e.date] || 0) + e.caloriesBurned;
+            return acc;
+        }, {}),
+        activities: data.reduce((acc, e) => {
+            acc[e.exerciseType] = (acc[e.exerciseType] || 0) + 1;
+            return acc;
+        }, {}),
+        intensity: data.reduce((acc, e) => {
+            acc[e.intensity] = (acc[e.intensity] || 0) + 1;
+            return acc;
+        }, {})
+    };
+}
+
+function createIntensityChart(data) {
+    const ctx = document.getElementById('intensityChart');
+    if (!ctx) return;
+    
+    intensityChart = new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: Object.keys(data.intensity),
+            datasets: [{
+                data: Object.values(data.intensity),
+                backgroundColor: ['#36a2eb', '#ffce56', '#ff6384']
+            }]
+        },
+        options: {
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Exercise Intensity Distribution'
+                }
+            }
+        }
+    });
+}
+
+function createDurationChart(data) {
+    const ctx = document.getElementById('durationChart');
+    if (!ctx) return;
+    
+    durationChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: Object.keys(data.duration),
+            datasets: [{
+                label: 'Total Duration (min)',
+                data: Object.values(data.duration),
+                borderColor: '#4bc0c0',
+                tension: 0.3
+            }]
+        }
+    });
+}
+
+function createActivityChart(data) {
+    const ctx = document.getElementById('activityChart');
+    if (!ctx) return;
+    
+    activityChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: Object.keys(data.activities),
+            datasets: [{
+                data: Object.values(data.activities),
+                backgroundColor: ['#ff6384', '#36a2eb', '#ffce56', '#4bc0c0']
+            }]
+        }
+    });
+}
+
+function createCaloriesChart(data) {
+    const ctx = document.getElementById('caloriesChart');
+    if (!ctx) return;
+    
+    caloriesChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: Object.keys(data.calories),
+            datasets: [{
+                label: 'Calories Burned',
+                data: Object.values(data.calories),
+                backgroundColor: '#cc65fe'
+            }]
+        }
+    });
+}
+
+function destroyCharts() {
+    if (durationChart) durationChart.destroy();
+    if (activityChart) activityChart.destroy();
+    if (caloriesChart) caloriesChart.destroy();
+    if (intensityChart) intensityChart.destroy();
+}
+
+function updateChartColors() {
+    const textColor = document.body.classList.contains('dark-mode') ? '#fff' : '#374151';
+    Chart.defaults.color = textColor;
+    if (durationChart) durationChart.update();
+    if (activityChart) activityChart.update();
+    if (caloriesChart) caloriesChart.update();
+    if (intensityChart) intensityChart.update();
+}
+
+
+// Report generation functionality
+function generateReport(pet) {
+    const reportWindow = window.open('', '_blank');
+    reportWindow.document.write(`
+        <html>
+            <head>
+                <title>Monthly Pet Report: ${pet.petDetails.name}</title>
+                <style>
+                    body { font-family: sans-serif; padding: 20px; }
+                    h1, h2 { text-align: center; color: #301934; }
+                    table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+                    th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
+                    .calendar-grid { 
+                        display: grid; 
+                        grid-template-columns: repeat(7, 1fr); 
+                        gap: 5px; 
+                        margin: 15px 0;
+                    }
+                    .calendar-day { 
+                        padding: 10px; 
+                        border: 1px solid #ddd; 
+                        text-align: center;
+                        min-height: 40px;
+                    }
+                    .mood-emoji { font-size: 1.5em; }
+                    .chart-container { width: 100%; height: 300px; margin: 20px 0; }
+                    .summary-stats { 
+                        display: grid; 
+                        grid-template-columns: repeat(3, 1fr); 
+                        gap: 15px; 
+                        margin: 20px 0;
+                    }
+                    .stat-box { 
+                        background: #f0f0f0; 
+                        padding: 15px; 
+                        border-radius: 8px; 
+                        text-align: center;
+                    }
+                    .button-container { 
+                        text-align: center; 
+                        margin: 20px 0;
+                    }
+                    button { 
+                        padding: 10px 20px; 
+                        margin: 0 10px; 
+                        background: #301934; 
+                        color: white; 
+                        border: none; 
+                        border-radius: 4px; 
+                        cursor: pointer;
+                    }
+                    button:hover { background: #4a235a; }
+                </style>
+            </head>
+            <body>
+                <h1>Monthly Pet Report: ${pet.petDetails.name}</h1>
+                ${generatePetDetailsHTML(pet)}
+                ${generateExerciseSummaryHTML(pet.exerciseEntries)}
+                ${generateExerciseCalendarHTML(pet)}
+                ${pet.moodLogs && pet.moodLogs.length > 0 ? generateMoodCalendarHTML(pet) : ''}
+                ${pet.exerciseEntries && pet.exerciseEntries.length > 0 ? generateExerciseChartsHTML(pet.exerciseEntries) : ''}
+                <div class="button-container">
+                    <button onclick="window.print()">Print Report</button>
+                    <button onclick="window.close()">Close</button>
+                </div>
+            </body>
+        </html>
+    `);
+    reportWindow.document.close();
+}
+
+function generatePetDetailsHTML(pet) {
+    return `
+        <div>
+            <h2>Pet Details</h2>
+            <table>
+                <tr><th>Name</th><th>Age</th><th>Weight</th><th>Breed</th><th>Gender</th></tr>
+                <tr>
+                    <td>${pet.petDetails.name || 'N/A'}</td>
+                    <td>${pet.petDetails.age || 'N/A'}</td>
+                    <td>${pet.petDetails.weight || 'N/A'}</td>
+                    <td>${pet.petDetails.breed || 'N/A'}</td>
+                    <td>${pet.petDetails.gender || 'N/A'}</td>
+                </tr>
+            </table>
+        </div>
+    `;
+}
+
+function generateExerciseCalendarHTML(pet) {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = now.getMonth();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const firstDay = new Date(year, month, 1).getDay();
+    
+    let calendarHtml = `
+        <h2>Exercise Calendar - ${now.toLocaleString('default', { month: 'long', year: 'numeric' })}</h2>
+        <div class="calendar-grid">
+        ${['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => 
+            `<div class="calendar-day" style="font-weight:bold;">${day}</div>`
+        ).join('')}
+    `;
+    
+    // Empty days for the first week
+    for (let i = 0; i < firstDay; i++) {
+        calendarHtml += '<div class="calendar-day"></div>';
+    }
+    
+    for (let day = 1; day <= daysInMonth; day++) {
+        const dateStr = `${year}-${(month + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+        const hasExercise = pet.exerciseEntries?.some(entry => entry.date === dateStr);
+        calendarHtml += `<div class="calendar-day">${day} ${hasExercise ? '✅' : ''}</div>`;
+    }
+    
+    calendarHtml += '</div>';
+    return calendarHtml;
+}
+
+function generateMoodCalendarHTML(pet) {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = now.getMonth();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const firstDay = new Date(year, month, 1).getDay();
+    
+    let moodHtml = `
+        <h2>Mood Calendar - ${now.toLocaleString('default', { month: 'long', year: 'numeric' })}</h2>
+        <div class="calendar-grid">
+        ${['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => 
+            `<div class="calendar-day" style="font-weight:bold;">${day}</div>`
+        ).join('')}
+    `;
+    
+    // Empty days for the first week
+    for (let i = 0; i < firstDay; i++) {
+        moodHtml += '<div class="calendar-day'></div>';
+    }
+    
+    for (let day = 1; day <= daysInMonth; day++) {
+        const dateStr = `${year}-${(month + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+        const moodEntry = pet.moodLogs?.find(log => log.date === dateStr);
+        const moodEmoji = moodEntry ? MOOD_EMOJIS[moodEntry.mood] || '❓' : '';
+        moodHtml += `<div class="calendar-day mood-emoji">${moodEmoji}</div>`;
+    }
+    
+    moodHtml += '</div>';
+    return moodHtml;
+}
+
+function generateExerciseChartsHTML(exerciseEntries) {
+    if (!exerciseEntries || exerciseEntries.length === 0) return '<p>No exercise data available.</p>';
+    
+    const labels = [...new Set(exerciseEntries.map(entry => entry.date))].sort();
+    const durationData = labels.map(date => 
+        exerciseEntries.filter(entry => entry.date === date)
+                       .reduce((sum, entry) => sum + entry.duration, 0)
+    );
+    
+    const caloriesData = labels.map(date => 
+        exerciseEntries.filter(entry => entry.date === date)
+                       .reduce((sum, entry) => sum + entry.caloriesBurned, 0)
+    );
+
+    return `
+        <h2>Exercise Charts</h2>
+        <div class="chart-container">
+            <canvas id="durationChart"></canvas>
+        </div>
+        <div class="chart-container">
+            <canvas id="caloriesChart"></canvas>
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script>
+            setTimeout(function() {
+                new Chart(document.getElementById('durationChart').getContext('2d'), { 
+                    type: 'bar', 
+                    data: { 
+                        labels: ${JSON.stringify(labels)}, 
+                        datasets: [{ 
+                            label: 'Duration (minutes)', 
+                            data: ${JSON.stringify(durationData)}, 
+                            backgroundColor: 'rgba(54, 162, 235, 0.5)', 
+                            borderColor: 'rgba(54, 162, 235, 1)', 
+                            borderWidth: 1 
+                        }] 
+                    }, 
+                    options: { 
+                        responsive: true,
+                        scales: { y: { beginAtZero: true } } 
+                    } 
+                });
+                
+                new Chart(document.getElementById('caloriesChart').getContext('2d'), { 
+                    type: 'line', 
+                    data: { 
+                        labels: ${JSON.stringify(labels)}, 
+                        datasets: [{ 
+                            label: 'Calories Burned', 
+                            data: ${JSON.stringify(caloriesData)}, 
+                            backgroundColor: 'rgba(255, 99, 132, 0.2)', 
+                            borderColor: 'rgba(255, 99, 132, 1)', 
+                            borderWidth: 2,
+                            tension: 0.3
+                        }] 
+                    }, 
+                    options: { 
+                        responsive: true,
+                        scales: { y: { beginAtZero: true } } 
+                    } 
+                });
+            }, 100);
+        </script>
+    `;
+}
+
+function generateExerciseSummaryHTML(exerciseEntries) {
+    if (!exerciseEntries || exerciseEntries.length === 0) return '<p>No exercise data available.</p>';
+    
+    const totalDays = new Set(exerciseEntries.map(entry => entry.date)).size;
+    const totalDuration = exerciseEntries.reduce((sum, entry) => sum + entry.duration, 0);
+    const totalCalories = exerciseEntries.reduce((sum, entry) => sum + entry.caloriesBurned, 0);
+    const avgDuration = totalDuration / exerciseEntries.length;
+    const avgCalories = totalCalories / exerciseEntries.length;
+
+    return `
+        <h2>Exercise Summary</h2>
+        <div class="summary-stats">
+            <div class="stat-box">
+                <h3>${totalDays}</h3>
+                <p>Days Exercised</p>
+            </div>
+            <div class="stat-box">
+                <h3>${totalDuration} min</h3>
+                <p>Total Duration</p>
+            </div>
+            <div class="stat-box">
+                <h3>${totalCalories}</h3>
+                <p>Total Calories</p>
+            </div>
+            <div class="stat-box">
+                <h3>${avgDuration.toFixed(1)} min</h3>
+                <p>Avg. per Session</p>
+            </div>
+            <div class="stat-box">
+                <h3>${avgCalories.toFixed(0)}</h3>
+                <p>Avg. Calories</p>
+            </div>
+            <div class="stat-box">
+                <h3>${exerciseEntries.length}</h3>
+                <p>Total Sessions</p>
+            </div>
+        </div>
+    `;
+}
+
+
