@@ -223,18 +223,20 @@ async function handleAuthSubmit(e, isSignUp) {
     sessionStorage.setItem('user', JSON.stringify(userData));
     console.log('Stored user data:', JSON.parse(sessionStorage.getItem('user')));
     
-    // FIXED: Check if PetEntry exists/CALL EVENTBUS HERE
-    EventBus.emit('USER_LOGGED_IN', userData);
-      
+    // Emit login event
+    if (typeof PetEntry !== 'undefined') {
+      EventBus.emit('USER_LOGGED_IN', userData);
     } else {
       console.error('PetEntry module not available');
       AppHelper.showError('Failed to load dashboard. Please refresh the page.');
     }
-  } catch (error) {
+      
+  } catch (error) {  // serves the try 
     console.error('Authentication error:', error);
     AppHelper.showError('Authentication failed. Please try again.');
   }
 }
+              
   function showAuth(isSignUp = false) {
       // Show Lottie banner - ADD THIS LINE
 document.getElementById('lottie-banner').style.display = 'block';
