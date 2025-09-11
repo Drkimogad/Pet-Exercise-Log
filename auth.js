@@ -9,6 +9,7 @@ async function hashPassword(pass, salt) {
     return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
+
 // Handle Sign Up
 async function handleSignUp(e) {
     e.preventDefault();
@@ -102,6 +103,13 @@ async function handleSignIn(e) {
         console.error('Sign in error:', error);
         showError('Sign in failed. Please try again.');
     }
+}
+
+// Manual logout function for testing
+function manualLogout() {
+    sessionStorage.removeItem('user');
+    alert('Manual logout completed. Refresh the page.');
+    location.reload();
 }
 
 // Switch between sign in and sign up forms
