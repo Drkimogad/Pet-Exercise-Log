@@ -72,9 +72,109 @@ function showCreateProfile() {
 function handleFormSubmit(e) {
     e.preventDefault();
     // Your form handling logic here
+        console.log('FORM SUBMIT CALLED!'); // ← Add this line
+
+    // Collect all form data
+    pets = PetEntry.getPets(); // ← FIXED
+    const formData = {
+      petType: document.getElementById('petType').value,
+      petName: document.getElementById('petName').value,
+      petImage: document.getElementById('petImagePreview').src,
+      petAge: document.getElementById('petAge').value,
+      petWeight: document.getElementById('petWeight').value,
+      petBreed: document.getElementById('petBreed').value,
+      petGender: document.getElementById('petGender').value,
+      petColor: document.getElementById('petColor').value,
+      petMicrochip: document.getElementById('petMicrochip').value,
+      petEnergyLevel: document.getElementById('petEnergyLevel').value,
+      petHealthStatus: document.getElementById('petHealthStatus').value,
+      petVetInfo: document.getElementById('petVetInfo').value,
+      petVaccinations: document.getElementById('petVaccinations').value,
+      petMedications: document.getElementById('petMedications').value,
+      petAllergies: document.getElementById('petAllergies').value,
+      petDiet: document.getElementById('petDiet').value,
+      petBehavior: document.getElementById('petBehavior').value,
+      petFavoriteExercise: document.getElementById('petFavoriteExercise').value,
+      petNotes: document.getElementById('petNotes').value,
+      exerciseType: document.getElementById('exerciseType').value,
+      duration: document.getElementById('exerciseDuration').value,
+      date: document.getElementById('exerciseDate').value,
+      calories: document.getElementById('caloriesBurned').value,
+      exerciseIntensity: document.getElementById('exerciseIntensity').value,
+      exerciseNotes: document.getElementById('exerciseNotes').value
+    };
+        // Validate required fields Validation code
+    const errors = [];
+    if (!formData.petType) errors.push('Pet type is required');
+    if (!formData.petName.trim()) errors.push('Pet name is required');
+    if (formData.duration < 1) errors.push('Invalid duration');
+    if (formData.calories < 1) errors.push('Invalid calories');
+    if (errors.length) return AppHelper.showErrors(errors);
+
+ //   pets = getPets();
+    const petData = activePetIndex !== null ? pets[activePetIndex] : initializeNewPet();
+      // it retrieves everything via the helper
+
+    // Update pet details with all form fields data processing
+    petData.petDetails = {
+      type: formData.petType,
+      name: formData.petName,
+      image: formData.petImage,
+      age: formData.petAge,
+      weight: formData.petWeight,
+      breed: formData.petBreed,
+      gender: formData.petGender,
+      color: formData.petColor,
+      microchip: formData.petMicrochip,
+      energyLevel: formData.petEnergyLevel,
+      healthStatus: formData.petHealthStatus,
+      vetInfo: formData.petVetInfo,
+      vaccinations: formData.petVaccinations,
+      medications: formData.petMedications,
+      allergies: formData.petAllergies,
+      diet: formData.petDiet,
+      behavior: formData.petBehavior,
+      favoriteExercise: formData.petFavoriteExercise,
+      notes: formData.petNotes
+    };
+
+    // Add exercise entry with new fields
+// Only add exercise if we're updating an existing profile
+if (activePetIndex !== null) {
+  petData.exerciseEntries.push({
+    exerciseType: formData.exerciseType,
+    duration: Number(formData.duration),
+    date: formData.date,
+    caloriesBurned: Number(formData.calories),
+    intensity: formData.exerciseIntensity,
+    notes: formData.exerciseNotes
+  });
 }
 
-// Load saved profiles
+    if (activePetIndex === null) {
+      if (pets.length >= MAX_PETS) return AppHelper.showError('Maximum profiles reached');
+      pets.push(petData);
+      activePetIndex = pets.length - 1;
+    } else {
+      pets[activePetIndex] = petData;
+    }
+
+// AFTER SUCCESSFUL SAVE:
+localStorage.setItem('pets', JSON.stringify(pets));
+sessionStorage.setItem('activePetIndex', activePetIndex);
+
+// Return to view profiles state - USING UI STATE
+setUIState(UIState.VIEW_PROFILES); // ← ONLY THIS LINE
+
+// Refresh and show success
+loadSavedProfiles();
+AppHelper.showError('Profile saved successfully!');
+updateDashboard(petData);
+}
+
+// ===============================================
+//  Load saved profiles
+//==========================================
 function loadSavedProfiles() {
     pets = getPets();
     if (pets.length === 0) {
@@ -85,7 +185,48 @@ function loadSavedProfiles() {
         return;
     }
     // Your profiles rendering logic here
+    
+  const profilesHTML = pets.map((pet, index) => `
+    <div class="profile-card ${index === activePetIndex ? 'active' : ''}" data-pet-index="${index}">
+      <img src="${pet.petDetails.image}" alt="${pet.petDetails.name}">
+      <div class="profile-info">
+        <h4>${pet.petDetails.name}</h4>
+        <p>Type: ${pet.petDetails.type ? pet.petDetails.type.charAt(0).toUpperCase() + pet.petDetails.type.slice(1) : 'Unknown'}</p>
+        <p>Breed: ${pet.petDetails.breed || 'Unknown'}</p>
+        <p>Age: ${pet.petDetails.age || 'Unknown'} years</p>
+        <p>Weight: ${pet.petDetails.weight || 'Unknown'}</p>
+        <div class="profile-stats">
+          <span class="stat-badge">${pet.exerciseEntries.length} exercises</span>
+          ${pet.moodLogs ? `<span class="stat-badge">${pet.moodLogs.length} moods</span>` : ''}
+        </div>
+      </div>
+      <div class="profile-actions">
+        <button class="select-btn" data-index="${index}" title="Select this pet">
+          ${index === activePetIndex ? '✅ Selected' : '👉 Select'}
+        </button>
+        <button class="edit-btn" data-index="${index}" title="Edit pet details">
+          ✏️ Edit
+        </button>
+        <button class="delete-btn" data-index="${index}" title="Delete this pet">
+          🗑️ Delete
+        </button>
+        <button class="report-btn" data-index="${index}" title="Generate report">
+          📊 Report
+        </button>
+        <button class="share-btn" data-index="${index}" title="Share pet profile">
+          📤 Share
+        </button>
+      </div>
+    </div>
+  `).join('');
+
+  AppHelper.renderComponent('savedProfiles', profilesHTML);
+  
+  // Add event listeners for all buttons
+  setupProfileEventListeners();
 }
+
+
 
 // Get pets from localStorage
 function getPets() {
