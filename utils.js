@@ -92,18 +92,32 @@ function showSuccess(msg) {
 }
 
 // NEW: Check if user is authenticated
+// Check if user is authenticated - UPDATED
 function checkAuth() {
-    const user = sessionStorage.getItem('user');
-    if (user) {
-        // User is logged in, show dashboard
-        document.getElementById('auth-container').style.display = 'none';
-        document.getElementById('lottie-banner').style.display = 'none';
-        document.querySelector('.dashboard-container').style.display = 'block';
-        return true;
+    try {
+        const user = sessionStorage.getItem('user');
+        if (user) {
+            // User is logged in, show dashboard
+            document.getElementById('auth-container').style.display = 'none';
+            document.getElementById('lottie-banner').style.display = 'none';
+            
+            const dashboard = document.querySelector('.dashboard-container');
+            if (dashboard) {
+                dashboard.style.display = 'block';
+            }
+            return true;
+        }
+        // User is not logged in, show auth forms
+        document.getElementById('auth-container').style.display = 'block';
+        document.getElementById('lottie-banner').style.display = 'block';
+        
+        const dashboard = document.querySelector('.dashboard-container');
+        if (dashboard) {
+            dashboard.style.display = 'none';
+        }
+        return false;
+    } catch (error) {
+        console.error('Auth check error:', error);
+        return false;
     }
-    // User is not logged in, show auth forms
-    document.getElementById('auth-container').style.display = 'block';
-    document.getElementById('lottie-banner').style.display = 'block';
-    document.querySelector('.dashboard-container').style.display = 'none';
-    return false;
 }
