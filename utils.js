@@ -65,3 +65,29 @@ function showError(msg) {
 function showErrors(msgs) {
     msgs.forEach(msg => showError(msg));
 }
+
+// NEW: Success message function
+function showSuccess(msg) {
+    const success = document.createElement('div');
+    success.className = 'success-message';
+    success.textContent = msg;
+    document.getElementById('app').appendChild(success);
+    setTimeout(() => success.remove(), 5000);
+}
+
+// NEW: Check if user is authenticated
+function checkAuth() {
+    const user = sessionStorage.getItem('user');
+    if (user) {
+        // User is logged in, show dashboard
+        document.getElementById('auth-container').style.display = 'none';
+        document.getElementById('lottie-banner').style.display = 'none';
+        document.querySelector('.dashboard-container').style.display = 'block';
+        return true;
+    }
+    // User is not logged in, show auth forms
+    document.getElementById('auth-container').style.display = 'block';
+    document.getElementById('lottie-banner').style.display = 'block';
+    document.querySelector('.dashboard-container').style.display = 'none';
+    return false;
+}
