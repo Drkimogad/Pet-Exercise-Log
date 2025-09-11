@@ -96,7 +96,6 @@
     </div>
 
     <!-- Dashboard Templates (hidden by default) -->
-    <template id="dashboard-template">
         <div class="dashboard-container">
             <header class="dashboard-header">
                 <button id="addNewProfileButton" class="icon-btn">＋ New Profile</button>
@@ -137,10 +136,8 @@
             
             <aside class="saved-profiles" id="savedProfiles"></aside>
         </div>
-    </template>
 
     <!-- Pet Form Template -->
-    <template id="pet-form-template">
         <form id="exerciseForm" class="pet-form card">
             <fieldset class="pet-details">
                 <legend data-bind="title">New Pet</legend>
@@ -171,18 +168,162 @@
                         <img id="petImagePreview" src="https://drkimogad.github.io/Pet-Exercise-Log/images/default-pet.png" alt="Pet Preview">
                     </div>
                 </div>
-                
-                <!-- Add other form fields as needed -->
-                
+                      
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="petAge">Age (years)</label>
+              <input type="number" id="petAge" min="0" step="0.1" value="${petDetails.age || ''}">
+            </div>
+            
+            <div class="form-group">
+              <label for="petWeight">Weight (lbs or kg)</label>
+              <input type="number" id="petWeight" min="0" step="0.1" value="${petDetails.weight || ''}">
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="petBreed">Breed</label>
+            <input type="text" id="petBreed" value="${petDetails.breed || ''}" placeholder="e.g., Labrador, Siamese">
+          </div>
+          
+          <div class="form-group">
+            <label for="petGender">Gender</label>
+            <select id="petGender">
+              <option value="">Select Gender</option>
+              <option value="male" ${petDetails.gender === 'male' ? 'selected' : ''}>Male</option>
+              <option value="female" ${petDetails.gender === 'female' ? 'selected' : ''}>Female</option>
+              <option value="unknown" ${petDetails.gender === 'unknown' ? 'selected' : ''}>Unknown</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label for="petColor">Color/Markings</label>
+            <input type="text" id="petColor" value="${petDetails.color || ''}" placeholder="e.g., Black with white paws">
+          </div>
+          
+          <div class="form-group">
+            <label for="petMicrochip">Microchip ID</label>
+            <input type="text" id="petMicrochip" value="${petDetails.microchip || ''}" placeholder="15-digit microchip number">
+          </div>
+          
+          <div class="form-group">
+            <label for="petEnergyLevel">Energy Level</label>
+            <select id="petEnergyLevel">
+              <option value="">Select Energy Level</option>
+              ${ENERGY_LEVELS.map(level => `
+                <option value="${level}" ${petDetails.energyLevel === level ? 'selected' : ''}>
+                  ${level.charAt(0).toUpperCase() + level.slice(1)}
+                </option>
+              `).join('')}
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label for="petHealthStatus">Health Status</label>
+            <select id="petHealthStatus">
+              <option value="">Select Health Status</option>
+              ${HEALTH_STATUSES.map(status => `
+                <option value="${status}" ${petDetails.healthStatus === status ? 'selected' : ''}>
+                  ${status.charAt(0).toUpperCase() + status.slice(1)}
+                </option>
+              `).join('')}
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label for="petVetInfo">Veterinarian Information</label>
+            <textarea id="petVetInfo" rows="2" placeholder="Vet name, clinic, and contact info">${petDetails.vetInfo || ''}</textarea>
+          </div>
+          
+          <div class="form-group">
+            <label for="petVaccinations">Vaccination Records</label>
+            <textarea id="petVaccinations" rows="2" placeholder="Vaccination types and dates">${petDetails.vaccinations || ''}</textarea>
+          </div>
+          
+          <div class="form-group">
+            <label for="petMedications">Medications</label>
+            <textarea id="petMedications" rows="2" placeholder="Current medications and dosage">${petDetails.medications || ''}</textarea>
+          </div>
+          
+          <div class="form-group">
+            <label for="petAllergies">Allergies/Sensitivities</label>
+            <textarea id="petAllergies" rows="2" placeholder="Food, environmental, or medication allergies">${petDetails.allergies || ''}</textarea>
+          </div>
+          
+          <div class="form-group">
+            <label for="petDiet">Diet & Feeding Schedule</label>
+            <textarea id="petDiet" rows="2" placeholder="What, how much, and when they eat">${petDetails.diet || ''}</textarea>
+          </div>
+          
+          <div class="form-group">
+            <label for="petBehavior">Temperament & Behavior</label>
+            <textarea id="petBehavior" rows="2" placeholder="General behavior, training, socialization">${petDetails.behavior || ''}</textarea>
+          </div>
+          
+          <div class="form-group">
+            <label for="petFavoriteExercise">Favorite Exercise/Activity</label>
+            <select id="petFavoriteExercise">
+              <option value="">Select Favorite</option>
+              ${FAVORITE_EXERCISES.map(exercise => `
+                <option value="${exercise}" ${petDetails.favoriteExercise === exercise ? 'selected' : ''}>
+                  ${exercise.charAt(0).toUpperCase() + exercise.slice(1)}
+                </option>
+              `).join('')}
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label for="petNotes">Additional Notes</label>
+            <textarea id="petNotes" rows="3" placeholder="Any other important information">${petDetails.notes || ''}</textarea>
+          </div>
+        </fieldset>
+        
+        <fieldset class="exercise-entry">
+          <legend>Add Exercise</legend>
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="exerciseType">Type</label>
+              <select id="exerciseType" required>
+                ${FAVORITE_EXERCISES.map(exercise => `
+                  <option value="${exercise}">${exercise.charAt(0).toUpperCase() + exercise.slice(1)}</option>
+                `).join('')}
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="exerciseDuration">Duration (min)</label>
+              <input type="number" id="exerciseDuration" min="1" required>
+            </div>
+            <div class="form-group">
+              <label for="exerciseDate">Date</label>
+              <input type="date" id="exerciseDate" required>
+            </div>
+            <div class="form-group">
+              <label for="caloriesBurned">Calories Burned</label>
+              <input type="number" id="caloriesBurned" min="1" required>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="exerciseIntensity">Intensity Level</label>
+            <select id="exerciseIntensity">
+              <option value="low">Low</option>
+              <option value="medium" selected>Medium</option>
+              <option value="high">High</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label for="exerciseNotes">Exercise Notes</label>
+            <textarea id="exerciseNotes" rows="2" placeholder="Weather conditions, route, behavior during exercise"></textarea>
+          </div>       
+        </fieldset>
                 <div class="create-profile-btn-container">
                     <button type="submit" class="primary-btn" data-bind="buttonText">Create Complete Profile</button>
                 </div>
             </fieldset>
         </form>
-    </template>
 
     <!-- Calendar Template -->
-    <template id="calendar-template">
         <div class="calendar">
             <div class="calendar-header">
                 <button class="nav-btn prev">←</button>
@@ -200,10 +341,8 @@
                 <!-- Days will be populated dynamically -->
             </div>
         </div>
-    </template>
 
     <!-- Mood Logs Template -->
-    <template id="mood-logs-template">
         <div class="mood-container">
             <h3>Today's Mood</h3>
             <div class="mood-selector">
@@ -215,7 +354,6 @@
                 <!-- Mood history will be populated dynamically -->
             </div>
         </div>
-    </template>
 
     <!-- Main App Container -->
     <div id="app-container">
@@ -236,8 +374,8 @@
     </footer>
 
     <!-- Script Imports -->
-    <script src="utils.js" defer></script>
     <script src="auth.js" defer></script>
+    <script src="utils.js" defer></script>
     <script src="dashboard.js" defer></script>
 </body>
 </html>
