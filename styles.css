@@ -165,6 +165,34 @@ body:has(#auth-container:not([style*="display: none"])) footer {
     display: none;
 }
 
+.error-message {
+    background-color: #ffebee;
+    color: #c62828;
+    padding: 10px;
+    margin: 10px;
+    border-radius: 4px;
+    border-left: 4px solid #c62828;
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    max-width: 300px;
+}
+
+.success-message {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+    padding: 10px;
+    margin: 10px;
+    border-radius: 4px;
+    border-left: 4px solid #2e7d32;
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    max-width: 300px;
+}
+
 /* ============================================================
     DASHBOARD CONTAINER STYLING
 ============================================================ */
