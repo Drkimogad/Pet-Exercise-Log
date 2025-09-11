@@ -119,7 +119,29 @@ function setupAuthSwitchers() {
     });
 }
 
-// Initialize authentication
+
+// Logout function
+function logout() {
+    // Clear user session
+    sessionStorage.removeItem('user');
+    currentUser = null;
+    
+    // Hide dashboard, show auth forms
+    document.querySelector('.dashboard-container').style.display = 'none';
+    document.getElementById('auth-container').style.display = 'block';
+    document.getElementById('lottie-banner').style.display = 'block';
+    
+    // Show sign-in form specifically
+    document.getElementById('signinForm').style.display = 'block';
+    document.getElementById('signupForm').style.display = 'none';
+    
+    // Clear any form values
+    document.getElementById('authForm').reset();
+    
+    console.log('User logged out successfully');
+}
+
+// Add this to your initAuth function to set up the logout button
 function initAuth() {
     // Check if user is already logged in
     if (checkAuth()) {
@@ -132,6 +154,12 @@ function initAuth() {
     
     // Set up auth switchers
     setupAuthSwitchers();
+    
+    // Set up logout button if it exists
+    const logoutButton = document.getElementById('logoutButton');
+    if (logoutButton) {
+        logoutButton.addEventListener('click', logout);
+    }
 }
 
 // Initialize when DOM is loaded
