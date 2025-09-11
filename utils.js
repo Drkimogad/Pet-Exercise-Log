@@ -91,33 +91,29 @@ function showSuccess(msg) {
     }
 }
 
-// NEW: Check if user is authenticated
-// Check if user is authenticated - UPDATED
+// Check if user is authenticated - IMPROVED
 function checkAuth() {
     try {
-        const user = sessionStorage.getItem('user');
-        if (user) {
-            // User is logged in, show dashboard
-            document.getElementById('auth-container').style.display = 'none';
-            document.getElementById('lottie-banner').style.display = 'none';
-            
-            const dashboard = document.querySelector('.dashboard-container');
-            if (dashboard) {
-                dashboard.style.display = 'block';
-            }
-            return true;
-        }
-        // User is not logged in, show auth forms
-        document.getElementById('auth-container').style.display = 'block';
-        document.getElementById('lottie-banner').style.display = 'block';
+        const userJson = sessionStorage.getItem('user');
+        if (!userJson) return false;
+        
+        const user = JSON.parse(userJson);
+        if (!user || !user.email) return false;
+        
+        // User is logged in, show dashboard, hide auth
+        document.getElementById('auth-container').style.display = 'none';
+        document.getElementById('lottie-banner').style.display = 'none';
         
         const dashboard = document.querySelector('.dashboard-container');
         if (dashboard) {
-            dashboard.style.display = 'none';
+            dashboard.style.display = 'block';
         }
-        return false;
+        
+        return true;
     } catch (error) {
         console.error('Auth check error:', error);
+        // If there's any error, clear the invalid session
+        sessionStorage.removeItem('user');
         return false;
     }
 }
