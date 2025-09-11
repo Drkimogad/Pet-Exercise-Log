@@ -95,15 +95,16 @@
         </div>
     </div>
 
-    <!-- Dashboard Templates (hidden by default) -->
-        <div class="dashboard-container">
-            <header class="dashboard-header">
+ <!-- Dashboard Container (hidden by default) -->
+    <div class="dashboard-container" style="display: none;">
+        <header class="dashboard-header">
                 <button id="addNewProfileButton" class="icon-btn">＋ New Profile</button>
                 <button id="toggleModeButton" class="icon-btn">🌓 Toggle Mode</button>
                 <button id="logoutButton" class="icon-btn">🚪 Logout</button>
             </header>
             
             <main class="dashboard-main">
+                            <!-- This is where the pet form will appear -->
                 <section class="form-section" id="petFormContainer"></section>
                 
                 <section class="data-section">
@@ -137,8 +138,10 @@
             <aside class="saved-profiles" id="savedProfiles"></aside>
         </div>
 
+          <!-- Templates (hidden) -->
+    <div style="display: none;">
     <!-- Pet Form Template -->
-        <form id="exerciseForm" class="pet-form card">
+        <div id="petFormTemplate">
             <fieldset class="pet-details">
                 <legend data-bind="title">New Pet</legend>
                 
@@ -322,7 +325,8 @@
                 </div>
             </fieldset>
         </form>
-
+     </div>
+           <!-- Other templates (calendar, mood logs) -->
     <!-- Calendar Template -->
         <div class="calendar">
             <div class="calendar-header">
@@ -354,19 +358,15 @@
                 <!-- Mood history will be populated dynamically -->
             </div>
         </div>
-
-    <!-- Main App Container -->
-    <div id="app-container">
-        <div id="app">
-            <!-- Content managed by JavaScript -->
-        </div>
+    </div>       <!-- CLOSES THE TEMPLATES DIV -->
 
         <!-- Notifications System -->
-        <div id="notifications" class="notifications-container"></div>
-    </div>
+        <div id="notifications" class="notifications-container">
+            <!-- PWA Install Button -->
+        <button id="installButton" style="display: none;">Install App</button>
+        </div>
 
-    <!-- PWA Install Button -->
-    <button id="installButton" style="display: none;">Install App</button>
+
 
     <!-- Footer -->
     <footer id="main-footer">
