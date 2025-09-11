@@ -40,12 +40,15 @@ async function handleSignUp(e) {
         // Save to localStorage (for demo purposes)
         localStorage.setItem('user_' + formData.email, JSON.stringify(userData));
         sessionStorage.setItem('user', JSON.stringify(userData));
+        currentUser = userData;
         
-        // Show success and redirect
+        // Show success and show dashboard
         showSuccess('Account created successfully!');
-        setTimeout(() => {
-            window.location.href = 'dashboard.html';
-        }, 1000);
+        
+        // Hide auth, show dashboard
+        document.getElementById('auth-container').style.display = 'none';
+        document.getElementById('lottie-banner').style.display = 'none';
+        document.querySelector('.dashboard-container').style.display = 'block';
         
     } catch (error) {
         console.error('Sign up error:', error);
@@ -87,11 +90,13 @@ async function handleSignIn(e) {
         sessionStorage.setItem('user', JSON.stringify(savedUser));
         currentUser = savedUser;
         
-        // Show success and redirect
+        // Show success and show dashboard
         showSuccess('Signed in successfully!');
-        setTimeout(() => {
-            window.location.href = 'dashboard.html';
-        }, 1000);
+        
+        // Hide auth, show dashboard
+        document.getElementById('auth-container').style.display = 'none';
+        document.getElementById('lottie-banner').style.display = 'none';
+        document.querySelector('.dashboard-container').style.display = 'block';
         
     } catch (error) {
         console.error('Sign in error:', error);
@@ -117,10 +122,8 @@ function setupAuthSwitchers() {
 // Initialize authentication
 function initAuth() {
     // Check if user is already logged in
-    const savedUser = sessionStorage.getItem('user');
-    if (savedUser) {
-        window.location.href = 'dashboard.html';
-        return;
+    if (checkAuth()) {
+        return; // User is already logged in, dashboard will be shown
     }
     
     // Set up form handlers
@@ -132,4 +135,7 @@ function initAuth() {
 }
 
 // Initialize when DOM is loaded
-document.addEventListener('DOMContentLoaded', initAuth);
+document.addEventListener('DOMContentLoaded', function() {
+    registerServiceWorker(); // From utils.js
+    initAuth();
+});
