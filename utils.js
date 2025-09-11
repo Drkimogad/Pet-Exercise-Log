@@ -53,26 +53,42 @@ window.addEventListener('beforeinstallprompt', (event) => {
     }
 });
 
-// Error handling
+
+
+// Error handling - UPDATED
 function showError(msg) {
     const error = document.createElement('div');
     error.className = 'error-message';
     error.textContent = msg;
-    document.getElementById('app').appendChild(error);
-    setTimeout(() => error.remove(), 5000);
+    
+    // Use auth container for messages
+    const authContainer = document.getElementById('auth-container');
+    if (authContainer) {
+        authContainer.appendChild(error);
+        setTimeout(() => error.remove(), 5000);
+    } else {
+        console.error('Error:', msg); // Fallback to console
+    }
 }
-
 function showErrors(msgs) {
     msgs.forEach(msg => showError(msg));
 }
 
-// NEW: Success message function
+
+// Success message function - UPDATED
 function showSuccess(msg) {
     const success = document.createElement('div');
     success.className = 'success-message';
     success.textContent = msg;
-    document.getElementById('app').appendChild(success);
-    setTimeout(() => success.remove(), 5000);
+    
+    // Use auth container for messages
+    const authContainer = document.getElementById('auth-container');
+    if (authContainer) {
+        authContainer.appendChild(success);
+        setTimeout(() => success.remove(), 5000);
+    } else {
+        console.log('Success:', msg); // Fallback to console
+    }
 }
 
 // NEW: Check if user is authenticated
