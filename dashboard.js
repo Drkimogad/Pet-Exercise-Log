@@ -41,10 +41,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // ==================== PET ENTRY FUNCTIONS ====================
 function showExerciseLog() {
-    document.getElementById('app').innerHTML = dashboardTemplate();
+    // Hide auth and show dashboard
+    document.getElementById('auth-container').style.display = 'none';
     document.getElementById('lottie-banner').style.display = 'none';
-    document.querySelector('.dashboard-main').style.display = 'none';
+    document.querySelector('.dashboard-container').style.display = 'block';
+
+        // Show saved profiles section
     document.getElementById('savedProfiles').style.display = 'block';
+    document.querySelector('.dashboard-main').style.display = 'none';
+    
     loadSavedProfiles();
     setupEventListeners();
 }
