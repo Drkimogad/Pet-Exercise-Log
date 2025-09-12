@@ -118,9 +118,9 @@ function showExerciseLog() {
     document.getElementById('lottie-banner').style.display = 'none';
     document.querySelector('.dashboard-container').style.display = 'block';
 
-        // Show saved profiles section
+    // Show saved profiles, hide the form container initially
     document.getElementById('savedProfiles').style.display = 'block';
-    document.querySelector('.dashboard-main').style.display = 'none';
+    document.getElementById('profileContainer').style.display = 'none';
     
     loadSavedProfiles();
     setupEventListeners();
@@ -134,15 +134,49 @@ function setupEventListeners() {
     document.getElementById('toggleModeButton').addEventListener('click', toggleDarkMode);
 }
 
-// Show create profile
+// Show create profile to show the profile form when "New Profile" is clicked
 function showCreateProfile() {
-    activePetIndex = null;
-    document.querySelector('.dashboard-main').style.display = 'flex';
-    document.getElementById('savedProfiles').style.display = 'block';
-    document.getElementById('petFormContainer').innerHTML = petFormTemplate();
+    // Hide saved profiles, show form container
+    document.getElementById('savedProfiles').style.display = 'none';
+    document.getElementById('profileContainer').style.display = 'block';
     
-    document.getElementById('exerciseForm').addEventListener('submit', handleFormSubmit);
-    document.getElementById('petImage').addEventListener('change', handleImageUpload);
+    // Load the profile form template
+    const template = document.getElementById('profileFormTemplate');
+    document.getElementById('profileContainer').innerHTML = template.innerHTML;
+    
+    // Set up form submission handler
+    document.getElementById('completeProfileForm').addEventListener('submit', handleProfileSubmit);
+    
+    // Set up cancel button
+    document.getElementById('cancelButton').addEventListener('click', function() {
+        document.getElementById('savedProfiles').style.display = 'block';
+        document.getElementById('profileContainer').style.display = 'none';
+        document.getElementById('profileContainer').innerHTML = '';
+    });
+    
+    // Set today's date as default for exercise
+    document.getElementById('exerciseDate').value = new Date().toISOString().split('T')[0];
+    
+    // Initialize empty charts, calendar, and mood tracker
+    initializeEmptyDashboard();
+}
+
+function handleProfileSubmit(e) {
+    e.preventDefault();
+    // This will handle collecting ALL data and updating everything
+    console.log('Profile form submitted - will process all data');
+    // We'll implement this function next
+}
+
+function initializeEmptyDashboard() {
+    // Initialize empty charts
+    initializeEmptyCharts();
+    
+    // Initialize empty calendar
+    initializeEmptyCalendar();
+    
+    // Initialize empty mood tracker
+    initializeEmptyMoodTracker();
 }
 
 // Handle form submit
