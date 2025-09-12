@@ -100,58 +100,34 @@
         </div>
     </div>
 
- <!-- Dashboard Container (hidden by default) -->
-    <div class="dashboard-container" style="display: none;">
-        <header class="dashboard-header">
-                <button id="addNewProfileButton" class="icon-btn">＋ New Profile</button>
-                <button id="toggleModeButton" class="icon-btn">🌓 Toggle Mode</button>
-                <button id="logoutButton" class="icon-btn">🚪 Logout</button>
-            </header>
-            
-            <main class="dashboard-main">
-                            <!-- This is where the pet form will appear -->
-                <section class="form-section" id="petFormContainer"></section>
-                
-                <section class="data-section">
-                    <div class="component-container">
-                        <h3>Exercise Calendar</h3>
-                        <div id="exerciseCalendar"></div>
-                    </div>
-                    
-                    <div class="component-container">
-                        <h3>Mood Tracker</h3>
-                        <div id="moodLogsContainer"></div>
-                    </div>
-                    
-                    <div class="charts-container">
-                        <div class="chart-container">
-                            <h3>Duration</h3>
-                            <canvas id="durationChart"></canvas>
-                        </div>
-                        <div class="chart-container">
-                            <h3>Calories Burned</h3>
-                            <canvas id="caloriesChart"></canvas>
-                        </div>
-                        <div class="chart-container">
-                            <h3>Intensity Distribution</h3>
-                            <canvas id="intensityChart"></canvas>
-                        </div>
-                    </div>
-                </section>
-            </main>
-            
-            <aside class="saved-profiles" id="savedProfiles"></aside>
-        </div>
+<!-- Dashboard Container -->
+<div class="dashboard-container" style="display: none;">
+    <header class="dashboard-header">
+        <button id="addNewProfileButton" class="icon-btn">＋ New Profile</button>
+        <button id="toggleModeButton" class="icon-btn">🌓 Toggle Mode</button>
+        <button id="logoutButton" class="icon-btn">🚪 Logout</button>
+    </header>
+    
+    <!-- Profile Container - Will hold either form or saved profiles -->
+    <main class="profile-container" id="profileContainer">
+        <!-- This will be populated dynamically -->
+    </main>
+    
+    <aside class="saved-profiles" id="savedProfiles"></aside>
+</div>
+
 
           <!-- Templates (hidden) -->
     <div style="display: none;">
     <!-- Pet Form Template -->
-        <div id="petFormContainer">
-            <fieldset class="pet-details">
-                <legend data-bind="title">New Pet</legend>
+    <div id="profileFormTemplate">
+        <form id="completeProfileForm" class="profile-form">
+            <!-- Pet Details Section -->
                 
-                <div class="form-group">
-                    <label for="petType">Pet Type *</label>
+    <section class="form-section" id="petDetailsSection">
+                <h3>Pet Information</h3>
+                <!-- All pet form fields go here -->
+                
                     <select id="petType" required>
                         <option value="">Select Type</option>
                         <option value="dog">Dog</option>
@@ -162,7 +138,6 @@
                         <option value="reptile">Reptile</option>
                         <option value="other">Other</option>
                     </select>
-                </div>
                 
                 <div class="form-group">
                     <label for="petName">Name *</label>
@@ -329,41 +304,39 @@
                     <button type="submit" class="primary-btn" data-bind="buttonText">Create Complete Profile</button>
                 </div>
             </fieldset>
-        </form>
-     </div>
-           <!-- Other templates (calendar, mood logs) -->
-    <!-- Calendar Template -->
-        <div class="calendar">
-            <div class="calendar-header">
-                <button class="nav-btn prev">←</button>
-                <h2 data-bind="monthYear">Month Year</h2>
-                <button class="nav-btn next">→</button>
-            </div>
-            <div class="calendar-grid">
-                <div class="calendar-day header">Sun</div>
-                <div class="calendar-day header">Mon</div>
-                <div class="calendar-day header">Tue</div>
-                <div class="calendar-day header">Wed</div>
-                <div class="calendar-day header">Thu</div>
-                <div class="calendar-day header">Fri</div>
-                <div class="calendar-day header">Sat</div>
-                <!-- Days will be populated dynamically -->
-            </div>
-        </div>
-
-    <!-- Mood Logs Template -->
-        <div class="mood-container">
-            <h3>Today's Mood</h3>
-            <div class="mood-selector">
-                <!-- Mood buttons will be populated dynamically -->
-            </div>
+        </section>
             
-            <h3>Mood History</h3>
-            <div class="mood-history">
-                <!-- Mood history will be populated dynamically -->
+           <!-- Other templates (calendar, mood logs) -->
+ <!-- Exercise Calendar Section -->
+            <section class="form-section" id="calendarSection">
+                <h3>Exercise Calendar</h3>
+                <div class="calendar" id="exerciseCalendar"></div>
+            </section>
+            
+                        <!-- Mood Tracker Section -->
+            <section class="form-section" id="moodSection">
+                <h3>Mood Tracker</h3>
+                <div class="mood-tracker" id="moodTracker"></div>
+            </section>
+            
+            <!-- Charts Section -->
+            <section class="form-section" id="chartsSection">
+                <h3>Activity Charts</h3>
+                <div class="charts-container">
+                    <div class="chart-container" id="durationChartContainer"></div>
+                    <div class="chart-container" id="caloriesChartContainer"></div>
+                    <div class="chart-container" id="intensityChartContainer"></div>
+                </div>
+            </section>
+            
+            <!-- Action Button -->
+            <div class="form-actions">
+                <button type="submit" id="saveProfileButton" class="primary-btn">Create Profile</button>
+                <button type="button" id="cancelButton" class="secondary-btn">Cancel</button>
             </div>
-        </div>
-    </div>       <!-- CLOSES THE TEMPLATES DIV -->
+        </form>
+    </div>
+</div>
 
         <!-- Notifications System -->
         <div id="notifications" class="notifications-container">
