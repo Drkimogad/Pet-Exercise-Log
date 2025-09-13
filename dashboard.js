@@ -106,6 +106,19 @@ function showCreateProfile() {
     initializeEmptyDashboard();
 }
 
+// ===== PLACEHOLDER FUNCTIONS TO BE IMPLEMENTED LATER A QUICK FIX =====
+function initializeEmptyCharts() {
+    console.log('Empty charts initialized - will implement later');
+}
+
+function initializeEmptyCalendar() {
+    console.log('Empty calendar initialized - will implement later');
+}
+
+function initializeEmptyMoodTracker() {
+    console.log('Empty mood tracker initialized - will implement later');
+}
+
 
 function initializeEmptyDashboard() {
     // Initialize empty charts
