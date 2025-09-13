@@ -43,6 +43,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // ==================== PET ENTRY FUNCTIONS ====================
 function showExerciseLog() {
+        console.log('showExerciseLog called'); // ← ADD THIS
     // Hide auth and show dashboard
     document.getElementById('auth-container').style.display = 'none';
     document.getElementById('lottie-banner').style.display = 'none';
@@ -59,19 +60,33 @@ function showExerciseLog() {
 
 // Setup event listeners
 function setupEventListeners() {
+        console.log('setupEventListeners called'); // ← ADD THIS
+
     document.getElementById('logoutButton').addEventListener('click', logout);
-    document.getElementById('addNewProfileButton').addEventListener('click', showCreateProfile);
+    
+    const newProfileBtn = document.getElementById('addNewProfileButton');
+    console.log('New Profile button:', newProfileBtn); // ← ADD THIS
+    if (newProfileBtn) {
+        newProfileBtn.addEventListener('click', function() {
+            console.log('New Profile button clicked!'); // ← ADD THIS
+            showCreateProfile();
+        });
+    }
+    
     document.getElementById('toggleModeButton').addEventListener('click', toggleDarkMode);
 }
 
+
 // Show create profile to show the profile form when "New Profile" is clicked
 function showCreateProfile() {
+    console.log('showCreateProfile called'); // ← ADD THIS
     // Hide saved profiles, show form container
     document.getElementById('savedProfiles').style.display = 'none';
     document.getElementById('profileContainer').style.display = 'block';
     
     // Load the profile form template
     const template = document.getElementById('profileFormTemplate');
+    console.log('Template found:', template); // ← ADD THIS
     document.getElementById('profileContainer').innerHTML = template.innerHTML;
     
     // Set up form submission handler
