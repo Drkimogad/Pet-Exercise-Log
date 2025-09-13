@@ -188,6 +188,33 @@ function handleFormSubmit(e) {
  //   pets = getPets();
     const petData = activePetIndex !== null ? pets[activePetIndex] : initializeNewPet();
       // it retrieves everything via the helper
+    function initializeNewPet() {
+    return {
+        petDetails: {
+            type: '',
+            name: '',
+            image: 'https://drkimogad.github.io/Pet-Exercise-Log/images/default-pet.png',
+            age: '',
+            weight: '',
+            breed: '',
+            gender: '',
+            color: '',
+            microchip: '',
+            energyLevel: '',
+            healthStatus: '',
+            vetInfo: '',
+            vaccinations: '',
+            medications: '',
+            allergies: '',
+            diet: '',
+            behavior: '',
+            favoriteExercise: '',
+            notes: ''
+        },
+        exerciseEntries: [],
+        moodLogs: []
+    };
+}
 
     // Update pet details with all form fields data processing
     petData.petDetails = {
