@@ -138,7 +138,7 @@ function handleFormSubmit(e) {
         console.log('FORM SUBMIT CALLED!'); // ← Add this line
 
     // Collect all form data
-    pets = PetEntry.getPets(); // ← FIXED
+    pets = getPets(); // Use your existing getPets() function
     const formData = {
       petType: document.getElementById('petType').value,
       petName: document.getElementById('petName').value,
