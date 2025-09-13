@@ -90,7 +90,7 @@ function showCreateProfile() {
     document.getElementById('profileContainer').innerHTML = template.innerHTML;
     
     // Set up form submission handler
-    document.getElementById('completeProfileForm').addEventListener('submit', handleProfileSubmit);
+    document.getElementById('completeProfileForm').addEventListener('submit', handleFormSubmit);
     
     // Set up cancel button
     document.getElementById('cancelButton').addEventListener('click', function() {
