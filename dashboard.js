@@ -322,8 +322,8 @@ function loadSavedProfiles() {
     </div>
   `).join('');
 
-  AppHelper.renderComponent('savedProfiles', profilesHTML);
-  
+document.getElementById('savedProfiles').innerHTML = profilesHTML;
+    
   // Add event listeners for all buttons
   setupProfileEventListeners();
 }
