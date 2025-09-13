@@ -564,9 +564,7 @@ function handleMoodSelection(e) {
 }
 
 // Calendar functionality
-let currentMonth = new Date().getMonth();
-let currentYear = new Date().getFullYear();
-let exerciseData = [];
+
 
 function initCalendar(selector) {
     const container = document.querySelector(selector);
