@@ -696,7 +696,6 @@ function refreshCalendar(data) {
 
 
 // Charts functionality
-let durationChart, caloriesChart, activityChart, intensityChart;
 
 function initCharts(selector) {
     const container = document.querySelector(selector);
@@ -1163,5 +1162,4 @@ function updateCharts(exerciseData) {
     refreshCharts(chartData);
 }
 
-//============================================
 
