@@ -298,19 +298,6 @@ function handleImageUpload(e) {
 }
 
 // Mood Logs functionality
-const MOOD_OPTIONS = [
-    { value: 0, emoji: '😀', label: 'Happy' },
-    { value: 1, emoji: '😊', label: 'Content' },
-    { value: 2, emoji: '😐', label: 'Neutral' },
-    { value: 3, emoji: '😞', label: 'Sad' },
-    { value: 4, emoji: '😠', label: 'Angry' },
-    { value: 5, emoji: '🤢', label: 'Sick' },
-    { value: 6, emoji: '😤', label: 'Aggressive' },
-    { value: 7, emoji: '😔', label: 'Depressed' },
-    { value: 8, emoji: '😴', label: 'Tired' },
-    { value: 9, emoji: '😰', label: 'Anxious' }
-];
-
 function renderMoodLogs() {
     if (activePetIndex === null) return;
     
