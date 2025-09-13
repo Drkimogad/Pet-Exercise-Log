@@ -33,76 +33,6 @@ const MOOD_OPTIONS = [
 ];
 
 
-// added for later
-function updateDashboard(exerciseData) {
-    // 1. Update Calendar
-    updateCalendar(exerciseData);
-    
-    // 2. Update Mood Logs (for the selected date)
-    updateMoodLogs(exerciseData.date);
-    
-    // 3. Update All Charts
-    updateCharts(exerciseData);
-}
-
-// Helper function for Calendar
-function updateCalendar(exerciseData) {
-    const calendar = document.getElementById('exerciseCalendar');
-    if (!calendar) return;
-    
-    // Find the calendar day for this exercise date
-    const dayElement = calendar.querySelector(`[data-date="${exerciseData.date}"]`);
-    if (dayElement) {
-        // Add exercise indicator to this day
-        if (!dayElement.querySelector('.exercise-indicator')) {
-            const indicator = document.createElement('div');
-            indicator.className = 'exercise-indicator';
-            indicator.textContent = '✅'; // Or use CSS styles
-            dayElement.appendChild(indicator);
-        }
-    }
-}
-
-// Helper function for Mood Logs
-function updateMoodLogs(exerciseDate) {
-    const moodContainer = document.getElementById('moodLogsContainer');
-    if (!moodContainer) return;
-    
-    // Highlight or enable mood selection for this date
-    const moodEntry = moodContainer.querySelector(`[data-date="${exerciseDate}"]`);
-    if (moodEntry) {
-        moodEntry.classList.add('active-date');
-    }
-}
-
-// Helper function for Charts
-function updateCharts(exerciseData) {
-    // Get current chart data or initialize
-    let chartData = JSON.parse(localStorage.getItem('chartData')) || {
-        dates: [],
-        durations: [],
-        calories: [],
-        activities: []
-    };
-    
-    // Add new exercise data
-    chartData.dates.push(exerciseData.date);
-    chartData.durations.push(exerciseData.duration);
-    chartData.calories.push(exerciseData.caloriesBurned);
-    chartData.activities.push(exerciseData.exerciseType);
-    
-    // Save updated data
-    localStorage.setItem('chartData', JSON.stringify(chartData));
-    
-    // Refresh all charts
-    refreshCharts(chartData);
-}
-
-//============================================
-
-
-
-
 
 // Initialize dashboard
 document.addEventListener('DOMContentLoaded', function() {
@@ -1030,4 +960,70 @@ function generateExerciseSummaryHTML(exerciseEntries) {
     `;
 }
 
+// added for later
+function updateDashboard(exerciseData) {
+    // 1. Update Calendar
+    updateCalendar(exerciseData);
+    
+    // 2. Update Mood Logs (for the selected date)
+    updateMoodLogs(exerciseData.date);
+    
+    // 3. Update All Charts
+    updateCharts(exerciseData);
+}
+
+// Helper function for Calendar
+function updateCalendar(exerciseData) {
+    const calendar = document.getElementById('exerciseCalendar');
+    if (!calendar) return;
+    
+    // Find the calendar day for this exercise date
+    const dayElement = calendar.querySelector(`[data-date="${exerciseData.date}"]`);
+    if (dayElement) {
+        // Add exercise indicator to this day
+        if (!dayElement.querySelector('.exercise-indicator')) {
+            const indicator = document.createElement('div');
+            indicator.className = 'exercise-indicator';
+            indicator.textContent = '✅'; // Or use CSS styles
+            dayElement.appendChild(indicator);
+        }
+    }
+}
+
+// Helper function for Mood Logs
+function updateMoodLogs(exerciseDate) {
+    const moodContainer = document.getElementById('moodLogsContainer');
+    if (!moodContainer) return;
+    
+    // Highlight or enable mood selection for this date
+    const moodEntry = moodContainer.querySelector(`[data-date="${exerciseDate}"]`);
+    if (moodEntry) {
+        moodEntry.classList.add('active-date');
+    }
+}
+
+// Helper function for Charts
+function updateCharts(exerciseData) {
+    // Get current chart data or initialize
+    let chartData = JSON.parse(localStorage.getItem('chartData')) || {
+        dates: [],
+        durations: [],
+        calories: [],
+        activities: []
+    };
+    
+    // Add new exercise data
+    chartData.dates.push(exerciseData.date);
+    chartData.durations.push(exerciseData.duration);
+    chartData.calories.push(exerciseData.caloriesBurned);
+    chartData.activities.push(exerciseData.exerciseType);
+    
+    // Save updated data
+    localStorage.setItem('chartData', JSON.stringify(chartData));
+    
+    // Refresh all charts
+    refreshCharts(chartData);
+}
+
+//============================================
 
