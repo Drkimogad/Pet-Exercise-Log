@@ -108,15 +108,26 @@ function showCreateProfile() {
 
 // ===== PLACEHOLDER FUNCTIONS TO BE IMPLEMENTED LATER A QUICK FIX =====
 function initializeEmptyCharts() {
-    console.log('Empty charts initialized - will implement later');
+    console.log('Initializing empty charts');
+    
+    // Add placeholder text for charts
+    document.getElementById('durationChartContainer').innerHTML = '<p>Duration chart will appear here</p>';
+    document.getElementById('caloriesChartContainer').innerHTML = '<p>Calories chart will appear here</p>';
+    document.getElementById('intensityChartContainer').innerHTML = '<p>Intensity chart will appear here</p>';
 }
 
 function initializeEmptyCalendar() {
-    console.log('Empty calendar initialized - will implement later');
+    console.log('Initializing empty calendar');
+    
+    // Add placeholder for calendar
+    document.getElementById('exerciseCalendar').innerHTML = '<p>Exercise calendar will appear here</p>';
 }
 
 function initializeEmptyMoodTracker() {
-    console.log('Empty mood tracker initialized - will implement later');
+    console.log('Initializing empty mood tracker');
+    
+    // Add placeholder for mood tracker
+    document.getElementById('moodTracker').innerHTML = '<p>Mood tracker will appear here</p>';
 }
 
 
