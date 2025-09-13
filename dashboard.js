@@ -266,7 +266,160 @@ function loadSavedProfiles() {
   // Add event listeners for all buttons
   setupProfileEventListeners();
 }
+//=================================
+// SETUP PROFILE EVENT LISTENERS
+//===========================
+function setupProfileEventListeners() {
+  // Select button
+  document.querySelectorAll('.select-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const index = parseInt(btn.dataset.index);
+      selectPetProfile(index);
+    });
+  });
 
+  // Edit button
+  document.querySelectorAll('.edit-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const index = parseInt(btn.dataset.index);
+      editPetProfile(index);
+    });
+  });
+
+  // Delete button
+  document.querySelectorAll('.delete-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const index = parseInt(btn.dataset.index);
+      deletePetProfile(index);
+    });
+  });
+
+  // Report button
+  document.querySelectorAll('.report-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const index = parseInt(btn.dataset.index);
+      const pet = getPets()[index];
+      if (pet) {
+        Report.generatePDF(pet);
+      }
+    });
+  });
+
+  // Share button
+  document.querySelectorAll('.share-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const index = parseInt(btn.dataset.index);
+      sharePetProfile(index);
+    });
+  });
+
+  // Click anywhere on card to select
+  document.querySelectorAll('.profile-card').forEach(card => {
+    card.addEventListener('click', (e) => {
+      if (!e.target.closest('.profile-actions')) {
+        const index = parseInt(card.dataset.petIndex);
+        selectPetProfile(index);
+      }
+    });
+  });
+}
+
+//=================================
+// PROFILE ACTION FUNCTIONS
+//===========================
+function selectPetProfile(index) {
+  activePetIndex = index;
+  sessionStorage.setItem('activePetIndex', activePetIndex);
+  setUIState(UIState.VIEW_PROFILES); // Stay in view mode
+  updateDashboard(getPets()[activePetIndex]);
+  loadSavedProfiles(); // Refresh to show selected state
+}
+
+function editPetProfile(index) {
+  activePetIndex = index;
+  sessionStorage.setItem('activePetIndex', activePetIndex);
+    setUIState(UIState.EDIT_PROFILE); // Switch to edit mode
+
+  // Load the pet data into the form
+  const pet = getPets()[index];
+  if (pet) {
+    AppHelper.refreshComponent('petFormContainer');
+    
+    // Fill form fields with existing data (you may need to add this functionality)
+    setTimeout(() => {
+      if (document.getElementById('petName')) {
+        document.getElementById('petName').value = pet.petDetails.name || '';
+        document.getElementById('petType').value = pet.petDetails.type || '';
+        document.getElementById('petAge').value = pet.petDetails.age || '';
+        document.getElementById('petWeight').value = pet.petDetails.weight || '';
+        document.getElementById('petBreed').value = pet.petDetails.breed || '';
+        document.getElementById('petGender').value = pet.petDetails.gender || '';
+        document.getElementById('petColor').value = pet.petDetails.color || '';
+        document.getElementById('petCharacteristics').value = pet.petDetails.characteristics || '';
+        document.getElementById('petDiet').value = pet.petDetails.diet || '';
+        document.getElementById('petHealthStatus').value = pet.petDetails.healthStatus || '';
+        document.getElementById('petAllergies').value = pet.petDetails.allergies || '';
+        document.getElementById('petBehavior').value = pet.petDetails.behavior || '';
+        document.getElementById('petFavoriteExercise').value = pet.petDetails.favoriteExercise || '';
+        document.getElementById('petNotes').value = pet.petDetails.notes || '';
+        
+        if (pet.petDetails.image && document.getElementById('petImagePreview')) {
+          document.getElementById('petImagePreview').src = pet.petDetails.image;
+        }
+      }
+    }, 100);
+  }
+}
+
+function deletePetProfile(index) {
+  if (confirm('Are you sure you want to delete this pet profile? This action cannot be undone.')) {
+    const pets = getPets();
+    pets.splice(index, 1);
+    localStorage.setItem('pets', JSON.stringify(pets));
+    
+    if (activePetIndex === index) {
+      activePetIndex = null;
+      sessionStorage.removeItem('activePetIndex');
+      AppHelper.refreshComponent('petFormContainer');
+    }
+    
+    loadSavedProfiles();
+    AppHelper.showError('Profile deleted successfully');
+  }
+}
+
+function sharePetProfile(index) {
+  const pet = getPets()[index];
+  if (!pet) return;
+  
+  const shareData = {
+    title: `${pet.petDetails.name}'s Profile`,
+    text: `Check out ${pet.petDetails.name}'s pet profile on Pet Exercise Log!`,
+    url: window.location.href
+  };
+  
+  if (navigator.share) {
+    navigator.share(shareData)
+      .then(() => console.log('Profile shared successfully'))
+      .catch(error => console.log('Error sharing:', error));
+  } else {
+    // Fallback: copy to clipboard
+    const profileText = `Pet: ${pet.petDetails.name}\nType: ${pet.petDetails.type}\nBreed: ${pet.petDetails.breed}\nAge: ${pet.petDetails.age}`;
+    navigator.clipboard.writeText(profileText)
+      .then(() => {
+        AppHelper.showError('Profile details copied to clipboard!');
+      })
+      .catch(err => {
+        console.error('Failed to copy: ', err);
+        AppHelper.showError('Sharing not supported on this browser');
+      });
+  }
+}
 
 
 // Get pets from localStorage
