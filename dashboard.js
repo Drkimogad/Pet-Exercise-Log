@@ -106,12 +106,6 @@ function showCreateProfile() {
     initializeEmptyDashboard();
 }
 
-function handleProfileSubmit(e) {
-    e.preventDefault();
-    // This will handle collecting ALL data and updating everything
-    console.log('Profile form submitted - will process all data');
-    // We'll implement this function next
-}
 
 function initializeEmptyDashboard() {
     // Initialize empty charts
