@@ -46,10 +46,8 @@ async function handleSignUp(e) {
         // Show success and show dashboard
         showSuccess('Account created successfully!');
         
-        // Hide auth, show dashboard
-        document.getElementById('auth-container').style.display = 'none';
-        document.getElementById('lottie-banner').style.display = 'none';
-        document.querySelector('.dashboard-container').style.display = 'block';
+        // Hide auth and properly initialize dashboard
+      showExerciseLog();
         
     } catch (error) {
         console.error('Sign up error:', error);
@@ -94,10 +92,8 @@ async function handleSignIn(e) {
         // Show success and show dashboard
         showSuccess('Signed in successfully!');
         
-        // Hide auth, show dashboard
-        document.getElementById('auth-container').style.display = 'none';
-        document.getElementById('lottie-banner').style.display = 'none';
-        document.querySelector('.dashboard-container').style.display = 'block';
+        // Hide auth and properly initialize dashboard
+        showExerciseLog();
         
     } catch (error) {
         console.error('Sign in error:', error);
