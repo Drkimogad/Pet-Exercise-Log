@@ -264,12 +264,13 @@ if (activePetIndex !== null) {
 localStorage.setItem('pets', JSON.stringify(pets));
 sessionStorage.setItem('activePetIndex', activePetIndex);
 
-// Return to view profiles state - USING UI STATE
-setUIState(UIState.VIEW_PROFILES); // ← ONLY THIS LINE
-
+// Return to view profiles state
+document.getElementById('savedProfiles').style.display = 'block';
+document.getElementById('profileContainer').style.display = 'none';
+    
 // Refresh and show success
 loadSavedProfiles();
-AppHelper.showError('Profile saved successfully!');
+showSuccess('Profile saved successfully!'); // Changed from AppHelper.showError to showSuccess
 updateDashboard(petData);
 }
 
