@@ -973,11 +973,11 @@ function generateMoodCalendarHTML(pet) {
         ${['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => 
             `<div class="calendar-day" style="font-weight:bold;">${day}</div>`
         ).join('')}
-    `;
+        `; // ← ADDED CLOSING BACKTICK HERE
     
     // Empty days for the first week
     for (let i = 0; i < firstDay; i++) {
-        moodHtml += '<div class="calendar-day'></div>';
+        moodHtml += '<div class="calendar-day"></div>';
     }
     
     for (let day = 1; day <= daysInMonth; day++) {
