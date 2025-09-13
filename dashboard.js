@@ -275,10 +275,10 @@ function getPets() {
 }
 
 // Logout function
-function logout() {
-    sessionStorage.removeItem('user');
-    window.location.href = 'index.html';
-}
+//function logout() {
+  //  sessionStorage.removeItem('user');
+//    window.location.href = 'index.html';
+//}
 
 // Toggle dark mode
 function toggleDarkMode() {
