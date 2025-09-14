@@ -286,9 +286,8 @@ function loadSavedProfiles() {
             </div>`;
         return;
     }
-    // Your profiles rendering logic here
     
-  const profilesHTML = pets.map((pet, index) => `
+    const profilesHTML = pets.map((pet, index) => `
     <div class="profile-card ${index === activePetIndex ? 'active' : ''}" data-pet-index="${index}">
       <img src="${pet.petDetails.image}" alt="${pet.petDetails.name}">
       <div class="profile-info">
@@ -297,6 +296,11 @@ function loadSavedProfiles() {
         <p>Breed: ${pet.petDetails.breed || 'Unknown'}</p>
         <p>Age: ${pet.petDetails.age || 'Unknown'} years</p>
         <p>Weight: ${pet.petDetails.weight || 'Unknown'}</p>
+        <p>Gender: ${pet.petDetails.gender || 'Unknown'}</p>
+        <p>Color: ${pet.petDetails.color || 'Unknown'}</p>
+        <p>Energy Level: ${pet.petDetails.energyLevel || 'Unknown'}</p>
+        <p>Health Status: ${pet.petDetails.healthStatus || 'Unknown'}</p>
+        <p>Microchip: ${pet.petDetails.microchip || 'None'}</p>
         <div class="profile-stats">
           <span class="stat-badge">${pet.exerciseEntries.length} exercises</span>
           ${pet.moodLogs ? `<span class="stat-badge">${pet.moodLogs.length} moods</span>` : ''}
@@ -322,11 +326,18 @@ function loadSavedProfiles() {
     </div>
   `).join('');
 
-document.getElementById('savedProfiles').innerHTML = profilesHTML;
-    
+  document.getElementById('savedProfiles').innerHTML = profilesHTML;
+  
   // Add event listeners for all buttons
   setupProfileEventListeners();
 }
+
+// UPDATE DASHBOARD FUNCTION
+function updateDashboard(pet) {
+    console.log('Updating dashboard for:', pet.petDetails.name);
+    // Will implement later - for now just log
+}
+
 //=================================
 // SETUP PROFILE EVENT LISTENERS
 //===========================
@@ -390,21 +401,23 @@ function setupProfileEventListeners() {
   });
 }
 
-//=================================
-// PROFILE ACTION FUNCTIONS
-//===========================
+//===========================================================
+   //      PROFILE ACTION FUNCTIONS
+//==========================================================
+// SELECT PROFILE TO VIEW AND WORK WITH WITHOUT EDITTING MODE
 function selectPetProfile(index) {
   activePetIndex = index;
   sessionStorage.setItem('activePetIndex', activePetIndex);
-  setUIState(UIState.VIEW_PROFILES); // Stay in view mode
   updateDashboard(getPets()[activePetIndex]);
   loadSavedProfiles(); // Refresh to show selected state
 }
 
+//===========================================
+  // EDIT PROFILE FUNCTION
+//=========================
 function editPetProfile(index) {
   activePetIndex = index;
   sessionStorage.setItem('activePetIndex', activePetIndex);
-    setUIState(UIState.EDIT_PROFILE); // Switch to edit mode
 
   // Load the pet data into the form
   const pet = getPets()[index];
@@ -436,7 +449,9 @@ function editPetProfile(index) {
     }, 100);
   }
 }
-
+//=========================================
+     // DELETE FUNCTION 
+//====================================
 function deletePetProfile(index) {
   if (confirm('Are you sure you want to delete this pet profile? This action cannot be undone.')) {
     const pets = getPets();
@@ -446,14 +461,17 @@ function deletePetProfile(index) {
     if (activePetIndex === index) {
       activePetIndex = null;
       sessionStorage.removeItem('activePetIndex');
-      AppHelper.refreshComponent('petFormContainer');
+     document.getElementById('petFormContainer').innerHTML = document.getElementById('profileFormTemplate').innerHTML;
     }
     
     loadSavedProfiles();
-    AppHelper.showError('Profile deleted successfully');
+    showSuccess('Profile deleted successfully'); // verify
   }
 }
 
+//=========================================
+  // SHARE PROFILE FUNCTION
+//========================================
 function sharePetProfile(index) {
   const pet = getPets()[index];
   if (!pet) return;
@@ -488,19 +506,17 @@ function getPets() {
     return JSON.parse(localStorage.getItem('pets') || '[]');
 }
 
-// Logout function
-//function logout() {
-  //  sessionStorage.removeItem('user');
-//    window.location.href = 'index.html';
-//}
-
-// Toggle dark mode
+//===============================
+  // Toggle dark mode
+//===========================
 function toggleDarkMode() {
     document.body.classList.toggle('dark-mode');
     localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
 }
 
-// Handle image upload
+//=========================
+  // Handle image upload
+//==========================
 function handleImageUpload(e) {
     const file = e.target.files[0];
     if (!file) return;
@@ -511,7 +527,11 @@ function handleImageUpload(e) {
     reader.readAsDataURL(file);
 }
 
-// Mood Logs functionality
+
+
+//===============================================
+   //     Mood Logs functionality
+//==========================================
 function renderMoodLogs() {
     if (activePetIndex === null) return;
     
