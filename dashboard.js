@@ -441,6 +441,13 @@ function editPetProfile(index) {
         document.getElementById('petBehavior').value = pet.petDetails.behavior || '';
         document.getElementById('petFavoriteExercise').value = pet.petDetails.favoriteExercise || '';
         document.getElementById('petNotes').value = pet.petDetails.notes || '';
+        document.getElementById('petMicrochip').value = pet.petDetails.microchip || '';
+        document.getElementById('petEnergyLevel').value = pet.petDetails.energyLevel || '';
+        document.getElementById('petHealthStatus').value = pet.petDetails.healthStatus || '';
+        document.getElementById('petVetInfo').value = pet.petDetails.vetInfo || '';
+        document.getElementById('petVaccinations').value = pet.petDetails.vaccinations || '';
+        document.getElementById('petMedications').value = pet.petDetails.medications || '';
+        document.getElementById('petAllergies').value = pet.petDetails.allergies || '';
         
         if (pet.petDetails.image && document.getElementById('petImagePreview')) {
           document.getElementById('petImagePreview').src = pet.petDetails.image;
@@ -502,6 +509,7 @@ function sharePetProfile(index) {
 
 
 // Get pets from localStorage
+//It retrieves ALL saved pet profiles from the browser's localStorage.
 function getPets() {
     return JSON.parse(localStorage.getItem('pets') || '[]');
 }
