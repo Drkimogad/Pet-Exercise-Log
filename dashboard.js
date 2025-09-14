@@ -127,7 +127,7 @@ function showCreateProfile() {
 function initializeDashboard() {
     initializeCalendar();    // Handles empty or data state internally
     initializeCharts();      // Handles empty or data state internally
-    initializeMoodTracker(); // Handles empty or data state internally
+    initializeMoodTracker(); // Handles empty or data state internally Updated
 }
 
 
@@ -255,6 +255,8 @@ if (activePetIndex !== null) {
       pets[activePetIndex] = petData;
     }
 
+// Add this before saving:
+petData = saveTemporaryMoodData(petData);
 // AFTER SUCCESSFUL SAVE:
 localStorage.setItem('pets', JSON.stringify(pets));
 sessionStorage.setItem('activePetIndex', activePetIndex);
@@ -605,21 +607,80 @@ function handleImageUpload(e) {
 //===============================================
    //     Mood Logs functionality
 //==========================================
-function renderMoodLogs() {
-    if (activePetIndex === null) return;
+// ===============================================
+// MOOD TRACKER - Unified Initialization Function
+// ===============================================
+function initializeMoodTracker() {
+    console.log('Initializing mood tracker...');
     
-    const pets = getPets();
-    const activePet = pets[activePetIndex];
-    const moodLogs = activePet.moodLogs || [];
-    
+    const moodContainer = document.getElementById('moodTracker');
+    if (!moodContainer) {
+        console.error('Mood tracker container not found!');
+        return;
+    }
+
+    // Check if we're creating new profile or editing existing
+    if (activePetIndex === null) {
+        // NEW PROFILE: Initialize empty mood tracker with temporary storage
+        console.log('New profile - initializing empty mood tracker');
+        initializeNewProfileMoodTracker(moodContainer);
+    } else {
+        // EDITING EXISTING PROFILE: Load existing mood data
+        console.log('Editing profile - loading existing mood data');
+        initializeExistingProfileMoodTracker(moodContainer);
+    }
+}
+
+// ===============================================
+// NEW PROFILE: Temporary mood storage implementation
+// ===============================================
+function initializeNewProfileMoodTracker(moodContainer) {
     const today = new Date().toISOString().split('T')[0];
     
-    const html = `
+    // Initialize temporary mood storage for new profile
+    window.tempMoodLogs = [];
+    
+    moodContainer.innerHTML = `
         <div class="mood-container">
             <h3>Today's Mood</h3>
             <div class="mood-selector">
                 ${MOOD_OPTIONS.map(mood => `
-                    <button class="emoji-btn" data-mood="${mood.value}" data-date="${today}" 
+                    <button type="button" class="emoji-btn" data-mood="${mood.value}" data-date="${today}" 
+                            title="${mood.label}">
+                        ${mood.emoji}
+                        <span class="mood-label">${mood.label}</span>
+                    </button>
+                `).join('')}
+            </div>
+            
+            <h3>Mood History</h3>
+            <div class="mood-history">
+                <p class="no-entries">No mood entries yet. Select a mood for today!</p>
+            </div>
+        </div>
+    `;
+    
+    // Add event listeners for NEW profile mood selection
+    moodContainer.addEventListener('click', handleNewProfileMoodSelection);
+}
+
+// ===============================================
+// EXISTING PROFILE: Load from pets data
+// ===============================================
+function initializeExistingProfileMoodTracker(moodContainer) {
+    const pets = getPets();
+    const activePet = pets[activePetIndex];
+    const moodLogs = activePet.moodLogs || [];
+    const today = new Date().toISOString().split('T')[0];
+    const todayMood = moodLogs.find(log => log.date === today);
+    
+    moodContainer.innerHTML = `
+        <div class="mood-container">
+            <h3>Today's Mood</h3>
+            <div class="mood-selector">
+                ${MOOD_OPTIONS.map(mood => `
+                    <button type="button" class="emoji-btn ${todayMood && todayMood.mood === mood.value ? 'selected' : ''}" 
+                            data-mood="${mood.value}" data-date="${today}" 
                             title="${mood.label}">
                         ${mood.emoji}
                         <span class="mood-label">${mood.label}</span>
@@ -643,21 +704,112 @@ function renderMoodLogs() {
         </div>
     `;
     
-    const moodContainer = document.getElementById('moodLogsContainer');
-    if (moodContainer) {
-        moodContainer.innerHTML = html;
+    // Add event listeners for EXISTING profile mood selection
+    moodContainer.addEventListener('click', handleExistingProfileMoodSelection);
+}
+
+// ===============================================
+// NEW PROFILE: Mood selection handler (temporary)
+// ===============================================
+function handleNewProfileMoodSelection(e) {
+    if (e.target.classList.contains('emoji-btn') || e.target.closest('.emoji-btn')) {
+        e.preventDefault(); // Prevent form submission
+        const btn = e.target.classList.contains('emoji-btn') ? 
+                   e.target : e.target.closest('.emoji-btn');
         
-        // Add event listeners
-        moodContainer.addEventListener('click', handleMoodSelection);
+        const moodValue = parseInt(btn.dataset.mood);
+        const date = btn.dataset.date;
         
-        // Highlight today's mood if already logged
-        const todayMood = moodLogs.find(log => log.date === today);
-        if (todayMood) {
-            const todayBtn = moodContainer.querySelector(`.emoji-btn[data-mood="${todayMood.mood}"]`);
-            if (todayBtn) todayBtn.classList.add('selected');
-        }
+        // Update temporary storage
+        window.tempMoodLogs = window.tempMoodLogs.filter(log => log.date !== date);
+        window.tempMoodLogs.push({ 
+            date: date, 
+            mood: moodValue,
+            timestamp: new Date().toISOString()
+        });
+        
+        // Update UI only (no localStorage writes)
+        updateMoodUI(btn, window.tempMoodLogs);
+        console.log('Temporary mood stored:', window.tempMoodLogs);
     }
 }
+
+// ===============================================
+// EXISTING PROFILE: Mood selection handler (permanent)
+// ===============================================
+function handleExistingProfileMoodSelection(e) {
+    if (e.target.classList.contains('emoji-btn') || e.target.closest('.emoji-btn')) {
+        e.preventDefault(); // Prevent form submission
+        const btn = e.target.classList.contains('emoji-btn') ? 
+                   e.target : e.target.closest('.emoji-btn');
+        
+        const moodValue = parseInt(btn.dataset.mood);
+        const date = btn.dataset.date;
+        
+        const pets = getPets();
+        let pet = { ...pets[activePetIndex] };
+        
+        // Initialize or update moodLogs array
+        pet.moodLogs = pet.moodLogs || [];
+        pet.moodLogs = pet.moodLogs.filter(log => log.date !== date);
+        pet.moodLogs.push({ 
+            date: date, 
+            mood: moodValue,
+            timestamp: new Date().toISOString()
+        });
+        
+        // Save to localStorage
+        pets[activePetIndex] = pet;
+        localStorage.setItem('pets', JSON.stringify(pets));
+        
+        // Update UI
+        updateMoodUI(btn, pet.moodLogs);
+        console.log('Mood saved to localStorage for pet:', activePetIndex);
+    }
+}
+
+// ===============================================
+// UNIVERSAL: UI update function (for both scenarios)
+// ===============================================
+function updateMoodUI(selectedBtn, moodLogs) {
+    const date = selectedBtn.dataset.date;
+    
+    // Update button selection state
+    document.querySelectorAll('.emoji-btn').forEach(btn => 
+        btn.classList.remove('selected')
+    );
+    selectedBtn.classList.add('selected');
+    
+    // Update mood history display
+    const moodHistory = document.querySelector('.mood-history');
+    if (moodHistory) {
+        moodHistory.innerHTML = moodLogs.length > 0 ? moodLogs.map(log => {
+            const mood = MOOD_OPTIONS.find(m => m.value === log.mood) || MOOD_OPTIONS[0];
+            return `
+                <div class="mood-entry">
+                    <span class="mood-date">${formatDate(log.date)}</span>
+                    <span class="mood-emoji">${mood.emoji}</span>
+                    <span class="mood-label">${mood.label}</span>
+                </div>
+            `;
+        }).join('') : '<p class="no-entries">No mood entries yet</p>';
+    }
+}
+
+// ===============================================
+// Save temporary mood data to pet profile (call this on form submit)
+// ===============================================
+function saveTemporaryMoodData(petData) {
+    if (window.tempMoodLogs && window.tempMoodLogs.length > 0) {
+        petData.moodLogs = window.tempMoodLogs;
+        console.log('Temporary mood data saved to pet profile:', petData.moodLogs);
+        // Clear temporary storage
+        window.tempMoodLogs = [];
+    }
+    return petData;
+} 
+    
+
 
 function formatDate(dateStr) {
     try {
@@ -673,120 +825,6 @@ function formatDate(dateStr) {
     }
 }
 
-function handleMoodSelection(e) {
-    if (e.target.classList.contains('emoji-btn') || e.target.closest('.emoji-btn')) {
-        const btn = e.target.classList.contains('emoji-btn') ? 
-                   e.target : e.target.closest('.emoji-btn');
-        
-        const moodValue = parseInt(btn.dataset.mood);
-        const date = btn.dataset.date;
-        
-        if (activePetIndex === null) return;
-        
-        const pets = getPets();
-        let pet = { ...pets[activePetIndex] };
-        
-        // Initialize moodLogs array if it doesn't exist
-        pet.moodLogs = pet.moodLogs || [];
-        
-        // Remove any existing mood log for today
-        pet.moodLogs = pet.moodLogs.filter(log => log.date !== date);
-        
-        // Add the new mood log
-        pet.moodLogs.push({ 
-            date: date, 
-            mood: moodValue,
-            timestamp: new Date().toISOString()
-        });
-        
-        // Sort by date (newest first)
-        pet.moodLogs.sort((a, b) => new Date(b.date) - new Date(a.date));
-        
-        // Update pets array and save
-        pets[activePetIndex] = pet;
-        localStorage.setItem('pets', JSON.stringify(pets));
-        
-        // Update UI
-        document.querySelectorAll('.emoji-btn').forEach(btn => 
-            btn.classList.remove('selected')
-        );
-        btn.classList.add('selected');
-        
-        // Re-render mood logs
-        renderMoodLogs();
-    }
-}
-
-function renderMoodTracker() {
-    const moodContainer = document.querySelector('.mood-tracker-container');
-    if (!moodContainer) return;
-    
-    const today = new Date().toISOString().split('T')[0];
-    
-    moodContainer.innerHTML = `
-        <div class="mood-container">
-            <h3>Today's Mood</h3>
-            <div class="mood-selector">
-                ${MOOD_OPTIONS.map(mood => `
-                    <button class="emoji-btn" data-mood="${mood.value}" data-date="${today}" 
-                            title="${mood.label}">
-                        ${mood.emoji}
-                        <span class="mood-label">${mood.label}</span>
-                    </button>
-                `).join('')}
-            </div>
-            
-            <h3>Mood History</h3>
-            <div class="mood-history">
-                <p class="no-entries">No mood entries yet</p>
-            </div>
-        </div>
-    `;
-    
-    // Add event listeners
-    moodContainer.addEventListener('click', handleMoodSelection);
-}
-// Add this function to update mood tracker with data:
-function updateMoodTracker(moodLogs) {
-    const moodContainer = document.getElementById('moodTracker');
-    if (!moodContainer) return;
-    
-    const today = new Date().toISOString().split('T')[0];
-    const todayMood = moodLogs.find(log => log.date === today);
-    
-    moodContainer.innerHTML = `
-        <div class="mood-container">
-            <h4>Today's Mood</h4>
-            <div class="mood-selector">
-                ${MOOD_OPTIONS.map(mood => `
-                    <button class="emoji-btn ${todayMood && todayMood.mood === mood.value ? 'selected' : ''}" 
-                            data-mood="${mood.value}" data-date="${today}" 
-                            title="${mood.label}">
-                        ${mood.emoji}
-                        <span class="mood-label">${mood.label}</span>
-                    </button>
-                `).join('')}
-            </div>
-            
-            <h4>Mood History</h4>
-            <div class="mood-history">
-                ${moodLogs.length > 0 ? moodLogs.map(log => {
-                    const mood = MOOD_OPTIONS.find(m => m.value === log.mood) || MOOD_OPTIONS[0];
-                    return `
-                        <div class="mood-entry">
-                            <span class="mood-date">${formatDate(log.date)}</span>
-                            <span class="mood-emoji">${mood.emoji}</span>
-                            <span class="mood-label">${mood.label}</span>
-                        </div>
-                    `;
-                }).join('') : '<p class="no-entries">No mood entries yet</p>'}
-            </div>
-        </div>
-    `;
-    
-    // Add event listeners
-    moodContainer.addEventListener('click', handleMoodSelection);
-}
 
 
 
