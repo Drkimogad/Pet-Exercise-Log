@@ -337,6 +337,27 @@ body:has(#auth-container:not([style*="display: none"])) footer {
     }
 }
 
+/* empty stats added*/
+.empty-state {
+    text-align: center;
+    padding: 2rem;
+    color: #666;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border: 2px dashed #ddd;
+}
+
+.empty-state p {
+    margin: 0 0 0.5rem 0;
+    font-weight: 500;
+}
+
+.empty-state small {
+    font-size: 0.9em;
+    color: #888;
+}
+
+
 /* Sidebar - Saved Profiles */
 .saved-profiles {
   grid-area: sidebar;
