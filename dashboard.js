@@ -118,167 +118,23 @@ function showCreateProfile() {
     // Initialize image upload handler
     document.getElementById('petImage').addEventListener('change', handleImageUpload);
     
-    initializeEmptyDashboard();
+    initializeDashboard();
 }
 
 //==================================================
 // Initialize dashboard and it's related Initializations
 //=====================================================
-function initializeEmptyDashboard() {
-    // Initialize empty charts
-    initializeEmptyCharts();    
-    // Initialize empty calendar
-    initializeEmptyCalendar();    
-    // Initialize empty mood tracker
-    initializeEmptyMoodTracker();
+function initializeDashboard() {
+    initializeCalendar();    // Handles empty or data state internally
+    initializeCharts();      // Handles empty or data state internally
+    initializeMoodTracker(); // Handles empty or data state internally
 }
 
-// Dashboard related nitializations
-function initializeEmptyCharts() {
-    console.log('Initializing empty charts');    
-    // Initialize each chart container
-    const chartContainers = [
-        { id: 'durationChartContainer', title: 'Duration Chart', type: 'line' },
-        { id: 'caloriesChartContainer', title: 'Calories Chart', type: 'bar' },
-        { id: 'intensityChartContainer', title: 'Intensity Chart', type: 'pie' }
-    ];
-    
-    chartContainers.forEach(container => {
-        const element = document.getElementById(container.id);
-        if (element) {
-            element.innerHTML = `
-                <div class="empty-state">
-                    <p>📊 ${container.title}</p>
-                    <small>Add exercise data to see charts</small>
-                </div>
-            `;
-            console.log(`${container.id} initialized successfully`);
-        } else {
-            console.error(`${container.id} not found!`);
-        }
-    });
-}
-// Initialize empty calendar
-function initializeEmptyCalendar() {
-    console.log('Initializing empty calendar');
-    const calendarContainer = document.getElementById('exerciseCalendar');
-    if (calendarContainer) {
-        calendarContainer.innerHTML = `
-            <div class="empty-state">
-                <p>📅 No exercise data yet</p>
-                <small>Add exercises to see them on the calendar</small>
-            </div>
-        `;
-        console.log('Calendar initialized successfully');
-    } else {
-        console.error('Calendar container not found!');
-    }
-}
-// Initialize empty mood tracker 
-function initializeEmptyMoodTracker() {
-    console.log('Initializing empty mood tracker');
-    const moodContainer = document.getElementById('moodTracker');
-    if (moodContainer) {
-        const today = new Date().toISOString().split('T')[0];
-        
-        moodContainer.innerHTML = `
-            <div class="mood-container">
-                <h4>Today's Mood</h4>
-                <div class="mood-selector">
-                    ${MOOD_OPTIONS.map(mood => `
-                        <button class="emoji-btn" data-mood="${mood.value}" data-date="${today}" 
-                                title="${mood.label}">
-                            ${mood.emoji}
-                            <span class="mood-label">${mood.label}</span>
-                        </button>
-                    `).join('')}
-                </div>
-                
-                <h4>Mood History</h4>
-                <div class="mood-history">
-                    <p class="no-entries">No mood entries yet. Select a mood for today!</p>
-                </div>
-            </div>
-        `;
-        
-        // Add event listeners for mood selection
-        moodContainer.addEventListener('click', handleMoodSelection);
-        console.log('Mood tracker initialized successfully');
-    } else {
-        console.error('Mood tracker container not found!');
-    }
-}
 
-function renderMoodTracker() {
-    const moodContainer = document.querySelector('.mood-tracker-container');
-    if (!moodContainer) return;
-    
-    const today = new Date().toISOString().split('T')[0];
-    
-    moodContainer.innerHTML = `
-        <div class="mood-container">
-            <h3>Today's Mood</h3>
-            <div class="mood-selector">
-                ${MOOD_OPTIONS.map(mood => `
-                    <button class="emoji-btn" data-mood="${mood.value}" data-date="${today}" 
-                            title="${mood.label}">
-                        ${mood.emoji}
-                        <span class="mood-label">${mood.label}</span>
-                    </button>
-                `).join('')}
-            </div>
-            
-            <h3>Mood History</h3>
-            <div class="mood-history">
-                <p class="no-entries">No mood entries yet</p>
-            </div>
-        </div>
-    `;
-    
-    // Add event listeners
-    moodContainer.addEventListener('click', handleMoodSelection);
-}
-// Add this function to update mood tracker with data:
-function updateMoodTracker(moodLogs) {
-    const moodContainer = document.getElementById('moodTracker');
-    if (!moodContainer) return;
-    
-    const today = new Date().toISOString().split('T')[0];
-    const todayMood = moodLogs.find(log => log.date === today);
-    
-    moodContainer.innerHTML = `
-        <div class="mood-container">
-            <h4>Today's Mood</h4>
-            <div class="mood-selector">
-                ${MOOD_OPTIONS.map(mood => `
-                    <button class="emoji-btn ${todayMood && todayMood.mood === mood.value ? 'selected' : ''}" 
-                            data-mood="${mood.value}" data-date="${today}" 
-                            title="${mood.label}">
-                        ${mood.emoji}
-                        <span class="mood-label">${mood.label}</span>
-                    </button>
-                `).join('')}
-            </div>
-            
-            <h4>Mood History</h4>
-            <div class="mood-history">
-                ${moodLogs.length > 0 ? moodLogs.map(log => {
-                    const mood = MOOD_OPTIONS.find(m => m.value === log.mood) || MOOD_OPTIONS[0];
-                    return `
-                        <div class="mood-entry">
-                            <span class="mood-date">${formatDate(log.date)}</span>
-                            <span class="mood-emoji">${mood.emoji}</span>
-                            <span class="mood-label">${mood.label}</span>
-                        </div>
-                    `;
-                }).join('') : '<p class="no-entries">No mood entries yet</p>'}
-            </div>
-        </div>
-    `;
-    
-    // Add event listeners
-    moodContainer.addEventListener('click', handleMoodSelection);
-}
+
+
+
+
 
 
 // Handle form submit
@@ -860,6 +716,81 @@ function handleMoodSelection(e) {
         renderMoodLogs();
     }
 }
+
+function renderMoodTracker() {
+    const moodContainer = document.querySelector('.mood-tracker-container');
+    if (!moodContainer) return;
+    
+    const today = new Date().toISOString().split('T')[0];
+    
+    moodContainer.innerHTML = `
+        <div class="mood-container">
+            <h3>Today's Mood</h3>
+            <div class="mood-selector">
+                ${MOOD_OPTIONS.map(mood => `
+                    <button class="emoji-btn" data-mood="${mood.value}" data-date="${today}" 
+                            title="${mood.label}">
+                        ${mood.emoji}
+                        <span class="mood-label">${mood.label}</span>
+                    </button>
+                `).join('')}
+            </div>
+            
+            <h3>Mood History</h3>
+            <div class="mood-history">
+                <p class="no-entries">No mood entries yet</p>
+            </div>
+        </div>
+    `;
+    
+    // Add event listeners
+    moodContainer.addEventListener('click', handleMoodSelection);
+}
+// Add this function to update mood tracker with data:
+function updateMoodTracker(moodLogs) {
+    const moodContainer = document.getElementById('moodTracker');
+    if (!moodContainer) return;
+    
+    const today = new Date().toISOString().split('T')[0];
+    const todayMood = moodLogs.find(log => log.date === today);
+    
+    moodContainer.innerHTML = `
+        <div class="mood-container">
+            <h4>Today's Mood</h4>
+            <div class="mood-selector">
+                ${MOOD_OPTIONS.map(mood => `
+                    <button class="emoji-btn ${todayMood && todayMood.mood === mood.value ? 'selected' : ''}" 
+                            data-mood="${mood.value}" data-date="${today}" 
+                            title="${mood.label}">
+                        ${mood.emoji}
+                        <span class="mood-label">${mood.label}</span>
+                    </button>
+                `).join('')}
+            </div>
+            
+            <h4>Mood History</h4>
+            <div class="mood-history">
+                ${moodLogs.length > 0 ? moodLogs.map(log => {
+                    const mood = MOOD_OPTIONS.find(m => m.value === log.mood) || MOOD_OPTIONS[0];
+                    return `
+                        <div class="mood-entry">
+                            <span class="mood-date">${formatDate(log.date)}</span>
+                            <span class="mood-emoji">${mood.emoji}</span>
+                            <span class="mood-label">${mood.label}</span>
+                        </div>
+                    `;
+                }).join('') : '<p class="no-entries">No mood entries yet</p>'}
+            </div>
+        </div>
+    `;
+    
+    // Add event listeners
+    moodContainer.addEventListener('click', handleMoodSelection);
+}
+
+
+
+
 
 // Calendar functionality
 
