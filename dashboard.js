@@ -78,8 +78,9 @@ function setupEventListeners() {
     document.getElementById('toggleModeButton').addEventListener('click', toggleDarkMode);
 }
 
-
+//=======================================
 // Show create profile to show the profile form when "New Profile" is clicked
+//=====================================================
 function showCreateProfile() {
     console.log('showCreateProfile called');
     // Hide saved profiles, show form container
@@ -113,47 +114,29 @@ function showCreateProfile() {
     });
     
     // Set today's date as default for exercise
-    document.getElementById('exerciseDate').value = new Date().toISOString().split('T')[0];
-        // ============ KEY CHANGES START HERE ============
-    
+    document.getElementById('exerciseDate').value = new Date().toISOString().split('T')[0];    
     // Initialize image upload handler
     document.getElementById('petImage').addEventListener('change', handleImageUpload);
     
-    // Initialize calendar with empty state
-    console.log('Initializing calendar...');
-    initializeEmptyCalendar();
-    
-    // Initialize mood tracker with empty state
-    console.log('Initializing mood tracker...');
-    initializeEmptyMoodTracker();
-    
-    // Initialize charts with empty state
-    console.log('Initializing charts...');
-    initializeEmptyCharts();
-    
-    // ============ KEY CHANGES END HERE ============
+    initializeEmptyDashboard();
 }
 
-//========================
+//==================================================
 // Initialize dashboard and it's related Initializations
-//===================================
-
+//=====================================================
 function initializeEmptyDashboard() {
     // Initialize empty charts
-    initializeEmptyCharts();
-    
+    initializeEmptyCharts();    
     // Initialize empty calendar
-    initializeEmptyCalendar();
-    
+    initializeEmptyCalendar();    
     // Initialize empty mood tracker
     initializeEmptyMoodTracker();
 }
 
 // Dashboard related nitializations
 function initializeEmptyCharts() {
-    console.log('Initializing empty charts');
-    
-    // Initialize each chart container with a placeholder
+    console.log('Initializing empty charts');    
+    // Initialize each chart container
     const chartContainers = [
         { id: 'durationChartContainer', title: 'Duration Chart', type: 'line' },
         { id: 'caloriesChartContainer', title: 'Calories Chart', type: 'bar' },
@@ -175,7 +158,7 @@ function initializeEmptyCharts() {
         }
     });
 }
-
+// Initialize empty calendar
 function initializeEmptyCalendar() {
     console.log('Initializing empty calendar');
     const calendarContainer = document.getElementById('exerciseCalendar');
@@ -191,7 +174,7 @@ function initializeEmptyCalendar() {
         console.error('Calendar container not found!');
     }
 }
-
+// Initialize empty mood tracker 
 function initializeEmptyMoodTracker() {
     console.log('Initializing empty mood tracker');
     const moodContainer = document.getElementById('moodTracker');
