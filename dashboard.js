@@ -1098,6 +1098,84 @@ function initializeCharts() {
     }
 }
 
+
+// ===============================================
+// Create empty charts (place this RIGHT HERE)
+// ===============================================
+function createEmptyCharts() {
+    // Duration chart
+    const durationCtx = document.getElementById('durationChart');
+    if (durationCtx) {
+        durationChart = new Chart(durationCtx, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Total Duration (min)',
+                    data: [],
+                    borderColor: '#4bc0c0',
+                    tension: 0.3
+                }]
+            },
+            options: {
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Exercise Duration Over Time'
+                    }
+                }
+            }
+        });
+    }
+    
+    // Calories chart
+    const caloriesCtx = document.getElementById('caloriesChart');
+    if (caloriesCtx) {
+        caloriesChart = new Chart(caloriesCtx, {
+            type: 'bar',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Calories Burned',
+                    data: [],
+                    backgroundColor: '#cc65fe'
+                }]
+            },
+            options: {
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Calories Burned Over Time'
+                    }
+                }
+            }
+        });
+    }
+    
+    // Intensity chart
+    const intensityCtx = document.getElementById('intensityChart');
+    if (intensityCtx) {
+        intensityChart = new Chart(intensityCtx, {
+            type: 'pie',
+            data: {
+                labels: ['Low', 'Medium', 'High'],
+                datasets: [{
+                    data: [0, 0, 0],
+                    backgroundColor: ['#36a2eb', '#ffce56', '#ff6384']
+                }]
+            },
+            options: {
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Exercise Intensity Distribution'
+                    }
+                }
+            }
+        });
+    }
+}
+
 // ===============================================
 // NEW PROFILE: Empty charts implementation
 // ===============================================
@@ -1115,31 +1193,6 @@ function initializeNewProfileCharts() {
     showChartEmptyStates();
 }
 
-
-// Create empty chart placeholders
-const durationCtx = document.getElementById('durationChart');
-if (durationCtx) {
-    durationChart = new Chart(durationCtx, {
-        type: 'line',
-        data: {
-            labels: [],
-            datasets: [{
-                label: 'Total Duration (min)',
-                data: [],
-                borderColor: '#4bc0c0',
-                tension: 0.3
-            }]
-        },
-        options: {
-            plugins: {
-                title: {
-                    display: true,
-                    text: 'Exercise Duration Over Time'
-                }
-            }
-        }
-    });
-}
 
 // ===============================================
 // EXISTING PROFILE: Load from pets data
