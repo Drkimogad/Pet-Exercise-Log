@@ -55,6 +55,8 @@ function showExerciseLog() {
     
     loadSavedProfiles();
     setupEventListeners();
+    // Load active pet data after profiles are loaded
+    loadActivePetData(); // ADD THIS LINE
 }
 
 
