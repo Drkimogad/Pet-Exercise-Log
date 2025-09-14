@@ -862,13 +862,11 @@ function initializeNewProfileCalendar(container) {
     // Initialize temporary exercise storage for new profile
     window.tempExerciseEntries = [];
     
-    container.innerHTML = `
-        <div class="calendar-empty-state">
-            <h3>Exercise Calendar</h3>
-            <p>📅 No exercise data yet</p>
-            <small>Add exercises to see them on the calendar</small>
-        </div>
-    `;
+    // Set empty exercise data
+    exerciseData = [];
+    
+    // Generate the actual calendar UI (not just empty message)
+    generateCalendar(container);
 }
 
 // ===============================================
