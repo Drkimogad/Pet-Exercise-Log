@@ -256,6 +256,7 @@ if (activePetIndex !== null) {
     }
 
 // Add this before saving:
+petData = saveTemporaryExerciseData(petData);
 petData = saveTemporaryMoodData(petData);
 // AFTER SUCCESSFUL SAVE:
 localStorage.setItem('pets', JSON.stringify(pets));
@@ -831,23 +832,70 @@ function formatDate(dateStr) {
 
 
 // Calendar functionality
+// ===============================================
+// CALENDAR - Unified Initialization Function
+// ===============================================
+function initializeCalendar() {
+    console.log('Initializing calendar...');
+    
+    const calendarContainer = document.getElementById('exerciseCalendar');
+    if (!calendarContainer) {
+        console.error('Calendar container not found!');
+        return;
+    }
 
-
-function initCalendar(selector) { // updated
-    const container = document.querySelector(selector);
-    if (!container) return;
-    container.innerHTML = '<div class="calendar"></div>';
-    generateCalendar();
+    // Check if we're creating new profile or editing existing
+    if (activePetIndex === null) {
+        // NEW PROFILE: Initialize empty calendar
+        console.log('New profile - initializing empty calendar');
+        initializeNewProfileCalendar(calendarContainer);
+    } else {
+        // EDITING EXISTING PROFILE: Load existing exercise data
+        console.log('Editing profile - loading existing exercise data');
+        initializeExistingProfileCalendar(calendarContainer);
+    }
 }
 
-function refreshCalendar(data) {
-    exerciseData = data || [];
-    generateCalendar();
+// ===============================================
+// NEW PROFILE: Empty calendar implementation
+// ===============================================
+function initializeNewProfileCalendar(container) {
+    // Initialize temporary exercise storage for new profile
+    window.tempExerciseEntries = [];
+    
+    container.innerHTML = `
+        <div class="calendar-empty-state">
+            <h3>Exercise Calendar</h3>
+            <p>📅 No exercise data yet</p>
+            <small>Add exercises to see them on the calendar</small>
+        </div>
+    `;
 }
 
-function generateCalendar() {
-    const container = document.querySelector('.calendar');
-    if (!container) return;
+// ===============================================
+// EXISTING PROFILE: Load from pets data
+// ===============================================
+function initializeExistingProfileCalendar(container) {
+    const pets = getPets();
+    const activePet = pets[activePetIndex];
+    const exerciseEntries = activePet.exerciseEntries || [];
+    
+    // Set global exercise data for calendar generation
+    exerciseData = exerciseEntries;
+    
+    // Generate the actual calendar with data
+    generateCalendar(container);
+}
+
+// ===============================================
+// Generate calendar with exercise data
+// ===============================================
+function generateCalendar(container = null) {
+    const targetContainer = container || document.querySelector('.calendar');
+    if (!targetContainer) {
+        console.error('Calendar container not found for generation');
+        return;
+    }
 
     const date = new Date(currentYear, currentMonth, 1);
     const monthName = date.toLocaleString('default', { month: 'long' });
@@ -856,9 +904,9 @@ function generateCalendar() {
 
     let calendarHTML = `
         <div class="calendar-header">
-            <button class="nav-btn prev">←</button>
+            <button type="button" class="nav-btn prev">←</button>
             <h2>${monthName} ${currentYear}</h2>
-            <button class="nav-btn next">→</button>
+            <button type="button" class="nav-btn next">→</button>
         </div>
         <div class="calendar-grid">
             ${['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
@@ -871,7 +919,7 @@ function generateCalendar() {
         calendarHTML += `<div class="calendar-day empty"></div>`;
     }
 
-    // Actual days
+    // Actual days with exercise data
     for (let day = 1; day <= endDate; day++) {
         const paddedMonth = String(currentMonth + 1).padStart(2, '0');
         const dateStr = `${currentYear}-${paddedMonth}-${String(day).padStart(2, '0')}`;
@@ -885,11 +933,15 @@ function generateCalendar() {
     }
 
     calendarHTML += '</div>';
-    container.innerHTML = calendarHTML;
+    targetContainer.innerHTML = calendarHTML;
     addCalendarEventListeners();
 }
 
+// ===============================================
+// Calendar event listeners
+// ===============================================
 function addCalendarEventListeners() {
+    // Navigation buttons
     document.querySelector('.prev')?.addEventListener('click', () => {
         currentMonth--;
         if (currentMonth < 0) {
@@ -908,7 +960,8 @@ function addCalendarEventListeners() {
         generateCalendar();
     });
 
-    document.querySelectorAll('.calendar-day:not(.empty)').forEach(day => {
+    // Day click handlers
+    document.querySelectorAll('.calendar-day:not(.empty):not(.header)').forEach(day => {
         day.addEventListener('click', () => {
             const entries = exerciseData.filter(e => e.date === day.dataset.date);
             showDayModal(day.dataset.date, entries);
@@ -916,6 +969,9 @@ function addCalendarEventListeners() {
     });
 }
 
+// ===============================================
+// Day modal functionality
+// ===============================================
 function showDayModal(date, entries) {
     const modalHTML = `
         <div class="calendar-modal">
@@ -930,40 +986,82 @@ function showDayModal(date, entries) {
                         ${e.notes ? `<p>Notes: ${e.notes}</p>` : ''}
                     </div>
                 `).join('') : '<p>No exercises</p>'}
-                <button class="add-exercise-btn" data-date="${date}">Add Exercise</button>
-                <button class="close-modal-btn">Close</button>
+                <button type="button" class="add-exercise-btn" data-date="${date}">Add Exercise</button>
+                <button type="button" class="close-modal-btn">Close</button>
             </div>
         </div>
     `;
 
     document.body.insertAdjacentHTML('beforeend', modalHTML);
     
+    // Add exercise button handler
     document.querySelector('.add-exercise-btn').addEventListener('click', (e) => {
-        if (activePetIndex !== null) {
-            const pets = getPets();
-            const pet = pets[activePetIndex];
-            pet.exerciseEntries.push({
-                date: e.target.dataset.date,
-                exerciseType: 'walking',
-                duration: 30,
-                caloriesBurned: 150,
-                intensity: 'medium'
-            });
-            localStorage.setItem('pets', JSON.stringify(pets));
-            refreshCalendar(pet.exerciseEntries);
-        }
+        handleAddExercise(e.target.dataset.date);
         document.querySelector('.calendar-modal').remove();
     });
     
+    // Close button handler
     document.querySelector('.close-modal-btn').addEventListener('click', () => {
         document.querySelector('.calendar-modal').remove();
     });
 }
 
+// ===============================================
+// Add exercise handler (different for new vs existing profiles)
+// ===============================================
+function handleAddExercise(date) {
+    if (activePetIndex === null) {
+        // NEW PROFILE: Add to temporary storage
+        if (!window.tempExerciseEntries) window.tempExerciseEntries = [];
+        window.tempExerciseEntries.push({
+            date: date,
+            exerciseType: 'walking',
+            duration: 30,
+            caloriesBurned: 150,
+            intensity: 'medium',
+            notes: 'Added from calendar'
+        });
+        console.log('Exercise added to temporary storage:', window.tempExerciseEntries);
+    } else {
+        // EXISTING PROFILE: Add to localStorage
+        const pets = getPets();
+        const pet = pets[activePetIndex];
+        pet.exerciseEntries = pet.exerciseEntries || [];
+        pet.exerciseEntries.push({
+            date: date,
+            exerciseType: 'walking',
+            duration: 30,
+            caloriesBurned: 150,
+            intensity: 'medium',
+            notes: 'Added from calendar'
+        });
+        localStorage.setItem('pets', JSON.stringify(pets));
+        refreshCalendar(pet.exerciseEntries);
+    }
+}
+
+// ===============================================
+// Refresh calendar with new data
+// ===============================================
 function refreshCalendar(data) {
     exerciseData = data || [];
     generateCalendar();
 }
+
+// ===============================================
+// Save temporary exercise data to pet profile (call this on form submit)
+// ===============================================
+function saveTemporaryExerciseData(petData) {
+    if (window.tempExerciseEntries && window.tempExerciseEntries.length > 0) {
+        petData.exerciseEntries = window.tempExerciseEntries;
+        console.log('Temporary exercise data saved to pet profile:', petData.exerciseEntries);
+        // Clear temporary storage
+        window.tempExerciseEntries = [];
+    }
+    return petData;
+}
+
+
 
 
 
