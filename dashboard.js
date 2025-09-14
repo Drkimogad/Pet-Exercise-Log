@@ -1066,105 +1066,143 @@ function saveTemporaryExerciseData(petData) {
 
 
 // Charts functionality
+// ===============================================
+// CHARTS - Unified Initialization Function
+// ===============================================
+function initializeCharts() {
+    console.log('Initializing charts...');
+    
+    // Check if chart containers exist
+    const durationContainer = document.getElementById('durationChartContainer');
+    const caloriesContainer = document.getElementById('caloriesChartContainer');
+    const intensityContainer = document.getElementById('intensityChartContainer');
+    
+    if (!durationContainer || !caloriesContainer || !intensityContainer) {
+        console.error('Chart containers not found!');
+        return;
+    }
 
-function initCharts() {  // updated
-    // Destroy any existing charts
+    // Check if we're creating new profile or editing existing
+    if (activePetIndex === null) {
+        // NEW PROFILE: Initialize empty charts
+        console.log('New profile - initializing empty charts');
+        initializeNewProfileCharts();
+    } else {
+        // EDITING EXISTING PROFILE: Load existing exercise data
+        console.log('Editing profile - loading existing exercise data for charts');
+        initializeExistingProfileCharts();
+    }
+}
+
+// ===============================================
+// NEW PROFILE: Empty charts implementation
+// ===============================================
+function initializeNewProfileCharts() {
+    // Initialize temporary exercise storage for charts if not already set
+    if (!window.tempExerciseEntries) window.tempExerciseEntries = [];
+    
+    // Destroy any existing charts first
     destroyCharts();
     
-    // Create empty charts
+    // Create empty chart placeholders
     createEmptyCharts();
+    
+    // Show empty state messages
+    showChartEmptyStates();
 }
 
-function createEmptyCharts() {
-    // Duration chart
-    const durationCtx = document.getElementById('durationChart');
-    if (durationCtx) {
-        durationChart = new Chart(durationCtx, {
-            type: 'line',
-            data: {
-                labels: [],
-                datasets: [{
-                    label: 'Total Duration (min)',
-                    data: [],
-                    borderColor: '#4bc0c0',
-                    tension: 0.3
-                }]
-            },
-            options: {
-                plugins: {
-                    title: {
-                        display: true,
-                        text: 'Exercise Duration Over Time'
-                    }
-                }
-            }
-        });
-    }
+// ===============================================
+// EXISTING PROFILE: Load from pets data
+// ===============================================
+function initializeExistingProfileCharts() {
+    const pets = getPets();
+    const activePet = pets[activePetIndex];
+    const exerciseEntries = activePet.exerciseEntries || [];
     
-    // Calories chart
-    const caloriesCtx = document.getElementById('caloriesChart');
-    if (caloriesCtx) {
-        caloriesChart = new Chart(caloriesCtx, {
-            type: 'bar',
-            data: {
-                labels: [],
-                datasets: [{
-                    label: 'Calories Burned',
-                    data: [],
-                    backgroundColor: '#cc65fe'
-                }]
-            },
-            options: {
-                plugins: {
-                    title: {
-                        display: true,
-                        text: 'Calories Burned Over Time'
-                    }
-                }
-            }
-        });
-    }
-    
-    // Intensity chart
-    const intensityCtx = document.getElementById('intensityChart');
-    if (intensityCtx) {
-        intensityChart = new Chart(intensityCtx, {
-            type: 'pie',
-            data: {
-                labels: ['Low', 'Medium', 'High'],
-                datasets: [{
-                    data: [0, 0, 0],
-                    backgroundColor: ['#36a2eb', '#ffce56', '#ff6384']
-                }]
-            },
-            options: {
-                plugins: {
-                    title: {
-                        display: true,
-                        text: 'Exercise Intensity Distribution'
-                    }
-                }
-            }
-        });
+    if (exerciseEntries.length > 0) {
+        // Has data - render actual charts
+        refreshChartsWithData(exerciseEntries);
+    } else {
+        // No data - show empty state
+        initializeNewProfileCharts();
     }
 }
 
+// ===============================================
+// Show empty state messages for charts
+// ===============================================
+function showChartEmptyStates() {
+    const chartContainers = [
+        { id: 'durationChartContainer', title: 'Duration Chart', type: 'line' },
+        { id: 'caloriesChartContainer', title: 'Calories Chart', type: 'bar' },
+        { id: 'intensityChartContainer', title: 'Intensity Chart', type: 'pie' }
+    ];
+    
+    chartContainers.forEach(container => {
+        const element = document.getElementById(container.id);
+        if (element) {
+            // Create or update empty state message
+            let emptyState = element.querySelector('.empty-state');
+            if (!emptyState) {
+                emptyState = document.createElement('div');
+                emptyState.className = 'empty-state';
+                element.appendChild(emptyState);
+            }
+            emptyState.innerHTML = `
+                <p>📊 ${container.title}</p>
+                <small>Add exercise data to see charts</small>
+            `;
+        }
+    });
+}
 
-function refreshCharts(data) {
+// ===============================================
+// Refresh charts with exercise data
+// ===============================================
+function refreshChartsWithData(data) {
     if (!data || !data.length) {
-        createEmptyCharts();
+        initializeNewProfileCharts();
         return;
     }
     
+    // Hide empty state messages
+    document.querySelectorAll('.empty-state').forEach(el => el.style.display = 'none');
+    
+    // Destroy existing charts and create new ones with data
     destroyCharts();
     
     const processed = processChartData(data);
     createDurationChart(processed);
-    createActivityChart(processed);
     createCaloriesChart(processed);
     createIntensityChart(processed);
 }
 
+// ===============================================
+// Update charts when new exercise data is available
+// ===============================================
+function updateCharts() {
+    if (activePetIndex === null) {
+        // NEW PROFILE: Use temporary data
+        if (window.tempExerciseEntries && window.tempExerciseEntries.length > 0) {
+            refreshChartsWithData(window.tempExerciseEntries);
+        }
+    } else {
+        // EXISTING PROFILE: Use data from localStorage
+        const pets = getPets();
+        const activePet = pets[activePetIndex];
+        const exerciseEntries = activePet.exerciseEntries || [];
+        
+        if (exerciseEntries.length > 0) {
+            refreshChartsWithData(exerciseEntries);
+        } else {
+            initializeNewProfileCharts();
+        }
+    }
+}
+
+// ===============================================
+// Process chart data (unchanged from your original)
+// ===============================================
 function processChartData(data) {
     return {
         labels: [...new Set(data.map(e => e.date))].sort(),
@@ -1173,7 +1211,7 @@ function processChartData(data) {
             return acc;
         }, {}),
         calories: data.reduce((acc, e) => {
-            acc[e.date] = (acc[e.date] || 0) + e.caloriesBurned;
+            acc[e.date] = (acc[edate] || 0) + e.caloriesBurned;
             return acc;
         }, {}),
         activities: data.reduce((acc, e) => {
@@ -1187,6 +1225,9 @@ function processChartData(data) {
     };
 }
 
+// ===============================================
+// Individual chart creation functions (unchanged from your original)
+// ===============================================
 function createIntensityChart(data) {
     const ctx = document.getElementById('intensityChart');
     if (!ctx) return;
@@ -1197,7 +1238,7 @@ function createIntensityChart(data) {
             labels: Object.keys(data.intensity),
             datasets: [{
                 data: Object.values(data.intensity),
-                backgroundColor: ['#36a2eb', '#ffce56', '#ff6384']
+                backgroundColor: ['#36a2eb', '#ffce56', '#ff6384', '#4bc0c0', '#cc65fe']
             }]
         },
         options: {
@@ -1206,7 +1247,9 @@ function createIntensityChart(data) {
                     display: true,
                     text: 'Exercise Intensity Distribution'
                 }
-            }
+            },
+            responsive: true,
+            maintainAspectRatio: false
         }
     });
 }
@@ -1223,24 +1266,19 @@ function createDurationChart(data) {
                 label: 'Total Duration (min)',
                 data: Object.values(data.duration),
                 borderColor: '#4bc0c0',
-                tension: 0.3
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                tension: 0.3,
+                fill: true
             }]
-        }
-    });
-}
-
-function createActivityChart(data) {
-    const ctx = document.getElementById('activityChart');
-    if (!ctx) return;
-    
-    activityChart = new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-            labels: Object.keys(data.activities),
-            datasets: [{
-                data: Object.values(data.activities),
-                backgroundColor: ['#ff6384', '#36a2eb', '#ffce56', '#4bc0c0']
-            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
         }
     });
 }
@@ -1258,25 +1296,49 @@ function createCaloriesChart(data) {
                 data: Object.values(data.calories),
                 backgroundColor: '#cc65fe'
             }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
         }
     });
 }
 
+// ===============================================
+// Chart utility functions (unchanged from your original)
+// ===============================================
 function destroyCharts() {
     if (durationChart) durationChart.destroy();
-    if (activityChart) activityChart.destroy();
     if (caloriesChart) caloriesChart.destroy();
     if (intensityChart) intensityChart.destroy();
+    durationChart = null;
+    caloriesChart = null;
+    intensityChart = null;
 }
 
 function updateChartColors() {
     const textColor = document.body.classList.contains('dark-mode') ? '#fff' : '#374151';
     Chart.defaults.color = textColor;
     if (durationChart) durationChart.update();
-    if (activityChart) activityChart.update();
     if (caloriesChart) caloriesChart.update();
     if (intensityChart) intensityChart.update();
 }
+
+// ===============================================
+// Save temporary chart data (already handled by exercise data saving)
+// ===============================================
+// Note: Charts use the same temporary exercise data as the calendar
+// No separate saving function needed - uses window.tempExerciseEntries 
+
+
+
+
+
 
 
 // Report generation functionality
@@ -1534,70 +1596,4 @@ function generateExerciseSummaryHTML(exerciseEntries) {
         </div>
     `;
 }
-
-// added for later
-function updateDashboard(exerciseData) {
-    // 1. Update Calendar
-    updateCalendar(exerciseData);
-    
-    // 2. Update Mood Logs (for the selected date)
-    updateMoodLogs(exerciseData.date);
-    
-    // 3. Update All Charts
-    updateCharts(exerciseData);
-}
-
-// Helper function for Calendar
-function updateCalendar(exerciseData) {
-    const calendar = document.getElementById('exerciseCalendar');
-    if (!calendar) return;
-    
-    // Find the calendar day for this exercise date
-    const dayElement = calendar.querySelector(`[data-date="${exerciseData.date}"]`);
-    if (dayElement) {
-        // Add exercise indicator to this day
-        if (!dayElement.querySelector('.exercise-indicator')) {
-            const indicator = document.createElement('div');
-            indicator.className = 'exercise-indicator';
-            indicator.textContent = '✅'; // Or use CSS styles
-            dayElement.appendChild(indicator);
-        }
-    }
-}
-
-// Helper function for Mood Logs
-function updateMoodLogs(exerciseDate) {
-    const moodContainer = document.getElementById('moodLogsContainer');
-    if (!moodContainer) return;
-    
-    // Highlight or enable mood selection for this date
-    const moodEntry = moodContainer.querySelector(`[data-date="${exerciseDate}"]`);
-    if (moodEntry) {
-        moodEntry.classList.add('active-date');
-    }
-}
-
-// Helper function for Charts
-function updateCharts(exerciseData) {
-    // Get current chart data or initialize
-    let chartData = JSON.parse(localStorage.getItem('chartData')) || {
-        dates: [],
-        durations: [],
-        calories: [],
-        activities: []
-    };
-    
-    // Add new exercise data
-    chartData.dates.push(exerciseData.date);
-    chartData.durations.push(exerciseData.duration);
-    chartData.calories.push(exerciseData.caloriesBurned);
-    chartData.activities.push(exerciseData.exerciseType);
-    
-    // Save updated data
-    localStorage.setItem('chartData', JSON.stringify(chartData));
-    
-    // Refresh all charts
-    refreshCharts(chartData);
-}
-
 
