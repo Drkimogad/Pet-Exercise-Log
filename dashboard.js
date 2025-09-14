@@ -16,7 +16,11 @@ let currentYear = new Date().getFullYear();
 let exerciseData = [];
 
 // Charts variables
-let durationChart, caloriesChart, activityChart, intensityChart;
+let durationChart = null;
+let caloriesChart = null; 
+let intensityChart = null;
+let activityChart = null; // If you use activity chart elsewhere
+
 
 // Mood options
 const MOOD_OPTIONS = [
@@ -1109,6 +1113,32 @@ function initializeNewProfileCharts() {
     
     // Show empty state messages
     showChartEmptyStates();
+}
+
+
+// Create empty chart placeholders
+const durationCtx = document.getElementById('durationChart');
+if (durationCtx) {
+    durationChart = new Chart(durationCtx, {
+        type: 'line',
+        data: {
+            labels: [],
+            datasets: [{
+                label: 'Total Duration (min)',
+                data: [],
+                borderColor: '#4bc0c0',
+                tension: 0.3
+            }]
+        },
+        options: {
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Exercise Duration Over Time'
+                }
+            }
+        }
+    });
 }
 
 // ===============================================
