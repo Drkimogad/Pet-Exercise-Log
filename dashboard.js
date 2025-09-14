@@ -106,30 +106,9 @@ function showCreateProfile() {
     initializeEmptyDashboard();
 }
 
-// ===== PLACEHOLDER FUNCTIONS TO BE IMPLEMENTED LATER A QUICK FIX =====
-function initializeEmptyCharts() {
-    console.log('Initializing empty charts');
-    
-    // Add placeholder text for charts
-    document.getElementById('durationChartContainer').innerHTML = '<p>Duration chart will appear here</p>';
-    document.getElementById('caloriesChartContainer').innerHTML = '<p>Calories chart will appear here</p>';
-    document.getElementById('intensityChartContainer').innerHTML = '<p>Intensity chart will appear here</p>';
-}
-
-function initializeEmptyCalendar() {
-    console.log('Initializing empty calendar');
-    
-    // Add placeholder for calendar
-    document.getElementById('exerciseCalendar').innerHTML = '<p>Exercise calendar will appear here</p>';
-}
-
-function initializeEmptyMoodTracker() {
-    console.log('Initializing empty mood tracker');
-    
-    // Add placeholder for mood tracker
-    document.getElementById('moodTracker').innerHTML = '<p>Mood tracker will appear here</p>';
-}
-
+//========================
+// Initialize dashboard and it's related Initializations
+//===================================
 
 function initializeEmptyDashboard() {
     // Initialize empty charts
@@ -140,6 +119,69 @@ function initializeEmptyDashboard() {
     
     // Initialize empty mood tracker
     initializeEmptyMoodTracker();
+}
+
+// Dashboard related nitializations
+function initializeCharts() {
+    console.log('Initializing charts');
+    
+    // Set up chart containers with proper IDs for Chart.js
+    document.getElementById('durationChartContainer').innerHTML = '<canvas id="durationChart"></canvas>';
+    document.getElementById('caloriesChartContainer').innerHTML = '<canvas id="caloriesChart"></canvas>';
+    document.getElementById('intensityChartContainer').innerHTML = '<canvas id="intensityChart"></canvas>';
+    
+    // Initialize empty charts
+    initCharts();
+}
+
+function initializeCalendar() {
+    console.log('Initializing calendar');
+    
+    // Set up calendar container
+    document.getElementById('exerciseCalendar').innerHTML = '<div class="calendar-container"></div>';
+    
+    // Initialize empty calendar
+    initCalendar('.calendar-container');
+}
+
+function initializeMoodTracker() {
+    console.log('Initializing mood tracker');
+    
+    // Set up mood tracker container
+    document.getElementById('moodTracker').innerHTML = '<div class="mood-tracker-container"></div>';
+    
+    // Render mood tracker
+    renderMoodTracker();
+}
+
+function renderMoodTracker() {
+    const moodContainer = document.querySelector('.mood-tracker-container');
+    if (!moodContainer) return;
+    
+    const today = new Date().toISOString().split('T')[0];
+    
+    moodContainer.innerHTML = `
+        <div class="mood-container">
+            <h3>Today's Mood</h3>
+            <div class="mood-selector">
+                ${MOOD_OPTIONS.map(mood => `
+                    <button class="emoji-btn" data-mood="${mood.value}" data-date="${today}" 
+                            title="${mood.label}">
+                        ${mood.emoji}
+                        <span class="mood-label">${mood.label}</span>
+                    </button>
+                `).join('')}
+            </div>
+            
+            <h3>Mood History</h3>
+            <div class="mood-history">
+                <p class="no-entries">No mood entries yet</p>
+            </div>
+        </div>
+    `;
+    
+    // Add event listeners
+    moodContainer.addEventListener('click', handleMoodSelection);
 }
 
 // Handle form submit
@@ -333,12 +375,56 @@ function loadSavedProfiles() {
 }
 
 // UPDATE DASHBOARD FUNCTION
-function updateDashboard(petData) { // Verify prt or petData 
-    console.log('Updating dashboard for:', pet.petDetails.name);
-    Calendar.refresh(petData.exerciseEntries);
-    Charts.refresh(petData.exerciseEntries);
+function updateDashboard(petData) {
+    console.log('Updating dashboard for:', petData.petDetails.name);
+    
+    // Update calendar with exercise data
+    refreshCalendar(petData.exerciseEntries || []);
+    
+    // Update charts with exercise data
+    refreshCharts(petData.exerciseEntries || []);
+    
+    // Update mood tracker
+    updateMoodTracker(petData.moodLogs || []);
+    
+    // Refresh profile list
     loadSavedProfiles();
-  }
+}
+
+function updateMoodTracker(moodLogs) {
+    const moodContainer = document.querySelector('.mood-tracker-container');
+    if (!moodContainer) return;
+    
+    const today = new Date().toISOString().split('T')[0];
+    const todayMood = moodLogs.find(log => log.date === today);
+    
+    // Update mood history section
+    const moodHistory = moodContainer.querySelector('.mood-history');
+    if (moodHistory) {
+        if (moodLogs.length > 0) {
+            moodHistory.innerHTML = moodLogs.map(log => {
+                const mood = MOOD_OPTIONS.find(m => m.value === log.mood) || MOOD_OPTIONS[0];
+                return `
+                    <div class="mood-entry">
+                        <span class="mood-date">${formatDate(log.date)}</span>
+                        <span class="mood-emoji">${mood.emoji}</span>
+                        <span class="mood-label">${mood.label}</span>
+                    </div>
+                `;
+            }).join('');
+        } else {
+            moodHistory.innerHTML = '<p class="no-entries">No mood entries yet</p>';
+        }
+    }
+    
+    // Update today's mood selection
+    moodContainer.querySelectorAll('.emoji-btn').forEach(btn => {
+        btn.classList.remove('selected');
+        if (todayMood && parseInt(btn.dataset.mood) === todayMood.mood) {
+            btn.classList.add('selected');
+        }
+    });
+}
 
 // Load active petdata. verify if it is needed still
 function loadActivePetData() {
@@ -668,10 +754,15 @@ function handleMoodSelection(e) {
 // Calendar functionality
 
 
-function initCalendar(selector) {
+function initCalendar(selector) { // updated
     const container = document.querySelector(selector);
     if (!container) return;
     container.innerHTML = '<div class="calendar"></div>';
+    generateCalendar();
+}
+
+function refreshCalendar(data) {
+    exerciseData = data || [];
     generateCalendar();
 }
 
@@ -799,27 +890,95 @@ function refreshCalendar(data) {
 
 // Charts functionality
 
-function initCharts(selector) {
-    const container = document.querySelector(selector);
-    if (!container) return;
-    container.innerHTML = `
-        <div class="chart">
-            <canvas id="durationChart"></canvas>
-        </div>
-        <div class="chart">
-            <canvas id="activityChart"></canvas>
-        </div>
-        <div class="chart">
-            <canvas id="caloriesChart"></canvas>
-        </div>
-        <div class="chart">
-            <canvas id="intensityChart"></canvas>
-        </div>
-    `;
+function initCharts() {  // updated
+    // Destroy any existing charts
+    destroyCharts();
+    
+    // Create empty charts
+    createEmptyCharts();
 }
 
+function createEmptyCharts() {
+    // Duration chart
+    const durationCtx = document.getElementById('durationChart');
+    if (durationCtx) {
+        durationChart = new Chart(durationCtx, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Total Duration (min)',
+                    data: [],
+                    borderColor: '#4bc0c0',
+                    tension: 0.3
+                }]
+            },
+            options: {
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Exercise Duration Over Time'
+                    }
+                }
+            }
+        });
+    }
+    
+    // Calories chart
+    const caloriesCtx = document.getElementById('caloriesChart');
+    if (caloriesCtx) {
+        caloriesChart = new Chart(caloriesCtx, {
+            type: 'bar',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Calories Burned',
+                    data: [],
+                    backgroundColor: '#cc65fe'
+                }]
+            },
+            options: {
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Calories Burned Over Time'
+                    }
+                }
+            }
+        });
+    }
+    
+    // Intensity chart
+    const intensityCtx = document.getElementById('intensityChart');
+    if (intensityCtx) {
+        intensityChart = new Chart(intensityCtx, {
+            type: 'pie',
+            data: {
+                labels: ['Low', 'Medium', 'High'],
+                datasets: [{
+                    data: [0, 0, 0],
+                    backgroundColor: ['#36a2eb', '#ffce56', '#ff6384']
+                }]
+            },
+            options: {
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Exercise Intensity Distribution'
+                    }
+                }
+            }
+        });
+    }
+}
+
+
 function refreshCharts(data) {
-    if (!data || !data.length) return;
+    if (!data || !data.length) {
+        createEmptyCharts();
+        return;
+    }
+    
     destroyCharts();
     
     const processed = processChartData(data);
