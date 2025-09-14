@@ -438,16 +438,16 @@ function setupProfileEventListeners() {
   });
 
   // Report button
-  document.querySelectorAll('.report-btn').forEach(btn => {
+document.querySelectorAll('.report-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const index = parseInt(btn.dataset.index);
-      const pet = getPets()[index];
-      if (pet) {
-        Report.generatePDF(pet);
-      }
+        e.stopPropagation();
+        const index = parseInt(btn.dataset.index);
+        const pet = getPets()[index];
+        if (pet) {
+            generateReport(pet); // ← This should call your report function
+        }
     });
-  });
+});
 
   // Share button
   document.querySelectorAll('.share-btn').forEach(btn => {
@@ -1460,6 +1460,12 @@ function generateExerciseCalendarHTML(pet) {
     return calendarHtml;
 }
 
+
+// AND ADD THIS HELPER FUNCTION IN THE REPORT:
+function getMoodEmojiFromValue(value) {
+    const emojiMap = {0: '😀', 1: '😊', 2: '😐', 3: '😞', 4: '😠', 5: '🤢', 6: '😤', 7: '😔', 8: '😴', 9: '😰'};
+    return emojiMap[value] || '❓';
+}
 function generateMoodCalendarHTML(pet) {
     const now = new Date();
     const year = now.getFullYear();
@@ -1483,7 +1489,7 @@ function generateMoodCalendarHTML(pet) {
     for (let day = 1; day <= daysInMonth; day++) {
         const dateStr = `${year}-${(month + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
         const moodEntry = pet.moodLogs?.find(log => log.date === dateStr);
-        const moodEmoji = moodEntry ? MOOD_EMOJIS[moodEntry.mood] || '❓' : '';
+        const moodEmoji = moodEntry ? getMoodEmojiFromValue(moodEntry.mood) : '';
         moodHtml += `<div class="calendar-day mood-emoji">${moodEmoji}</div>`;
     }
     
