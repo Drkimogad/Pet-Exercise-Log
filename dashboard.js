@@ -333,10 +333,23 @@ function loadSavedProfiles() {
 }
 
 // UPDATE DASHBOARD FUNCTION
-function updateDashboard(pet) {
+function updateDashboard(petData) { // Verify prt or petData 
     console.log('Updating dashboard for:', pet.petDetails.name);
-    // Will implement later - for now just log
+    Calendar.refresh(petData.exerciseEntries);
+    Charts.refresh(petData.exerciseEntries);
+    loadSavedProfiles();
+  }
+
+// Load active petdata. verify if it is needed still
+function loadActivePetData() {
+    const savedIndex = sessionStorage.getItem('activePetIndex');
+    if (savedIndex !== null) {
+      activePetIndex = parseInt(savedIndex);
+      const petData = getPets()[activePetIndex];
+      if (petData) updateDashboard(petData);
+    }
 }
+
 
 //=================================
 // SETUP PROFILE EVENT LISTENERS
