@@ -81,15 +81,26 @@ function setupEventListeners() {
 
 // Show create profile to show the profile form when "New Profile" is clicked
 function showCreateProfile() {
-    console.log('showCreateProfile called'); // ← ADD THIS
+    console.log('showCreateProfile called');
     // Hide saved profiles, show form container
     document.getElementById('savedProfiles').style.display = 'none';
     document.getElementById('profileContainer').style.display = 'block';
     
     // Load the profile form template
     const template = document.getElementById('profileFormTemplate');
-    console.log('Template found:', template); // ← ADD THIS
+    console.log('Template found:', template);
+    
+    // DEBUG: Check if template has content
+    console.log('Template innerHTML length:', template.innerHTML.length);
+    
     document.getElementById('profileContainer').innerHTML = template.innerHTML;
+    
+    // DEBUG: Check if elements exist after inserting template
+    setTimeout(() => {
+        console.log('Calendar element exists:', !!document.getElementById('exerciseCalendar'));
+        console.log('Mood tracker element exists:', !!document.getElementById('moodTracker'));
+        console.log('Duration chart container exists:', !!document.getElementById('durationChartContainer'));
+    }, 100);
     
     // Set up form submission handler
     document.getElementById('completeProfileForm').addEventListener('submit', handleFormSubmit);
@@ -103,9 +114,24 @@ function showCreateProfile() {
     
     // Set today's date as default for exercise
     document.getElementById('exerciseDate').value = new Date().toISOString().split('T')[0];
+        // ============ KEY CHANGES START HERE ============
     
-    // Initialize empty charts, calendar, and mood tracker
-    initializeEmptyDashboard();
+    // Initialize image upload handler
+    document.getElementById('petImage').addEventListener('change', handleImageUpload);
+    
+    // Initialize calendar with empty state
+    console.log('Initializing calendar...');
+    initializeEmptyCalendar();
+    
+    // Initialize mood tracker with empty state
+    console.log('Initializing mood tracker...');
+    initializeEmptyMoodTracker();
+    
+    // Initialize charts with empty state
+    console.log('Initializing charts...');
+    initializeEmptyCharts();
+    
+    // ============ KEY CHANGES END HERE ============
 }
 
 //========================
@@ -124,36 +150,80 @@ function initializeEmptyDashboard() {
 }
 
 // Dashboard related nitializations
-function initializeCharts() {
-    console.log('Initializing charts');
+function initializeEmptyCharts() {
+    console.log('Initializing empty charts');
     
-    // Set up chart containers with proper IDs for Chart.js
-    document.getElementById('durationChartContainer').innerHTML = '<canvas id="durationChart"></canvas>';
-    document.getElementById('caloriesChartContainer').innerHTML = '<canvas id="caloriesChart"></canvas>';
-    document.getElementById('intensityChartContainer').innerHTML = '<canvas id="intensityChart"></canvas>';
+    // Initialize each chart container with a placeholder
+    const chartContainers = [
+        { id: 'durationChartContainer', title: 'Duration Chart', type: 'line' },
+        { id: 'caloriesChartContainer', title: 'Calories Chart', type: 'bar' },
+        { id: 'intensityChartContainer', title: 'Intensity Chart', type: 'pie' }
+    ];
     
-    // Initialize empty charts
-    initCharts();
+    chartContainers.forEach(container => {
+        const element = document.getElementById(container.id);
+        if (element) {
+            element.innerHTML = `
+                <div class="empty-state">
+                    <p>📊 ${container.title}</p>
+                    <small>Add exercise data to see charts</small>
+                </div>
+            `;
+            console.log(`${container.id} initialized successfully`);
+        } else {
+            console.error(`${container.id} not found!`);
+        }
+    });
 }
 
-function initializeCalendar() {
-    console.log('Initializing calendar');
-    
-    // Set up calendar container
-    document.getElementById('exerciseCalendar').innerHTML = '<div class="calendar-container"></div>';
-    
-    // Initialize empty calendar
-    initCalendar('.calendar-container');
+function initializeEmptyCalendar() {
+    console.log('Initializing empty calendar');
+    const calendarContainer = document.getElementById('exerciseCalendar');
+    if (calendarContainer) {
+        calendarContainer.innerHTML = `
+            <div class="empty-state">
+                <p>📅 No exercise data yet</p>
+                <small>Add exercises to see them on the calendar</small>
+            </div>
+        `;
+        console.log('Calendar initialized successfully');
+    } else {
+        console.error('Calendar container not found!');
+    }
 }
 
-function initializeMoodTracker() {
-    console.log('Initializing mood tracker');
-    
-    // Set up mood tracker container
-    document.getElementById('moodTracker').innerHTML = '<div class="mood-tracker-container"></div>';
-    
-    // Render mood tracker
-    renderMoodTracker();
+function initializeEmptyMoodTracker() {
+    console.log('Initializing empty mood tracker');
+    const moodContainer = document.getElementById('moodTracker');
+    if (moodContainer) {
+        const today = new Date().toISOString().split('T')[0];
+        
+        moodContainer.innerHTML = `
+            <div class="mood-container">
+                <h4>Today's Mood</h4>
+                <div class="mood-selector">
+                    ${MOOD_OPTIONS.map(mood => `
+                        <button class="emoji-btn" data-mood="${mood.value}" data-date="${today}" 
+                                title="${mood.label}">
+                            ${mood.emoji}
+                            <span class="mood-label">${mood.label}</span>
+                        </button>
+                    `).join('')}
+                </div>
+                
+                <h4>Mood History</h4>
+                <div class="mood-history">
+                    <p class="no-entries">No mood entries yet. Select a mood for today!</p>
+                </div>
+            </div>
+        `;
+        
+        // Add event listeners for mood selection
+        moodContainer.addEventListener('click', handleMoodSelection);
+        console.log('Mood tracker initialized successfully');
+    } else {
+        console.error('Mood tracker container not found!');
+    }
 }
 
 function renderMoodTracker() {
@@ -185,6 +255,48 @@ function renderMoodTracker() {
     // Add event listeners
     moodContainer.addEventListener('click', handleMoodSelection);
 }
+// Add this function to update mood tracker with data:
+function updateMoodTracker(moodLogs) {
+    const moodContainer = document.getElementById('moodTracker');
+    if (!moodContainer) return;
+    
+    const today = new Date().toISOString().split('T')[0];
+    const todayMood = moodLogs.find(log => log.date === today);
+    
+    moodContainer.innerHTML = `
+        <div class="mood-container">
+            <h4>Today's Mood</h4>
+            <div class="mood-selector">
+                ${MOOD_OPTIONS.map(mood => `
+                    <button class="emoji-btn ${todayMood && todayMood.mood === mood.value ? 'selected' : ''}" 
+                            data-mood="${mood.value}" data-date="${today}" 
+                            title="${mood.label}">
+                        ${mood.emoji}
+                        <span class="mood-label">${mood.label}</span>
+                    </button>
+                `).join('')}
+            </div>
+            
+            <h4>Mood History</h4>
+            <div class="mood-history">
+                ${moodLogs.length > 0 ? moodLogs.map(log => {
+                    const mood = MOOD_OPTIONS.find(m => m.value === log.mood) || MOOD_OPTIONS[0];
+                    return `
+                        <div class="mood-entry">
+                            <span class="mood-date">${formatDate(log.date)}</span>
+                            <span class="mood-emoji">${mood.emoji}</span>
+                            <span class="mood-label">${mood.label}</span>
+                        </div>
+                    `;
+                }).join('') : '<p class="no-entries">No mood entries yet</p>'}
+            </div>
+        </div>
+    `;
+    
+    // Add event listeners
+    moodContainer.addEventListener('click', handleMoodSelection);
+}
+
 
 // Handle form submit
 function handleFormSubmit(e) {
@@ -377,17 +489,30 @@ function loadSavedProfiles() {
 }
 
 // UPDATE DASHBOARD FUNCTION
+// Also update your updateDashboard function to handle these components:
 function updateDashboard(petData) {
     console.log('Updating dashboard for:', petData.petDetails.name);
     
     // Update calendar with exercise data
-    refreshCalendar(petData.exerciseEntries || []);
-    
-    // Update charts with exercise data
-    refreshCharts(petData.exerciseEntries || []);
+    if (petData.exerciseEntries && petData.exerciseEntries.length > 0) {
+        refreshCalendar(petData.exerciseEntries);
+    } else {
+        initializeEmptyCalendar();
+    }
     
     // Update mood tracker
-    updateMoodTracker(petData.moodLogs || []);
+    if (petData.moodLogs && petData.moodLogs.length > 0) {
+        updateMoodTracker(petData.moodLogs);
+    } else {
+        initializeEmptyMoodTracker();
+    }
+    
+    // Update charts with exercise data
+    if (petData.exerciseEntries && petData.exerciseEntries.length > 0) {
+        refreshCharts(petData.exerciseEntries);
+    } else {
+        initializeEmptyCharts();
+    }
     
     // Refresh profile list
     loadSavedProfiles();
