@@ -135,12 +135,6 @@ function initializeDashboard() {
 }
 
 
-
-
-
-
-
-
 // Handle form submit
 function handleFormSubmit(e) {
     e.preventDefault();
@@ -149,7 +143,8 @@ function handleFormSubmit(e) {
 
     // Collect all form data
     pets = getPets(); // Use your existing getPets() function
-    const formData = {
+   // const formData = {
+      let formData = {
       petType: document.getElementById('petType').value,
       petName: document.getElementById('petName').value,
       petImage: document.getElementById('petImagePreview').src,
