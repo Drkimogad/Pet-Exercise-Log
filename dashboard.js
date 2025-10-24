@@ -134,6 +134,35 @@ function initializeDashboard() {
     initializeMoodTracker(); // Handles empty or data state internally Updated
 }
 
+// move it outside the formhandler 
+// it retrieves everything via the helper
+    function initializeNewPet() {
+    return {
+        petDetails: {
+            type: '',
+            name: '',
+            image: 'https://drkimogad.github.io/Pet-Exercise-Log/images/default-pet.png',
+            age: '',
+            weight: '',
+            breed: '',
+            gender: '',
+            color: '',
+            microchip: '',
+            energyLevel: '',
+            healthStatus: '',
+            vetInfo: '',
+            vaccinations: '',
+            medications: '',
+            allergies: '',
+            diet: '',
+            behavior: '',
+            favoriteExercise: '',
+            notes: ''
+        },
+        exerciseEntries: [],
+        moodLogs: []
+    };
+}
 
 // Handle form submit
 function handleFormSubmit(e) {
@@ -179,35 +208,14 @@ function handleFormSubmit(e) {
     if (formData.calories < 1) errors.push('Invalid calories');
     if (errors.length) return AppHelper.showErrors(errors);
 
- //   pets = getPets();
-let petData = activePetIndex !== null ? pets[activePetIndex] : initializeNewPet();
-      // it retrieves everything via the helper
-    function initializeNewPet() {
-    return {
-        petDetails: {
-            type: '',
-            name: '',
-            image: 'https://drkimogad.github.io/Pet-Exercise-Log/images/default-pet.png',
-            age: '',
-            weight: '',
-            breed: '',
-            gender: '',
-            color: '',
-            microchip: '',
-            energyLevel: '',
-            healthStatus: '',
-            vetInfo: '',
-            vaccinations: '',
-            medications: '',
-            allergies: '',
-            diet: '',
-            behavior: '',
-            favoriteExercise: '',
-            notes: ''
-        },
-        exerciseEntries: [],
-        moodLogs: []
-    };
+ 
+// THEN IN handleFormSubmit, change to:
+    //   pets = getPets();
+let petData;
+if (activePetIndex !== null) {
+    petData = pets[activePetIndex];
+} else {
+    petData = initializeNewPet(); // ← Now this will work
 }
 
     // Update pet details with all form fields data processing
