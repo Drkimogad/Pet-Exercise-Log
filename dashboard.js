@@ -180,7 +180,7 @@ function handleFormSubmit(e) {
     if (errors.length) return AppHelper.showErrors(errors);
 
  //   pets = getPets();
-    const petData = activePetIndex !== null ? pets[activePetIndex] : initializeNewPet();
+let petData = activePetIndex !== null ? pets[activePetIndex] : initializeNewPet();
       // it retrieves everything via the helper
     function initializeNewPet() {
     return {
