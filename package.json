@@ -1,10 +1,11 @@
 {
-  "name": "Pet-Exercise-Log",
+  "name": "pet-exercise-log",
   "version": "1.0.0",
   "description": "This project is licensed under the Proprietary License.",
-  "main": "app.js",
+    "main": "dashboard.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node dashboard.js",
+    "dev": "node dashboard.js"
   },
   "keywords": [],
   "author": "",
