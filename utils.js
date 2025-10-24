@@ -1,7 +1,5 @@
 "use strict";
 
- const MOOD_EMOJIS = ['😀', '😊', '😐', '😞', '😠', '🤢', '😤', '😔', '😴', '😰'];
-
 // Service Worker
 function registerServiceWorker() {
     if ('serviceWorker' in navigator) {
