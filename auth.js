@@ -101,13 +101,6 @@ async function handleSignIn(e) {
     }
 }
 
-// Manual logout function for testing
-function manualLogout() {
-    sessionStorage.removeItem('user');
-    alert('Manual logout completed. Refresh the page.');
-    location.reload();
-}
-
 // Switch between sign in and sign up forms
 function setupAuthSwitchers() {
     document.getElementById('switchAuth').addEventListener('click', function(e) {
