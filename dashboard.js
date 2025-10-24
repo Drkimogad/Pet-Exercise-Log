@@ -21,6 +21,8 @@ let caloriesChart = null;
 let intensityChart = null;
 let activityChart = null; // If you use activity chart elsewhere
 
+ 
+const MOOD_EMOJIS = ['😀', '😊', '😐', '😞', '😠', '🤢', '😤', '😔', '😴', '😰'];
 
 // Mood options
 const MOOD_OPTIONS = [
@@ -134,7 +136,8 @@ function initializeDashboard() {
     initializeMoodTracker(); // Handles empty or data state internally Updated
 }
 
-// move it outside the formhandler 
+
+// move it outside handleFormSubmit and initialized in it.
 // it retrieves everything via the helper
     function initializeNewPet() {
     return {
@@ -200,7 +203,7 @@ function handleFormSubmit(e) {
       exerciseIntensity: document.getElementById('exerciseIntensity').value,
       exerciseNotes: document.getElementById('exerciseNotes').value
     };
-        // Validate required fields Validation code
+// Validate required fields Validation code
     const errors = [];
     if (!formData.petType) errors.push('Pet type is required');
     if (!formData.petName.trim()) errors.push('Pet name is required');
@@ -210,7 +213,7 @@ function handleFormSubmit(e) {
 
  
 // THEN IN handleFormSubmit, change to:
-    //   pets = getPets();
+//   pets = getPets();
 let petData;
 if (activePetIndex !== null) {
     petData = pets[activePetIndex];
@@ -218,7 +221,7 @@ if (activePetIndex !== null) {
     petData = initializeNewPet(); // ← Now this will work
 }
 
-    // Update pet details with all form fields data processing
+// Update pet details with all form fields data processing
     petData.petDetails = {
       type: formData.petType,
       name: formData.petName,
