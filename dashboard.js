@@ -335,6 +335,38 @@ function loadSavedProfiles() {
           📤 Share
         </button>
       </div>
+        <!-- ADD THIS MOOD SECTION -->
+  <div class="mood-section">
+    <h5>😊 Mood Log</h5>
+    ${pet.moodLogs && pet.moodLogs.length > 0 ? 
+      pet.moodLogs.slice(-5).map(log => {
+        const mood = MOOD_OPTIONS.find(m => m.value === log.mood) || MOOD_OPTIONS[0];
+        return `
+          <div class="mood-entry-small">
+            <span class="mood-emoji-small">${mood.emoji}</span>
+            <span class="mood-date-small">${formatDate(log.date)}</span>
+          </div>
+        `;
+      }).join('') : 
+      '<p class="no-moods">No mood entries yet</p>'
+    }
+  </div>
+  
+    <!-- ADD THIS CALENDAR SECTION -->
+  <div class="calendar-section">
+    <h5>📅 Exercise Calendar</h5>
+    <div class="mini-calendar" id="mini-calendar-${index}">
+      ${generateMiniCalendar(pet.exerciseEntries || [])}
+    </div>
+  </div>
+    <!-- ADD THIS CHARTS SECTION -->
+  <div class="charts-section">
+    <h5>📊 Exercise Charts</h5>
+    <div class="mini-charts">
+      ${generateMiniCharts(pet.exerciseEntries || [])}
+    </div>
+  </div>
+  
     </div>
   `).join('');
 
@@ -846,6 +878,41 @@ function formatDate(dateStr) {
 
 
 // Calendar functionality
+// Add the Helper Function
+function generateMiniCalendar(exerciseEntries) {
+    const today = new Date();
+    const currentMonth = today.getMonth();
+    const currentYear = today.getFullYear();
+    const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+    const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+    
+    let calendarHTML = `<div class="mini-calendar-grid">`;
+    
+    // Day headers
+    ['S', 'M', 'T', 'W', 'T', 'F', 'S'].forEach(day => {
+        calendarHTML += `<div class="mini-calendar-header">${day}</div>`;
+    });
+    
+    // Empty days
+    for (let i = 0; i < firstDay; i++) {
+        calendarHTML += `<div class="mini-calendar-day empty"></div>`;
+    }
+    
+    // Actual days
+    for (let day = 1; day <= daysInMonth; day++) {
+        const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        const hasExercise = exerciseEntries.some(entry => entry.date === dateStr);
+        
+        calendarHTML += `
+            <div class="mini-calendar-day ${hasExercise ? 'has-exercise' : ''} ${day === today.getDate() ? 'today' : ''}">
+                ${day}
+            </div>
+        `;
+    }
+    
+    calendarHTML += `</div>`;
+    return calendarHTML;
+}
 // ===============================================
 // CALENDAR - Unified Initialization Function
 // ===============================================
@@ -1078,6 +1145,34 @@ function saveTemporaryExerciseData(petData) {
 
 
 // Charts functionality
+// add helper function 
+function generateMiniCharts(exerciseEntries) {
+    if (!exerciseEntries || exerciseEntries.length === 0) {
+        return '<p class="no-charts-data">No exercise data yet</p>';
+    }
+    
+    // Calculate simple stats for mini display
+    const totalDuration = exerciseEntries.reduce((sum, entry) => sum + entry.duration, 0);
+    const totalCalories = exerciseEntries.reduce((sum, entry) => sum + entry.caloriesBurned, 0);
+    const avgDuration = (totalDuration / exerciseEntries.length).toFixed(1);
+    
+    return `
+        <div class="mini-charts-stats">
+            <div class="mini-stat">
+                <div class="mini-stat-value">${totalDuration}m</div>
+                <div class="mini-stat-label">Total Duration</div>
+            </div>
+            <div class="mini-stat">
+                <div class="mini-stat-value">${totalCalories}</div>
+                <div class="mini-stat-label">Total Calories</div>
+            </div>
+            <div class="mini-stat">
+                <div class="mini-stat-value">${avgDuration}m</div>
+                <div class="mini-stat-label">Avg/Session</div>
+            </div>
+        </div>
+    `;
+}
 // ===============================================
 // CHARTS - Unified Initialization Function
 // ===============================================
