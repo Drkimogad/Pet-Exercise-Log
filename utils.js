@@ -1,7 +1,6 @@
 "use strict";
 
  const MOOD_EMOJIS = ['😀', '😊', '😐', '😞', '😠', '🤢', '😤', '😔', '😴', '😰'];
-let deferredPrompt;
 
 // Service Worker
 function registerServiceWorker() {
@@ -15,45 +14,6 @@ function registerServiceWorker() {
         });
     }
 }
-
-// PWA Install
-window.addEventListener('beforeinstallprompt', (event) => {
-    event.preventDefault();  
-    deferredPrompt = event; 
-    setTimeout(async () => {
-        if (deferredPrompt) {
-            try {
-                await deferredPrompt.prompt();
-                const choiceResult = await deferredPrompt.userChoice;
-                console.log(choiceResult.outcome === 'accepted' ? 'User accepted install' : 'User dismissed install');
-                deferredPrompt = null;
-            } catch (error) {
-                console.error('Auto Install prompt failed:', error);
-            }
-        }
-    }, 2000);
-    
-    const installButton = document.getElementById('installButton');
-    if (installButton) {
-        installButton.style.display = 'block';
-        installButton.addEventListener('click', async () => {
-            if (deferredPrompt) {
-                try {
-                    await deferredPrompt.prompt();
-                    const choiceResult = await deferredPrompt.userChoice;
-                    console.log(choiceResult.outcome === 'accepted' ? 'User accepted install' : 'User dismissed install');
-                } catch (error) {
-                    console.error('Manual Install failed:', error);
-                } finally {
-                    deferredPrompt = null;
-                    installButton.style.display = 'none';
-                }
-            }
-        });
-    }
-});
-
-
 
 // Error handling - UPDATED
 function showError(msg) {
@@ -70,6 +30,7 @@ function showError(msg) {
         console.error('Error:', msg); // Fallback to console
     }
 }
+
 function showErrors(msgs) {
     msgs.forEach(msg => showError(msg));
 }
