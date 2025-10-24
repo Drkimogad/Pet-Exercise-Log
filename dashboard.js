@@ -89,6 +89,10 @@ function setupEventListeners() {
 //=====================================================
 function showCreateProfile() {
     console.log('showCreateProfile called');
+
+        // ADD THIS LINE:
+    activePetIndex = null; // ← Reset to create new profile instead of editing existing
+ 
     // Hide saved profiles, show form container
     document.getElementById('savedProfiles').style.display = 'none';
     document.getElementById('profileContainer').style.display = 'block';
