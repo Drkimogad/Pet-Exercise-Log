@@ -88,8 +88,8 @@ body.dark-mode {
     AUTHENTICATION FORM STYLING
 ============================================================ */
 .auth-container {
-    width: 50%;
-    margin: 10vh auto;
+    width: 35%;   /* it was 50%*/
+    margin: 40vh auto;
     background: var(--container-bg);
     border: 2px solid var(--container-border);
     padding: 2rem;
