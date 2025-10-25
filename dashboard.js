@@ -287,7 +287,7 @@ updateDashboard(petData);
 }
 
 // ===============================================
-//  Load saved profiles
+//  Load saved profiles - ENHANCED LAYOUT
 //==========================================
 function loadSavedProfiles() {
     pets = getPets();
@@ -299,25 +299,99 @@ function loadSavedProfiles() {
         return;
     }
     
-    const profilesHTML = pets.map((pet, index) => `
+    const profilesHTML = pets.map((pet, index) => {
+        // Calculate exercise stats
+        const totalSessions = pet.exerciseEntries.length;
+        const totalDuration = pet.exerciseEntries.reduce((sum, entry) => sum + entry.duration, 0);
+        const totalCalories = pet.exerciseEntries.reduce((sum, entry) => sum + entry.caloriesBurned, 0);
+        const avgDuration = totalSessions > 0 ? (totalDuration / totalSessions).toFixed(1) : 0;
+        
+        // Medical badges
+        const hasVaccinations = pet.petDetails.vaccinations && pet.petDetails.vaccinations.trim() !== '';
+        const hasMedications = pet.petDetails.medications && pet.petDetails.medications.trim() !== '';
+        
+        return `
     <div class="profile-card ${index === activePetIndex ? 'active' : ''}" data-pet-index="${index}">
-      <img src="${pet.petDetails.image}" alt="${pet.petDetails.name}">
-      <div class="profile-info">
-        <h4>${pet.petDetails.name}</h4>
-        <p>Type: ${pet.petDetails.type ? pet.petDetails.type.charAt(0).toUpperCase() + pet.petDetails.type.slice(1) : 'Unknown'}</p>
-        <p>Breed: ${pet.petDetails.breed || 'Unknown'}</p>
-        <p>Age: ${pet.petDetails.age || 'Unknown'} years</p>
-        <p>Weight: ${pet.petDetails.weight || 'Unknown'}</p>
-        <p>Gender: ${pet.petDetails.gender || 'Unknown'}</p>
-        <p>Color: ${pet.petDetails.color || 'Unknown'}</p>
-        <p>Energy Level: ${pet.petDetails.energyLevel || 'Unknown'}</p>
-        <p>Health Status: ${pet.petDetails.healthStatus || 'Unknown'}</p>
-        <p>Microchip: ${pet.petDetails.microchip || 'None'}</p>
-        <div class="profile-stats">
-          <span class="stat-badge">${pet.exerciseEntries.length} exercises</span>
-          ${pet.moodLogs ? `<span class="stat-badge">${pet.moodLogs.length} moods</span>` : ''}
+      <!-- 🐕 BASIC INFO SECTION -->
+      <div class="basic-info-section">
+        <img src="${pet.petDetails.image}" alt="${pet.petDetails.name}">
+        <div class="basic-info">
+          <h4>${pet.petDetails.name}</h4>
+          <div class="basic-details">
+            <span class="detail-badge">${pet.petDetails.type ? pet.petDetails.type.charAt(0).toUpperCase() + pet.petDetails.type.slice(1) : 'Unknown'}</span>
+            <span class="detail-badge">${pet.petDetails.breed || 'Mixed'}</span>
+            <span class="detail-badge">${pet.petDetails.age || '?'} yrs</span>
+            <span class="detail-badge">${pet.petDetails.gender || 'Unknown'}</span>
+          </div>
         </div>
       </div>
+
+      <!-- ⚕️ MEDICAL BADGES SECTION -->
+      <div class="medical-badges">
+        ${pet.petDetails.healthStatus ? `<span class="medical-badge health-${pet.petDetails.healthStatus}">${pet.petDetails.healthStatus}</span>` : ''}
+        ${hasVaccinations ? '<span class="medical-badge vaccine">💉 Vaccinated</span>' : ''}
+        ${hasMedications ? '<span class="medical-badge medication">💊 Medicated</span>' : ''}
+        ${pet.petDetails.microchip ? '<span class="medical-badge microchip">🔍 Microchipped</span>' : ''}
+      </div>
+
+      <!-- 📊 EXERCISE STATS SECTION -->
+      <div class="exercise-stats-section">
+        <div class="exercise-stat">
+          <div class="stat-number">${totalSessions}</div>
+          <div class="stat-label">Sessions</div>
+        </div>
+        <div class="exercise-stat">
+          <div class="stat-number">${avgDuration}m</div>
+          <div class="stat-label">Avg Duration</div>
+        </div>
+        <div class="exercise-stat">
+          <div class="stat-number">${totalCalories}</div>
+          <div class="stat-label">Total Calories</div>
+        </div>
+      </div>
+
+      <!-- 😊 MOOD SECTION -->
+      <div class="mood-section">
+        <h5>😊 Recent Mood</h5>
+        ${pet.moodLogs && pet.moodLogs.length > 0 ? 
+          pet.moodLogs.slice(-3).map(log => {
+            const mood = MOOD_OPTIONS.find(m => m.value === log.mood) || MOOD_OPTIONS[0];
+            return `
+              <div class="mood-entry-small">
+                <span class="mood-emoji-small">${mood.emoji}</span>
+                <span class="mood-date-small">${formatDate(log.date)}</span>
+              </div>
+            `;
+          }).join('') : 
+          '<p class="no-moods">No mood entries</p>'
+        }
+      </div>
+
+      <!-- 📅 CALENDAR SECTION -->
+      <div class="calendar-section">
+        <h5>📅 Exercise Calendar</h5>
+        <div class="mini-calendar" id="mini-calendar-${index}">
+          ${generateMiniCalendar(pet.exerciseEntries || [])}
+        </div>
+      </div>
+
+      <!-- 🏃‍♂️ QUICK STATS SECTION -->
+      <div class="quick-stats-section">
+        <div class="quick-stat">
+          <span class="quick-stat-icon">⏱️</span>
+          <span class="quick-stat-value">${totalDuration}m</span>
+        </div>
+        <div class="quick-stat">
+          <span class="quick-stat-icon">🔥</span>
+          <span class="quick-stat-value">${totalCalories}</span>
+        </div>
+        <div class="quick-stat">
+          <span class="quick-stat-icon">📈</span>
+          <span class="quick-stat-value">${totalSessions}</span>
+        </div>
+      </div>
+
+      <!-- ACTION BUTTONS -->
       <div class="profile-actions">
         <button class="select-btn" data-index="${index}" title="Select this pet">
           ${index === activePetIndex ? '✅ Selected' : '👉 Select'}
@@ -335,40 +409,8 @@ function loadSavedProfiles() {
           📤 Share
         </button>
       </div>
-        <!-- ADD THIS MOOD SECTION -->
-  <div class="mood-section">
-    <h5>😊 Mood Log</h5>
-    ${pet.moodLogs && pet.moodLogs.length > 0 ? 
-      pet.moodLogs.slice(-5).map(log => {
-        const mood = MOOD_OPTIONS.find(m => m.value === log.mood) || MOOD_OPTIONS[0];
-        return `
-          <div class="mood-entry-small">
-            <span class="mood-emoji-small">${mood.emoji}</span>
-            <span class="mood-date-small">${formatDate(log.date)}</span>
-          </div>
-        `;
-      }).join('') : 
-      '<p class="no-moods">No mood entries yet</p>'
-    }
-  </div>
-  
-    <!-- ADD THIS CALENDAR SECTION -->
-  <div class="calendar-section">
-    <h5>📅 Exercise Calendar</h5>
-    <div class="mini-calendar" id="mini-calendar-${index}">
-      ${generateMiniCalendar(pet.exerciseEntries || [])}
     </div>
-  </div>
-    <!-- ADD THIS CHARTS SECTION -->
-  <div class="charts-section">
-    <h5>📊 Exercise Charts</h5>
-    <div class="mini-charts">
-      ${generateMiniCharts(pet.exerciseEntries || [])}
-    </div>
-  </div>
-  
-    </div>
-  `).join('');
+  `}).join('');
 
   document.getElementById('savedProfiles').innerHTML = profilesHTML;
   
