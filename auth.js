@@ -126,7 +126,7 @@ function logout() {
     // Hide dashboard, show auth forms
     document.querySelector('.dashboard-container').style.display = 'none';
     document.getElementById('auth-container').style.display = 'block';
-    document.getElementById('lottie-banner').style.display = 'block';
+    document.getElementById('main-banner').style.display = 'block';
     
     // Show sign-in form specifically
     document.getElementById('signinForm').style.display = 'block';
