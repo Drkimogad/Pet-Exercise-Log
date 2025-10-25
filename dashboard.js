@@ -255,8 +255,17 @@ function handleFormSubmit(e) {
         }
 
         // Handle mood data - CUMULATIVE UPDATES
-        petData = saveTemporaryMoodData(petData);
-        console.log('😊 Mood data processed. Total mood entries:', petData.moodLogs ? petData.moodLogs.length : 0);
+// In handleFormSubmit(), right before calling saveTemporaryMoodData:
+console.log('🔍 MOOD DEBUG - Before saveTemporaryMoodData:');
+console.log(' - activePetIndex:', activePetIndex);
+console.log(' - window.tempMoodLogs:', window.tempMoodLogs);
+console.log(' - petData.moodLogs (before):', petData.moodLogs);
+
+petData = saveTemporaryMoodData(petData);
+
+console.log('🔍 MOOD DEBUG - After saveTemporaryMoodData:');
+console.log(' - petData.moodLogs (after):', petData.moodLogs);
+     console.log('😊 Mood data processed. Total mood entries:', petData.moodLogs ? petData.moodLogs.length : 0);
 
         // Handle temporary exercise data
         petData = saveTemporaryExerciseData(petData);
@@ -477,6 +486,10 @@ function loadSavedProfiles() {
     }
     
     const profilesHTML = pets.map((pet, index) => {
+     // In loadSavedProfiles(), inside the pets.map(), add:
+console.log(`🔍 MOOD DEBUG - Loading profile ${index}: ${pet.petDetails.name}`);
+console.log(' - pet.moodLogs:', pet.moodLogs);
+console.log(' - moodLogs length:', pet.moodLogs ? pet.moodLogs.length : 0);
         // Calculate exercise stats
         const totalSessions = pet.exerciseEntries.length;
         const totalDuration = pet.exerciseEntries.reduce((sum, entry) => sum + entry.duration, 0);
@@ -529,20 +542,21 @@ function loadSavedProfiles() {
 
       <!-- 😊 MOOD SECTION -->
       <div class="mood-section">
-        <h5>😊 Recent Mood</h5>
-        ${pet.moodLogs && pet.moodLogs.length > 0 ? 
-          pet.moodLogs.slice(-3).map(log => {
+    <h5>😊 Recent Mood</h5>
+    ${pet.moodLogs && pet.moodLogs.length > 0 ? 
+        pet.moodLogs.slice(-3).map(log => {
             const mood = MOOD_OPTIONS.find(m => m.value === log.mood) || MOOD_OPTIONS[0];
             return `
-              <div class="mood-entry-small">
-                <span class="mood-emoji-small">${mood.emoji}</span>
-                <span class="mood-date-small">${formatDate(log.date)}</span>
-              </div>
+                <div class="mood-entry-small">
+                    <span class="mood-emoji-small">${mood.emoji}</span>
+                    <span class="mood-date-small">${formatDate(log.date)}</span>
+                </div>
             `;
-          }).join('') : 
-          '<p class="no-moods">No mood entries</p>'
-        }
-      </div>
+        }).join('') : 
+        '<p class="no-moods">No mood entries</p>'
+    }
+</div>
+
 
       <!-- 📅 CALENDAR SECTION -->
       <div class="calendar-section">
@@ -611,7 +625,8 @@ function updateDashboard(petData) {
     if (petData.moodLogs && petData.moodLogs.length > 0) {
         updateMoodTracker(petData.moodLogs);
     } else {
-        initializeEmptyMoodTracker();
+       // initializeEmptyMoodTracker();
+         initializeMoodTracker(); // ← CALL YOUR EXISTING FUNCTION
     }
     
     // Update charts with exercise data
@@ -1404,17 +1419,68 @@ function updateMoodUI(selectedBtn, moodLogs) {
 }
 
 // ===============================================
-// Save temporary mood data to pet profile (call this on form submit)
+// Save temporary mood data to pet profile - ENHANCED
+// We need to ensure both new and existing profile moods are properly saved.
 // ===============================================
 function saveTemporaryMoodData(petData) {
+    console.log('💾 Saving mood data to pet profile...');
+    
+    // Initialize moodLogs array if it doesn't exist
+    petData.moodLogs = petData.moodLogs || [];
+    
+    // Handle temporary mood logs (new profiles)
     if (window.tempMoodLogs && window.tempMoodLogs.length > 0) {
-        petData.moodLogs = window.tempMoodLogs;
-        console.log('Temporary mood data saved to pet profile:', petData.moodLogs);
+        console.log('📥 Adding temporary mood logs:', window.tempMoodLogs);
+        
+        // Merge temporary logs with existing, avoiding duplicates
+        window.tempMoodLogs.forEach(tempLog => {
+            const existingIndex = petData.moodLogs.findIndex(log => log.date === tempLog.date);
+            if (existingIndex !== -1) {
+                // Update existing entry
+                petData.moodLogs[existingIndex] = tempLog;
+            } else {
+                // Add new entry
+                petData.moodLogs.push(tempLog);
+            }
+        });
+        
         // Clear temporary storage
         window.tempMoodLogs = [];
     }
+    
+    // For existing profiles, ensure any mood selections made in the form are preserved
+    // This handles the case where users select moods in edit mode without using temp storage
+    const moodContainer = document.getElementById('moodTracker');
+    if (moodContainer && activePetIndex !== null) {
+        const selectedMoodBtn = moodContainer.querySelector('.emoji-btn.selected');
+        if (selectedMoodBtn) {
+            const moodValue = parseInt(selectedMoodBtn.dataset.mood);
+            const date = selectedMoodBtn.dataset.date;
+            
+            console.log('📥 Adding current form mood selection:', { moodValue, date });
+            
+            // Add or update this mood entry
+            const existingIndex = petData.moodLogs.findIndex(log => log.date === date);
+            const moodEntry = { 
+                date: date, 
+                mood: moodValue,
+                timestamp: new Date().toISOString()
+            };
+            
+            if (existingIndex !== -1) {
+                petData.moodLogs[existingIndex] = moodEntry;
+            } else {
+                petData.moodLogs.push(moodEntry);
+            }
+        }
+    }
+    
+    // Sort mood logs by date (newest first)
+    petData.moodLogs.sort((a, b) => new Date(b.date) - new Date(a.date));
+    
+    console.log('✅ Final mood data:', petData.moodLogs);
     return petData;
-} 
+}
     
 
 
