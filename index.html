@@ -113,52 +113,53 @@
 
 <!-- Templates (hidden) -->
 <div style="display: none;">
-    <!-- Profile Form Template -->
-    <div id="profileFormTemplate">
-        <form id="completeProfileForm" class="profile-form">
-            <!-- Pet Details Section -->
-            <section class="form-section" id="petDetailsSection">
-                <h3>Pet Information</h3>
+    
+<!-- Profile Form Template -->
+<div id="profileFormTemplate">
+    <form id="completeProfileForm" class="profile-form">
+        
+        <!-- Section 1: Basic Information -->
+        <section class="form-section" id="basicInfoSection">
+            <h3>🐕 Basic Information</h3>
+            
+            <div class="form-group">
+                <label for="petType">Pet Type *</label>
+                <select id="petType" required>
+                    <option value="">Select Type</option>
+                    <option value="dog">Dog</option>
+                    <option value="cat">Cat</option>
+                    <option value="bird">Bird</option>
+                    <option value="rabbit">Rabbit</option>
+                    <option value="hamster">Hamster</option>
+                    <option value="reptile">Reptile</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="petName">Name *</label>
+                <input type="text" id="petName" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Image</label>
+                <div class="image-upload">
+                    <input type="file" id="petImage" accept="image/*">
+                    <img id="petImagePreview" src="https://drkimogad.github.io/Pet-Exercise-Log/images/default-pet.png" alt="Pet Preview">
+                </div>
+            </div>
+
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="petAge">Age (years)</label>
+                    <input type="number" id="petAge" min="0" step="0.1">
+                </div>
                 
                 <div class="form-group">
-                    <label for="petType">Pet Type *</label>
-                    <select id="petType" required>
-                        <option value="">Select Type</option>
-                        <option value="dog">Dog</option>
-                        <option value="cat">Cat</option>
-                        <option value="bird">Bird</option>
-                        <option value="rabbit">Rabbit</option>
-                        <option value="hamster">Hamster</option>
-                        <option value="reptile">Reptile</option>
-                        <option value="other">Other</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label for="petName">Name *</label>
-                    <input type="text" id="petName" required>
+                    <label for="petWeight">Weight (lbs or kg)</label>
+                    <input type="number" id="petWeight" min="0" step="0.1">
                 </div>
                 
-                <div class="form-group">
-                    <label>Image</label>
-                    <div class="image-upload">
-                        <input type="file" id="petImage" accept="image/*">
-                        <img id="petImagePreview" src="https://drkimogad.github.io/Pet-Exercise-Log/images/default-pet.png" alt="Pet Preview">
-                    </div>
-                </div>
-
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label for="petAge">Age (years)</label>
-                        <input type="number" id="petAge" min="0" step="0.1">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="petWeight">Weight (lbs or kg)</label>
-                        <input type="number" id="petWeight" min="0" step="0.1">
-                    </div>
-                </div>
-
                 <div class="form-group">
                     <label for="petBreed">Breed</label>
                     <input type="text" id="petBreed" placeholder="e.g., Labrador, Siamese">
@@ -173,15 +174,12 @@
                         <option value="unknown">Unknown</option>
                     </select>
                 </div>
+            </div>
 
+            <div class="form-grid">
                 <div class="form-group">
                     <label for="petColor">Color/Markings</label>
                     <input type="text" id="petColor" placeholder="e.g., Black with white paws">
-                </div>
-
-                <div class="form-group">
-                    <label for="petMicrochip">Microchip ID</label>
-                    <input type="text" id="petMicrochip" placeholder="15-digit microchip number">
                 </div>
 
                 <div class="form-group">
@@ -193,6 +191,18 @@
                         <option value="high">High</option>
                         <option value="very high">Very High</option>
                     </select>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: Medical & Vital Information -->
+        <section class="form-section" id="medicalSection">
+            <h3>⚕️ Medical & Vital Information</h3>
+
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="petMicrochip">Microchip ID</label>
+                    <input type="text" id="petMicrochip" placeholder="15-digit microchip number">
                 </div>
 
                 <div class="form-group">
@@ -206,41 +216,70 @@
                         <option value="under treatment">Under Treatment</option>
                     </select>
                 </div>
+            </div>
 
-                <div class="form-group">
-                    <label for="petVetInfo">Veterinarian Information</label>
-                    <textarea id="petVetInfo" rows="2" placeholder="Vet name, clinic, and contact info"></textarea>
-                </div>
+            <div class="form-group">
+                <label for="petVetInfo">Veterinarian Information</label>
+                <textarea id="petVetInfo" rows="2" placeholder="Vet name, clinic, and contact info"></textarea>
+            </div>
 
-                <div class="form-group">
-                    <label for="petVaccinations">Vaccination Records</label>
-                    <textarea id="petVaccinations" rows="2" placeholder="Vaccination types and dates"></textarea>
-                </div>
+            <div class="form-group">
+                <label for="petVaccinations">Vaccination Records</label>
+                <textarea id="petVaccinations" rows="2" placeholder="Vaccination types and dates"></textarea>
+            </div>
 
-                <div class="form-group">
-                    <label for="petMedications">Medications</label>
-                    <textarea id="petMedications" rows="2" placeholder="Current medications and dosage"></textarea>
-                </div>
+            <div class="form-group">
+                <label for="petMedications">Medications</label>
+                <textarea id="petMedications" rows="2" placeholder="Current medications and dosage"></textarea>
+            </div>
 
-                <div class="form-group">
-                    <label for="petAllergies">Allergies/Sensitivities</label>
-                    <textarea id="petAllergies" rows="2" placeholder="Food, environmental, or medication allergies"></textarea>
-                </div>
+            <div class="form-group">
+                <label for="petAllergies">Allergies/Sensitivities</label>
+                <textarea id="petAllergies" rows="2" placeholder="Food, environmental, or medication allergies"></textarea>
+            </div>
+        </section>
 
-                <div class="form-group">
-                    <label for="petDiet">Diet & Feeding Schedule</label>
-                    <textarea id="petDiet" rows="2" placeholder="What, how much, and when they eat"></textarea>
-                </div>
+        <!-- Section 3: Lifestyle & Behavior -->
+        <section class="form-section" id="lifestyleSection">
+            <h3>🏃‍♂️ Lifestyle & Behavior</h3>
 
-                <div class="form-group">
-                    <label for="petBehavior">Temperament & Behavior</label>
-                    <textarea id="petBehavior" rows="2" placeholder="General behavior, training, socialization"></textarea>
-                </div>
+            <div class="form-group">
+                <label for="petDiet">Diet & Feeding Schedule</label>
+                <textarea id="petDiet" rows="2" placeholder="What, how much, and when they eat"></textarea>
+            </div>
 
+            <div class="form-group">
+                <label for="petBehavior">Temperament & Behavior</label>
+                <textarea id="petBehavior" rows="2" placeholder="General behavior, training, socialization"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="petFavoriteExercise">Favorite Exercise/Activity</label>
+                <select id="petFavoriteExercise">
+                    <option value="">Select Favorite</option>
+                    <option value="walking">Walking</option>
+                    <option value="running">Running</option>
+                    <option value="swimming">Swimming</option>
+                    <option value="playing">Playing</option>
+                    <option value="fetch">Fetch</option>
+                    <option value="agility">Agility</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="petNotes">Additional Notes</label>
+                <textarea id="petNotes" rows="3" placeholder="Any other important information"></textarea>
+            </div>
+        </section>
+
+        <!-- Section 4: Exercise Logging (Keep as is) -->
+        <section class="form-section" id="exerciseSection">
+            <h3>📊 Exercise Logging</h3>
+            
+            <div class="form-grid">
                 <div class="form-group">
-                    <label for="petFavoriteExercise">Favorite Exercise/Activity</label>
-                    <select id="petFavoriteExercise">
-                        <option value="">Select Favorite</option>
+                    <label for="exerciseType">Type *</label>
+                    <select id="exerciseType" required>
                         <option value="walking">Walking</option>
                         <option value="running">Running</option>
                         <option value="swimming">Swimming</option>
@@ -249,65 +288,42 @@
                         <option value="agility">Agility</option>
                     </select>
                 </div>
-
                 <div class="form-group">
-                    <label for="petNotes">Additional Notes</label>
-                    <textarea id="petNotes" rows="3" placeholder="Any other important information"></textarea>
+                    <label for="exerciseDuration">Duration (min) *</label>
+                    <input type="number" id="exerciseDuration" min="1" required>
                 </div>
-            </section>
-
-            <!-- Exercise Entry Section -->
-            <section class="form-section" id="exerciseSection">
-                <h3>Exercise Information</h3>
-                
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label for="exerciseType">Type *</label>
-                        <select id="exerciseType" required>
-                            <option value="walking">Walking</option>
-                            <option value="running">Running</option>
-                            <option value="swimming">Swimming</option>
-                            <option value="playing">Playing</option>
-                            <option value="fetch">Fetch</option>
-                            <option value="agility">Agility</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="exerciseDuration">Duration (min) *</label>
-                        <input type="number" id="exerciseDuration" min="1" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="exerciseDate">Date *</label>
-                        <input type="date" id="exerciseDate" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="caloriesBurned">Calories Burned *</label>
-                        <input type="number" id="caloriesBurned" min="1" required>
-                    </div>
-                </div>
-                
                 <div class="form-group">
-                    <label for="exerciseIntensity">Intensity Level</label>
-                    <select id="exerciseIntensity">
-                        <option value="low">Low</option>
-                        <option value="medium" selected>Medium</option>
-                        <option value="high">High</option>
-                    </select>
+                    <label for="exerciseDate">Date *</label>
+                    <input type="date" id="exerciseDate" required>
                 </div>
-                
                 <div class="form-group">
-                    <label for="exerciseNotes">Exercise Notes</label>
-                    <textarea id="exerciseNotes" rows="2" placeholder="Weather conditions, route, behavior during exercise"></textarea>
+                    <label for="caloriesBurned">Calories Burned *</label>
+                    <input type="number" id="caloriesBurned" min="1" required>
                 </div>
-            </section>
-
-            <!-- Action Button -->
-            <div class="form-actions">
-                <button type="submit" id="saveProfileButton" class="primary-btn">Create Profile</button>
-                <button type="button" id="cancelButton" class="secondary-btn">Cancel</button>
             </div>
-        </form>
-    </div>
+            
+            <div class="form-group">
+                <label for="exerciseIntensity">Intensity Level</label>
+                <select id="exerciseIntensity">
+                    <option value="low">Low</option>
+                    <option value="medium" selected>Medium</option>
+                    <option value="high">High</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="exerciseNotes">Exercise Notes</label>
+                <textarea id="exerciseNotes" rows="2" placeholder="Weather conditions, route, behavior during exercise"></textarea>
+            </div>
+        </section>
+
+        <!-- Action Buttons -->
+        <div class="form-actions">
+            <button type="submit" id="saveProfileButton" class="primary-btn">Create Profile</button>
+            <button type="button" id="cancelButton" class="secondary-btn">Cancel</button>
+        </div>
+    </form>
+ </div>
 </div>
 
 
