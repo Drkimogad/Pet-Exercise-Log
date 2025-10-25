@@ -569,49 +569,390 @@ function selectPetProfile(index) {
 }
 
 //===========================================
-  // EDIT PROFILE FUNCTION
-//=========================
-function editPetProfile(index) {
-  activePetIndex = index;
-  sessionStorage.setItem('activePetIndex', activePetIndex);
+// ENHANCED WITH COMPLETE DATA POPULATION
 
-  // Load the pet data into the form
-  const pet = getPets()[index];
-  if (pet) {
-    AppHelper.refreshComponent('petFormContainer');
+// 1.EDIT PET PROFILE 
+// ===============================================
+function editPetProfile(index) {  
+    console.log('🔄 editPetProfile called for index:', index);
     
-    // Fill form fields with existing data (you may need to add this functionality)
-    setTimeout(() => {
-      if (document.getElementById('petName')) {
-        document.getElementById('petName').value = pet.petDetails.name || '';
-        document.getElementById('petType').value = pet.petDetails.type || '';
-        document.getElementById('petAge').value = pet.petDetails.age || '';
-        document.getElementById('petWeight').value = pet.petDetails.weight || '';
-        document.getElementById('petBreed').value = pet.petDetails.breed || '';
-        document.getElementById('petGender').value = pet.petDetails.gender || '';
-        document.getElementById('petColor').value = pet.petDetails.color || '';
-        document.getElementById('petCharacteristics').value = pet.petDetails.characteristics || '';
-        document.getElementById('petDiet').value = pet.petDetails.diet || '';
-        document.getElementById('petHealthStatus').value = pet.petDetails.healthStatus || '';
-        document.getElementById('petAllergies').value = pet.petDetails.allergies || '';
-        document.getElementById('petBehavior').value = pet.petDetails.behavior || '';
-        document.getElementById('petFavoriteExercise').value = pet.petDetails.favoriteExercise || '';
-        document.getElementById('petNotes').value = pet.petDetails.notes || '';
-        document.getElementById('petMicrochip').value = pet.petDetails.microchip || '';
-        document.getElementById('petEnergyLevel').value = pet.petDetails.energyLevel || '';
-        document.getElementById('petHealthStatus').value = pet.petDetails.healthStatus || '';
-        document.getElementById('petVetInfo').value = pet.petDetails.vetInfo || '';
-        document.getElementById('petVaccinations').value = pet.petDetails.vaccinations || '';
-        document.getElementById('petMedications').value = pet.petDetails.medications || '';
-        document.getElementById('petAllergies').value = pet.petDetails.allergies || '';
-        
-        if (pet.petDetails.image && document.getElementById('petImagePreview')) {
-          document.getElementById('petImagePreview').src = pet.petDetails.image;
+    try {
+        // Validate input
+        if (index === undefined || index === null) {
+            throw new Error('Invalid pet index provided');
         }
-      }
-    }, 100);
-  }
+
+        const pets = getPets();
+        if (!pets[index]) {
+            throw new Error(`Pet not found at index: ${index}`);
+        }
+
+        const pet = pets[index];
+        console.log('📝 Loading pet data:', pet.petDetails.name);
+        
+        // Set active pet and store in session
+        activePetIndex = index;
+        sessionStorage.setItem('activePetIndex', activePetIndex);
+
+        // Show the form container
+        document.getElementById('savedProfiles').style.display = 'none';
+        document.getElementById('profileContainer').style.display = 'block';
+        
+        // Load the form template
+        const template = document.getElementById('profileFormTemplate');
+        if (!template) {
+            throw new Error('Profile form template not found');
+        }
+        
+        document.getElementById('profileContainer').innerHTML = template.innerHTML;
+        
+        // Populate form fields with a small delay to ensure DOM is ready
+        setTimeout(() => populateFormFields(pet), 50);
+        
+        // Update form for edit mode
+        setupEditModeForm();
+        
+        console.log('✅ Edit form initialized successfully');
+        
+    } catch (error) {
+        console.error('❌ Error in editPetProfile:', error);
+        AppHelper.showError(`Failed to load pet profile: ${error.message}`);
+        // Return to dashboard on error
+        document.getElementById('savedProfiles').style.display = 'block';
+        document.getElementById('profileContainer').style.display = 'none';
+    }
 }
+
+// 2.POPULATE FORM FIELDS - COMPREHENSIVE DATA LOADING
+function populateFormFields(pet) {  
+    console.log('🔄 populateFormFields called for:', pet.petDetails.name);
+    
+    const fieldMappings = {
+        // Basic Information
+        'petType': pet.petDetails.type,
+        'petName': pet.petDetails.name,
+        'petAge': pet.petDetails.age,
+        'petWeight': pet.petDetails.weight,
+        'petBreed': pet.petDetails.breed,
+        'petGender': pet.petDetails.gender,
+        'petColor': pet.petDetails.color,
+        'petEnergyLevel': pet.petDetails.energyLevel,
+        
+        // Medical Information
+        'petHealthStatus': pet.petDetails.healthStatus,
+        'petMicrochip': pet.petDetails.microchip,
+        'petVetInfo': pet.petDetails.vetInfo,
+        'petVaccinations': pet.petDetails.vaccinations,
+        'petMedications': pet.petDetails.medications,
+        'petAllergies': pet.petDetails.allergies,
+        
+        // Lifestyle & Behavior
+        'petDiet': pet.petDetails.diet,
+        'petBehavior': pet.petDetails.behavior,
+        'petFavoriteExercise': pet.petDetails.favoriteExercise,
+        'petNotes': pet.petDetails.notes,
+        
+        // Exercise Information (latest entry or empty)
+        'exerciseType': pet.exerciseEntries.length > 0 ? pet.exerciseEntries[pet.exerciseEntries.length - 1].exerciseType : 'walking',
+        'exerciseDuration': pet.exerciseEntries.length > 0 ? pet.exerciseEntries[pet.exerciseEntries.length - 1].duration : '',
+        'exerciseDate': pet.exerciseEntries.length > 0 ? pet.exerciseEntries[pet.exerciseEntries.length - 1].date : new Date().toISOString().split('T')[0],
+        'caloriesBurned': pet.exerciseEntries.length > 0 ? pet.exerciseEntries[pet.exerciseEntries.length - 1].caloriesBurned : '',
+        'exerciseIntensity': pet.exerciseEntries.length > 0 ? pet.exerciseEntries[pet.exerciseEntries.length - 1].intensity : 'medium',
+        'exerciseNotes': pet.exerciseEntries.length > 0 ? pet.exerciseEntries[pet.exerciseEntries.length - 1].notes : ''
+    };
+
+    let populatedCount = 0;
+    let errorCount = 0;
+
+    // Populate each field
+    Object.entries(fieldMappings).forEach(([fieldId, value]) => {
+        try {
+            const element = document.getElementById(fieldId);
+            if (element) {
+                if (element.type === 'select-one') {
+                    element.value = value || '';
+                } else if (element.type === 'textarea') {
+                    element.value = value || '';
+                } else {
+                    element.value = value || '';
+                }
+                populatedCount++;
+            } else {
+                console.warn(`⚠️ Form field not found: ${fieldId}`);
+                errorCount++;
+            }
+        } catch (fieldError) {
+            console.error(`❌ Error populating field ${fieldId}:`, fieldError);
+            errorCount++;
+        }
+    });
+
+    // Handle image preview
+    try {
+        const imagePreview = document.getElementById('petImagePreview');
+        if (imagePreview && pet.petDetails.image) {
+            imagePreview.src = pet.petDetails.image;
+        }
+    } catch (imageError) {
+        console.error('❌ Error setting image preview:', imageError);
+    }
+
+    console.log(`✅ Form population complete: ${populatedCount} fields populated, ${errorCount} errors`);
+}
+
+// 3.SETUP EDIT MODE FORM - UPDATE UI FOR EDITING
+function setupEditModeForm() {   
+    console.log('🔄 Setting up edit mode form');
+    
+    try {
+        // Update form title and button text
+        const saveButton = document.getElementById('saveProfileButton');
+        if (saveButton) {
+            saveButton.textContent = 'Update Profile';
+            saveButton.innerHTML = '💾 Update Profile'; // With icon for better UX
+        }
+
+        // Set up form submission handler
+        const form = document.getElementById('completeProfileForm');
+        if (form) {
+            // Remove any existing listeners to prevent duplicates
+            form.replaceWith(form.cloneNode(true));
+            // Re-get the form after clone
+            const newForm = document.getElementById('completeProfileForm');
+            newForm.addEventListener('submit', handleFormSubmit);
+        }
+
+        // Set up enhanced cancel button
+        const cancelButton = document.getElementById('cancelButton');
+        if (cancelButton) {
+            cancelButton.innerHTML = '❌ Cancel Edit';
+            cancelButton.addEventListener('click', cancelEdit);
+        }
+
+        // Set up image upload handler
+        const imageInput = document.getElementById('petImage');
+        if (imageInput) {
+            imageInput.addEventListener('change', handleImageUpload);
+        }
+
+        console.log('✅ Edit mode form setup complete');
+        
+    } catch (error) {
+        console.error('❌ Error setting up edit mode form:', error);
+        throw error; // Re-throw to be handled by caller
+    }
+}
+
+//============================================================
+// UNIFIED CANCELLATION WITH CONFIRMATION
+
+// 1.CANCEL EDIT -
+// ===============================================
+function cancelEdit() {
+    console.log('🔄 cancelEdit called');
+    
+    try {
+        // Check if form has unsaved changes
+        if (hasUnsavedChanges()) {
+            const confirmCancel = confirm(
+                '⚠️ You have unsaved changes!\n\nAre you sure you want to cancel? Your changes will be lost.'
+            );
+            
+            if (!confirmCancel) {
+                console.log('🚫 Cancel operation aborted by user');
+                return; // User chose to stay in edit mode
+            }
+        }
+
+        // Perform cancellation
+        performCancellation();
+        
+    } catch (error) {
+        console.error('❌ Error in cancelEdit:', error);
+        // Fallback: force return to dashboard even on error
+        forceReturnToDashboard();
+    }
+}
+
+// ===============================================
+// 2.CHECK FOR UNSAVED CHANGES
+// ===============================================
+function hasUnsavedChanges() {
+    console.log('🔍 Checking for unsaved changes...');
+    
+    try {
+        // If we're creating a new profile (no active pet), check if form has any data
+        if (activePetIndex === null) {
+            const petName = document.getElementById('petName')?.value.trim();
+            const petType = document.getElementById('petType')?.value;
+            return !!(petName || petType); // Return true if any data exists
+        }
+        
+        // If we're editing an existing profile, compare with original data
+        const pets = getPets();
+        const originalPet = pets[activePetIndex];
+        if (!originalPet) return false;
+
+        const currentFormData = getCurrentFormData();
+        return hasFormDataChanged(originalPet, currentFormData);
+        
+    } catch (error) {
+        console.error('❌ Error checking unsaved changes:', error);
+        return false; // Default to no changes on error
+    }
+}
+
+// ===============================================
+// 3.GET CURRENT FORM DATA FOR COMPARISON
+// ===============================================
+function getCurrentFormData() {
+    const formData = {
+        // Basic Information
+        type: document.getElementById('petType')?.value || '',
+        name: document.getElementById('petName')?.value.trim() || '',
+        age: document.getElementById('petAge')?.value || '',
+        weight: document.getElementById('petWeight')?.value || '',
+        breed: document.getElementById('petBreed')?.value.trim() || '',
+        gender: document.getElementById('petGender')?.value || '',
+        color: document.getElementById('petColor')?.value.trim() || '',
+        energyLevel: document.getElementById('petEnergyLevel')?.value || '',
+        
+        // Medical Information
+        healthStatus: document.getElementById('petHealthStatus')?.value || '',
+        microchip: document.getElementById('petMicrochip')?.value.trim() || '',
+        vetInfo: document.getElementById('petVetInfo')?.value.trim() || '',
+        vaccinations: document.getElementById('petVaccinations')?.value.trim() || '',
+        medications: document.getElementById('petMedications')?.value.trim() || '',
+        allergies: document.getElementById('petAllergies')?.value.trim() || '',
+        
+        // Lifestyle & Behavior
+        diet: document.getElementById('petDiet')?.value.trim() || '',
+        behavior: document.getElementById('petBehavior')?.value.trim() || '',
+        favoriteExercise: document.getElementById('petFavoriteExercise')?.value || '',
+        notes: document.getElementById('petNotes')?.value.trim() || '',
+        
+        // Image (simplified check)
+        image: document.getElementById('petImagePreview')?.src || ''
+    };
+    
+    return formData;
+}
+
+// ===============================================
+// 4.COMPARE FORM DATA WITH ORIGINAL
+// ===============================================
+function hasFormDataChanged(originalPet, currentFormData) {
+    const originalDetails = originalPet.petDetails;
+    
+    // Compare each field
+    const changes = [
+        originalDetails.type !== currentFormData.type,
+        originalDetails.name !== currentFormData.name,
+        originalDetails.age !== currentFormData.age,
+        originalDetails.weight !== currentFormData.weight,
+        originalDetails.breed !== currentFormData.breed,
+        originalDetails.gender !== currentFormData.gender,
+        originalDetails.color !== currentFormData.color,
+        originalDetails.energyLevel !== currentFormData.energyLevel,
+        originalDetails.healthStatus !== currentFormData.healthStatus,
+        originalDetails.microchip !== currentFormData.microchip,
+        originalDetails.vetInfo !== currentFormData.vetInfo,
+        originalDetails.vaccinations !== currentFormData.vaccinations,
+        originalDetails.medications !== currentFormData.medications,
+        originalDetails.allergies !== currentFormData.allergies,
+        originalDetails.diet !== currentFormData.diet,
+        originalDetails.behavior !== currentFormData.behavior,
+        originalDetails.favoriteExercise !== currentFormData.favoriteExercise,
+        originalDetails.notes !== currentFormData.notes,
+        // Image comparison (simplified - just check if different from default)
+        currentFormData.image !== 'https://drkimogad.github.io/Pet-Exercise-Log/images/default-pet.png' && 
+        currentFormData.image !== originalDetails.image
+    ];
+    
+    const hasChanges = changes.some(change => change === true);
+    console.log('📊 Form change detection:', hasChanges ? 'Changes found' : 'No changes');
+    
+    return hasChanges;
+}
+
+// ===============================================
+// 5.PERFORM CANCELLATION - CLEAN RETURN TO DASHBOARD
+// ===============================================
+function performCancellation() {
+    console.log('🔄 Performing cancellation...');
+    
+    try {
+        // Clear any temporary data
+        clearTemporaryData();
+        
+        // Reset active pet index if we were creating new
+        if (activePetIndex === null) {
+            console.log('🧹 Clearing new profile session data');
+            sessionStorage.removeItem('activePetIndex');
+        }
+        
+        // Return to dashboard view
+        document.getElementById('savedProfiles').style.display = 'block';
+        document.getElementById('profileContainer').style.display = 'none';
+        document.getElementById('profileContainer').innerHTML = '';
+        
+        // Refresh the profiles to ensure current data is shown
+        loadSavedProfiles();
+        
+        console.log('✅ Cancellation completed successfully');
+        showSuccess('Edit cancelled'); // Optional: show confirmation message
+        
+    } catch (error) {
+        console.error('❌ Error during cancellation:', error);
+        throw error; // Re-throw to be handled by caller
+    }
+}
+
+// ===============================================
+// 6.CLEAR TEMPORARY DATA
+// ===============================================
+function clearTemporaryData() {
+    console.log('🧹 Clearing temporary data...');
+    
+    try {
+        // Clear any temporary exercise entries
+        if (window.tempExerciseEntries) {
+            window.tempExerciseEntries = [];
+        }
+        
+        // Clear any temporary mood logs
+        if (window.tempMoodLogs) {
+            window.tempMoodLogs = [];
+        }
+        
+        console.log('✅ Temporary data cleared');
+        
+    } catch (error) {
+        console.error('❌ Error clearing temporary data:', error);
+    }
+}
+
+// ===============================================
+// 7.FORCE RETURN TO DASHBOARD (ERROR FALLBACK)
+// ===============================================
+function forceReturnToDashboard() {
+    console.warn('🚨 Force returning to dashboard due to error');
+    
+    // Emergency fallback - ensure we always return to a usable state
+    document.getElementById('savedProfiles').style.display = 'block';
+    document.getElementById('profileContainer').style.display = 'none';
+    document.getElementById('profileContainer').innerHTML = '';
+    
+    // Reload profiles to reset state
+    setTimeout(() => {
+        loadSavedProfiles();
+    }, 100);
+    
+    AppHelper.showError('Returned to dashboard due to an error');
+}
+
+
+
 //=========================================
      // DELETE FUNCTION 
 //====================================
