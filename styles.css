@@ -1344,3 +1344,258 @@ body:has(#auth-container:not([style*="display: none"])) footer {
     max-width: 85%;
   }
 }
+
+/* new rules for displaying calendar, mood, charts in saved petcards*/
+/* ============================================================
+    ENHANCED PROFILE CARD SECTIONS (Mood, Calendar, Charts)
+============================================================ */
+
+/* Mood Section in Profile Cards */
+.mood-section {
+  grid-area: mood;
+  background: var(--off-white);
+  border-radius: 12px;
+  padding: 1rem;
+  margin: 0.5rem 0;
+  border: 2px solid var(--primary-yellow);
+}
+
+.dark-mode .mood-section {
+  background: var(--light-charcoal);
+  border-color: var(--light-purple);
+}
+
+.mood-section h5 {
+  color: var(--dark-purple);
+  margin-bottom: 0.75rem;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.dark-mode .mood-section h5 {
+  color: var(--primary-yellow);
+}
+
+.mood-entry-small {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0;
+  border-bottom: 1px solid rgba(255, 219, 88, 0.3);
+}
+
+.mood-entry-small:last-child {
+  border-bottom: none;
+}
+
+.mood-emoji-small {
+  font-size: 1.1rem;
+  min-width: 25px;
+}
+
+.mood-date-small {
+  font-size: 0.8rem;
+  color: var(--light-charcoal);
+  flex: 1;
+}
+
+.dark-mode .mood-date-small {
+  color: var(--off-white);
+}
+
+.no-moods {
+  text-align: center;
+  color: var(--light-charcoal);
+  font-style: italic;
+  font-size: 0.9rem;
+  padding: 1rem 0;
+}
+
+.dark-mode .no-moods {
+  color: var(--off-white);
+}
+
+/* Calendar Section in Profile Cards */
+.calendar-section {
+  grid-area: calendar;
+  background: var(--off-white);
+  border-radius: 12px;
+  padding: 1rem;
+  margin: 0.5rem 0;
+  border: 2px solid var(--primary-mustard);
+}
+
+.dark-mode .calendar-section {
+  background: var(--light-charcoal);
+  border-color: var(--primary-yellow);
+}
+
+.calendar-section h5 {
+  color: var(--dark-purple);
+  margin-bottom: 0.75rem;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.dark-mode .calendar-section h5 {
+  color: var(--primary-yellow);
+}
+
+.mini-calendar {
+  font-size: 0.75rem;
+}
+
+.mini-calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+}
+
+.mini-calendar-header {
+  text-align: center;
+  font-weight: bold;
+  font-size: 0.7rem;
+  color: var(--dark-purple);
+  padding: 0.2rem;
+}
+
+.dark-mode .mini-calendar-header {
+  color: var(--primary-yellow);
+}
+
+.mini-calendar-day {
+  text-align: center;
+  padding: 0.3rem;
+  background: var(--white);
+  border-radius: 4px;
+  font-size: 0.7rem;
+  min-height: 25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  border: 1px solid rgba(255, 183, 0, 0.2);
+}
+
+.dark-mode .mini-calendar-day {
+  background: var(--dark-charcoal);
+  border-color: rgba(255, 219, 88, 0.3);
+}
+
+.mini-calendar-day.empty {
+  background: transparent;
+  border: none;
+}
+
+.mini-calendar-day.has-exercise {
+  background: var(--primary-mustard);
+  color: var(--dark-purple);
+  font-weight: bold;
+}
+
+.mini-calendar-day.today {
+  border: 2px solid var(--dark-purple);
+}
+
+.dark-mode .mini-calendar-day.today {
+  border-color: var(--primary-yellow);
+}
+
+/* Charts Section in Profile Cards */
+.charts-section {
+  grid-area: charts;
+  background: var(--off-white);
+  border-radius: 12px;
+  padding: 1rem;
+  margin: 0.5rem 0;
+  border: 2px solid var(--light-purple);
+}
+
+.dark-mode .charts-section {
+  background: var(--light-charcoal);
+  border-color: var(--primary-mustard);
+}
+
+.charts-section h5 {
+  color: var(--dark-purple);
+  margin-bottom: 0.75rem;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.dark-mode .charts-section h5 {
+  color: var(--primary-yellow);
+}
+
+.mini-charts-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+}
+
+.mini-stat {
+  text-align: center;
+  padding: 0.5rem;
+  background: var(--white);
+  border-radius: 8px;
+  border: 1px solid var(--primary-yellow);
+}
+
+.dark-mode .mini-stat {
+  background: var(--dark-charcoal);
+  border-color: var(--light-purple);
+}
+
+.mini-stat-value {
+  font-size: 1rem;
+  font-weight: bold;
+  color: var(--dark-purple);
+  margin-bottom: 0.2rem;
+}
+
+.dark-mode .mini-stat-value {
+  color: var(--primary-yellow);
+}
+
+.mini-stat-label {
+  font-size: 0.7rem;
+  color: var(--light-charcoal);
+}
+
+.dark-mode .mini-stat-label {
+  color: var(--off-white);
+}
+
+.no-charts-data {
+  text-align: center;
+  color: var(--light-charcoal);
+  font-style: italic;
+  font-size: 0.9rem;
+  padding: 1rem 0;
+}
+
+.dark-mode .no-charts-data {
+  color: var(--off-white);
+}
+
+/* Update Profile Card Grid to Include New Sections */
+.profile-card {
+  grid-template-areas: 
+    "image image"
+    "header header"
+    "info info"
+    "mood mood"
+    "calendar calendar"
+    "charts charts"
+    "actions actions";
+  grid-template-rows: auto auto 1fr auto auto auto auto;
+}
+
+
+
