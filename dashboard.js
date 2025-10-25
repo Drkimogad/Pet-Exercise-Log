@@ -105,6 +105,8 @@ function showCreateProfile() {
     console.log('Template innerHTML length:', template.innerHTML.length);
     
     document.getElementById('profileContainer').innerHTML = template.innerHTML;
+     // SET UP MOOD TRACKER WITH EVENT LISTENERS
+    initializeMoodTracker();
     
     // DEBUG: Check if elements exist after inserting template
     setTimeout(() => {
@@ -797,6 +799,8 @@ function editPetProfile(index) {
         }
         
         document.getElementById('profileContainer').innerHTML = template.innerHTML;
+        // SET UP MOOD TRACKER WITH EVENT LISTENERS
+    initializeMoodTracker();
         
         // Populate form fields with a small delay to ensure DOM is ready
         setTimeout(() => populateFormFields(pet), 50);
