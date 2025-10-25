@@ -171,119 +171,296 @@ function initializeDashboard() {
     };
 }
 
-// Handle form submit
+// ===============================================
+// ENHANCED WITH DYNAMIC UPDATES
+// 1.HANDLE FORM SUBMIT - 
+// ===============================================
 function handleFormSubmit(e) {
     e.preventDefault();
-    // Your form handling logic here
-        console.log('FORM SUBMIT CALLED!'); // ← Add this line
+    console.log('🔄 FORM SUBMIT INITIATED - Starting dynamic update process');
 
-    // Collect all form data
-    pets = getPets(); // Use your existing getPets() function
-   // const formData = {
-      let formData = {
-      petType: document.getElementById('petType').value,
-      petName: document.getElementById('petName').value,
-      petImage: document.getElementById('petImagePreview').src,
-      petAge: document.getElementById('petAge').value,
-      petWeight: document.getElementById('petWeight').value,
-      petBreed: document.getElementById('petBreed').value,
-      petGender: document.getElementById('petGender').value,
-      petColor: document.getElementById('petColor').value,
-      petMicrochip: document.getElementById('petMicrochip').value,
-      petEnergyLevel: document.getElementById('petEnergyLevel').value,
-      petHealthStatus: document.getElementById('petHealthStatus').value,
-      petVetInfo: document.getElementById('petVetInfo').value,
-      petVaccinations: document.getElementById('petVaccinations').value,
-      petMedications: document.getElementById('petMedications').value,
-      petAllergies: document.getElementById('petAllergies').value,
-      petDiet: document.getElementById('petDiet').value,
-      petBehavior: document.getElementById('petBehavior').value,
-      petFavoriteExercise: document.getElementById('petFavoriteExercise').value,
-      petNotes: document.getElementById('petNotes').value,
-      exerciseType: document.getElementById('exerciseType').value,
-      duration: document.getElementById('exerciseDuration').value,
-      date: document.getElementById('exerciseDate').value,
-      calories: document.getElementById('caloriesBurned').value,
-      exerciseIntensity: document.getElementById('exerciseIntensity').value,
-      exerciseNotes: document.getElementById('exerciseNotes').value
-    };
-// Validate required fields Validation code
-    const errors = [];
-    if (!formData.petType) errors.push('Pet type is required');
-    if (!formData.petName.trim()) errors.push('Pet name is required');
-    if (formData.duration < 1) errors.push('Invalid duration');
-    if (formData.calories < 1) errors.push('Invalid calories');
-    if (errors.length) return AppHelper.showErrors(errors);
+    try {
+        // Validate form first
+        const validationErrors = validateForm();
+        if (validationErrors.length > 0) {
+            console.error('❌ Form validation failed:', validationErrors);
+            AppHelper.showErrors(validationErrors);
+            return;
+        }
 
- 
-// THEN IN handleFormSubmit, change to:
-//   pets = getPets();
-let petData;
-if (activePetIndex !== null) {
-    petData = pets[activePetIndex];
-} else {
-    petData = initializeNewPet(); // ← Now this will work
-}
+        // Collect form data
+        const formData = collectFormData();
+        console.log('📋 Form data collected:', formData);
 
-// Update pet details with all form fields data processing
-    petData.petDetails = {
-      type: formData.petType,
-      name: formData.petName,
-      image: formData.petImage,
-      age: formData.petAge,
-      weight: formData.petWeight,
-      breed: formData.petBreed,
-      gender: formData.petGender,
-      color: formData.petColor,
-      microchip: formData.petMicrochip,
-      energyLevel: formData.petEnergyLevel,
-      healthStatus: formData.petHealthStatus,
-      vetInfo: formData.petVetInfo,
-      vaccinations: formData.petVaccinations,
-      medications: formData.petMedications,
-      allergies: formData.petAllergies,
-      diet: formData.petDiet,
-      behavior: formData.petBehavior,
-      favoriteExercise: formData.petFavoriteExercise,
-      notes: formData.petNotes
-    };
+        // Get current pets and prepare pet data
+        const pets = getPets();
+        let petData;
 
-    // Add exercise entry with new fields
-// Only add exercise if we're updating an existing profile
-if (activePetIndex !== null) {
-  petData.exerciseEntries.push({
-    exerciseType: formData.exerciseType,
-    duration: Number(formData.duration),
-    date: formData.date,
-    caloriesBurned: Number(formData.calories),
-    intensity: formData.exerciseIntensity,
-    notes: formData.exerciseNotes
-  });
-}
+        if (activePetIndex === null) {
+            // CREATE NEW PROFILE
+            console.log('🆕 Creating new profile');
+            if (pets.length >= MAX_PETS) {
+                AppHelper.showError(`Maximum of ${MAX_PETS} profiles reached`);
+                return;
+            }
+            petData = initializeNewPet();
+        } else {
+            // UPDATE EXISTING PROFILE
+            console.log('📝 Updating existing profile at index:', activePetIndex);
+            petData = { ...pets[activePetIndex] };
+        }
 
-    if (activePetIndex === null) {
-      if (pets.length >= MAX_PETS) return AppHelper.showError('Maximum profiles reached');
-      pets.push(petData);
-      activePetIndex = pets.length - 1;
-    } else {
-      pets[activePetIndex] = petData;
+        // Update pet details with form data
+        petData.petDetails = {
+            type: formData.petType,
+            name: formData.petName.trim(),
+            image: formData.petImage,
+            age: formData.petAge,
+            weight: formData.petWeight,
+            breed: formData.petBreed.trim(),
+            gender: formData.petGender,
+            color: formData.petColor.trim(),
+            microchip: formData.petMicrochip.trim(),
+            energyLevel: formData.petEnergyLevel,
+            healthStatus: formData.petHealthStatus,
+            vetInfo: formData.petVetInfo.trim(),
+            vaccinations: formData.petVaccinations.trim(),
+            medications: formData.petMedications.trim(),
+            allergies: formData.petAllergies.trim(),
+            diet: formData.petDiet.trim(),
+            behavior: formData.petBehavior.trim(),
+            favoriteExercise: formData.petFavoriteExercise,
+            notes: formData.petNotes.trim()
+        };
+
+        console.log('✅ Pet details updated');
+
+        // Handle exercise data - CUMULATIVE UPDATES
+        if (formData.exerciseType && formData.duration && formData.date && formData.calories) {
+            const newExerciseEntry = {
+                exerciseType: formData.exerciseType,
+                duration: Number(formData.duration),
+                date: formData.date,
+                caloriesBurned: Number(formData.calories),
+                intensity: formData.exerciseIntensity,
+                notes: formData.exerciseNotes.trim()
+            };
+
+            // Initialize exerciseEntries array if it doesn't exist
+            petData.exerciseEntries = petData.exerciseEntries || [];
+            
+            // Add new exercise entry (cumulative - don't replace existing)
+            petData.exerciseEntries.push(newExerciseEntry);
+            console.log('💪 New exercise entry added. Total exercises:', petData.exerciseEntries.length);
+        }
+
+        // Handle mood data - CUMULATIVE UPDATES
+        petData = saveTemporaryMoodData(petData);
+        console.log('😊 Mood data processed. Total mood entries:', petData.moodLogs ? petData.moodLogs.length : 0);
+
+        // Handle temporary exercise data
+        petData = saveTemporaryExerciseData(petData);
+
+        // Save to storage
+        if (activePetIndex === null) {
+            pets.push(petData);
+            activePetIndex = pets.length - 1;
+        } else {
+            pets[activePetIndex] = petData;
+        }
+
+        localStorage.setItem('pets', JSON.stringify(pets));
+        sessionStorage.setItem('activePetIndex', activePetIndex);
+        console.log('💾 Data saved to storage');
+
+        // DYNAMIC UPDATES - Refresh all components
+        performDynamicUpdates(petData);
+
+        // Show success and return to dashboard
+        showSuccess(activePetIndex === null ? 'Profile created successfully!' : 'Profile updated successfully!');
+        returnToDashboard();
+
+        console.log('✅ FORM SUBMIT COMPLETED SUCCESSFULLY');
+
+    } catch (error) {
+        console.error('❌ CRITICAL ERROR in handleFormSubmit:', error);
+        AppHelper.showError('Failed to save profile: ' + error.message);
     }
+}
 
-// Add this before saving:
-petData = saveTemporaryExerciseData(petData);
-petData = saveTemporaryMoodData(petData);
-// AFTER SUCCESSFUL SAVE:
-localStorage.setItem('pets', JSON.stringify(pets));
-sessionStorage.setItem('activePetIndex', activePetIndex);
-
-// Return to view profiles state
-document.getElementById('savedProfiles').style.display = 'block';
-document.getElementById('profileContainer').style.display = 'none';
+// ===============================================
+// 2.VALIDATE FORM - COMPREHENSIVE VALIDATION
+// ===============================================
+function validateForm() {
+    console.log('🔍 Validating form...');
+    const errors = [];
     
-// Refresh and show success
-loadSavedProfiles();
-showSuccess('Profile saved successfully!'); // Changed from AppHelper.showError to showSuccess
-updateDashboard(petData);
+    // Required fields validation
+    if (!document.getElementById('petType')?.value) {
+        errors.push('Pet type is required');
+    }
+    
+    const petName = document.getElementById('petName')?.value.trim();
+    if (!petName) {
+        errors.push('Pet name is required');
+    }
+    
+    // Exercise validation (if exercise data is provided)
+    const exerciseType = document.getElementById('exerciseType')?.value;
+    const duration = document.getElementById('exerciseDuration')?.value;
+    const date = document.getElementById('exerciseDate')?.value;
+    const calories = document.getElementById('caloriesBurned')?.value;
+    
+    // If any exercise field is filled, all required ones must be filled
+    if (exerciseType || duration || date || calories) {
+        if (!exerciseType) errors.push('Exercise type is required when logging exercise');
+        if (!duration || duration < 1) errors.push('Valid exercise duration is required');
+        if (!date) errors.push('Exercise date is required');
+        if (!calories || calories < 1) errors.push('Valid calories burned is required');
+    }
+    
+    console.log('📊 Validation results:', errors.length > 0 ? errors : 'No errors');
+    return errors;
+}
+
+// ===============================================
+// 3.COLLECT FORM DATA
+// ===============================================
+function collectFormData() {
+    return {
+        petType: document.getElementById('petType')?.value,
+        petName: document.getElementById('petName')?.value,
+        petImage: document.getElementById('petImagePreview')?.src,
+        petAge: document.getElementById('petAge')?.value,
+        petWeight: document.getElementById('petWeight')?.value,
+        petBreed: document.getElementById('petBreed')?.value,
+        petGender: document.getElementById('petGender')?.value,
+        petColor: document.getElementById('petColor')?.value,
+        petMicrochip: document.getElementById('petMicrochip')?.value,
+        petEnergyLevel: document.getElementById('petEnergyLevel')?.value,
+        petHealthStatus: document.getElementById('petHealthStatus')?.value,
+        petVetInfo: document.getElementById('petVetInfo')?.value,
+        petVaccinations: document.getElementById('petVaccinations')?.value,
+        petMedications: document.getElementById('petMedications')?.value,
+        petAllergies: document.getElementById('petAllergies')?.value,
+        petDiet: document.getElementById('petDiet')?.value,
+        petBehavior: document.getElementById('petBehavior')?.value,
+        petFavoriteExercise: document.getElementById('petFavoriteExercise')?.value,
+        petNotes: document.getElementById('petNotes')?.value,
+        exerciseType: document.getElementById('exerciseType')?.value,
+        duration: document.getElementById('exerciseDuration')?.value,
+        date: document.getElementById('exerciseDate')?.value,
+        calories: document.getElementById('caloriesBurned')?.value,
+        exerciseIntensity: document.getElementById('exerciseIntensity')?.value,
+        exerciseNotes: document.getElementById('exerciseNotes')?.value
+    };
+}
+
+// ===============================================
+// 4.PERFORM DYNAMIC UPDATES - CORE CONNECTIVITY
+// ===============================================
+function performDynamicUpdates(petData) {
+    console.log('🔄 Performing dynamic updates for all components');
+    
+    try {
+        // 1. Update saved profiles (pet cards)
+        loadSavedProfiles();
+        console.log('✅ Pet cards updated');
+        
+        // 2. Update dashboard components if we're on the active pet
+        const currentActiveIndex = parseInt(sessionStorage.getItem('activePetIndex'));
+        if (currentActiveIndex === activePetIndex) {
+            updateDashboard(petData);
+            console.log('✅ Dashboard components updated');
+        }
+        
+        // 3. Force refresh of calendar highlights
+        refreshCalendarHighlights(petData.exerciseEntries || []);
+        console.log('✅ Calendar highlights refreshed');
+        
+        // 4. Update any open modal or preview components
+        updateOpenComponents(petData);
+        console.log('✅ Open components refreshed');
+        
+    } catch (error) {
+        console.error('❌ Error during dynamic updates:', error);
+        // Don't throw - we still want the save to complete
+    }
+}
+
+// ===============================================
+// 5.REFRESH CALENDAR HIGHLIGHTS
+// ===============================================
+function refreshCalendarHighlights(exerciseEntries) {
+    // This will ensure any open calendar shows the new exercise data
+    // The calendar in saved profiles will update via loadSavedProfiles()
+    console.log('📅 Refreshing calendar with', exerciseEntries.length, 'exercise entries');
+    
+    // If there's a specific calendar component open, refresh it
+    const openCalendar = document.querySelector('.mini-calendar');
+    if (openCalendar && exerciseEntries.length > 0) {
+        // Trigger a re-render of the mini calendar
+        const calendarContainer = openCalendar.closest('.calendar-section');
+        if (calendarContainer) {
+            const petIndex = calendarContainer.closest('.profile-card')?.dataset.petIndex;
+            if (petIndex !== undefined) {
+                const pets = getPets();
+                const pet = pets[petIndex];
+                if (pet) {
+                    calendarContainer.querySelector('.mini-calendar').innerHTML = 
+                        generateMiniCalendar(pet.exerciseEntries || []);
+                }
+            }
+        }
+    }
+}
+
+// ===============================================
+// 6.UPDATE OPEN COMPONENTS
+// ===============================================
+function updateOpenComponents(petData) {
+    // Update any other open UI components that might need refreshing
+    const moodContainer = document.querySelector('.mood-section');
+    if (moodContainer) {
+        // Re-render mood section with updated data
+        const moodHTML = generateMoodSectionHTML(petData.moodLogs || []);
+        moodContainer.innerHTML = moodHTML;
+    }
+}
+
+// ===============================================
+// 7.GENERATE MOOD SECTION HTML
+// ===============================================
+function generateMoodSectionHTML(moodLogs) {
+    return `
+        <h5>😊 Recent Mood</h5>
+        ${moodLogs && moodLogs.length > 0 ? 
+            moodLogs.slice(-3).map(log => {
+                const mood = MOOD_OPTIONS.find(m => m.value === log.mood) || MOOD_OPTIONS[0];
+                return `
+                    <div class="mood-entry-small">
+                        <span class="mood-emoji-small">${mood.emoji}</span>
+                        <span class="mood-date-small">${formatDate(log.date)}</span>
+                    </div>
+                `;
+            }).join('') : 
+            '<p class="no-moods">No mood entries</p>'
+        }
+    `;
+}
+
+// ===============================================
+// 8.RETURN TO DASHBOARD
+// ===============================================
+function returnToDashboard() {
+    console.log('🏠 Returning to dashboard');
+    
+    document.getElementById('savedProfiles').style.display = 'block';
+    document.getElementById('profileContainer').style.display = 'none';
+    document.getElementById('profileContainer').innerHTML = '';
+    
+    // Clear any temporary data
+    clearTemporaryData();
 }
 
 // ===============================================
