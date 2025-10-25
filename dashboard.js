@@ -475,7 +475,7 @@ function returnToDashboard() {
 }
 
 // ===============================================
-//  Load saved profiles - ENHANCED LAYOUT
+//  Load saved profiles - SIDE-BY-SIDE LAYOUT
 //==========================================
 function loadSavedProfiles() {
     pets = getPets();
@@ -488,42 +488,129 @@ function loadSavedProfiles() {
     }
     
     const profilesHTML = pets.map((pet, index) => {
-     // In loadSavedProfiles(), inside the pets.map(), add:
-console.log(`🔍 MOOD DEBUG - Loading profile ${index}: ${pet.petDetails.name}`);
-console.log(' - pet.moodLogs:', pet.moodLogs);
-console.log(' - moodLogs length:', pet.moodLogs ? pet.moodLogs.length : 0);
+        // Debug logs
+        console.log(`🔍 MOOD DEBUG - Loading profile ${index}: ${pet.petDetails.name}`);
+        console.log(' - pet.moodLogs:', pet.moodLogs);
+        console.log(' - moodLogs length:', pet.moodLogs ? pet.moodLogs.length : 0);
+        
         // Calculate exercise stats
         const totalSessions = pet.exerciseEntries.length;
         const totalDuration = pet.exerciseEntries.reduce((sum, entry) => sum + entry.duration, 0);
         const totalCalories = pet.exerciseEntries.reduce((sum, entry) => sum + entry.caloriesBurned, 0);
         const avgDuration = totalSessions > 0 ? (totalDuration / totalSessions).toFixed(1) : 0;
         
-        // Medical badges
-        const hasVaccinations = pet.petDetails.vaccinations && pet.petDetails.vaccinations.trim() !== '';
-        const hasMedications = pet.petDetails.medications && pet.petDetails.medications.trim() !== '';
-        
         return `
     <div class="profile-card ${index === activePetIndex ? 'active' : ''}" data-pet-index="${index}">
-      <!-- 🐕 BASIC INFO SECTION -->
-      <div class="basic-info-section">
-        <img src="${pet.petDetails.image}" alt="${pet.petDetails.name}">
-        <div class="basic-info">
-          <h4>${pet.petDetails.name}</h4>
-          <div class="basic-details">
-            <span class="detail-badge">${pet.petDetails.type ? pet.petDetails.type.charAt(0).toUpperCase() + pet.petDetails.type.slice(1) : 'Unknown'}</span>
-            <span class="detail-badge">${pet.petDetails.breed || 'Mixed'}</span>
-            <span class="detail-badge">${pet.petDetails.age || '?'} yrs</span>
-            <span class="detail-badge">${pet.petDetails.gender || 'Unknown'}</span>
+      <!-- SIDE-BY-SIDE BASIC & MEDICAL INFO -->
+      <div class="info-medical-container">
+        <!-- 🐕 BASIC INFO SECTION - LEFT -->
+        <div class="basic-info-section">
+          <div class="basic-info-header">
+            <span>🐕</span>
+            <span>Basic Info</span>
+          </div>
+          <div class="basic-info-details">
+            <div class="info-item">
+              <span class="info-icon">🐶</span>
+              <div class="info-content">
+                <div class="info-label">Name</div>
+                <div class="info-value">${pet.petDetails.name || 'Unknown'}</div>
+              </div>
+            </div>
+            <div class="info-item">
+              <span class="info-icon">🏷️</span>
+              <div class="info-content">
+                <div class="info-label">Breed</div>
+                <div class="info-value">${pet.petDetails.breed || 'Mixed'}</div>
+              </div>
+            </div>
+            <div class="info-item">
+              <span class="info-icon">⚖️</span>
+              <div class="info-content">
+                <div class="info-label">Weight</div>
+                <div class="info-value">${pet.petDetails.weight || '?'} ${pet.petDetails.weight ? 'lbs' : ''}</div>
+              </div>
+            </div>
+            <div class="info-item">
+              <span class="info-icon">🎂</span>
+              <div class="info-content">
+                <div class="info-label">Age</div>
+                <div class="info-value">${pet.petDetails.age || '?'} ${pet.petDetails.age ? 'years' : ''}</div>
+              </div>
+            </div>
+            <div class="info-item">
+              <span class="info-icon">♂️</span>
+              <div class="info-content">
+                <div class="info-label">Gender</div>
+                <div class="info-value">${pet.petDetails.gender || 'Unknown'}</div>
+              </div>
+            </div>
+            ${pet.petDetails.color ? `
+            <div class="info-item">
+              <span class="info-icon">🎨</span>
+              <div class="info-content">
+                <div class="info-label">Color</div>
+                <div class="info-value">${pet.petDetails.color}</div>
+              </div>
+            </div>
+            ` : ''}
           </div>
         </div>
-      </div>
 
-      <!-- ⚕️ MEDICAL BADGES SECTION -->
-      <div class="medical-badges">
-        ${pet.petDetails.healthStatus ? `<span class="medical-badge health-${pet.petDetails.healthStatus}">${pet.petDetails.healthStatus}</span>` : ''}
-        ${hasVaccinations ? '<span class="medical-badge vaccine">💉 Vaccinated</span>' : ''}
-        ${hasMedications ? '<span class="medical-badge medication">💊 Medicated</span>' : ''}
-        ${pet.petDetails.microchip ? '<span class="medical-badge microchip">🔍 Microchipped</span>' : ''}
+        <!-- ⚕️ MEDICAL INFO SECTION - RIGHT -->
+        <div class="medical-info-section">
+          <div class="medical-info-header">
+            <span>⚕️</span>
+            <span>Medical Info</span>
+          </div>
+          <div class="medical-status">
+            <div class="medical-item health-item">
+              <span class="medical-icon">❤️</span>
+              <div class="medical-content">
+                <div class="medical-label">Health Status</div>
+                <div class="medical-value health-${pet.petDetails.healthStatus || 'unknown'}">
+                  ${pet.petDetails.healthStatus ? pet.petDetails.healthStatus.charAt(0).toUpperCase() + pet.petDetails.healthStatus.slice(1) : 'Not set'}
+                </div>
+              </div>
+            </div>
+            <div class="medical-item vaccine-item">
+              <span class="medical-icon">💉</span>
+              <div class="medical-content">
+                <div class="medical-label">Vaccinations</div>
+                <div class="medical-value ${pet.petDetails.vaccinations ? 'vaccine-complete' : 'meds-none'}">
+                  ${pet.petDetails.vaccinations ? 'Up to date' : 'Not recorded'}
+                </div>
+              </div>
+            </div>
+            <div class="medical-item meds-item">
+              <span class="medical-icon">💊</span>
+              <div class="medical-content">
+                <div class="medical-label">Medications</div>
+                <div class="medical-value ${pet.petDetails.medications ? 'vaccine-complete' : 'meds-none'}">
+                  ${pet.petDetails.medications ? 'Current' : 'None'}
+                </div>
+              </div>
+            </div>
+            <div class="medical-item chip-item">
+              <span class="medical-icon">🔍</span>
+              <div class="medical-content">
+                <div class="medical-label">Microchip</div>
+                <div class="medical-value ${pet.petDetails.microchip ? 'chip-yes' : 'meds-none'}">
+                  ${pet.petDetails.microchip ? 'Installed' : 'None'}
+                </div>
+              </div>
+            </div>
+            ${pet.petDetails.allergies ? `
+            <div class="medical-item allergy-item">
+              <span class="medical-icon">🌡️</span>
+              <div class="medical-content">
+                <div class="medical-label">Allergies</div>
+                <div class="medical-value">${pet.petDetails.allergies}</div>
+              </div>
+            </div>
+            ` : ''}
+          </div>
+        </div>
       </div>
 
       <!-- 📊 EXERCISE STATS SECTION -->
@@ -544,21 +631,20 @@ console.log(' - moodLogs length:', pet.moodLogs ? pet.moodLogs.length : 0);
 
       <!-- 😊 MOOD SECTION -->
       <div class="mood-section">
-    <h5>😊 Recent Mood</h5>
-    ${pet.moodLogs && pet.moodLogs.length > 0 ? 
-        pet.moodLogs.slice(-3).map(log => {
+        <h5>😊 Recent Mood</h5>
+        ${pet.moodLogs && pet.moodLogs.length > 0 ? 
+          pet.moodLogs.slice(-3).map(log => {
             const mood = MOOD_OPTIONS.find(m => m.value === log.mood) || MOOD_OPTIONS[0];
             return `
-                <div class="mood-entry-small">
-                    <span class="mood-emoji-small">${mood.emoji}</span>
-                    <span class="mood-date-small">${formatDate(log.date)}</span>
-                </div>
+              <div class="mood-entry-small">
+                <span class="mood-emoji-small">${mood.emoji}</span>
+                <span class="mood-date-small">${formatDate(log.date)}</span>
+              </div>
             `;
-        }).join('') : 
-        '<p class="no-moods">No mood entries</p>'
-    }
-</div>
-
+          }).join('') : 
+          '<p class="no-moods">No mood entries</p>'
+        }
+      </div>
 
       <!-- 📅 CALENDAR SECTION -->
       <div class="calendar-section">
@@ -610,6 +696,9 @@ console.log(' - moodLogs length:', pet.moodLogs ? pet.moodLogs.length : 0);
   // Add event listeners for all buttons
   setupProfileEventListeners();
 }
+
+
+
 
 // UPDATE DASHBOARD FUNCTION
 // Also update your updateDashboard function to handle these components:
