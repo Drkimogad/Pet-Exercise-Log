@@ -52,7 +52,7 @@ function showExerciseLog() {
         console.log('showExerciseLog called'); // ← ADD THIS
     // Hide auth and show dashboard
     document.getElementById('auth-container').style.display = 'none';
-    document.getElementById('lottie-banner').style.display = 'none';
+    document.getElementById('main-banner').style.display = 'none';
     document.querySelector('.dashboard-container').style.display = 'block';
 
     // Show saved profiles, hide the form container initially
