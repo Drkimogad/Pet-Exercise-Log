@@ -476,17 +476,20 @@
 /* ============================================================
     DASHBOARD CONTAINER STYLING
 ============================================================ */
+/* Update dashboard container grid to include footer */
 .dashboard-container {
-  display: grid;
-  grid-template-areas: 
-    "header header"
-    "sidebar main";
-  grid-template-columns: 300px 1fr;
-  grid-template-rows: auto 1fr;
-  gap: 1.5rem;
-  padding: 1rem;
-  max-width: 1600px;
-  margin: 0 auto;
+    display: grid;
+    grid-template-areas: 
+        "header header"
+        "sidebar main"
+        "footer footer";
+    grid-template-columns: 300px 1fr;
+    grid-template-rows: auto 1fr auto; /* Added auto for footer */
+    gap: 1.5rem;
+    padding: 1rem;
+    max-width: 1600px;
+    margin: 0 auto;
+    min-height: 100vh; /* Ensure full viewport height */
 }
 
   /*  ENHANCED DASHBOARD HEADER (with brand + actions)*/
@@ -570,21 +573,30 @@
     color: var(--dark-charcoal);
 }
 
+/* ============================================================
+    DASHBOARD FOOTER STYLING
+============================================================ */
 .dashboard-footer {
+    grid-area: footer;
     background: var(--light-charcoal);
-    color: var(--dark-mustard) !important;
+    color: var(--dark-mustard);
     border-top: 3px solid var(--primary-mustard);
     padding: 1.5rem;
     text-align: center;
     font-size: 1rem;
+    margin-top: auto; /* Pushes footer to bottom */
 }
 
 .dark-mode .dashboard-footer {
-  background-color: var(--dark-charcoal);
-  border-color: var(--light-purple);
+    background-color: var(--dark-charcoal);
+    border-color: var(--light-purple);
+    color: var(--primary-yellow);
 }
 
-/* TO ENSURE VISIBILITY*/
+
+/*========================
+  TO ENSURE VISIBILITY
+==============================*/
 .dashboard-main, #savedProfiles {
   transition: opacity 0.3s ease;
 }
@@ -595,27 +607,6 @@
   gap: 1rem;
   padding: 1rem;
 }
-/* ============================================================
-    RESPONSIVE ADJUSTMENTS
-============================================================ */
-@media (max-width: 768px) {
-    .auth-container {
-        width: 80%;
-    }
-    
-    .dashboard-container {
-        padding: 1rem;
-    }
-    
-    header {
-        font-size: 1.2rem;
-    }
-    
-    footer {
-        font-size: 0.9rem;
-    }
-}
-
 /* empty stats added*/
 .empty-state {
     text-align: center;
