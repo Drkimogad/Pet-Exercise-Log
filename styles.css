@@ -47,18 +47,11 @@
   --header-text: var(--primary-yellow);
 }
 */
-/* complete auth page css*/
+
 /* ============================================================
-    AUTH PAGE LAYOUT - MODERN REDESIGN
+  COMPLETE AUTH PAGE LAYOUT - MODERN REDESIGN
 ============================================================ */
-
-/* Hide header/footer only on auth pages */
-body:has(#auth-container:not([style*="display: none"])) #main-header,
-body:has(#auth-container:not([style*="display: none"])) #main-footer {
-    display: none;
-}
-
-/* Floating Logo for Auth Pages */
+/* Floating Logo for Auth Pages  replaces the header */
 .auth-logo {
     position: fixed;
     top: 2rem;
@@ -496,77 +489,85 @@ body:has(#auth-container:not([style*="display: none"])) #main-footer {
   margin: 0 auto;
 }
 
+  /*  ENHANCED DASHBOARD HEADER (with brand + actions)*/
 .dashboard-header {
-  grid-area: header;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem;
-  background-color: var(--dark-purple);
-  color: var(--primary-yellow);
-  border-radius: 8px;
-  box-shadow: var(--shadow-sm);
-  border: 2px solid var(--primary-mustard);
+    grid-area: header;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    background-color: var(--dark-purple);
+    color: var(--primary-yellow);
+    border-radius: 8px;
+    box-shadow: var(--shadow-sm);
+    border: 2px solid var(--primary-mustard);
+    gap: 1.5rem;
 }
 
-.dark-mode .dashboard-header {
-  background-color: var(--dark-charcoal);
-  border-color: var(--primary-mustard);
-  color: var(--primary-yellow);
+.dashboard-header-brand {
+    flex: 1;
+    text-align: left;
 }
 
+.dashboard-header-brand h1 {
+    font-size: 1.8rem;
+    margin-bottom: 0.25rem;
+    color: var(--primary-yellow);
+    line-height: 1.2;
+}
+
+.dashboard-header-brand p {
+    font-size: 0.9rem;
+    color: var(--primary-yellow);
+    opacity: 0.9;
+    margin: 0;
+}
+
+.dashboard-header-actions {
+    display: flex;
+    gap: 0.75rem;
+    flex-shrink: 0;
+}
+
+/* Button styles remain the same */
 .dashboard-header .icon-btn {
-  color: var(--primary-yellow);
-  border: 1px solid var(--primary-yellow);
+    color: var(--primary-yellow);
+    border: 1px solid var(--primary-yellow);
+    background-color: var(--dark-purple);
+    padding: 0.75rem 1.25rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    min-width: 120px;
+    justify-content: center;
+    font-size: 0.9rem;
 }
 
 .dashboard-header .icon-btn:hover {
-  background-color: var(--primary-yellow);
-  color: var(--dark-purple);
-}
-
-/* ============================================================
-    DASHBOARD HEADER BUTTON FIXES
-============================================================ */
-.dashboard-header .icon-btn {
-  color: var(--primary-yellow);
-  border: 1px solid var(--primary-yellow);
-  background-color: var(--dark-purple);
-  padding: 0.75rem 1.5rem;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  min-width: 120px; /* Ensures consistent width */
-  justify-content: center;
-}
-
-.dashboard-header .icon-btn:hover {
-  background-color: var(--primary-yellow);
-  color: var(--dark-purple);
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
-}
-
-/* Ensure text is always visible, not just on hover */
-.dashboard-header .icon-btn::after {
-  content: attr(title); /* Shows the button text */
-  display: inline-block;
+    background-color: var(--primary-yellow);
+    color: var(--dark-purple);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
 }
 
 /* Dark mode adjustments */
+.dark-mode .dashboard-header {
+    background-color: var(--dark-charcoal);
+    border-color: var(--primary-mustard);
+}
+
 .dark-mode .dashboard-header .icon-btn {
-  background-color: var(--dark-charcoal);
-  border-color: var(--primary-mustard);
-  color: var(--primary-yellow);
+    background-color: var(--dark-charcoal);
+    border-color: var(--primary-mustard);
 }
 
 .dark-mode .dashboard-header .icon-btn:hover {
-  background-color: var(--primary-mustard);
-  color: var(--dark-charcoal);
+    background-color: var(--primary-mustard);
+    color: var(--dark-charcoal);
 }
 
 .dashboard-footer {
