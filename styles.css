@@ -181,31 +181,40 @@ body:has(#auth-container:not([style*="display: none"])) footer {
 /* Auth container positioned in bottom third */
 #auth-container {
   position: fixed;
-  bottom: 20vh; /* Direct positioning from bottom */
+  bottom: 10vh; /* 10vh from footer */
   left: 50%;
   transform: translateX(-50%);
   z-index: 25;
-  width: 60vw;
-  max-width: 800px;
+  width: 80vw; /* Increased width */
+  max-width: 1000px; /* Wider max-width */
 }
 
 .auth-container {
   width: 100%;
-  min-height: 400px;
+  min-height: 300px; /* Reduced height */
   background: rgba(247, 247, 247, 0.95);
   border: 2px solid var(--container-border);
-  padding: 2.5rem;
+  padding: 1.5rem 2.5rem; /* Reduced top/bottom padding */
   box-shadow: var(--shadow-md);
   text-align: center;
   border-radius: 12px;
   backdrop-filter: blur(10px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* Perfect vertical centering */
 }
 
-/* Rest of your auth form styles remain the same */
+.auth-container h2 {
+  color: var(--dark-mustard);
+  margin-bottom: 1rem; /* Reduced spacing */
+  font-size: 1.8rem;
+}
+
+/* Form Elements - Horizontal Layout */
 .auth-form {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1.5rem;
+  grid-template-columns: 1fr 1fr; /* Two equal columns */
+  gap: 1rem; /* Reduced gap */
   align-items: end;
 }
 
@@ -218,33 +227,33 @@ body:has(#auth-container:not([style*="display: none"])) footer {
 .form-group label {
   color: var(--dark-purple);
   font-weight: 600;
-  margin-bottom: 0.5rem;
-  font-size: 0.95rem;
+  margin-bottom: 0.3rem; /* Reduced spacing */
+  font-size: 0.9rem;
 }
 
 .form-group input {
-  padding: 0.8rem 1rem;
+  padding: 0.6rem 0.8rem; /* Reduced padding */
   border: 2px solid var(--input-border);
-  border-radius: 8px;
+  border-radius: 6px;
   background: var(--input-bg);
-  font-size: 1rem;
+  font-size: 0.95rem;
   transition: all 0.3s ease;
-  width: 100%; /* Full width of grid column */
+  width: 100%;
 }
 
 /* Submit button - full width below the fields */
 .auth-btn {
-  grid-column: 1 / -1; /* Span both columns */
-  padding: 1rem 2rem;
+  grid-column: 1 / -1;
+  padding: 0.8rem 2rem; /* Reduced padding */
   background: var(--dark-purple);
   color: var(--primary-yellow);
   border: none;
-  border-radius: 8px;
-  font-size: 1.1rem;
+  border-radius: 6px;
+  font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  margin-top: 1rem;
+  margin-top: 0.8rem; /* Reduced spacing */
 }
 
 .auth-btn:hover {
@@ -254,8 +263,8 @@ body:has(#auth-container:not([style*="display: none"])) footer {
 }
 
 .auth-switch {
-  grid-column: 1 / -1; /* Span both columns */
-  margin-top: 1.5rem;
+  grid-column: 1 / -1;
+  margin-top: 1rem; /* Reduced spacing */
   color: var(--light-charcoal);
 }
 
