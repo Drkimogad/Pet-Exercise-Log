@@ -2463,4 +2463,17 @@
 }
 
   
-  
+ /* SURGICAL FIX - ADD TO VERY END OF CSS */
+#auth-container {
+    position: fixed !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    bottom: auto !important;
+    width: 90% !important;
+    max-width: 500px !important;
+}
+
+.auth-logo {
+    display: block !important;
+} 
