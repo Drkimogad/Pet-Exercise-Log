@@ -191,18 +191,23 @@ body:has(#auth-container:not([style*="display: none"])) footer {
   align-items: flex-end; /* Push to bottom */
   justify-content: center;
   flex: 1;
-  padding-bottom: 10vh; /* Bottom third positioning */
+  padding-bottom: 10vh !important; /* Bottom third positioning */
 }
 
 .auth-container {
-  width: 40%;
-  background: rgba(247, 247, 247, 0.95); /* Semi-transparent off-white */
+  width: 60vw;
+  max-width: 800px;
+  min-height: 400px;
+  background: rgba(247, 247, 247, 0.95);
   border: 2px solid var(--container-border);
   padding: 2.5rem;
   box-shadow: var(--shadow-md);
   text-align: center;
   border-radius: 12px;
-  backdrop-filter: blur(10px); /* Frosted glass effect */
+  backdrop-filter: blur(10px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .auth-container h2 {
@@ -211,11 +216,12 @@ body:has(#auth-container:not([style*="display: none"])) footer {
   font-size: 1.8rem;
 }
 
-/* Form Elements */
+/* Form Elements - Horizontal Layout */
 .auth-form {
-  display: flex;
-  flex-direction: column;
-  gap: 1.2rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* Two equal columns */
+  gap: 1.5rem;
+  align-items: end; /* Align form elements at bottom */
 }
 
 .form-group {
@@ -238,15 +244,12 @@ body:has(#auth-container:not([style*="display: none"])) footer {
   background: var(--input-bg);
   font-size: 1rem;
   transition: all 0.3s ease;
+  width: 100%; /* Full width of grid column */
 }
 
-.form-group input:focus {
-  outline: none;
-  border-color: var(--border-focus);
-  box-shadow: 0 0 0 3px rgba(239, 179, 102, 0.2); /* primary-mustard with opacity */
-}
-
+/* Submit button - full width below the fields */
 .auth-btn {
+  grid-column: 1 / -1; /* Span both columns */
   padding: 1rem 2rem;
   background: var(--dark-purple);
   color: var(--primary-yellow);
@@ -256,7 +259,7 @@ body:has(#auth-container:not([style*="display: none"])) footer {
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  margin-top: 0.5rem;
+  margin-top: 1rem;
 }
 
 .auth-btn:hover {
@@ -266,6 +269,7 @@ body:has(#auth-container:not([style*="display: none"])) footer {
 }
 
 .auth-switch {
+  grid-column: 1 / -1; /* Span both columns */
   margin-top: 1.5rem;
   color: var(--light-charcoal);
 }
@@ -279,6 +283,8 @@ body:has(#auth-container:not([style*="display: none"])) footer {
 .auth-switch a:hover {
   color: var(--light-purple);
 }
+
+
 
 /* ============================================================
     RESPONSIVE DESIGN
