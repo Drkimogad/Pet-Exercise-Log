@@ -479,6 +479,11 @@ function returnToDashboard() {
 //==========================================
 function loadSavedProfiles() {
     pets = getPets();
+    console.log('🔍 MOOD DEBUG - Total pets:', pets.length);
+    pets.forEach((pet, i) => {
+        console.log(`🔍 Pet ${i}: ${pet.petDetails.name}, Mood logs:`, pet.moodLogs);
+    });
+
     if (pets.length === 0) {
         document.getElementById('savedProfiles').innerHTML = `
             <div class="no-profiles-message">
@@ -696,7 +701,7 @@ function loadSavedProfiles() {
 
 
 
-
+//=====================================================
 // UPDATE DASHBOARD FUNCTION
 // Also update your updateDashboard function to handle these components:
 function updateDashboard(petData) {
@@ -719,7 +724,7 @@ function updateDashboard(petData) {
     
     // Update charts with exercise data
     if (petData.exerciseEntries && petData.exerciseEntries.length > 0) {
-        refreshCharts(petData.exerciseEntries);
+        updateCharts(petData.exerciseEntries);
     } else {
         initializeEmptyCharts();
     }
