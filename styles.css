@@ -1631,71 +1631,90 @@ body:has(#auth-container:not([style*="display: none"])) footer {
 
 
 /* ============================================================
-    ENHANCED PROFILE CARD LAYOUT STYLES
-============================================================ */
-/* ============================================================
-    SIDE-BY-SIDE BASIC & MEDICAL SECTIONS
+    ENHANCED PROFILE CARD - HORIZONTAL LAYOUTS
 ============================================================ */
 
-/* Container for side-by-side layout */
-.info-medical-container {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+/* Profile Card Base */
+.profile-card {
+  display: flex;
+  flex-direction: column;
   gap: 1.5rem;
-  margin-bottom: 1rem;
+  background: var(--white);
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: var(--shadow-md);
+  border: 3px solid var(--primary-mustard);
+  transition: all 0.3s ease;
 }
 
-/* Basic Info Section - Left */
-.basic-info-section {
-  background: var(--off-white);
-  border-radius: 12px;
-  padding: 1rem;
-  border: 2px solid var(--primary-mustard);
-}
-
-.dark-mode .basic-info-section {
-  background: var(--light-charcoal);
+.dark-mode .profile-card {
+  background: var(--dark-charcoal);
   border-color: var(--primary-yellow);
 }
 
-.basic-info-header {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin-bottom: 1rem;
-  color: var(--dark-purple);
-  font-weight: 600;
+.profile-card.active {
+  border-color: var(--dark-purple);
+  box-shadow: 0 0 25px rgba(255, 183, 0, 0.4);
 }
 
-.dark-mode .basic-info-header {
-  color: var(--primary-yellow);
+/* ============================================================
+    SECTION 1: BASIC INFO - HORIZONTAL
+============================================================ */
+
+.basic-info-section {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 1.5rem;
+  align-items: start;
+  padding-bottom: 1.5rem;
+  border-bottom: 2px solid var(--primary-mustard);
 }
 
+/* Larger Circular Image */
+.profile-image-container {
+  position: relative;
+}
+
+.profile-image {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid var(--primary-mustard);
+  box-shadow: var(--shadow-md);
+}
+
+.dark-mode .profile-image {
+  border-color: var(--primary-yellow);
+}
+
+/* Basic Info Details Grid */
 .basic-info-details {
-  display: flex;
-  flex-direction: column;
-  gap: 0.8rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
 }
 
 .info-item {
   display: flex;
   align-items: center;
-  gap: 0.8rem;
-  padding: 0.5rem;
-  background: var(--white);
-  border-radius: 8px;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  background: var(--off-white);
+  border-radius: 12px;
   border-left: 4px solid var(--primary-yellow);
 }
 
 .dark-mode .info-item {
-  background: var(--dark-charcoal);
+  background: var(--light-charcoal);
   border-left-color: var(--primary-mustard);
 }
 
 .info-icon {
-  font-size: 1.2rem;
-  width: 24px;
+  font-size: 1.3rem;
+  width: 28px;
   text-align: center;
+  flex-shrink: 0;
 }
 
 .info-content {
@@ -1707,6 +1726,8 @@ body:has(#auth-container:not([style*="display: none"])) footer {
   color: var(--light-charcoal);
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  font-weight: 600;
+  margin-bottom: 0.2rem;
 }
 
 .dark-mode .info-label {
@@ -1714,73 +1735,81 @@ body:has(#auth-container:not([style*="display: none"])) footer {
 }
 
 .info-value {
-  font-size: 0.9rem;
-  font-weight: 600;
+  font-size: 0.95rem;
+  font-weight: 700;
   color: var(--dark-purple);
+  line-height: 1.2;
 }
 
 .dark-mode .info-value {
   color: var(--primary-yellow);
 }
 
-/* Medical Info Section - Right */
+/* ============================================================
+    SECTION 2: MEDICAL INFO - HORIZONTAL GRID
+============================================================ */
+
 .medical-info-section {
-  background: var(--off-white);
-  border-radius: 12px;
-  padding: 1rem;
-  border: 2px solid var(--light-purple);
+  padding-bottom: 1.5rem;
+  border-bottom: 2px solid var(--light-purple);
 }
 
-.dark-mode .medical-info-section {
-  background: var(--light-charcoal);
-  border-color: var(--primary-mustard);
-}
-
-.medical-info-header {
+.section-header {
   display: flex;
   align-items: center;
   gap: 0.5rem;
   margin-bottom: 1rem;
   color: var(--dark-purple);
-  font-weight: 600;
+  font-weight: 700;
+  font-size: 1.1rem;
 }
 
-.dark-mode .medical-info-header {
+.dark-mode .section-header {
   color: var(--primary-yellow);
 }
 
-.medical-status {
-  display: flex;
-  flex-direction: column;
-  gap: 0.8rem;
+.medical-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 1rem;
 }
 
 .medical-item {
   display: flex;
   align-items: center;
-  gap: 0.8rem;
-  padding: 0.6rem;
-  border-radius: 8px;
-  font-size: 0.85rem;
-  border-left: 4px solid;
+  gap: 0.75rem;
+  padding: 1rem;
+  border-radius: 12px;
+  border: 2px solid;
+  background: var(--white);
+  transition: transform 0.2s ease;
 }
 
-.health-item { border-left-color: #4caf50; background: #e8f5e8; }
-.vaccine-item { border-left-color: #2196f3; background: #e3f2fd; }
-.meds-item { border-left-color: #ff9800; background: #fff3e0; }
-.chip-item { border-left-color: #9c27b0; background: #f3e5f5; }
-.allergy-item { border-left-color: #f44336; background: #ffebee; }
+.medical-item:hover {
+  transform: translateY(-2px);
+}
 
-.dark-mode .health-item { background: #1b5e20; }
-.dark-mode .vaccine-item { background: #0d47a1; }
-.dark-mode .meds-item { background: #e65100; }
-.dark-mode .chip-item { background: #4a148c; }
-.dark-mode .allergy-item { background: #b71c1c; }
+.dark-mode .medical-item {
+  background: var(--dark-charcoal);
+}
+
+.health-item { border-color: #4caf50; background: #e8f5e8; }
+.vaccine-item { border-color: #2196f3; background: #e3f2fd; }
+.meds-item { border-color: #ff9800; background: #fff3e0; }
+.chip-item { border-color: #9c27b0; background: #f3e5f5; }
+.allergy-item { border-color: #f44336; background: #ffebee; }
+
+.dark-mode .health-item { background: #1b5e20; border-color: #4caf50; }
+.dark-mode .vaccine-item { background: #0d47a1; border-color: #2196f3; }
+.dark-mode .meds-item { background: #e65100; border-color: #ff9800; }
+.dark-mode .chip-item { background: #4a148c; border-color: #9c27b0; }
+.dark-mode .allergy-item { background: #b71c1c; border-color: #f44336; }
 
 .medical-icon {
-  font-size: 1.2rem;
-  width: 24px;
+  font-size: 1.4rem;
+  width: 32px;
   text-align: center;
+  flex-shrink: 0;
 }
 
 .medical-content {
@@ -1792,6 +1821,8 @@ body:has(#auth-container:not([style*="display: none"])) footer {
   color: var(--light-charcoal);
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  font-weight: 600;
+  margin-bottom: 0.2rem;
 }
 
 .dark-mode .medical-label {
@@ -1800,10 +1831,10 @@ body:has(#auth-container:not([style*="display: none"])) footer {
 
 .medical-value {
   font-size: 0.9rem;
-  font-weight: 600;
+  font-weight: 700;
+  line-height: 1.2;
 }
 
-/* Status-specific colors */
 .health-good { color: #2e7d32; }
 .health-fair { color: #ef6c00; }
 .health-poor { color: #c62828; }
@@ -1815,50 +1846,328 @@ body:has(#auth-container:not([style*="display: none"])) footer {
 .dark-mode .health-good { color: #81c784; }
 .dark-mode .health-fair { color: #ffb74d; }
 .dark-mode .health-poor { color: #e57373; }
+.dark-mode .vaccine-complete { color: #90caf9; }
+.dark-mode .chip-yes { color: #ce93d8; }
 
 /* ============================================================
-    RESPONSIVE ADJUSTMENTS
+    SECTION 3: EXERCISE STATS - HORIZONTAL
 ============================================================ */
 
+.exercise-stats-section {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 2px solid var(--primary-mustard);
+}
+
+.exercise-stat {
+  text-align: center;
+  padding: 1rem;
+  background: var(--off-white);
+  border-radius: 12px;
+  border: 2px solid var(--primary-yellow);
+}
+
+.dark-mode .exercise-stat {
+  background: var(--light-charcoal);
+  border-color: var(--primary-mustard);
+}
+
+.stat-number {
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: var(--dark-purple);
+  margin-bottom: 0.3rem;
+  line-height: 1;
+}
+
+.dark-mode .stat-number {
+  color: var(--primary-yellow);
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  color: var(--light-charcoal);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 600;
+}
+
+.dark-mode .stat-label {
+  color: var(--off-white);
+}
+
+/* Mini Chart Placeholder */
+.mini-chart-placeholder {
+  background: var(--primary-yellow);
+  color: var(--dark-purple);
+  border-radius: 8px;
+  padding: 0.5rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+/* ============================================================
+    SECTION 4: MOOD & CALENDAR - HORIZONTAL
+============================================================ */
+
+.mood-calendar-section {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 1.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 2px solid var(--light-purple);
+}
+
+/* Mood Section */
+.mood-section {
+  background: var(--off-white);
+  border-radius: 12px;
+  padding: 1rem;
+  border: 2px solid var(--primary-mustard);
+}
+
+.dark-mode .mood-section {
+  background: var(--light-charcoal);
+  border-color: var(--primary-yellow);
+}
+
+.mood-entries {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.mood-entry-small {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem;
+  background: var(--white);
+  border-radius: 8px;
+  border-left: 3px solid var(--primary-yellow);
+}
+
+.dark-mode .mood-entry-small {
+  background: var(--dark-charcoal);
+}
+
+.mood-emoji-small {
+  font-size: 1.2rem;
+}
+
+.mood-date-small {
+  font-size: 0.8rem;
+  color: var(--light-charcoal);
+  font-weight: 500;
+}
+
+.dark-mode .mood-date-small {
+  color: var(--off-white);
+}
+
+/* Calendar Section */
+.calendar-section {
+  background: var(--off-white);
+  border-radius: 12px;
+  padding: 1rem;
+  border: 2px solid var(--primary-mustard);
+}
+
+.dark-mode .calendar-section {
+  background: var(--light-charcoal);
+  border-color: var(--primary-yellow);
+}
+
+/* ============================================================
+    SECTION 5: QUICK STATS & ACTIONS - HORIZONTAL
+============================================================ */
+
+.quick-stats-actions {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+.quick-stats-section {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+}
+
+.quick-stat {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  background: var(--primary-yellow);
+  border-radius: 8px;
+  color: var(--dark-purple);
+  font-weight: 600;
+}
+
+.dark-mode .quick-stat {
+  background: var(--primary-mustard);
+}
+
+.quick-stat-icon {
+  font-size: 1rem;
+}
+
+.quick-stat-value {
+  font-size: 0.9rem;
+}
+
+/* Action Buttons */
+.profile-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.profile-actions button {
+  padding: 0.6rem 1rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.profile-actions button:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+
+.select-btn { background: var(--light-purple); color: var(--white); }
+.edit-btn { background: var(--primary-yellow); color: var(--dark-purple); }
+.delete-btn { background: #f44336; color: var(--white); }
+.report-btn { background: #2196f3; color: var(--white); }
+.share-btn { background: #4caf50; color: var(--white); }
+
+/* ============================================================
+    RESPONSIVE DESIGN
+============================================================ */
+
+/* Tablet (768px and below) */
 @media (max-width: 768px) {
-  .info-medical-container {
+  .profile-card {
+    padding: 1.2rem;
+    gap: 1.2rem;
+  }
+  
+  .basic-info-section {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    text-align: center;
+  }
+  
+  .profile-image {
+    width: 90px;
+    height: 90px;
+    margin: 0 auto;
+  }
+  
+  .basic-info-details {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+  }
+  
+  .medical-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+  }
+  
+  .exercise-stats-section {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+  }
+  
+  .mood-calendar-section {
     grid-template-columns: 1fr;
     gap: 1rem;
   }
   
-  .basic-info-details,
-  .medical-status {
-    gap: 0.6rem;
+  .quick-stats-actions {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .profile-actions {
+    justify-content: center;
+  }
+}
+
+/* Mobile (480px and below) */
+@media (max-width: 480px) {
+  .profile-card {
+    padding: 1rem;
+    gap: 1rem;
+  }
+  
+  .basic-info-details {
+    grid-template-columns: 1fr;
+  }
+  
+  .medical-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .exercise-stats-section {
+    grid-template-columns: 1fr;
+  }
+  
+  .quick-stats-section {
+    grid-template-columns: 1fr;
+  }
+  
+  .profile-actions {
+    flex-direction: column;
+  }
+  
+  .profile-actions button {
+    width: 100%;
+    justify-content: center;
   }
   
   .info-item,
   .medical-item {
-    padding: 0.4rem;
+    padding: 0.6rem;
+  }
+  
+  .profile-image {
+    width: 80px;
+    height: 80px;
   }
 }
 
-@media (max-width: 480px) {
-  .info-medical-container {
-    gap: 0.8rem;
+/* Large Desktop (1200px and above) */
+@media (min-width: 1200px) {
+  .profile-card {
+    padding: 2rem;
   }
   
-  .basic-info-section,
-  .medical-info-section {
-    padding: 0.8rem;
+  .profile-image {
+    width: 120px;
+    height: 120px;
   }
   
-  .info-icon,
-  .medical-icon {
-    font-size: 1rem;
-    width: 20px;
+  .basic-info-details {
+    grid-template-columns: repeat(3, 1fr);
   }
   
-  .info-value,
-  .medical-value {
-    font-size: 0.85rem;
+  .medical-grid {
+    grid-template-columns: repeat(5, 1fr);
   }
 }
-
 
   
   
