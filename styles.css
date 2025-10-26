@@ -51,9 +51,17 @@
 /* ============================================================
     AUTH PAGE LAYOUT - MODERN REDESIGN
 ============================================================ */
+#main-banner, .banner-overlay, #auth-container, .auth-logo {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+}
+
 /* Floating Logo for Auth Pages  replaces the header */
 .auth-logo {
-    position: fixed;
+  /*  position: fixed;*/
     top: 2rem;
     left: 50%;
     transform: translateX(-50%);
@@ -76,7 +84,7 @@
 
 /* Full Screen Banner */
 #main-banner {
-    position: fixed;
+  /*  position: fixed;*/
     top: 0;
     left: 0;
     width: 100%;
@@ -91,7 +99,7 @@
 }
 
 .banner-overlay {
-    position: fixed;
+ /*   position: fixed;*/
     top: 0;
     left: 0;
     width: 100%;
@@ -120,7 +128,7 @@
 
 /* Centered Auth Container - REPLACES OLD POSITIONING */
 #auth-container {
-    position: fixed;
+/*    position: fixed;*/
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
@@ -2463,17 +2471,3 @@
 }
 
   
- /* SURGICAL FIX - ADD TO VERY END OF CSS */
-#auth-container {
-    position: fixed !important;
-    top: 50% !important;
-    left: 50% !important;
-    transform: translate(-50%, -50%) !important;
-    bottom: auto !important;
-    width: 90% !important;
-    max-width: 500px !important;
-}
-
-.auth-logo {
-    display: block !important;
-} 
