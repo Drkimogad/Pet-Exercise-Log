@@ -25,11 +25,11 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-    <!-- Header -->
-    <header id="main-header">
-        <h1>Your Pet Exercise Log</h1>
-        <p>Track your pet's exercise routine and health metrics</p>
-    </header>
+   
+    <!-- Floating Logo for Auth Pages it replaces the header-->
+<div class="auth-logo" style="display: none;">
+    <h1>Pet Exercise Log</h1>
+</div>
 
 <!-- Full Page Banner background -->
 <div id="main-banner">
@@ -93,9 +93,16 @@
 <!-- Dashboard Container -->
 <div class="dashboard-container" style="display: none;">
     <header class="dashboard-header">
-        <button id="addNewProfileButton" class="icon-btn">＋ New Profile</button>
-        <button id="toggleModeButton" class="icon-btn">🌓 Toggle Mode</button>
-        <button id="logoutButton" class="icon-btn">🚪 Logout</button>
+        <!-- Moved header content here -->
+        <div class="dashboard-header-brand">
+            <h1>Your Pet Exercise Log</h1>
+            <p>Track your pet's exercise routine and health metrics</p>
+        </div>
+        <div class="dashboard-header-actions">
+            <button id="addNewProfileButton" class="icon-btn">＋ New Profile</button>
+            <button id="toggleModeButton" class="icon-btn">🌓 Toggle Mode</button>
+            <button id="logoutButton" class="icon-btn">🚪 Logout</button>
+        </div>
     </header>
     
     <!-- Profile Container - Will hold either form or saved profiles -->
