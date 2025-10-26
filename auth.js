@@ -2,19 +2,12 @@
 
 let currentUser = null;
 
-// Show/hide auth logo
-function toggleAuthLogo(show) {
-    const logo = document.querySelector('.auth-logo');
-    if (logo) logo.style.display = show ? 'block' : 'none';
-}
-
 async function hashPassword(pass, salt) {
     const encoder = new TextEncoder();
     const data = encoder.encode(salt ? pass + salt : pass);
     const hashBuffer = await crypto.subtle.digest('SHA-256', data);
     return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
 }
-
 
 // Handle Sign Up
 async function handleSignUp(e) {
@@ -59,6 +52,12 @@ async function handleSignUp(e) {
         console.error('Sign up error:', error);
         showError('Sign up failed. Please try again.');
     }
+}
+
+// Show/hide auth logo RECENTLY ADDED
+function toggleAuthLogo(show) {
+    const logo = document.querySelector('.auth-logo');
+    if (logo) logo.style.display = show ? 'block' : 'none';
 }
 
 // Handle Sign In
