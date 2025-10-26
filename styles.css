@@ -83,18 +83,18 @@ body.dark-mode {
   border-color: var(--primary-mustard);
 }
 
-
 /* ============================================================
-    AUTHENTICATION FORM STYLING
+    AUTHENTICATION FORM STYLING - POSITIONED IN BOTTOM THIRD
 ============================================================ */
 .auth-container {
-    width: 40%;   /* it was 50%*/
-    margin: 40vh auto;
+    width: 40%;
+    margin: auto auto 15vh auto; /* Changed: positions in bottom third horizontally */
     background: var(--container-bg);
     border: 2px solid var(--container-border);
     padding: 2rem;
     box-shadow: var(--shadow-md);
     text-align: center;
+    position: relative; /* Ensure it stays above banner */
 }
 
 .auth-container h2 {
@@ -102,26 +102,21 @@ body.dark-mode {
     margin-bottom: 1rem;
 }
 
-/* Alternative if .auth-page class isn't applied */
-body:has(#auth-container:not([style*="display: none"])) footer {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    z-index: 2;
+/* Ensure auth container stays above banner */
+#auth-container {
+    position: relative;
+    z-index: 10; /* Above banner background */
 }
 
-
 /* ============================================================
-    FULL-PAGE BANNER STYLING
+    BANNER POSITIONING - BETWEEN HEADER & FOOTER
 ============================================================ */
-
 #main-banner {
     position: fixed;
-    top: 0;
+    top: 140px; /* Start below header (header height + padding) */
     left: 0;
     width: 100%;
-    height: 100vh;
+    height: calc(100vh - 140px - 80px); /* Viewport - header - footer */
     z-index: -1;
     overflow: hidden;
 }
@@ -129,7 +124,7 @@ body:has(#auth-container:not([style*="display: none"])) footer {
 .banner-image {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: cover; /* Ensures full banner visibility */
 }
 
 .banner-overlay {
@@ -142,37 +137,55 @@ body:has(#auth-container:not([style*="display: none"])) footer {
     z-index: 1;
 }
 
+/* Ensure footer stays at bottom */
+#main-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    z-index: 5; /* Above banner but below auth container */
+}
+
 /* ============================================================
-    RESPONSIVE BANNER ADJUSTMENTS
+    RESPONSIVE ADJUSTMENTS
 ============================================================ */
 
+/* Tablet (768px and below) */
 @media (max-width: 768px) {
-    .banner-image {
-        object-fit: cover;
-    }
-}
-
-@media (max-width: 480px) {
-    #main-banner {
-        height: 100vh;
+    .auth-container {
+        width: 60%;
+        margin: auto auto 12vh auto; /* Adjusted for tablet */
     }
     
-    .banner-image {
-        object-fit: cover;
+    #main-banner {
+        top: 120px; /* Adjusted header height for tablet */
+        height: calc(100vh - 120px - 70px);
     }
 }
 
-/* Ensure auth container stays above lottie */
-#auth-container {
-    position: relative;
-    z-index: 10; /* Above banner background */
+/* Mobile (480px and below) */
+@media (max-width: 480px) {
+    .auth-container {
+        width: 85%;
+        margin: auto auto 10vh auto; /* Adjusted for mobile */
+        padding: 1.5rem;
+    }
+    
+    #main-banner {
+        top: 110px; /* Adjusted header height for mobile */
+        height: calc(100vh - 110px - 60px);
+    }
 }
 
-/* Dark mode adjustment */
-.dark-mode #lottie-banner {
-    opacity: 0.4; /* Even more transparent in dark mode */
+/* Large Desktop (1200px and above) */
+@media (min-width: 1200px) {
+    .auth-container {
+        width: 35%;
+        margin: auto auto 18vh auto; /* Fine-tuned for large screens */
+    }
 }
 
+/* error css */
 .error-message {
     background-color: #ffebee;
     color: #c62828;
