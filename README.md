@@ -12,3 +12,48 @@ This software and associated documentation files (the "Software") are proprietar
 ├── 📅 MINI CALENDAR (Current month with exercise dots)
 ├── 🏃‍♂️ QUICK STATS (Duration, Calories, Sessions in compact format)
 └── [ACTION BUTTONS]
+
+
+[Profile Card - Full Width Sections]
+┌─────────────────────────────────────────┐
+│ 🐕 BASIC INFO (Horizontal)               │
+│ ┌───────┐ ┌───────────────────────────┐ │
+│ │       │ │ 🐶 Name: Fido              │ │
+│ │  IMG  │ │ 🏷️  Breed: Labrador       │ │
+│ │       │ │ ⚖️  Weight: 25 lbs        │ │
+│ └───────┘ │ 🎂 Age: 3 years           │ │
+│           │ ♂️  Gender: Male          │ │
+│           │ 🎨 Color: Brown & White   │ │
+│           └───────────────────────────┘ │
+├─────────────────────────────────────────┤
+│ ⚕️ MEDICAL INFO (Horizontal)            │
+│ ┌───┐ ┌───┐ ┌───┐ ┌───┐ ┌───┐         │
+│ │❤️ │ │💉 │ │💊 │ │🔍 │ │🌡️ │         │
+│ │Hea│ │Vac│ │Med│ │Mic│ │All│         │
+│ │lth│ │cin│ │s  │ │ro │ │erg│         │
+│ │   │ │ati│ │   │ │chi│ │ies│         │
+│ │   │ │ons│ │   │ │p  │ │   │         │
+│ └───┘ └───┘ └───┘ └───┘ └───┘         │
+├─────────────────────────────────────────┤
+│ 📊 EXERCISE STATS (Horizontal)          │
+│ ┌───┐ ┌───┐ ┌───┐ ┌───┐               │
+│ │10 │ │30m│ │500│ │📈 │               │
+│ │ses│ │avg│ │cal│ │min│               │
+│ │sio│ │dur│ │ori│ │ich│               │
+│ │ns │ │   │ │es │ │art│               │
+│ └───┘ └───┘ └───┘ └───┘               │
+├─────────────────────────────────────────┤
+│ 😊 MOOD + 📅 CALENDAR (Horizontal)      │
+│ ┌───┐ ┌───────────────────────────┐     │
+│ │😊 │ │ S M T W T F S             │     │
+│ │😊 │ │ 1 2 3 4 5 6 7             │     │
+│ │😊 │ │ 8 9 10...                 │     │
+│ └───┘ └───────────────────────────┘     │
+├─────────────────────────────────────────┤
+│ 🏃 QUICK STATS + ACTIONS (Horizontal)   │
+│ ┌───┐ ┌───┐ ┌───┐ [Select][Edit]...    │
+│ │⏱️ │ │🔥 │ │📈 │                     │
+│ │120│ │500│ │10 │                     │
+│ │m  │ │cal│ │ses│                     │
+│ └───┘ └───┘ └───┘                     │
+└─────────────────────────────────────────┘
