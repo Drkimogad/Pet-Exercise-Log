@@ -2,6 +2,12 @@
 
 let currentUser = null;
 
+// Show/hide auth logo
+function toggleAuthLogo(show) {
+    const logo = document.querySelector('.auth-logo');
+    if (logo) logo.style.display = show ? 'block' : 'none';
+}
+
 async function hashPassword(pass, salt) {
     const encoder = new TextEncoder();
     const data = encoder.encode(salt ? pass + salt : pass);
@@ -122,6 +128,9 @@ function logout() {
     // Clear user session
     sessionStorage.removeItem('user');
     currentUser = null;
+
+    // Show auth logo and forms
+    toggleAuthLogo(true);
     
     // Hide dashboard, show auth forms
     document.querySelector('.dashboard-container').style.display = 'none';
@@ -140,6 +149,9 @@ function logout() {
 
 // Add this to your initAuth function to set up the logout button
 function initAuth() {
+    // Show auth logo initially
+    toggleAuthLogo(true);
+    
     // Check if user is already logged in
     if (checkAuth()) {
         return; // User is already logged in, dashboard will be shown
