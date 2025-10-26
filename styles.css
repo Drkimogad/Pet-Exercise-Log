@@ -145,7 +145,7 @@ body:has(#auth-container:not([style*="display: none"])) footer {
 #main-footer {
   background: var(--dark-purple);
   color: var(--primary-yellow);
-  padding: 1.5rem;
+  padding: 1rem;
   text-align: center;
   border-top: 3px solid var(--primary-mustard);
   position: relative;
@@ -188,7 +188,7 @@ body:has(#auth-container:not([style*="display: none"])) footer {
   display: flex;
   align-items: flex-end;
   justify-content: center;
-  padding-bottom: 20vh; /* ← INCREASE to push above footer */
+  padding-bottom: 1vh; /* ← INCREASE to push above footer */
   z-index: 25; /* ← INCREASE to be above footer */
   pointer-events: none; /* Allow clicks to pass through */
 }
