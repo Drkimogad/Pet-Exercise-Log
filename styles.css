@@ -47,6 +47,7 @@
   --header-text: var(--primary-yellow);
 }
 */
+
 /* Global Styles */
 * {
   box-sizing: border-box;
@@ -65,6 +66,56 @@ body {
 body.dark-mode {
   background-color: var(--dark-charcoal);
   color: var(--off-white);
+}
+
+
+/* ============================================================
+    HEADER & FOOTER STYLING - RESTORED
+============================================================ */
+#main-header, #main-footer {
+  background: var(--dark-purple);
+  color: var(--primary-yellow);
+  padding: 1.5rem;
+  text-align: center;
+}
+
+#main-header {
+  border-bottom: 3px solid var(--primary-mustard);
+}
+
+#main-footer {
+  border-top: 3px solid var(--primary-mustard);
+}
+
+#main-header h1 {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+  color: var(--primary-yellow);
+}
+
+#main-header p {
+  font-size: 1.1rem;
+  color: var(--primary-yellow);
+  opacity: 0.9;
+}
+
+/* Dark mode support */
+.dark-mode #main-header,
+.dark-mode #main-footer {
+  background: var(--dark-charcoal);
+  border-color: var(--primary-mustard);
+}
+
+/* ============================================================
+    CONDITIONAL FOOTER POSITIONING - RESTORED
+============================================================ */
+/* Ensure footer stays fixed when auth container is visible */
+body:has(#auth-container:not([style*="display: none"])) footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    z-index: 15; /* Above everything except auth container */
 }
 
 /* ============================================================
