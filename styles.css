@@ -2463,3 +2463,38 @@
 }
 
   
+/* SURGICAL OVERRIDE - ADD TO VERY END */
+#auth-container {
+    position: fixed !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    width: 90% !important;
+    max-width: 500px !important;
+    height: auto !important;
+}
+
+.auth-logo {
+    position: fixed !important;
+    top: 2rem !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    display: block !important;
+    height: auto !important;
+}
+
+#main-banner {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100vh !important;
+}
+
+.banner-overlay {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+}
