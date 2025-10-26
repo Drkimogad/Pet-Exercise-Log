@@ -1,13 +1,13 @@
 /* ============================================================
-    CSS VARIABLES: PALETTE DEFINITION
+    CSS VARIABLES: PALETTE DEFINITION - SCHEME 2 (ACTIVE)
 ============================================================ */
 :root {
-  --primary-yellow: #FFDB58;
-  --primary-mustard: #FFB700;
-  --dark-purple: #301934;
-  --light-purple: #A18AC4;
-  --light-charcoal: #333333;
-  --dark-charcoal: #1A1A1A;
+  --primary-yellow: #FFD166;    /* 🟡 Soft gold */
+  --primary-mustard: #EFB366;   /* 🟡 Muted amber */
+  --dark-purple: #26547C;       /* 🔷 Deep blue */
+  --light-purple: #3A86FF;      /* 🔷 Bright blue */
+  --light-charcoal: #5A5A5A;    /* ⚫ Warm gray */
+  --dark-charcoal: #363636;     /* ⚫ Charcoal */
   --white: #FFFFFF;
   --black: #000000;
   --off-white: #F7F7F7;
@@ -18,10 +18,35 @@
   --container-border: var(--primary-mustard);
   --shadow-sm: 0 2px 4px rgba(0,0,0,0.1);
   --shadow-md: 0 4px 6px rgba(0,0,0,0.15);
-  --dark-mustard: #E5A500; /* ADD THIS - darker shade of mustard */
-  --header-text: var(--primary-yellow); /* ADD THIS */
+  --dark-mustard: #D49A3D;      /* 🟡 Darker amber */
+  --header-text: var(--primary-yellow);
 }
 
+/* ============================================================
+    CSS VARIABLES: PALETTE DEFINITION - SCHEME 3 (BACKUP)
+============================================================ */
+/*
+:root {
+  --primary-yellow: #A3B18A;    /* 🟢 Sage green */
+  --primary-mustard: #588157;   /* 🟢 Forest green */
+  --dark-purple: #3A5A40;       /* 🟢 Deep green */
+  --light-purple: #7BAE7F;      /* 🟢 Soft green */
+  --light-charcoal: #5D5D5D;    /* ⚫ Neutral gray */
+  --dark-charcoal: #344E41;     /* 🟢 Dark green-gray */
+  --white: #FFFFFF;
+  --black: #000000;
+  --off-white: #F7F7F7;
+  --border-focus: var(--primary-mustard);
+  --input-bg: var(--white);
+  --input-border: var(--primary-mustard);
+  --container-bg: var(--off-white);
+  --container-border: var(--primary-mustard);
+  --shadow-sm: 0 2px 4px rgba(0,0,0,0.1);
+  --shadow-md: 0 4px 6px rgba(0,0,0,0.15);
+  --dark-mustard: #466443;      /* 🟢 Darker forest green */
+  --header-text: var(--primary-yellow);
+}
+*/
 /* Global Styles */
 * {
   box-sizing: border-box;
@@ -43,147 +68,248 @@ body.dark-mode {
 }
 
 /* ============================================================
-    HEADER & FOOTER STYLING - FIXED
+    AUTH PAGE LAYOUT - FLEXBOX REFACTOR
 ============================================================ */
-#main-header, #main-footer {
+
+/* Auth Page Container */
+.auth-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Header & Footer - Natural Flow */
+#main-header {
   background: var(--dark-purple);
   color: var(--primary-yellow);
   padding: 1.5rem;
   text-align: center;
-}
-
-
-/* Also make sure header stays above Lottie */
-#main-header {
-    position: relative;
-     border-bottom: 3px solid var(--primary-mustard);
-    z-index: 5; /* Above Lottie but below auth container */
+  border-bottom: 3px solid var(--primary-mustard);
+  flex-shrink: 0; /* Prevent shrinking */
 }
 
 #main-footer {
+  background: var(--dark-purple);
+  color: var(--primary-yellow);
+  padding: 1.5rem;
+  text-align: center;
   border-top: 3px solid var(--primary-mustard);
+  flex-shrink: 0; /* Prevent shrinking */
 }
 
-#main-header h1 {
-  font-size: 2rem;
-  margin-bottom: 0.5rem;
-  color: var(--primary-yellow);
+/* Main Content Area - Takes remaining space */
+.auth-main {
+  flex: 1; /* Take all available space */
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
 }
 
-#main-header p {
-  font-size: 1.1rem;
-  color: var(--primary-yellow);
-  opacity: 0.9;
-}
-
-/* Dark mode support */
-.dark-mode #main-header,
-.dark-mode #main-footer {
-  background: var(--dark-charcoal);
-  border-color: var(--primary-mustard);
-}
-
-/* ============================================================
-    AUTHENTICATION FORM STYLING - POSITIONED IN BOTTOM THIRD
-============================================================ */
-.auth-container {
-    width: 40%;
-    margin: auto auto 15vh auto; /* Changed: positions in bottom third horizontally */
-    background: var(--container-bg);
-    border: 2px solid var(--container-border);
-    padding: 2rem;
-    box-shadow: var(--shadow-md);
-    text-align: center;
-    position: relative; /* Ensure it stays above banner */
-}
-
-.auth-container h2 {
-    color: var(--dark-mustard);
-    margin-bottom: 1rem;
-}
-
-/* Ensure auth container stays above banner */
-#auth-container {
-    position: relative;
-    z-index: 10; /* Above banner background */
-}
-
-/* ============================================================
-    BANNER POSITIONING - BETWEEN HEADER & FOOTER
-============================================================ */
+/* Banner - Fills main content area */
 #main-banner {
-    position: fixed;
-    top: 140px; /* Start below header (header height + padding) */
-    left: 0;
-    width: 100%;
-    height: calc(100vh - 140px - 80px); /* Viewport - header - footer */
-    z-index: -1;
-    overflow: hidden;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
 }
 
 .banner-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover; /* Ensures full banner visibility */
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .banner-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(48, 25, 52, 0.4);
-    z-index: 1;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(38, 84, 124, 0.5); /* Using Scheme 2 dark-purple with opacity */
+  z-index: 2;
 }
 
-/* Ensure footer stays at bottom */
-#main-footer {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    z-index: 5; /* Above banner but below auth container */
+/* Auth Container - Perfectly positioned */
+#auth-container {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  align-items: flex-end; /* Push to bottom */
+  justify-content: center;
+  flex: 1;
+  padding-bottom: 10vh; /* Bottom third positioning */
+}
+
+.auth-container {
+  width: 40%;
+  background: rgba(247, 247, 247, 0.95); /* Semi-transparent off-white */
+  border: 2px solid var(--container-border);
+  padding: 2.5rem;
+  box-shadow: var(--shadow-md);
+  text-align: center;
+  border-radius: 12px;
+  backdrop-filter: blur(10px); /* Frosted glass effect */
+}
+
+.auth-container h2 {
+  color: var(--dark-mustard);
+  margin-bottom: 1.5rem;
+  font-size: 1.8rem;
+}
+
+/* Form Elements */
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.form-group label {
+  color: var(--dark-purple);
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+}
+
+.form-group input {
+  padding: 0.8rem 1rem;
+  border: 2px solid var(--input-border);
+  border-radius: 8px;
+  background: var(--input-bg);
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 3px rgba(239, 179, 102, 0.2); /* primary-mustard with opacity */
+}
+
+.auth-btn {
+  padding: 1rem 2rem;
+  background: var(--dark-purple);
+  color: var(--primary-yellow);
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 0.5rem;
+}
+
+.auth-btn:hover {
+  background: var(--light-purple);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.auth-switch {
+  margin-top: 1.5rem;
+  color: var(--light-charcoal);
+}
+
+.auth-switch a {
+  color: var(--dark-purple);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.auth-switch a:hover {
+  color: var(--light-purple);
 }
 
 /* ============================================================
-    RESPONSIVE ADJUSTMENTS
+    RESPONSIVE DESIGN
 ============================================================ */
 
 /* Tablet (768px and below) */
 @media (max-width: 768px) {
-    .auth-container {
-        width: 60%;
-        margin: auto auto 12vh auto; /* Adjusted for tablet */
-    }
-    
-    #main-banner {
-        top: 120px; /* Adjusted header height for tablet */
-        height: calc(100vh - 120px - 70px);
-    }
+  .auth-container {
+    width: 65%;
+    padding: 2rem;
+    margin-bottom: 5vh; /* Adjust bottom spacing */
+  }
+  
+  #auth-container {
+    padding-bottom: 8vh;
+  }
+  
+  .auth-container h2 {
+    font-size: 1.6rem;
+  }
 }
 
 /* Mobile (480px and below) */
 @media (max-width: 480px) {
-    .auth-container {
-        width: 85%;
-        margin: auto auto 10vh auto; /* Adjusted for mobile */
-        padding: 1.5rem;
-    }
-    
-    #main-banner {
-        top: 110px; /* Adjusted header height for mobile */
-        height: calc(100vh - 110px - 60px);
-    }
+  .auth-container {
+    width: 90%;
+    padding: 1.5rem;
+    margin-bottom: 3vh;
+  }
+  
+  #auth-container {
+    padding-bottom: 5vh;
+    align-items: center; /* Center on mobile */
+  }
+  
+  .auth-container h2 {
+    font-size: 1.4rem;
+  }
+  
+  .auth-btn {
+    padding: 0.8rem 1.5rem;
+    font-size: 1rem;
+  }
 }
 
 /* Large Desktop (1200px and above) */
 @media (min-width: 1200px) {
-    .auth-container {
-        width: 35%;
-        margin: auto auto 18vh auto; /* Fine-tuned for large screens */
-    }
+  .auth-container {
+    width: 35%;
+    padding: 3rem;
+  }
+  
+  #auth-container {
+    padding-bottom: 12vh;
+  }
 }
+
+/* Dark Mode Support */
+.dark-mode .auth-container {
+  background: rgba(54, 54, 54, 0.95); /* dark-charcoal with opacity */
+  border-color: var(--primary-mustard);
+}
+
+.dark-mode .form-group label {
+  color: var(--primary-yellow);
+}
+
+.dark-mode .form-group input {
+  background: var(--light-charcoal);
+  color: var(--off-white);
+  border-color: var(--primary-mustard);
+}
+
+.dark-mode .auth-switch {
+  color: var(--off-white);
+}
+
+.dark-mode .auth-switch a {
+  color: var(--primary-yellow);
+}
+
+
 
 /* error css */
 .error-message {
