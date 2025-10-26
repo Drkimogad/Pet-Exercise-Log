@@ -188,13 +188,13 @@ body:has(#auth-container:not([style*="display: none"])) footer {
   width: 80vw; /* Increased width */
   max-width: 1000px; /* Wider max-width */
 }
-
+/* for adjustments */
 .auth-container {
   width: 100%;
   min-height: 300px; /* Reduced height */
   background: rgba(247, 247, 247, 0.95);
   border: 2px solid var(--container-border);
-  padding: 1.5rem 2.5rem; /* Reduced top/bottom padding */
+  padding: 1rem; /* Reduced top/bottom padding */
   box-shadow: var(--shadow-md);
   text-align: center;
   border-radius: 12px;
