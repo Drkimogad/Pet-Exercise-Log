@@ -137,6 +137,84 @@ function setupAuthSwitchers() {
     });
 }
 
+// Password Reset Functions
+function setupPasswordReset() {
+    // Forgot Password link
+    document.getElementById('forgotPassword').addEventListener('click', function(e) {
+        e.preventDefault();
+        showForgotPasswordForm();
+    });
+    
+    // Back to Sign In from Forgot Password
+    document.getElementById('backToSignin').addEventListener('click', function(e) {
+        e.preventDefault();
+        showSignInForm();
+    });
+    
+    // Forgot Password form submission
+    document.getElementById('forgotPasswordFormElement').addEventListener('submit', handleForgotPassword);
+}
+
+// Show Forgot Password Form
+function showForgotPasswordForm() {
+    document.getElementById('signinForm').style.display = 'none';
+    document.getElementById('signupForm').style.display = 'none';
+    document.getElementById('forgotPasswordForm').style.display = 'block';
+}
+
+// Show Sign In Form
+function showSignInForm() {
+    document.getElementById('signinForm').style.display = 'block';
+    document.getElementById('signupForm').style.display = 'none';
+    document.getElementById('forgotPasswordForm').style.display = 'none';
+}
+
+// Handle Forgot Password
+async function handleForgotPassword(e) {
+    e.preventDefault();
+    
+    const email = document.getElementById('resetEmail').value;
+    
+    if (!email) {
+        return showError('Please enter your email address.');
+    }
+    
+    try {
+        // Send password reset email
+        await firebase.auth().sendPasswordResetEmail(email);
+        showSuccess('Password reset email sent! Check your inbox.');
+        
+        // Clear form and go back to sign in
+        document.getElementById('forgotPasswordFormElement').reset();
+        setTimeout(() => {
+            showSignInForm();
+        }, 2000);
+        
+    } catch (error) {
+        console.error('Password reset error:', error);
+        
+        if (error.code === 'auth/user-not-found') {
+            showError('No account found with this email.');
+        } else if (error.code === 'auth/invalid-email') {
+            showError('Invalid email address.');
+        } else {
+            showError('Failed to send reset email. Please try again.');
+        }
+    }
+}
+
+// Handle Password Reset from Email Link
+function handlePasswordResetFromEmail() {
+    // Check if we're on a password reset page (URL contains mode=resetPassword)
+    if (window.location.href.includes('mode=resetPassword')) {
+        // This would be handled by Firebase automatically
+        // The user clicks the email link and gets redirected to your auth page
+        // Firebase handles the token verification and password reset
+        console.log('Password reset flow detected');
+    }
+}
+
+
 // Logout function with Firebase
 function logout() {
     // Firebase Auth - Sign out
@@ -174,6 +252,9 @@ function initAuth() {
     document.getElementById('authForm').addEventListener('submit', handleSignIn);
     document.getElementById('signupFormElement').addEventListener('submit', handleSignUp);
     
+   // Set up password reset handlers
+    setupPasswordReset();
+
     // Set up auth switchers
     setupAuthSwitchers();
     
@@ -183,6 +264,9 @@ function initAuth() {
         logoutButton.addEventListener('click', logout);
     }
     
+    // Check for password reset flow
+    handlePasswordResetFromEmail();
+
     // Firebase Auth State Listener
     firebase.auth().onAuthStateChanged((user) => {
         if (user) {
