@@ -366,6 +366,149 @@ body:has(#auth-container) #main-footer {
     white-space: nowrap; /* Prevent line breaks */
 }
 
+/* ============================================================
+    PASSWORD RESET & LEGAL LINKS STYLING
+============================================================ */
+
+/* Auth Links Container */
+.auth-links {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    margin-top: 1.5rem;
+}
+
+/* Forgot Password Link */
+#forgotPassword {
+    color: var(--light-purple);
+    font-size: 0.9rem;
+    text-decoration: none;
+    font-weight: 600;
+    text-align: center;
+    transition: color 0.3s ease;
+}
+
+#forgotPassword:hover {
+    color: var(--dark-purple);
+    text-decoration: underline;
+}
+
+/* Reset Instructions Text */
+.reset-instructions {
+    color: var(--light-charcoal);
+    text-align: center;
+    margin-bottom: 1.5rem;
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+.dark-mode .reset-instructions {
+    color: var(--off-white);
+}
+
+/* Back to Sign In Link */
+#backToSignin {
+    color: var(--light-purple);
+    font-size: 0.9rem;
+    text-decoration: none;
+    font-weight: 600;
+    text-align: center;
+    transition: color 0.3s ease;
+}
+
+#backToSignin:hover {
+    color: var(--dark-purple);
+    text-decoration: underline;
+}
+
+/* Legal Links */
+.legal-links {
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 20;
+    display: flex;
+    gap: 0.8rem;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    padding: 0.8rem 1.5rem;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 209, 102, 0.2);
+}
+
+.legal-links a {
+    color: var(--primary-yellow);
+    font-size: 0.8rem;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.legal-links a:hover {
+    color: var(--primary-mustard);
+    text-decoration: underline;
+}
+
+.legal-links span {
+    color: var(--primary-yellow);
+    font-size: 0.8rem;
+}
+
+/* Dark Mode Support */
+.dark-mode .legal-links {
+    background: rgba(54, 54, 54, 0.1);
+    border-color: rgba(255, 209, 102, 0.1);
+}
+
+.dark-mode .legal-links a,
+.dark-mode .legal-links span {
+    color: var(--primary-yellow);
+}
+
+.dark-mode .legal-links a:hover {
+    color: var(--primary-mustard);
+}
+
+.dark-mode #forgotPassword,
+.dark-mode #backToSignin {
+    color: var(--primary-yellow);
+}
+
+.dark-mode #forgotPassword:hover,
+.dark-mode #backToSignin:hover {
+    color: var(--primary-mustard);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .legal-links {
+        bottom: 1.5rem;
+        padding: 0.6rem 1.2rem;
+    }
+    
+    .legal-links a {
+        font-size: 0.75rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .legal-links {
+        bottom: 1rem;
+        padding: 0.5rem 1rem;
+        gap: 0.6rem;
+    }
+    
+    .legal-links a {
+        font-size: 0.7rem;
+    }
+    
+    .reset-instructions {
+        font-size: 0.85rem;
+    }
+}
+
 /* ============================
       error css
 ============================================*/
