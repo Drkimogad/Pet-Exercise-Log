@@ -52,7 +52,7 @@ function showExerciseLog() {
         console.log('showExerciseLog called'); // ← ADD THIS
     // Hide auth and show dashboard
   // Hide auth logo and container
-    toggleAuthLogo(false);
+    toggleAuthHeader(false);
  
     document.getElementById('auth-container').style.display = 'none';
     document.getElementById('main-banner').style.display = 'none';
