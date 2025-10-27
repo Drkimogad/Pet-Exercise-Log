@@ -2,7 +2,7 @@
   "name": "pet-exercise-log",
   "version": "1.0.0",
   "description": "This project is licensed under the Proprietary License.",
-    "main": "dashboard.js",
+  "main": "dashboard.js",
   "scripts": {
     "start": "node dashboard.js",
     "dev": "node dashboard.js"
@@ -13,6 +13,7 @@
   "type": "commonjs",
   "dependencies": {
     "express": "^4.21.2",
+    "firebase": "^12.4.0",
     "path": "^0.12.7",
     "serve-static": "^1.16.2"
   }
