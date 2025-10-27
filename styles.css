@@ -620,6 +620,32 @@
   padding-right: 0.5rem;
 }
 
+
+/* When no profiles, use single column layout */
+.dashboard-container:has(.no-profiles-message) {
+    grid-template-areas: 
+        "header"
+        "main"
+        "footer";
+    grid-template-columns: 1fr;
+}
+
+.dashboard-container:has(.no-profiles-message) .saved-profiles {
+    display: none;
+}
+
+/* Center the empty message in main area */
+.profile-container .empty-state {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 400px;
+    text-align: center;
+}
+
+
+/* card styles*/
 .profile-card {
   background-color: var(--white);
   border-radius: 8px;
