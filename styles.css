@@ -342,7 +342,29 @@ body:has(#auth-container) #main-footer {
 
 
 
+/* ============================================================
+    AUTH PAGE TWEAKS
+============================================================ */
 
+/* Push auth container down and reduce size */
+#auth-container {
+    top: 55%; /* Push down from 50% */
+}
+
+.auth-container {
+    padding: 1.5rem; /* Reduced from 2rem */
+}
+
+/* Make logo wider and more pronounced */
+.auth-logo {
+    padding: 1rem 3rem; /* Wider from 2rem to 3rem */
+    min-width: 280px; /* Ensure minimum width */
+}
+
+.auth-logo h1 {
+    font-size: 2rem; /* Larger from 1.8rem */
+    white-space: nowrap; /* Prevent line breaks */
+}
 
 /* ============================
       error css
