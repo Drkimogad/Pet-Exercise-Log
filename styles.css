@@ -51,7 +51,7 @@
 /* ============================================================
     AUTH PAGE LAYOUT - MODERN REDESIGN
 ============================================================ */
-#main-banner, .banner-overlay, #auth-container {
+#main-banner, .banner-overlay {
     position: absolute;
     top: 0;
     left: 0;
@@ -133,13 +133,14 @@
 
 /* Centered Auth Container - REPLACES OLD POSITIONING */
 #auth-container {
-    position: fixed !important;
-    top: 50% !important;
-    left: 50% !important;
-    transform: translate(-50%, -50%) !important;
-    width: 90% !important;
-    max-width: 500px !important;
-    height: auto !important;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    max-width: 500px;
+    height: auto;
+    z-index: 25;
 }
 
 .auth-container {
