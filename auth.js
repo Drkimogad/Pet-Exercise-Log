@@ -2,14 +2,7 @@
 
 let currentUser = null;
 
-async function hashPassword(pass, salt) {
-    const encoder = new TextEncoder();
-    const data = encoder.encode(salt ? pass + salt : pass);
-    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-    return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
-}
-
-// Handle Sign Up
+// Handle Sign Up with Firebase
 async function handleSignUp(e) {
     e.preventDefault();
     const formData = {
@@ -28,29 +21,42 @@ async function handleSignUp(e) {
     if (errors.length) return showErrors(errors);
 
     try {
-        const salt = crypto.getRandomValues(new Uint8Array(16)).join('');
-        const userData = {
-            username: formData.username,
-            email: formData.email,
-            password: await hashPassword(formData.password, salt),
-            salt,
-            lastLogin: new Date().toISOString()
-        };
+        // Firebase Auth - Create user with email/password
+        const userCredential = await firebase.auth().createUserWithEmailAndPassword(
+            formData.email, 
+            formData.password
+        );
         
-        // Save to localStorage (for demo purposes)
-        localStorage.setItem('user_' + formData.email, JSON.stringify(userData));
-        sessionStorage.setItem('user', JSON.stringify(userData));
-        currentUser = userData;
+        // User created successfully
+        const user = userCredential.user;
+        
+        // Update user profile with display name
+        await user.updateProfile({
+            displayName: formData.username
+        });
+        
+        // Store additional user data in Firestore (we'll set this up next)
+        currentUser = {
+            uid: user.uid,
+            username: formData.username,
+            email: user.email
+        };
         
         // Show success and show dashboard
         showSuccess('Account created successfully!');
-        
-        // Hide auth and properly initialize dashboard
-      showExerciseLog();
+        showExerciseLog();
         
     } catch (error) {
-        console.error('Sign up error:', error);
-        showError('Sign up failed. Please try again.');
+        console.error('Firebase sign up error:', error);
+        
+        // Handle specific Firebase errors
+        if (error.code === 'auth/email-already-in-use') {
+            showError('This email is already registered. Please sign in instead.');
+        } else if (error.code === 'auth/weak-password') {
+            showError('Password is too weak. Please use a stronger password.');
+        } else {
+            showError('Sign up failed. Please try again.');
+        }
     }
 }
 
@@ -121,40 +127,54 @@ function setupAuthSwitchers() {
     });
 }
 
-
-// Logout function
+// Logout function with Firebase
 function logout() {
-    // Clear user session
-    sessionStorage.removeItem('user');
-    currentUser = null;
+    // Firebase Auth - Sign out
+    firebase.auth().signOut().then(() => {
+        // Clear user session
+        currentUser = null;
 
-    // Show auth logo and forms
-    toggleAuthLogo(true);
-    
-    // Hide dashboard, show auth forms
-    document.querySelector('.dashboard-container').style.display = 'none';
-    document.getElementById('auth-container').style.display = 'block';
-    document.getElementById('main-banner').style.display = 'block';
-    
-    // Show sign-in form specifically
-    document.getElementById('signinForm').style.display = 'block';
-    document.getElementById('signupForm').style.display = 'none';
-    
-    // Clear any form values
-    document.getElementById('authForm').reset();
-    
-    console.log('User logged out successfully');
+        // Show auth logo and forms
+        toggleAuthLogo(true);
+        
+        // Hide dashboard, show auth forms
+        document.querySelector('.dashboard-container').style.display = 'none';
+        document.getElementById('auth-container').style.display = 'block';
+        document.getElementById('main-banner').style.display = 'block';
+        
+        // Show sign-in form specifically
+        document.getElementById('signinForm').style.display = 'block';
+        document.getElementById('signupForm').style.display = 'none';
+        
+        // Clear any form values
+        document.getElementById('authForm').reset();
+        
+        console.log('User logged out successfully');
+    }).catch((error) => {
+        console.error('Firebase logout error:', error);
+    });
 }
 
-// Add this to your initAuth function to set up the logout button
+// Finally, update initAuth to handle Firebase auth state:
 function initAuth() {
     // Show auth logo initially
     toggleAuthLogo(true);
     
-    // Check if user is already logged in
-    if (checkAuth()) {
-        return; // User is already logged in, dashboard will be shown
-    }
+    // Firebase Auth State Listener
+    firebase.auth().onAuthStateChanged((user) => {
+        if (user) {
+            // User is signed in
+            currentUser = {
+                uid: user.uid,
+                username: user.displayName || user.email,
+                email: user.email
+            };
+            showExerciseLog();
+        } else {
+            // User is signed out
+            currentUser = null;
+        }
+    });
     
     // Set up form handlers
     document.getElementById('authForm').addEventListener('submit', handleSignIn);
