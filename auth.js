@@ -60,10 +60,10 @@ async function handleSignUp(e) {
     }
 }
 
-// Show/hide auth logo RECENTLY ADDED
-function toggleAuthLogo(show) {
-    const logo = document.querySelector('.auth-logo');
-    if (logo) logo.style.display = show ? 'block' : 'none';
+// Show/hide auth header (logo + legal links)
+function toggleAuthHeader(show) {
+    const authHeader = document.querySelector('.auth-header');
+    if (authHeader) authHeader.style.display = show ? 'block' : 'none';
 }
 
 // Handle Sign In with Firebase
@@ -223,7 +223,7 @@ function logout() {
         currentUser = null;
 
         // Show auth logo and forms
-        toggleAuthLogo(true);
+        toggleAuthHeader(true);
         
         // Hide dashboard, show auth forms
         document.querySelector('.dashboard-container').style.display = 'none';
@@ -246,8 +246,8 @@ function logout() {
 // Finally, update initAuth to handle Firebase auth state:
 function initAuth() {
     // Show auth logo initially
-    toggleAuthLogo(true);
-
+    toggleAuthHeader(true);
+    
      // Set up form handlers first
     document.getElementById('authForm').addEventListener('submit', handleSignIn);
     document.getElementById('signupFormElement').addEventListener('submit', handleSignUp);
