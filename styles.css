@@ -132,15 +132,18 @@
 }
 
 /* Centered Auth Container - REPLACES OLD POSITIONING */
+/* SURGICAL POSITIONING FIX */
 #auth-container {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 90%;
-    max-width: 500px;
-    height: auto;
-    z-index: 25;
+    position: fixed !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    width: 90% !important;
+    max-width: 500px !important;
+    height: auto !important;
+    z-index: 25 !important;
+    bottom: auto !important;
+    right: auto !important;
 }
 
 .auth-container {
