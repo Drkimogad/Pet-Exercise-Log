@@ -89,26 +89,35 @@ body:has(#auth-container) #main-footer {
 }
 
 /* Floating Logo - Top Center */
-.auth-logo {
+.auth-header {
     position: fixed;
     top: 2rem;
     left: 50%;
     transform: translateX(-50%);
     z-index: 30;
+    text-align: center;
+    width: auto;
+}
+
+.auth-logo {
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(10px);
     padding: 1rem 2rem;
     border-radius: 12px;
     border: 1px solid rgba(255, 209, 102, 0.3);
+    margin-bottom: 1rem;
 }
 
-.auth-logo h1 {
-    color: var(--primary-yellow);
-    font-size: 1.8rem;
-    margin: 0;
-    text-align: center;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-    font-weight: 700;
+.legal-links {
+    display: flex;
+    gap: 0.8rem;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    padding: 0.8rem 1.5rem;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 209, 102, 0.2);
+    justify-content: center;
 }
 
 /* Centered Auth Container */
@@ -220,7 +229,7 @@ body:has(#auth-container) #main-footer {
 
 /* Tablet (768px and below) */
 @media (max-width: 768px) {
-    .auth-logo {
+    .auth-header {
         top: 1.5rem;
         padding: 0.8rem 1.5rem;
     }
@@ -241,7 +250,7 @@ body:has(#auth-container) #main-footer {
 
 /* Mobile (480px and below) */
 @media (max-width: 480px) {
-    .auth-logo {
+    .auth-header {
         top: 1rem;
         padding: 0.6rem 1.2rem;
     }
@@ -291,7 +300,7 @@ body:has(#auth-container) #main-footer {
     DARK MODE SUPPORT
 ============================================================ */
 
-.dark-mode .auth-logo {
+.dark-mode .auth-header {
     background: rgba(54, 54, 54, 0.1);
     border-color: rgba(255, 209, 102, 0.2);
 }
@@ -356,7 +365,7 @@ body:has(#auth-container) #main-footer {
 }
 
 /* Make logo wider and more pronounced */
-.auth-logo {
+.auth-header {
     padding: 1rem 3rem; /* Wider from 2rem to 3rem */
     min-width: 280px; /* Ensure minimum width */
 }
@@ -422,52 +431,9 @@ body:has(#auth-container) #main-footer {
     color: var(--primary-mustard);
 }
 
-.auth-links {
-    margin-top: 2rem;
-    text-align: center;
-    width: 100%;
-    
-    /* Keep the rest */
-    z-index: 20;
-    display: flex;
-    gap: 0.8rem;
-    align-items: center;
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    padding: 0.8rem 1.5rem;
-    border-radius: 8px;
-    border: 1px solid rgba(255, 209, 102, 0.2);
-}
 
-/* Responsive Design */
-@media (max-width: 768px) {
-    .legal-links {
-        /* REMOVE bottom positioning */
-        /* bottom: 1.5rem; */
-        
-        margin-top: 1.5rem;
-        padding: 0.6rem 1.2rem;
-    }
-    
-    .legal-links a {
-        font-size: 0.75rem;
-    }
-}
 
-@media (max-width: 480px) {
-    .legal-links {
-        /* REMOVE bottom positioning */
-        /* bottom: 1rem; */
-        
-        margin-top: 1rem;
-        padding: 0.5rem 1rem;
-        gap: 0.6rem;
-    }
-    
-    .legal-links a {
-        font-size: 0.7rem;
-    }
-}
+
 
 /* ============================
       error css
