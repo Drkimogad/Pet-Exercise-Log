@@ -54,10 +54,10 @@ function showExerciseLog() {
     document.getElementById('main-banner').style.display = 'none';
     
     // Show dashboard with GRID display
-    document.querySelector('.dashboard-container').style.display = 'grid';
+    document.querySelector('.dashboard-container').style.display = 'block';
 
     // Show saved profiles with FLEX display (since it's flex in your CSS)
-    document.getElementById('savedProfiles').style.display = 'flex'; // ← Change from 'block' to 'flex'
+    document.getElementById('savedProfiles').style.display = 'block'; // ← Change from 'block' to 'flex'
     
     document.getElementById('profileContainer').style.display = 'none';
     
