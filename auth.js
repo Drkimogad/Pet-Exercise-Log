@@ -66,13 +66,17 @@ function toggleAuthLogo(show) {
     if (logo) logo.style.display = show ? 'block' : 'none';
 }
 
-// Handle Sign In
+// Handle Sign In with Firebase
 async function handleSignIn(e) {
     e.preventDefault();
+    console.log('Login form submitted'); // ADD THIS
+    
     const formData = {
         email: document.getElementById('email').value,
         password: document.getElementById('password').value
     };
+    
+    console.log('Form data:', formData); // ADD THIS
 
     const errors = [];
     if (!/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(formData.email)) errors.push('Invalid email');
@@ -81,34 +85,40 @@ async function handleSignIn(e) {
     if (errors.length) return showErrors(errors);
 
     try {
-        // Check if user exists
-        const userKey = 'user_' + formData.email;
-        const savedUser = JSON.parse(localStorage.getItem(userKey));
+        console.log('Attempting Firebase sign in...'); // ADD THIS
+        // Firebase Auth - Sign in with email/password
+        const userCredential = await firebase.auth().signInWithEmailAndPassword(
+            formData.email, 
+            formData.password
+        );
         
-        if (!savedUser) {
-            return showError('No account found with this email');
-        }
+        console.log('Firebase sign in successful:', userCredential.user); // ADD THIS
+        // User signed in successfully
+        const user = userCredential.user;
         
-        // Verify password
-        const hashedPassword = await hashPassword(formData.password, savedUser.salt);
-        if (hashedPassword !== savedUser.password) {
-            return showError('Incorrect password');
-        }
-        
-        // Update last login and save
-        savedUser.lastLogin = new Date().toISOString();
-        sessionStorage.setItem('user', JSON.stringify(savedUser));
-        currentUser = savedUser;
+        currentUser = {
+            uid: user.uid,
+            username: user.displayName || user.email,
+            email: user.email
+        };
         
         // Show success and show dashboard
         showSuccess('Signed in successfully!');
-        
-        // Hide auth and properly initialize dashboard
         showExerciseLog();
         
     } catch (error) {
-        console.error('Sign in error:', error);
-        showError('Sign in failed. Please try again.');
+        console.error('Firebase sign in error:', error);
+        
+        // Handle specific Firebase errors
+        if (error.code === 'auth/user-not-found') {
+            showError('No account found with this email.');
+        } else if (error.code === 'auth/wrong-password') {
+            showError('Incorrect password.');
+        } else if (error.code === 'auth/invalid-email') {
+            showError('Invalid email address.');
+        } else {
+            showError('Sign in failed. Please try again.');
+        }
     }
 }
 
