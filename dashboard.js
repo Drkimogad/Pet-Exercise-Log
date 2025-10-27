@@ -485,10 +485,17 @@ function loadSavedProfiles() {
         console.log(`🔍 Pet ${i}: ${pet.petDetails.name}, Mood logs:`, pet.moodLogs);
     });
 
-    if (pets.length === 0) {
+if (pets.length === 0) {
         document.getElementById('savedProfiles').innerHTML = `
             <div class="no-profiles-message">
                 <p>No saved profiles yet. Click "New Profile" to create one!</p>
+            </div>`;
+        
+        // Show centered message in main area
+        document.getElementById('profileContainer').innerHTML = `
+            <div class="empty-state">
+                <p>Welcome to Pet Exercise Log! 🐾</p>
+                <small>Click "New Profile" above to create your first pet profile and start tracking exercises.</small>
             </div>`;
         return;
     }
