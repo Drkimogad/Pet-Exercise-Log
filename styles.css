@@ -49,18 +49,8 @@
 */
 
 /* ============================================================
-    AUTH PAGE LAYOUT - MODERN REDESIGN
-============================================================ */
-/* ============================================================
     CLEAN AUTH PAGE CSS - FIXED POSITIONING
 ============================================================ */
-
-/* Hide header/footer on auth pages */
-body:has(#auth-container) #main-header,
-body:has(#auth-container) #main-footer {
-    display: none;
-}
-
 /* Full Screen Banner Background */
 #main-banner {
     position: fixed;
@@ -433,10 +423,8 @@ body:has(#auth-container) #main-footer {
 
 
 
-
-
 /* ============================
-      error css
+    notification rules 
 ============================================*/
 .error-message {
     background-color: #ffebee;
@@ -621,7 +609,7 @@ body:has(#auth-container) #main-footer {
 }
 
 
-/* Sidebar - Saved Profiles */
+/* Saved Profiles */
 .saved-profiles {
   grid-area: sidebar;
   display: flex;
