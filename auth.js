@@ -159,6 +159,19 @@ function logout() {
 function initAuth() {
     // Show auth logo initially
     toggleAuthLogo(true);
+
+     // Set up form handlers first
+    document.getElementById('authForm').addEventListener('submit', handleSignIn);
+    document.getElementById('signupFormElement').addEventListener('submit', handleSignUp);
+    
+    // Set up auth switchers
+    setupAuthSwitchers();
+    
+    // Set up logout button if it exists
+    const logoutButton = document.getElementById('logoutButton');
+    if (logoutButton) {
+        logoutButton.addEventListener('click', logout);
+    }
     
     // Firebase Auth State Listener
     firebase.auth().onAuthStateChanged((user) => {
@@ -176,18 +189,7 @@ function initAuth() {
         }
     });
     
-    // Set up form handlers
-    document.getElementById('authForm').addEventListener('submit', handleSignIn);
-    document.getElementById('signupFormElement').addEventListener('submit', handleSignUp);
-    
-    // Set up auth switchers
-    setupAuthSwitchers();
-    
-    // Set up logout button if it exists
-    const logoutButton = document.getElementById('logoutButton');
-    if (logoutButton) {
-        logoutButton.addEventListener('click', logout);
-    }
+   
 }
 
 // Initialize when DOM is loaded
