@@ -49,25 +49,21 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // ==================== PET ENTRY FUNCTIONS ====================
 function showExerciseLog() {
-        console.log('showExerciseLog called'); // ← ADD THIS
-    // Hide auth and show dashboard
-  // Hide auth logo and container
     toggleAuthHeader(false);
- 
     document.getElementById('auth-container').style.display = 'none';
     document.getElementById('main-banner').style.display = 'none';
- 
-  // Show dashboard with GRID display
+    
+    // Show dashboard with GRID display
     document.querySelector('.dashboard-container').style.display = 'grid';
 
-    // Show saved profiles, hide the form container initially
-    document.getElementById('savedProfiles').style.display = 'block';
+    // Show saved profiles with FLEX display (since it's flex in your CSS)
+    document.getElementById('savedProfiles').style.display = 'flex'; // ← Change from 'block' to 'flex'
+    
     document.getElementById('profileContainer').style.display = 'none';
     
     loadSavedProfiles();
     setupEventListeners();
-    // Load active pet data after profiles are loaded
-    loadActivePetData(); // ADD THIS LINE
+    loadActivePetData();
 }
 
 
