@@ -56,7 +56,9 @@ function showExerciseLog() {
  
     document.getElementById('auth-container').style.display = 'none';
     document.getElementById('main-banner').style.display = 'none';
-    document.querySelector('.dashboard-container').style.display = 'block';
+ 
+  // Show dashboard with GRID display
+    document.querySelector('.dashboard-container').style.display = 'grid';
 
     // Show saved profiles, hide the form container initially
     document.getElementById('savedProfiles').style.display = 'block';
