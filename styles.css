@@ -453,29 +453,21 @@
     z-index: 1000;
     max-width: 300px;
 }
-
 /* ============================================================
-    DASHBOARD CONTAINER STYLING
+    SIMPLIFIED DASHBOARD LAYOUT
 ============================================================ */
-/* Update dashboard container grid to include footer */
 .dashboard-container {
-    display: grid;
-    grid-template-areas: 
-        "header header"
-        "sidebar main"
-        "footer footer";
-    grid-template-columns: 300px 1fr;
-    grid-template-rows: auto 1fr auto; /* Added auto for footer */
-    gap: 1.5rem;
+    display: block;
     padding: 1rem;
     max-width: 1600px;
     margin: 0 auto;
-    min-height: 100vh; /* Ensure full viewport height */
+    min-height: 100vh;
+    position: relative;
+    padding-bottom: 100px; /* Space for fixed footer */
 }
 
-  /*  ENHANCED DASHBOARD HEADER (with brand + actions)*/
+/* Dashboard Header */
 .dashboard-header {
-    grid-area: header;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -486,6 +478,7 @@
     box-shadow: var(--shadow-sm);
     border: 2px solid var(--primary-mustard);
     gap: 1.5rem;
+    margin-bottom: 1.5rem;
 }
 
 .dashboard-header-brand {
@@ -513,7 +506,6 @@
     flex-shrink: 0;
 }
 
-/* Button styles remain the same */
 .dashboard-header .icon-btn {
     color: var(--primary-yellow);
     border: 1px solid var(--primary-yellow);
@@ -538,7 +530,73 @@
     box-shadow: var(--shadow-md);
 }
 
-/* Dark mode adjustments */
+/* Main Content Area */
+.dashboard-main {
+    display: block;
+    width: 100%;
+}
+
+/* Saved Profiles Grid */
+.saved-profiles {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 1.5rem;
+    padding: 1rem;
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: var(--light-charcoal);
+    background: var(--off-white);
+    border-radius: 12px;
+    border: 2px dashed var(--primary-mustard);
+    margin: 2rem 0;
+}
+
+.dark-mode .empty-state {
+    background: var(--dark-charcoal);
+    color: var(--off-white);
+}
+
+.empty-state p {
+    margin: 0 0 0.5rem 0;
+    font-weight: 500;
+    font-size: 1.2rem;
+}
+
+.empty-state small {
+    font-size: 0.9em;
+    color: var(--light-charcoal);
+}
+
+.dark-mode .empty-state small {
+    color: var(--off-white);
+}
+
+/* Fixed Footer */
+.dashboard-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--light-charcoal);
+    color: var(--dark-mustard);
+    border-top: 3px solid var(--primary-mustard);
+    padding: 1.5rem;
+    text-align: center;
+    font-size: 1rem;
+    z-index: 100;
+}
+
+.dark-mode .dashboard-footer {
+    background-color: var(--dark-charcoal);
+    border-color: var(--light-purple);
+    color: var(--primary-yellow);
+}
+
+/* Dark Mode */
 .dark-mode .dashboard-header {
     background-color: var(--dark-charcoal);
     border-color: var(--primary-mustard);
@@ -554,93 +612,27 @@
     color: var(--dark-charcoal);
 }
 
-/* ============================================================
-    DASHBOARD FOOTER STYLING
-============================================================ */
-.dashboard-footer {
-    grid-area: footer;
-    background: var(--light-charcoal);
-    color: var(--dark-mustard);
-    border-top: 3px solid var(--primary-mustard);
-    padding: 1.5rem;
-    text-align: center !important;
-    font-size: 1rem;
-    align-self: end !important; /* ← This pushes it to bottom in grid */
-}
-
-.dark-mode .dashboard-footer {
-    background-color: var(--dark-charcoal);
-    border-color: var(--light-purple);
-    color: var(--primary-yellow);
-}
-
-/*========================
-  TO ENSURE VISIBILITY
-==============================*/
-.dashboard-main, #savedProfiles {
-  transition: opacity 0.3s ease;
-}
-
-/* Ensure saved profiles has proper layout */
-.saved-profiles {
-  display: grid;
-  gap: 1rem;
-  padding: 1rem;
-}
-/* empty stats added*/
-.empty-state {
-    text-align: center;
-    padding: 2rem;
-    color: #666;
-    background: #f8f9fa;
-    border-radius: 8px;
-    border: 2px dashed #ddd;
-}
-
-.empty-state p {
-    margin: 0 0 0.5rem 0;
-    font-weight: 500;
-}
-
-.empty-state small {
-    font-size: 0.9em;
-    color: #888;
-}
-
-
-/* Saved Profiles */
-.saved-profiles {
-  grid-area: sidebar;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  max-height: calc(100vh - 120px);
-  overflow-y: auto;
-  padding-right: 0.5rem;
-}
-
-
-/* When no profiles, use single column layout */
-.dashboard-container:has(.no-profiles-message) {
-    grid-template-areas: 
-        "header"
-        "main"
-        "footer";
-    grid-template-columns: 1fr;
-}
-
-.dashboard-container:has(.no-profiles-message) .saved-profiles {
-    display: none;
-}
-
-/* Center the empty message in main area */
-.profile-container .empty-state {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    min-height: 400px;
-    text-align: center;
+/* Responsive */
+@media (max-width: 768px) {
+    .dashboard-header {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+    }
+    
+    .dashboard-header-brand {
+        text-align: center;
+    }
+    
+    .saved-profiles {
+        grid-template-columns: 1fr;
+        padding: 0.5rem;
+    }
+    
+    .empty-state {
+        padding: 3rem 1rem;
+        margin: 1rem 0;
+    }
 }
 
 
