@@ -466,61 +466,61 @@
     padding-bottom: 100px; /* Space for fixed footer */
 }
 
-/* Dashboard Header */
+/* Dashboard Header - Two Line Layout */
 .dashboard-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1rem 1.5rem;
+    display: block; /* Change from flex to block */
+    padding: 1.5rem 2rem;
     background-color: var(--dark-purple);
     color: var(--primary-yellow);
-    border-radius: 8px;
-    box-shadow: var(--shadow-sm);
+    border-radius: 12px;
+    box-shadow: var(--shadow-md);
     border: 2px solid var(--primary-mustard);
-    gap: 1.5rem;
-    margin-bottom: 1.5rem;
+    margin-bottom: 2rem;
 }
 
 .dashboard-header-brand {
-    flex: 1;
-    text-align: left;
+    text-align: center;
+    margin-bottom: 1.5rem; /* Space between title and buttons */
 }
 
 .dashboard-header-brand h1 {
-    font-size: 1.8rem;
-    margin-bottom: 0.25rem;
+    font-size: 2.5rem; /* Much larger title */
+    margin-bottom: 0.5rem;
     color: var(--primary-yellow);
-    line-height: 1.2;
+    line-height: 1.1;
+    font-weight: 800;
 }
 
 .dashboard-header-brand p {
-    font-size: 0.9rem;
+    font-size: 1.1rem;
     color: var(--primary-yellow);
     opacity: 0.9;
     margin: 0;
+    font-weight: 500;
 }
 
 .dashboard-header-actions {
     display: flex;
-    gap: 0.75rem;
-    flex-shrink: 0;
+    gap: 1rem;
+    justify-content: center;
+    align-items: center;
 }
 
 .dashboard-header .icon-btn {
     color: var(--primary-yellow);
-    border: 1px solid var(--primary-yellow);
-    background-color: var(--dark-purple);
-    padding: 0.75rem 1.25rem;
-    border-radius: 6px;
+    border: 2px solid var(--primary-yellow);
+    background-color: transparent;
+    padding: 0.8rem 1.5rem;
+    border-radius: 8px;
     cursor: pointer;
     transition: all 0.3s ease;
     font-weight: 600;
     display: flex;
     align-items: center;
-    gap: 0.4rem;
-    min-width: 120px;
+    gap: 0.5rem;
+    min-width: 140px;
     justify-content: center;
-    font-size: 0.9rem;
+    font-size: 1rem;
 }
 
 .dashboard-header .icon-btn:hover {
@@ -529,6 +529,47 @@
     transform: translateY(-2px);
     box-shadow: var(--shadow-md);
 }
+
+/* Dark Mode */
+.dark-mode .dashboard-header {
+    background-color: var(--dark-charcoal);
+    border-color: var(--primary-mustard);
+}
+
+.dark-mode .dashboard-header .icon-btn {
+    background-color: transparent;
+    border-color: var(--primary-mustard);
+}
+
+.dark-mode .dashboard-header .icon-btn:hover {
+    background-color: var(--primary-mustard);
+    color: var(--dark-charcoal);
+}
+/* Responsive */
+@media (max-width: 768px) {
+    .dashboard-header {
+        padding: 1.5rem 1rem;
+    }
+    
+    .dashboard-header-brand h1 {
+        font-size: 2rem;
+    }
+    
+    .dashboard-header-brand p {
+        font-size: 1rem;
+    }
+    
+    .dashboard-header-actions {
+        flex-direction: column;
+        gap: 0.8rem;
+    }
+    
+    .dashboard-header .icon-btn {
+        width: 100%;
+        min-width: auto;
+    }
+}
+
 
 /* Main Content Area */
 .dashboard-main {
@@ -596,34 +637,8 @@
     color: var(--primary-yellow);
 }
 
-/* Dark Mode */
-.dark-mode .dashboard-header {
-    background-color: var(--dark-charcoal);
-    border-color: var(--primary-mustard);
-}
-
-.dark-mode .dashboard-header .icon-btn {
-    background-color: var(--dark-charcoal);
-    border-color: var(--primary-mustard);
-}
-
-.dark-mode .dashboard-header .icon-btn:hover {
-    background-color: var(--primary-mustard);
-    color: var(--dark-charcoal);
-}
-
 /* Responsive */
 @media (max-width: 768px) {
-    .dashboard-header {
-        flex-direction: column;
-        gap: 1rem;
-        text-align: center;
-    }
-    
-    .dashboard-header-brand {
-        text-align: center;
-    }
-    
     .saved-profiles {
         grid-template-columns: 1fr;
         padding: 0.5rem;
@@ -636,7 +651,9 @@
 }
 
 
-/* card styles*/
+/*======================
+    card styles
+==========================*/
 .profile-card {
   background-color: var(--white);
   border-radius: 8px;
