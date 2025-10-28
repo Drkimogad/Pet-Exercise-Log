@@ -57,12 +57,12 @@ function showExerciseLog() {
     document.querySelector('.dashboard-container').style.display = 'block';
 
     // Show saved profiles with FLEX display (since it's flex in your CSS)
-    document.getElementById('savedProfiles').style.display = 'block'; // ← Change from 'block' to 'flex'
+//    document.getElementById('savedProfiles').style.display = 'block'; // ← Change from 'block' to 'flex'
     
-    document.getElementById('profileContainer').style.display = 'none';
+ //   document.getElementById('profileContainer').style.display = 'none';
     
-    loadSavedProfiles();
-    setupEventListeners();
+loadSavedProfiles(); // This will handle empty state vs profiles
+ setupEventListeners();
     loadActivePetData();
 }
 
