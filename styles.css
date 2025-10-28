@@ -620,8 +620,8 @@
 .dashboard-footer {
     position: fixed;
     bottom: 2rem; /* Space from bottom */
-    left: 50%;
-    transform: translateX(-50%);
+    left: 50% !important;
+    transform: translateX(-50%) !important;
     background: var(--light-charcoal);
     color: var(--dark-mustard);
     border: 2px solid var(--primary-mustard);
