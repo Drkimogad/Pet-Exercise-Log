@@ -463,7 +463,6 @@
     margin: 0 auto;
     min-height: 100vh;
     position: relative;
-    padding-bottom: 100px; /* Space for fixed footer */
 }
 
 /* Dashboard Header - Two Line Layout */
@@ -617,18 +616,21 @@
 }
 
 /* Fixed Footer */
+/* Fixed Footer - Centered at Bottom */
 .dashboard-footer {
     position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
+    bottom: 2rem; /* Space from bottom */
+    left: 50%;
+    transform: translateX(-50%);
     background: var(--light-charcoal);
     color: var(--dark-mustard);
-    border-top: 3px solid var(--primary-mustard);
-    padding: 1.5rem;
+    border: 2px solid var(--primary-mustard);
+    padding: 1rem 2rem;
     text-align: center;
     font-size: 1rem;
+    border-radius: 8px;
     z-index: 100;
+    white-space: nowrap;
 }
 
 .dark-mode .dashboard-footer {
