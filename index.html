@@ -377,8 +377,161 @@
         </div>
     </form>
  </div>
-         
+    
+    <!-- New Comprehensive Health Assessment Form Template -->
+<div id="healthAssessmentFormTemplate" style="display: none;">
+    <form id="completeHealthAssessmentForm" class="profile-form">
+        
+        <!-- Section 1: Basic Information (Simplified) -->
+        <section class="form-section" id="basicInfoSection">
+            <h3>🐕 Basic Information</h3>
+            
+            <div class="form-group">
+                <label for="healthPetType">Pet Type *</label>
+                <select id="healthPetType" required>
+                    <option value="">Select Type</option>
+                    <option value="dog">Dog</option>
+                    <option value="cat">Cat</option>
+                    <option value="bird">Bird</option>
+                    <option value="rabbit">Rabbit</option>
+                    <option value="hamster">Hamster</option>
+                    <option value="reptile">Reptile</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="healthPetName">Name *</label>
+                <input type="text" id="healthPetName" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Image</label>
+                <div class="image-upload">
+                    <input type="file" id="healthPetImage" accept="image/*">
+                    <img id="healthPetImagePreview" src="https://drkimogad.github.io/Pet-Exercise-Log/images/default-pet.png" alt="Pet Preview">
+                </div>
+            </div>
+
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="healthPetAge">Age (years) *</label>
+                    <input type="number" id="healthPetAge" min="0" step="0.1" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="healthPetWeight">Current Weight (lbs or kg) *</label>
+                    <input type="number" id="healthPetWeight" min="0" step="0.1" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="healthPetBreed">Breed *</label>
+                    <input type="text" id="healthPetBreed" required placeholder="e.g., Labrador, Siamese">
+                </div>
+
+                <div class="form-group">
+                    <label for="healthPetGender">Gender</label>
+                    <select id="healthPetGender">
+                        <option value="">Select Gender</option>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                        <option value="unknown">Unknown</option>
+                    </select>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: Health Assessment (NEW) -->
+        <section class="form-section" id="healthAssessmentSection">
+            <h3>⚕️ Health Assessment & Goals</h3>
+
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="petBCS">Body Condition Score (1-5) *</label>
+                    <select id="petBCS" required>
+                        <option value="">Select BCS</option>
+                        <option value="1">1 - Very Underweight</option>
+                        <option value="2">2 - Underweight</option>
+                        <option value="3">3 - Ideal Weight</option>
+                        <option value="4">4 - Overweight</option>
+                        <option value="5">5 - Obese</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="petTargetWeight">Target Weight</label>
+                    <input type="number" id="petTargetWeight" min="0" step="0.1" placeholder="Same as current to maintain">
+                </div>
+
+                <div class="form-group">
+                    <label for="petEnergyLevel">Energy Level *</label>
+                    <select id="petEnergyLevel" required>
+                        <option value="">Select Energy Level</option>
+                        <option value="low">Low</option>
+                        <option value="medium">Medium</option>
+                        <option value="high">High</option>
+                        <option value="very high">Very High</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Medical Conditions (select all that apply)</label>
+                <div class="checkbox-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="medicalConditions" value="arthritis"> Arthritis
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="medicalConditions" value="diabetes"> Diabetes
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="medicalConditions" value="heart_condition"> Heart Condition
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="medicalConditions" value="lameness"> Lameness
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="medicalConditions" value="torn_muscle"> Torn Muscle
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="medicalConditions" value="spinal_injury"> Spinal Injury
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="medicalConditions" value="previous_fracture"> Previous Bone Fracture
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="medicalConditions" value="seizure"> Seizure Disorder
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="petFeedingRecommendation">Feeding Recommendation</label>
+                <select id="petFeedingRecommendation">
+                    <option value="">Auto-calculated based on goals</option>
+                    <option value="feed_less">Feed Less - Weight Loss</option>
+                    <option value="feed_more">Feed More - Weight Gain</option>
+                    <option value="maintain">Maintain Current Diet</option>
+                    <option value="diet_change">Consider Diet Change</option>
+                </select>
+                <small>This will auto-calculate based on weight goals</small>
+            </div>
+
+            <div class="form-group">
+                <label for="petHealthNotes">Additional Health Notes</label>
+                <textarea id="petHealthNotes" rows="2" placeholder="Any other health concerns or notes"></textarea>
+            </div>
+        </section>
+
+        <!-- Action Buttons -->
+        <div class="form-actions">
+            <button type="submit" id="saveHealthAssessmentButton" class="primary-btn">Save Health Assessment</button>
+            <button type="button" id="cancelHealthAssessmentButton" class="secondary-btn">Cancel</button>
+        </div>
+    </form>
 </div>
+         
+</div> <!-- This closes the hidden templates div -->
 
 <!-- Script Imports -->
 <script src="auth.js" defer></script>
