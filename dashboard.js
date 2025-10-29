@@ -85,235 +85,6 @@ function setupEventListeners() {
     document.getElementById('toggleModeButton').addEventListener('click', toggleDarkMode);
 }
 
-
-
-// ===============================================
-// NEW HEALTH ASSESSMENT FORM FUNCTIONS
-// ===============================================
-
-// Show health assessment form (for new profiles)
-function showHealthAssessmentForm() {
-    console.log('🔄 Showing health assessment form');
-    
-    // Hide saved profiles, show form container
-    document.getElementById('savedProfiles').style.display = 'none';
-    document.getElementById('profileContainer').style.display = 'block';
-    
-    // Load the health assessment form template
-    const template = document.getElementById('healthAssessmentFormTemplate');
-    document.getElementById('profileContainer').innerHTML = template.innerHTML;
-    
-    // Set up form submission handler
-    document.getElementById('completeHealthAssessmentForm').addEventListener('submit', handleHealthAssessmentSubmit);
-    
-    // Set up cancel button
-    document.getElementById('cancelHealthAssessmentButton').addEventListener('click', function() {
-        document.getElementById('savedProfiles').style.display = 'block';
-        document.getElementById('profileContainer').style.display = 'none';
-        document.getElementById('profileContainer').innerHTML = '';
-    });
-    
-    // Set up image upload handler
-    document.getElementById('healthPetImage').addEventListener('change', handleHealthImageUpload);
-    
-    // Set up auto-calculation for feeding recommendation
-    setupFeedingCalculation();
-}
-
-// Handle health assessment form submission
-function handleHealthAssessmentSubmit(e) {
-    e.preventDefault();
-    console.log('🔄 Health assessment form submission');
-    
-    try {
-        // Validate form
-        const validationErrors = validateHealthAssessmentForm();
-        if (validationErrors.length > 0) {
-            console.error('❌ Health form validation failed:', validationErrors);
-            AppHelper.showErrors(validationErrors);
-            return;
-        }
-        
-        // Collect form data
-        const formData = collectHealthAssessmentData();
-        console.log('📋 Health assessment data collected:', formData);
-        
-        // Create new pet profile
-        const pets = getPets();
-        if (pets.length >= MAX_PETS) {
-            AppHelper.showError(`Maximum of ${MAX_PETS} profiles reached`);
-            return;
-        }
-        
-        const petData = initializeNewPetWithHealth(formData);
-        
-        // Save to storage
-        pets.push(petData);
-        activePetIndex = pets.length - 1;
-        localStorage.setItem('pets', JSON.stringify(pets));
-        sessionStorage.setItem('activePetIndex', activePetIndex);
-        
-        console.log('💾 Health assessment saved');
-        
-        // Show success and return to dashboard
-        showSuccess('Pet profile created successfully!');
-        loadSavedProfiles(); // Refresh to show new profile
-        
-        // Return to dashboard
-        document.getElementById('savedProfiles').style.display = 'block';
-        document.getElementById('profileContainer').style.display = 'none';
-        document.getElementById('profileContainer').innerHTML = '';
-        
-    } catch (error) {
-        console.error('❌ Error in health assessment submission:', error);
-        AppHelper.showError('Failed to save health assessment: ' + error.message);
-    }
-}
-
-// Initialize new pet with health assessment data
-function initializeNewPetWithHealth(formData) {
-    return {
-        petDetails: {
-            type: formData.petType,
-            name: formData.petName.trim(),
-            image: formData.petImage,
-            age: formData.petAge,
-            weight: formData.petWeight,
-            breed: formData.petBreed.trim(),
-            gender: formData.petGender,
-            // Health assessment fields
-            bcs: formData.petBCS,
-            energyLevel: formData.petEnergyLevel,
-            targetWeight: formData.petTargetWeight,
-            medicalConditions: formData.medicalConditions,
-            feedingRecommendation: formData.feedingRecommendation,
-            healthNotes: formData.healthNotes.trim()
-        },
-        exerciseEntries: [],
-        moodLogs: []
-    };
-}
-
-// Collect health assessment form data
-function collectHealthAssessmentData() {
-    // Get medical conditions checkboxes
-    const medicalCheckboxes = document.querySelectorAll('input[name="medicalConditions"]:checked');
-    const medicalConditions = Array.from(medicalCheckboxes).map(cb => cb.value);
-    
-    // Auto-calculate feeding recommendation if not set
-    let feedingRec = document.getElementById('petFeedingRecommendation')?.value;
-    if (!feedingRec) {
-        feedingRec = calculateFeedingRecommendation();
-    }
-    
-    return {
-        petType: document.getElementById('healthPetType')?.value,
-        petName: document.getElementById('healthPetName')?.value,
-        petImage: document.getElementById('healthPetImagePreview')?.src,
-        petAge: document.getElementById('healthPetAge')?.value,
-        petWeight: document.getElementById('healthPetWeight')?.value,
-        petBreed: document.getElementById('healthPetBreed')?.value,
-        petGender: document.getElementById('healthPetGender')?.value,
-        petBCS: document.getElementById('petBCS')?.value,
-        petEnergyLevel: document.getElementById('petEnergyLevel')?.value,
-        petTargetWeight: document.getElementById('petTargetWeight')?.value,
-        medicalConditions: medicalConditions,
-        feedingRecommendation: feedingRec,
-        healthNotes: document.getElementById('petHealthNotes')?.value
-    };
-}
-
-// Validate health assessment form
-function validateHealthAssessmentForm() {
-    console.log('🔍 Validating health assessment form...');
-    const errors = [];
-    
-    // Required fields validation
-    if (!document.getElementById('healthPetType')?.value) {
-        errors.push('Pet type is required');
-    }
-    
-    const petName = document.getElementById('healthPetName')?.value.trim();
-    if (!petName) {
-        errors.push('Pet name is required');
-    }
-    
-    if (!document.getElementById('healthPetAge')?.value) {
-        errors.push('Pet age is required');
-    }
-    
-    if (!document.getElementById('healthPetWeight')?.value) {
-        errors.push('Current weight is required');
-    }
-    
-    if (!document.getElementById('healthPetBreed')?.value?.trim()) {
-        errors.push('Breed is required');
-    }
-    
-    if (!document.getElementById('petBCS')?.value) {
-        errors.push('Body Condition Score is required');
-    }
-    
-    if (!document.getElementById('petEnergyLevel')?.value) {
-        errors.push('Energy level is required');
-    }
-    
-    console.log('📊 Health validation results:', errors.length > 0 ? errors : 'No errors');
-    return errors;
-}
-
-// Setup feeding calculation
-function setupFeedingCalculation() {
-    const currentWeightInput = document.getElementById('healthPetWeight');
-    const targetWeightInput = document.getElementById('petTargetWeight');
-    const feedingSelect = document.getElementById('petFeedingRecommendation');
-    
-    if (currentWeightInput && targetWeightInput && feedingSelect) {
-        // Calculate when either weight field changes
-        const calculateHandler = () => {
-            const currentWeight = parseFloat(currentWeightInput.value);
-            const targetWeight = parseFloat(targetWeightInput.value);
-            
-            if (currentWeight && targetWeight) {
-                const recommendation = calculateFeedingRecommendation(currentWeight, targetWeight);
-                feedingSelect.value = recommendation;
-            }
-        };
-        
-        currentWeightInput.addEventListener('input', calculateHandler);
-        targetWeightInput.addEventListener('input', calculateHandler);
-    }
-}
-
-// Calculate feeding recommendation
-function calculateFeedingRecommendation(currentWeight, targetWeight) {
-    if (!currentWeight || !targetWeight) return '';
-    
-    const weightDiff = targetWeight - currentWeight;
-    const percentDiff = (weightDiff / currentWeight) * 100;
-    
-    if (percentDiff < -10) {
-        return 'feed_less'; // Weight loss needed
-    } else if (percentDiff > 10) {
-        return 'feed_more'; // Weight gain needed
-    } else if (Math.abs(percentDiff) <= 5) {
-        return 'maintain'; // Maintain current
-    } else {
-        return 'diet_change'; // Significant change needed
-    }
-}
-
-// Handle health form image upload
-function handleHealthImageUpload(e) {
-    const file = e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (event) => {
-        document.getElementById('healthPetImagePreview').src = event.target.result;
-    };
-    reader.readAsDataURL(file);
-}
-
 //==========OLD SECTION =============================
 // Show create profile to show the profile form when "New Profile" is clicked  REPLACED
 //=====================================================
@@ -961,78 +732,354 @@ function loadActivePetData() {
     }
 }
 
+// ===============================================
+// NEW HEALTH ASSESSMENT FORM FUNCTIONS
+// ===============================================
 
-//=================================
-// SETUP PROFILE EVENT LISTENERS
-//===========================
-function setupProfileEventListeners() {
-  // Select button
-  document.querySelectorAll('.select-btn').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const index = parseInt(btn.dataset.index);
-      selectPetProfile(index);
+// Show health assessment form (for new profiles)
+function showHealthAssessmentForm() {
+    console.log('🔄 Showing health assessment form');
+    
+    // Hide saved profiles, show form container
+    document.getElementById('savedProfiles').style.display = 'none';
+    document.getElementById('profileContainer').style.display = 'block';
+    
+    // Load the health assessment form template
+    const template = document.getElementById('healthAssessmentFormTemplate');
+    document.getElementById('profileContainer').innerHTML = template.innerHTML;
+    
+    // Set up form submission handler
+    document.getElementById('completeHealthAssessmentForm').addEventListener('submit', handleHealthAssessmentSubmit);
+    
+    // Set up cancel button
+    document.getElementById('cancelHealthAssessmentButton').addEventListener('click', function() {
+        document.getElementById('savedProfiles').style.display = 'block';
+        document.getElementById('profileContainer').style.display = 'none';
+        document.getElementById('profileContainer').innerHTML = '';
     });
-  });
+    
+    // Set up image upload handler
+    document.getElementById('healthPetImage').addEventListener('change', handleHealthImageUpload);
+    
+    // Set up auto-calculation for feeding recommendation
+    setupFeedingCalculation();
+}
 
-   // Edit button → Now becomes Daily Log button
-  document.querySelectorAll('.daily-log-btn').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const index = parseInt(btn.dataset.index);
-      showDailyLogForm(index); // Changed from editPetProfile
-    });
-  });
+// Handle health assessment form submission
+function handleHealthAssessmentSubmit(e) {
+    e.preventDefault();
+    console.log('🔄 Health assessment form submission');
+    
+    try {
+        // Validate form
+        const validationErrors = validateHealthAssessmentForm();
+        if (validationErrors.length > 0) {
+            console.error('❌ Health form validation failed:', validationErrors);
+            AppHelper.showErrors(validationErrors);
+            return;
+        }
+        
+        // Collect form data
+        const formData = collectHealthAssessmentData();
+        console.log('📋 Health assessment data collected:', formData);
+        
+        // Create new pet profile
+        const pets = getPets();
+        if (pets.length >= MAX_PETS) {
+            AppHelper.showError(`Maximum of ${MAX_PETS} profiles reached`);
+            return;
+        }
+        
+        const petData = initializeNewPetWithHealth(formData);
+        
+        // Save to storage
+        pets.push(petData);
+        activePetIndex = pets.length - 1;
+        localStorage.setItem('pets', JSON.stringify(pets));
+        sessionStorage.setItem('activePetIndex', activePetIndex);
+        
+        console.log('💾 Health assessment saved');
+        
+        // Show success and return to dashboard
+        showSuccess('Pet profile created successfully!');
+        loadSavedProfiles(); // Refresh to show new profile
+        
+        // Return to dashboard
+        document.getElementById('savedProfiles').style.display = 'block';
+        document.getElementById('profileContainer').style.display = 'none';
+        document.getElementById('profileContainer').innerHTML = '';
+        
+    } catch (error) {
+        console.error('❌ Error in health assessment submission:', error);
+        AppHelper.showError('Failed to save health assessment: ' + error.message);
+    }
+}
 
-      // Edit Details button (for health assessment form)
-  document.querySelectorAll('.edit-details-btn').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const index = parseInt(btn.dataset.index);
-      // We'll implement this later for health assessment editing
-      AppHelper.showError('Edit details coming soon!');
-    });
-  });
+// Initialize new pet with health assessment data
+function initializeNewPetWithHealth(formData) {
+    return {
+        petDetails: {
+            type: formData.petType,
+            name: formData.petName.trim(),
+            image: formData.petImage,
+            age: formData.petAge,
+            weight: formData.petWeight,
+            breed: formData.petBreed.trim(),
+            gender: formData.petGender,
+            // Health assessment fields
+            bcs: formData.petBCS,
+            energyLevel: formData.petEnergyLevel,
+            targetWeight: formData.petTargetWeight,
+            medicalConditions: formData.medicalConditions,
+            feedingRecommendation: formData.feedingRecommendation,
+            healthNotes: formData.healthNotes.trim()
+        },
+        exerciseEntries: [],
+        moodLogs: []
+    };
+}
 
-  // Delete button
-  document.querySelectorAll('.delete-btn').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const index = parseInt(btn.dataset.index);
-      deletePetProfile(index);
-    });
-  });
+// Collect health assessment form data
+function collectHealthAssessmentData() {
+    // Get medical conditions checkboxes
+    const medicalCheckboxes = document.querySelectorAll('input[name="medicalConditions"]:checked');
+    const medicalConditions = Array.from(medicalCheckboxes).map(cb => cb.value);
+    
+    // Auto-calculate feeding recommendation if not set
+    let feedingRec = document.getElementById('petFeedingRecommendation')?.value;
+    if (!feedingRec) {
+        feedingRec = calculateFeedingRecommendation();
+    }
+    
+    return {
+        petType: document.getElementById('healthPetType')?.value,
+        petName: document.getElementById('healthPetName')?.value,
+        petImage: document.getElementById('healthPetImagePreview')?.src,
+        petAge: document.getElementById('healthPetAge')?.value,
+        petWeight: document.getElementById('healthPetWeight')?.value,
+        petBreed: document.getElementById('healthPetBreed')?.value,
+        petGender: document.getElementById('healthPetGender')?.value,
+        petBCS: document.getElementById('petBCS')?.value,
+        petEnergyLevel: document.getElementById('petEnergyLevel')?.value,
+        petTargetWeight: document.getElementById('petTargetWeight')?.value,
+        medicalConditions: medicalConditions,
+        feedingRecommendation: feedingRec,
+        healthNotes: document.getElementById('petHealthNotes')?.value
+    };
+}
 
-  // Report button
-document.querySelectorAll('.report-btn').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const index = parseInt(btn.dataset.index);
-        const pet = getPets()[index];
-        if (pet) {
-            generateReport(pet); // ← This should call your report function
+// Validate health assessment form
+function validateHealthAssessmentForm() {
+    console.log('🔍 Validating health assessment form...');
+    const errors = [];
+    
+    // Required fields validation
+    if (!document.getElementById('healthPetType')?.value) {
+        errors.push('Pet type is required');
+    }
+    
+    const petName = document.getElementById('healthPetName')?.value.trim();
+    if (!petName) {
+        errors.push('Pet name is required');
+    }
+    
+    if (!document.getElementById('healthPetAge')?.value) {
+        errors.push('Pet age is required');
+    }
+    
+    if (!document.getElementById('healthPetWeight')?.value) {
+        errors.push('Current weight is required');
+    }
+    
+    if (!document.getElementById('healthPetBreed')?.value?.trim()) {
+        errors.push('Breed is required');
+    }
+    
+    if (!document.getElementById('petBCS')?.value) {
+        errors.push('Body Condition Score is required');
+    }
+    
+    if (!document.getElementById('petEnergyLevel')?.value) {
+        errors.push('Energy level is required');
+    }
+    
+    console.log('📊 Health validation results:', errors.length > 0 ? errors : 'No errors');
+    return errors;
+}
+
+// Setup feeding calculation
+function setupFeedingCalculation() {
+    const currentWeightInput = document.getElementById('healthPetWeight');
+    const targetWeightInput = document.getElementById('petTargetWeight');
+    const feedingSelect = document.getElementById('petFeedingRecommendation');
+    
+    if (currentWeightInput && targetWeightInput && feedingSelect) {
+        // Calculate when either weight field changes
+        const calculateHandler = () => {
+            const currentWeight = parseFloat(currentWeightInput.value);
+            const targetWeight = parseFloat(targetWeightInput.value);
+            
+            if (currentWeight && targetWeight) {
+                const recommendation = calculateFeedingRecommendation(currentWeight, targetWeight);
+                feedingSelect.value = recommendation;
+            }
+        };
+        
+        currentWeightInput.addEventListener('input', calculateHandler);
+        targetWeightInput.addEventListener('input', calculateHandler);
+    }
+}
+
+// Calculate feeding recommendation
+function calculateFeedingRecommendation(currentWeight, targetWeight) {
+    if (!currentWeight || !targetWeight) return '';
+    
+    const weightDiff = targetWeight - currentWeight;
+    const percentDiff = (weightDiff / currentWeight) * 100;
+    
+    if (percentDiff < -10) {
+        return 'feed_less'; // Weight loss needed
+    } else if (percentDiff > 10) {
+        return 'feed_more'; // Weight gain needed
+    } else if (Math.abs(percentDiff) <= 5) {
+        return 'maintain'; // Maintain current
+    } else {
+        return 'diet_change'; // Significant change needed
+    }
+}
+
+// Handle health form image upload
+function handleHealthImageUpload(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (event) => {
+        document.getElementById('healthPetImagePreview').src = event.target.result;
+    };
+    reader.readAsDataURL(file);
+}
+// ===============================================
+// HEALTH ASSESSMENT EDIT FUNCTIONS
+// ===============================================
+
+// Show health assessment form for editing existing profile
+function showHealthAssessmentEditForm(index) {  
+    console.log('🔄 showHealthAssessmentEditForm called for index:', index);
+    
+    try {
+        if (index === undefined || index === null) {
+            throw new Error('Invalid pet index provided');
+        }
+
+        const pets = getPets();
+        if (!pets[index]) {
+            throw new Error(`Pet not found at index: ${index}`);
+        }
+
+        const pet = pets[index];
+        console.log('📝 Editing health assessment for:', pet.petDetails.name);
+        
+        // Set active pet
+        activePetIndex = index;
+        sessionStorage.setItem('activePetIndex', activePetIndex);
+
+        // Show the form container
+        document.getElementById('savedProfiles').style.display = 'none';
+        document.getElementById('profileContainer').style.display = 'block';
+        
+        // Load the health assessment form template
+        const template = document.getElementById('healthAssessmentFormTemplate');
+        if (!template) {
+            throw new Error('Health assessment form template not found');
+        }
+        
+        document.getElementById('profileContainer').innerHTML = template.innerHTML;
+        
+        // Populate form fields with health assessment data
+        setTimeout(() => populateHealthAssessmentForm(pet), 50);
+        
+        // Set up form submission handler
+        document.getElementById('completeHealthAssessmentForm').addEventListener('submit', handleHealthAssessmentSubmit);
+        
+        // Set up cancel button
+        document.getElementById('cancelHealthAssessmentButton').addEventListener('click', function() {
+            returnToDashboard();
+        });
+        
+        // Set up image upload handler
+        document.getElementById('healthPetImage').addEventListener('change', handleHealthImageUpload);
+        
+        // Set up feeding calculation
+        setupFeedingCalculation();
+        
+        console.log('✅ Health assessment edit form initialized successfully');
+        
+    } catch (error) {
+        console.error('❌ Error in showHealthAssessmentEditForm:', error);
+        AppHelper.showError(`Failed to load health assessment: ${error.message}`);
+        returnToDashboard();
+    }
+}
+
+// Populate health assessment form with existing data
+function populateHealthAssessmentForm(pet) {  
+    console.log('🔄 Populating health assessment form for:', pet.petDetails.name);
+    
+    const fieldMappings = {
+        // Basic Information
+        'healthPetType': pet.petDetails.type,
+        'healthPetName': pet.petDetails.name,
+        'healthPetAge': pet.petDetails.age,
+        'healthPetWeight': pet.petDetails.weight,
+        'healthPetBreed': pet.petDetails.breed,
+        'healthPetGender': pet.petDetails.gender,
+        
+        // Health Assessment Fields
+        'petBCS': pet.petDetails.bcs,
+        'petEnergyLevel': pet.petDetails.energyLevel,
+        'petTargetWeight': pet.petDetails.targetWeight,
+        'petHealthNotes': pet.petDetails.healthNotes
+    };
+
+    // Populate each field
+    Object.entries(fieldMappings).forEach(([fieldId, value]) => {
+        try {
+            const element = document.getElementById(fieldId);
+            if (element) {
+                element.value = value || '';
+            }
+        } catch (fieldError) {
+            console.error(`❌ Error populating field ${fieldId}:`, fieldError);
         }
     });
-});
 
-  // Share button
-  document.querySelectorAll('.share-btn').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const index = parseInt(btn.dataset.index);
-      sharePetProfile(index);
-    });
-  });
+    // Populate medical conditions checkboxes
+    if (pet.petDetails.medicalConditions) {
+        pet.petDetails.medicalConditions.forEach(condition => {
+            const checkbox = document.querySelector(`input[name="medicalConditions"][value="${condition}"]`);
+            if (checkbox) {
+                checkbox.checked = true;
+            }
+        });
+    }
 
-  // Click anywhere on card to select
-  document.querySelectorAll('.profile-card').forEach(card => {
-    card.addEventListener('click', (e) => {
-      if (!e.target.closest('.profile-actions')) {
-        const index = parseInt(card.dataset.petIndex);
-        selectPetProfile(index);
-      }
-    });
-  });
+    // Populate feeding recommendation
+    const feedingSelect = document.getElementById('petFeedingRecommendation');
+    if (feedingSelect && pet.petDetails.feedingRecommendation) {
+        feedingSelect.value = pet.petDetails.feedingRecommendation;
+    }
+
+    // Handle image preview
+    try {
+        const imagePreview = document.getElementById('healthPetImagePreview');
+        if (imagePreview && pet.petDetails.image) {
+            imagePreview.src = pet.petDetails.image;
+        }
+    } catch (imageError) {
+        console.error('❌ Error setting image preview:', imageError);
+    }
+
+    console.log('✅ Health assessment form populated');
 }
 
 //===========================================================
@@ -1763,8 +1810,6 @@ function handleImageUpload(e) {
     reader.readAsDataURL(file);
 }
 
-
-
 //===============================================
    //     Mood Logs functionality
 //==========================================
@@ -2036,12 +2081,6 @@ function formatDate(dateStr) {
         return dateStr;
     }
 }
-
-
-
-
-
-
 // Calendar functionality
 // Add the Helper Function
 function generateMiniCalendar(exerciseEntries) {
@@ -2952,5 +2991,78 @@ function generateExerciseSummaryHTML(exerciseEntries) {
             </div>
         </div>
     `;
+}
+
+
+//=================================
+// SETUP PROFILE EVENT LISTENERS
+//===========================
+function setupProfileEventListeners() {
+  // Select button
+  document.querySelectorAll('.select-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const index = parseInt(btn.dataset.index);
+      selectPetProfile(index);
+    });
+  });
+
+   // Edit button → Now becomes Daily Log button
+  document.querySelectorAll('.daily-log-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const index = parseInt(btn.dataset.index);
+      showDailyLogForm(index); // Changed from editPetProfile
+    });
+  });
+
+  // Edit Details button (for health assessment form)
+document.querySelectorAll('.edit-details-btn').forEach(btn => {
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const index = parseInt(btn.dataset.index);
+    showHealthAssessmentEditForm(index); // Now uses health assessment edit
+  });
+});
+
+  // Delete button
+  document.querySelectorAll('.delete-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const index = parseInt(btn.dataset.index);
+      deletePetProfile(index);
+    });
+  });
+
+  // Report button
+document.querySelectorAll('.report-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const index = parseInt(btn.dataset.index);
+        const pet = getPets()[index];
+        if (pet) {
+            generateReport(pet); // ← This should call your report function
+        }
+    });
+});
+
+  // Share button
+  document.querySelectorAll('.share-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const index = parseInt(btn.dataset.index);
+      sharePetProfile(index);
+    });
+  });
+
+  // Click anywhere on card to select
+  document.querySelectorAll('.profile-card').forEach(card => {
+    card.addEventListener('click', (e) => {
+      if (!e.target.closest('.profile-actions')) {
+        const index = parseInt(card.dataset.petIndex);
+        selectPetProfile(index);
+      }
+    });
+  });
 }
 
