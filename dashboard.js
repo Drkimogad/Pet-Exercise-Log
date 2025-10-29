@@ -3261,15 +3261,125 @@ function generateExerciseSummaryHTML(exerciseEntries) {
     `;
 }
 //======================================
-// BCS Reassessment Modal (we'll build the full modal next)
+// BCS Reassessment Modal - Complete Implementation
+//=====================
 function showBCSReassessmentModal(petIndex) {
     console.log('Opening BCS reassessment for pet index:', petIndex);
-    // We'll build the full modal in the next step
-    AppHelper.showError('BCS reassessment modal coming soon!');
     
-    // Store which pet we're assessing
-    sessionStorage.setItem('assessingBCSFor', petIndex);
+    // Get pet data
+    const pets = getPets();
+    const pet = pets[petIndex];
+    if (!pet) {
+        AppHelper.showError('Pet not found');
+        return;
+    }
+    
+    // Load modal template
+    const template = document.getElementById('bcsModalTemplate');
+    document.body.insertAdjacentHTML('beforeend', template.innerHTML);
+    
+    const modal = document.querySelector('.bcs-modal-overlay');
+    const currentBCS = pet.petDetails.bcs;
+    
+    // Set up event listeners
+    setupBCSModalEvents(modal, petIndex, currentBCS);
+    
+    // Pre-select current BCS if exists
+    if (currentBCS) {
+        const currentOption = modal.querySelector(`.bcs-option[data-bcs="${currentBCS}"]`);
+        if (currentOption) {
+            selectBCSOption(currentOption);
+        }
+    }
 }
+
+// Setup BCS Modal Event Listeners
+function setupBCSModalEvents(modal, petIndex, currentBCS) {
+    let selectedBCS = currentBCS;
+    
+    // BCS Option Clicks
+    modal.querySelectorAll('.bcs-option').forEach(option => {
+        option.addEventListener('click', () => {
+            selectedBCS = option.dataset.bcs;
+            selectBCSOption(option);
+            updateSelectedDisplay(selectedBCS);
+        });
+    });
+    
+    // Update Button
+    modal.querySelector('.bcs-update-btn').addEventListener('click', () => {
+        if (!selectedBCS) {
+            AppHelper.showError('Please select a body condition score');
+            return;
+        }
+        updatePetBCS(petIndex, selectedBCS);
+        modal.remove();
+    });
+    
+    // Close Button
+    modal.querySelector('.bcs-close-btn').addEventListener('click', () => {
+        modal.remove();
+    });
+    
+    // Close on overlay click
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            modal.remove();
+        }
+    });
+}
+
+// Select BCS Option and Update UI
+function selectBCSOption(option) {
+    // Remove selection from all options
+    document.querySelectorAll('.bcs-option').forEach(opt => {
+        opt.classList.remove('selected');
+    });
+    
+    // Add selection to clicked option
+    option.classList.add('selected');
+}
+
+// Update Selected BCS Display
+function updateSelectedDisplay(bcs) {
+    const display = document.getElementById('selectedBCSValue');
+    if (display) {
+        display.textContent = getBCSDisplay(bcs);
+        display.className = `selected-value bcs-${bcs}`;
+    }
+}
+
+// Update Pet BCS in Storage
+function updatePetBCS(petIndex, newBCS) {
+    const pets = getPets();
+    const pet = pets[petIndex];
+    
+    if (pet) {
+        // Update BCS
+        pet.petDetails.bcs = newBCS;
+        
+        // Auto-update feeding recommendation based on BCS
+        if (newBCS >= 4) {
+            pet.petDetails.feedingRecommendation = 'feed_less';
+        } else if (newBCS <= 2) {
+            pet.petDetails.feedingRecommendation = 'feed_more';
+        } else {
+            pet.petDetails.feedingRecommendation = 'maintain';
+        }
+        
+        // Save to storage
+        localStorage.setItem('pets', JSON.stringify(pets));
+        
+        // Refresh UI
+        loadSavedProfiles();
+        
+        // Show success
+        AppHelper.showSuccess(`Body Condition Score updated to: ${getBCSDisplay(newBCS)}`);
+        
+        console.log('✅ BCS updated for pet:', pet.petDetails.name);
+    }
+}
+
 
 //=================================
 // SETUP PROFILE EVENT LISTENERS
