@@ -667,17 +667,12 @@ function returnToDashboard() {
 }
 
 // ===============================================
-//  Load saved profiles - FINAL STRUCTURE
+//  Load saved profiles - REFACTORED STRUCTURE
 //==========================================
 function loadSavedProfiles() {
     pets = getPets();
-    console.log('🔍 MOOD DEBUG - Total pets:', pets.length);
-    pets.forEach((pet, i) => {
-        console.log(`🔍 Pet ${i}: ${pet.petDetails.name}, Mood logs:`, pet.moodLogs);
-    });
-
-if (pets.length === 0) { 
-        // Show centered message in main area
+    
+    if (pets.length === 0) { 
         document.getElementById('profileContainer').innerHTML = `
             <div class="empty-state">
                 <p>Welcome to Pet Exercise Log! 🐾</p>
@@ -695,7 +690,7 @@ if (pets.length === 0) {
         
         return `
     <div class="profile-card ${index === activePetIndex ? 'active' : ''}" data-pet-index="${index}">
-      <!-- SECTION 1: BASIC INFO -->
+      <!-- SECTION 1: BASIC INFO WITH QUICK STATS AND EDIT BUTTON -->
       <div class="basic-info-section">
         <div class="profile-image-container">
           <img src="${pet.petDetails.image}" alt="${pet.petDetails.name}" class="profile-image">
@@ -717,7 +712,7 @@ if (pets.length === 0) {
             </div>
           </div>
           
-          <!-- BASIC FIELDS - Free Floating -->
+          <!-- BASIC FIELDS -->
           <div class="basic-fields">
             <div class="field-item">
               <span class="field-icon">🐶</span>
@@ -739,151 +734,106 @@ if (pets.length === 0) {
               <span class="field-icon">♂️</span>
               <span class="field-text">${pet.petDetails.gender || 'Unknown'}</span>
             </div>
-            ${pet.petDetails.color ? `
-            <div class="field-item">
-              <span class="field-icon">🎨</span>
-              <span class="field-text">${pet.petDetails.color}</span>
-            </div>
-            ` : ''}
-            ${pet.petDetails.energyLevel ? `
-            <div class="field-item">
-              <span class="field-icon">⚡</span>
-              <span class="field-text">${pet.petDetails.energyLevel}</span>
-            </div>
-            ` : ''}
+          </div>
+          
+          <!-- EDIT DETAILS BUTTON - Top Right -->
+          <div class="top-action-buttons">
+            <button class="action-btn edit-details-btn" data-index="${index}" title="Edit pet details">
+              ✏️ Edit Details
+            </button>
           </div>
         </div>
       </div>
 
-      <!-- SECTION 2: MEDICAL INFO -->
-      <div class="medical-info-section">
+      <!-- SECTION 2: DAILY EXERCISE LOG SECTION -->
+      <div class="daily-exercise-section">
         <div class="section-header">
-          <span>⚕️</span>
-          <span>Medical & Vital Information</span>
+          <button class="action-btn daily-log-btn" data-index="${index}" title="Log daily exercise">
+            📝 Daily Log
+          </button>
+          <span>Exercise Tracking</span>
         </div>
-        <div class="medical-grid">
-          <div class="medical-item health-item">
-            <span class="medical-icon">❤️</span>
-            <div class="medical-content">
-              <div class="medical-label">Health</div>
-              <div class="medical-value health-${pet.petDetails.healthStatus || 'unknown'}">
-                ${pet.petDetails.healthStatus ? pet.petDetails.healthStatus.charAt(0).toUpperCase() + pet.petDetails.healthStatus.slice(1) : 'Not set'}
-              </div>
+        
+        <div class="exercise-content">
+          <!-- MINI CHARTS - 3 charts -->
+          <div class="mini-charts-container">
+            <div class="mini-chart" id="mini-duration-chart-${index}">
+              ${generateMiniCharts(pet.exerciseEntries || [])}
             </div>
-          </div>
-          <div class="medical-item vaccine-item">
-            <span class="medical-icon">💉</span>
-            <div class="medical-content">
-              <div class="medical-label">Vaccines</div>
-              <div class="medical-value ${pet.petDetails.vaccinations ? 'vaccine-complete' : 'meds-none'}">
-                ${pet.petDetails.vaccinations ? 'Up to date' : 'Not recorded'}
-              </div>
+            <div class="mini-chart" id="mini-calories-chart-${index}">
+              <!-- Calories chart placeholder -->
             </div>
-          </div>
-          <div class="medical-item meds-item">
-            <span class="medical-icon">💊</span>
-            <div class="medical-content">
-              <div class="medical-label">Medications</div>
-              <div class="medical-value ${pet.petDetails.medications ? 'vaccine-complete' : 'meds-none'}">
-                ${pet.petDetails.medications ? 'Current' : 'None'}
-              </div>
-            </div>
-          </div>
-          <div class="medical-item chip-item">
-            <span class="medical-icon">🔍</span>
-            <div class="medical-content">
-              <div class="medical-label">Microchip</div>
-              <div class="medical-value ${pet.petDetails.microchip ? 'chip-yes' : 'meds-none'}">
-                ${pet.petDetails.microchip ? 'Installed' : 'None'}
-              </div>
-            </div>
-          </div>
-          ${pet.petDetails.allergies ? `
-          <div class="medical-item allergy-item">
-            <span class="medical-icon">🌡️</span>
-            <div class="medical-content">
-              <div class="medical-label">Allergies</div>
-              <div class="medical-value">${pet.petDetails.allergies}</div>
-            </div>
-          </div>
-          ` : ''}
-        </div>
-      </div>
-
-      <!-- SECTION 3: PET'S ACTIVITY -->
-      <div class="pets-activity-section">
-        <div class="section-header">
-          <span>🏃‍♂️</span>
-          <span>Pet's Activity</span>
-        </div>
-        <div class="activity-content">
-          <!-- EXERCISE DETAILS - Left -->
-          <div class="exercise-details">
-            <div class="exercise-stat">
-              <div class="exercise-number">${totalSessions}</div>
-              <div class="exercise-label">Total Sessions</div>
-            </div>
-            <div class="exercise-stat">
-              <div class="exercise-number">${avgDuration}m</div>
-              <div class="exercise-label">Avg Duration</div>
-            </div>
-            <div class="exercise-stat">
-              <div class="exercise-number">${totalCalories}</div>
-              <div class="exercise-label">Total Calories</div>
+            <div class="mini-chart" id="mini-intensity-chart-${index}">
+              <!-- Intensity chart placeholder -->
             </div>
           </div>
           
-          <!-- MINI CALENDAR - Right -->
+          <!-- MINI CALENDAR -->
           <div class="calendar-section">
             <div class="mini-calendar" id="mini-calendar-${index}">
               ${generateMiniCalendar(pet.exerciseEntries || [])}
             </div>
           </div>
+          
+          <!-- MOOD LOGS -->
+          <div class="mood-section">
+            <div class="section-header">
+              <span>😊 Recent Mood</span>
+            </div>
+            <div class="mood-entries">
+              ${pet.moodLogs && pet.moodLogs.length > 0 ? 
+                pet.moodLogs.slice(-3).map(log => {
+                  const mood = MOOD_OPTIONS.find(m => m.value === log.mood) || MOOD_OPTIONS[0];
+                  return `
+                    <div class="mood-entry">
+                      <span class="mood-emoji">${mood.emoji}</span>
+                      <span class="mood-date">${formatDate(log.date)}</span>
+                    </div>
+                  `;
+                }).join('') : 
+                '<p class="no-moods">No mood entries yet</p>'
+              }
+            </div>
+          </div>
         </div>
       </div>
 
-      <!-- SECTION 4: MOOD SECTION -->
-      <div class="mood-section">
+      <!-- SECTION 3: SUGGESTED EXERCISES -->
+      <div class="suggested-exercises-section">
         <div class="section-header">
-          <span>😊</span>
-          <span>Recent Mood</span>
+          <span>💡 Suggested Exercises</span>
         </div>
-        <div class="mood-entries">
-          ${pet.moodLogs && pet.moodLogs.length > 0 ? 
-            pet.moodLogs.slice(-3).map(log => {
-              const mood = MOOD_OPTIONS.find(m => m.value === log.mood) || MOOD_OPTIONS[0];
-              return `
-                <div class="mood-entry">
-                  <span class="mood-emoji">${mood.emoji}</span>
-                  <span class="mood-date">${formatDate(log.date)}</span>
-                </div>
-              `;
-            }).join('') : 
-            '<p class="no-moods">No mood entries yet</p>'
-          }
+        <div class="suggested-exercises-list">
+          ${generateSuggestedExercises(pet).map((exercise, i) => `
+            <div class="suggested-exercise-item">
+              <div class="exercise-info">
+                <strong>${exercise.name}</strong>
+                <small>${exercise.duration} min • ${exercise.intensity}</small>
+                <p>${exercise.reason}</p>
+              </div>
+              <div class="exercise-actions">
+                <button class="small-btn log-exercise-btn" data-index="${index}" data-exercise="${exercise.id}">
+                  LOG
+                </button>
+                <button class="small-btn delete-suggestion-btn" data-index="${index}" data-exercise="${exercise.id}">
+                  ✕
+                </button>
+              </div>
+            </div>
+          `).join('')}
         </div>
       </div>
 
-      <!-- SECTION 5: ACTION BUTTONS -->
+      <!-- SECTION 4: ACTION BUTTONS -->
       <div class="action-buttons-section">
         <button class="action-btn select-btn" data-index="${index}" title="Select this pet">
           ${index === activePetIndex ? '✅ Selected' : '👉 Select'}
         </button>
-        <button class="action-btn edit-btn" data-index="${index}" title="Edit pet details">
-          ✏️ Edit
-        </button>
         <button class="action-btn delete-btn" data-index="${index}" title="Delete this pet">
           🗑️ Delete
         </button>
-        <button class="action-btn share-btn" data-index="${index}" title="Share pet profile">
-          📤 Share
-        </button>
-      </div>
-
-      <!-- SECTION 6: REPORT BUTTON -->
-      <div class="report-section">
-        <button class="report-btn" data-index="${index}" title="Generate comprehensive report">
-          📊 GENERATE REPORT
+        <button class="action-btn report-btn" data-index="${index}" title="Generate comprehensive report">
+          📊 Generate Report
         </button>
       </div>
     </div>
@@ -891,6 +841,45 @@ if (pets.length === 0) {
 
   document.getElementById('savedProfiles').innerHTML = profilesHTML;
   setupProfileEventListeners();
+}
+
+// Helper function for suggested exercises (placeholder - we'll enhance this)
+function generateSuggestedExercises(pet) {
+    // This will be enhanced with smart logic based on health assessment
+    const suggestions = [];
+    
+    if (pet.petDetails.bcs && pet.petDetails.bcs >= 4) {
+        suggestions.push({
+            id: 'weight_walk',
+            name: 'Gentle Weight Loss Walk',
+            duration: 20,
+            intensity: 'Low',
+            reason: 'Helps with weight management'
+        });
+    }
+    
+    if (pet.petDetails.medicalConditions && pet.petDetails.medicalConditions.includes('arthritis')) {
+        suggestions.push({
+            id: 'water_therapy',
+            name: 'Water Therapy',
+            duration: 15,
+            intensity: 'Low',
+            reason: 'Gentle on joints'
+        });
+    }
+    
+    // Default suggestion if none match
+    if (suggestions.length === 0) {
+        suggestions.push({
+            id: 'daily_walk',
+            name: 'Daily Walk',
+            duration: 30,
+            intensity: 'Medium', 
+            reason: 'General health maintenance'
+        });
+    }
+    
+    return suggestions;
 }
 
 
