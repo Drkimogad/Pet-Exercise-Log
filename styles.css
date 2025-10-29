@@ -1509,6 +1509,104 @@
     margin: 0;
 }
 
+/* =======================
+   BCS Section Styles  added recently 
+===========================*/
+.bcs-section {
+    background: var(--off-white);
+    border: 1px solid var(--primary-mustard);
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.bcs-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+}
+
+.current-bcs {
+    flex: 1;
+}
+
+.bcs-display {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 10px;
+}
+
+.bcs-label {
+    font-weight: 600;
+    color: var(--dark-charcoal);
+}
+
+.bcs-value {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-weight: bold;
+    font-size: 0.9em;
+}
+
+/* BCS Value Colors */
+.bcs-1 { background: #ff6b6b; color: white; }
+.bcs-2 { background: #ffa500; color: white; }
+.bcs-3 { background: #4ecdc4; color: white; }
+.bcs-4 { background: #ffd166; color: var(--dark-charcoal); }
+.bcs-5 { background: #ef476f; color: white; }
+.bcs-none { background: var(--light-charcoal); color: white; }
+
+/* BCS Visual Scale */
+.bcs-scale {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.bcs-point {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 0.8em;
+    border: 2px solid var(--light-charcoal);
+    background: var(--white);
+    transition: all 0.3s ease;
+}
+
+.bcs-point.filled {
+    background: var(--light-purple);
+    color: white;
+    border-color: var(--dark-purple);
+}
+
+.bcs-point.active {
+    transform: scale(1.2);
+    border-width: 3px;
+    border-color: var(--primary-mustard);
+}
+
+.bcs-reassess-btn {
+    background: var(--light-purple);
+    color: var(--white);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.bcs-reassess-btn:hover {
+    background: var(--dark-purple);
+    transform: translateY(-1px);
+}
+
 /* SECTION 3: SUGGESTED EXERCISES */
 .suggested-exercises-section {
     background: linear-gradient(135deg, var(--off-white) 0%, var(--white) 100%);
@@ -2483,4 +2581,218 @@
   width: 100%;
   margin: 0.25rem 0;
 }
+
+/* ==========================
+      BCS Modal Styles 
+==============================*/
+.bcs-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    padding: 20px;
+}
+
+.bcs-modal {
+    background: var(--white);
+    border-radius: 12px;
+    width: 100%;
+    max-width: 800px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: var(--shadow-md);
+    display: flex;
+    flex-direction: column;
+}
+
+/* Modal Header */
+.bcs-modal-header {
+    background: var(--dark-purple);
+    color: var(--white);
+    padding: 20px 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 12px 12px 0 0;
+}
+
+.bcs-modal-header h2 {
+    margin: 0;
+    color: var(--white);
+}
+
+.bcs-modal-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.bcs-update-btn, .bcs-close-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+.bcs-update-btn {
+    background: var(--primary-yellow);
+    color: var(--dark-charcoal);
+}
+
+.bcs-update-btn:hover {
+    background: var(--dark-mustard);
+    transform: translateY(-1px);
+}
+
+.bcs-close-btn {
+    background: var(--light-charcoal);
+    color: var(--white);
+}
+
+.bcs-close-btn:hover {
+    background: var(--dark-charcoal);
+    transform: translateY(-1px);
+}
+
+/* Modal Content */
+.bcs-modal-content {
+    padding: 25px;
+    flex: 1;
+}
+
+.bcs-instructions {
+    text-align: center;
+    margin-bottom: 25px;
+    color: var(--dark-charcoal);
+}
+
+.bcs-instructions p {
+    font-size: 1.1em;
+    margin: 0;
+}
+
+/* BCS Options */
+.bcs-options {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.bcs-option {
+    border: 2px solid var(--primary-mustard);
+    border-radius: 8px;
+    padding: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: var(--off-white);
+}
+
+.bcs-option:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-sm);
+    border-color: var(--light-purple);
+}
+
+.bcs-option.selected {
+    background: var(--light-purple);
+    border-color: var(--dark-purple);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.bcs-option.selected .bcs-option-header {
+    color: var(--white);
+}
+
+.bcs-option.selected .bcs-description {
+    color: var(--white);
+}
+
+.bcs-option-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 10px;
+}
+
+.bcs-number {
+    background: var(--primary-mustard);
+    color: var(--dark-charcoal);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1.2em;
+}
+
+.bcs-option.selected .bcs-number {
+    background: var(--white);
+    color: var(--dark-purple);
+}
+
+.bcs-title {
+    font-size: 1.3em;
+    font-weight: bold;
+    color: var(--dark-charcoal);
+}
+
+.bcs-option.selected .bcs-title {
+    color: var(--white);
+}
+
+.bcs-description p {
+    margin: 0 0 8px 0;
+    color: var(--dark-charcoal);
+    line-height: 1.5;
+}
+
+.bcs-description small {
+    color: var(--light-charcoal);
+    font-style: italic;
+}
+
+.bcs-option.selected .bcs-description p,
+.bcs-option.selected .bcs-description small {
+    color: var(--white);
+}
+
+/* Selected BCS Display */
+.bcs-selection-display {
+    background: var(--off-white);
+    padding: 20px 25px;
+    border-top: 2px solid var(--primary-mustard);
+}
+
+.selected-bcs-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    justify-content: center;
+}
+
+.selected-label {
+    font-weight: bold;
+    color: var(--dark-charcoal);
+    font-size: 1.1em;
+}
+
+.selected-value {
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-weight: bold;
+    color: white;
+    font-size: 1.1em;
+}
+
+
 
