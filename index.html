@@ -449,6 +449,99 @@
         </div>
     </form>
 </div>
+           <!-- BCS Reassessment Modal Template -->
+<div id="bcsModalTemplate" style="display: none;">
+    <div class="bcs-modal-overlay">
+        <div class="bcs-modal">
+            <!-- Modal Header -->
+            <div class="bcs-modal-header">
+                <h2>Body Condition Score Assessment</h2>
+                <div class="bcs-modal-actions">
+                    <button class="bcs-update-btn">✅ Update Score</button>
+                    <button class="bcs-close-btn">❌ Close</button>
+                </div>
+            </div>
+            
+            <!-- Modal Content -->
+            <div class="bcs-modal-content">
+                <div class="bcs-instructions">
+                    <p>Select your pet's current body condition score:</p>
+                </div>
+                
+                <!-- BCS Options -->
+                <div class="bcs-options">
+                    <!-- BCS 1: Very Underweight -->
+                    <div class="bcs-option" data-bcs="1">
+                        <div class="bcs-option-header">
+                            <span class="bcs-number">1</span>
+                            <span class="bcs-title">Very Underweight</span>
+                        </div>
+                        <div class="bcs-description">
+                            <p>Ribs, spine, and pelvic bones easily visible. No body fat. Obvious loss of muscle mass.</p>
+                            <small>Consider: Increased feeding, vet consultation</small>
+                        </div>
+                    </div>
+                    
+                    <!-- BCS 2: Underweight -->
+                    <div class="bcs-option" data-bcs="2">
+                        <div class="bcs-option-header">
+                            <span class="bcs-number">2</span>
+                            <span class="bcs-title">Underweight</span>
+                        </div>
+                        <div class="bcs-description">
+                            <p>Ribs easily felt with minimal fat covering. Waist easily visible from above.</p>
+                            <small>Consider: Moderate feeding increase, monitor weight</small>
+                        </div>
+                    </div>
+                    
+                    <!-- BCS 3: Ideal Weight -->
+                    <div class="bcs-option" data-bcs="3">
+                        <div class="bcs-option-header">
+                            <span class="bcs-number">3</span>
+                            <span class="bcs-title">Ideal Weight</span>
+                        </div>
+                        <div class="bcs-description">
+                            <p>Ribs easily felt but not visible. Obvious waist when viewed from above.</p>
+                            <small>Ideal: Maintain current diet and exercise</small>
+                        </div>
+                    </div>
+                    
+                    <!-- BCS 4: Overweight -->
+                    <div class="bcs-option" data-bcs="4">
+                        <div class="bcs-option-header">
+                            <span class="bcs-number">4</span>
+                            <span class="bcs-title">Overweight</span>
+                        </div>
+                        <div class="bcs-description">
+                            <p>Ribs difficult to feel under fat covering. Waist barely visible.</p>
+                            <small>Consider: Reduced feeding, increased exercise</small>
+                        </div>
+                    </div>
+                    
+                    <!-- BCS 5: Obese -->
+                    <div class="bcs-option" data-bcs="5">
+                        <div class="bcs-option-header">
+                            <span class="bcs-number">5</span>
+                            <span class="bcs-title">Obese</span>
+                        </div>
+                        <div class="bcs-description">
+                            <p>Heavy fat deposits over chest, spine, and tail base. No waist visible.</p>
+                            <small>Consider: Veterinary weight management plan</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Selected BCS Display -->
+            <div class="bcs-selection-display">
+                <div class="selected-bcs-info">
+                    <span class="selected-label">Selected Score:</span>
+                    <span class="selected-value" id="selectedBCSValue">None</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
          
 </div> <!-- This closes the hidden templates div -->
 
