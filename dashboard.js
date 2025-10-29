@@ -108,9 +108,10 @@ function initializeDashboard() {
 
 // move it outside handleFormSubmit and initialized in it.
 // it retrieves everything via the helper
-    function initializeNewPet() {
+function initializeNewPet() {
     return {
         petDetails: {
+            // Basic Information
             type: '',
             name: '',
             image: 'https://drkimogad.github.io/Pet-Exercise-Log/images/default-pet.png',
@@ -118,18 +119,14 @@ function initializeDashboard() {
             weight: '',
             breed: '',
             gender: '',
-            color: '',
-            microchip: '',
-            energyLevel: '',
-            healthStatus: '',
-            vetInfo: '',
-            vaccinations: '',
-            medications: '',
-            allergies: '',
-            diet: '',
-            behavior: '',
-            favoriteExercise: '',
-            notes: ''
+            
+            // Health Assessment Fields (NEW)
+            bcs: '',              // Body Condition Score
+            energyLevel: '',      // Energy Level
+            targetWeight: '',     // Target Weight
+            medicalConditions: [], // Medical Conditions array
+            feedingRecommendation: '', // Feeding Recommendation
+            healthNotes: ''       // Additional Health Notes
         },
         exerciseEntries: [],
         moodLogs: []
@@ -140,22 +137,25 @@ function initializeDashboard() {
 // ENHANCED WITH DYNAMIC UPDATES
 // 1.HANDLE FORM SUBMIT - 
 // ===============================================
-function handleFormSubmit(e) {
+// ===============================================
+// HANDLE HEALTH ASSESSMENT FORM SUBMIT
+// ===============================================
+function handleHealthAssessmentSubmit(e) {
     e.preventDefault();
-    console.log('🔄 FORM SUBMIT INITIATED - Starting dynamic update process');
+    console.log('🔄 HEALTH ASSESSMENT FORM SUBMIT INITIATED');
 
     try {
         // Validate form first
-        const validationErrors = validateForm();
+        const validationErrors = validateHealthAssessmentForm();
         if (validationErrors.length > 0) {
-            console.error('❌ Form validation failed:', validationErrors);
+            console.error('❌ Health form validation failed:', validationErrors);
             AppHelper.showErrors(validationErrors);
             return;
         }
 
         // Collect form data
-        const formData = collectFormData();
-        console.log('📋 Form data collected:', formData);
+        const formData = collectHealthAssessmentData();
+        console.log('📋 Health assessment data collected:', formData);
 
         // Get current pets and prepare pet data
         const pets = getPets();
@@ -163,7 +163,7 @@ function handleFormSubmit(e) {
 
         if (activePetIndex === null) {
             // CREATE NEW PROFILE
-            console.log('🆕 Creating new profile');
+            console.log('🆕 Creating new profile with health assessment');
             if (pets.length >= MAX_PETS) {
                 AppHelper.showError(`Maximum of ${MAX_PETS} profiles reached`);
                 return;
@@ -175,8 +175,9 @@ function handleFormSubmit(e) {
             petData = { ...pets[activePetIndex] };
         }
 
-        // Update pet details with form data
+        // Update pet details with HEALTH ASSESSMENT data
         petData.petDetails = {
+            // Basic Information
             type: formData.petType,
             name: formData.petName.trim(),
             image: formData.petImage,
@@ -184,56 +185,17 @@ function handleFormSubmit(e) {
             weight: formData.petWeight,
             breed: formData.petBreed.trim(),
             gender: formData.petGender,
-            color: formData.petColor.trim(),
-            microchip: formData.petMicrochip.trim(),
+            
+            // Health Assessment Fields
+            bcs: formData.petBCS,
             energyLevel: formData.petEnergyLevel,
-            healthStatus: formData.petHealthStatus,
-            vetInfo: formData.petVetInfo.trim(),
-            vaccinations: formData.petVaccinations.trim(),
-            medications: formData.petMedications.trim(),
-            allergies: formData.petAllergies.trim(),
-            diet: formData.petDiet.trim(),
-            behavior: formData.petBehavior.trim(),
-            favoriteExercise: formData.petFavoriteExercise,
-            notes: formData.petNotes.trim()
+            targetWeight: formData.petTargetWeight,
+            medicalConditions: formData.medicalConditions,
+            feedingRecommendation: formData.feedingRecommendation,
+            healthNotes: formData.healthNotes.trim()
         };
 
-        console.log('✅ Pet details updated');
-
-        // Handle exercise data - CUMULATIVE UPDATES
-        if (formData.exerciseType && formData.duration && formData.date && formData.calories) {
-            const newExerciseEntry = {
-                exerciseType: formData.exerciseType,
-                duration: Number(formData.duration),
-                date: formData.date,
-                caloriesBurned: Number(formData.calories),
-                intensity: formData.exerciseIntensity,
-                notes: formData.exerciseNotes.trim()
-            };
-
-            // Initialize exerciseEntries array if it doesn't exist
-            petData.exerciseEntries = petData.exerciseEntries || [];
-            
-            // Add new exercise entry (cumulative - don't replace existing)
-            petData.exerciseEntries.push(newExerciseEntry);
-            console.log('💪 New exercise entry added. Total exercises:', petData.exerciseEntries.length);
-        }
-
-        // Handle mood data - CUMULATIVE UPDATES
-// In handleFormSubmit(), right before calling saveTemporaryMoodData:
-console.log('🔍 MOOD DEBUG - Before saveTemporaryMoodData:');
-console.log(' - activePetIndex:', activePetIndex);
-console.log(' - window.tempMoodLogs:', window.tempMoodLogs);
-console.log(' - petData.moodLogs (before):', petData.moodLogs);
-
-petData = saveTemporaryMoodData(petData);
-
-console.log('🔍 MOOD DEBUG - After saveTemporaryMoodData:');
-console.log(' - petData.moodLogs (after):', petData.moodLogs);
-     console.log('😊 Mood data processed. Total mood entries:', petData.moodLogs ? petData.moodLogs.length : 0);
-
-        // Handle temporary exercise data
-        petData = saveTemporaryExerciseData(petData);
+        console.log('✅ Health assessment details updated');
 
         // Save to storage
         if (activePetIndex === null) {
@@ -245,93 +207,100 @@ console.log(' - petData.moodLogs (after):', petData.moodLogs);
 
         localStorage.setItem('pets', JSON.stringify(pets));
         sessionStorage.setItem('activePetIndex', activePetIndex);
-        console.log('💾 Data saved to storage');
+        console.log('💾 Health assessment saved to storage');
 
         // DYNAMIC UPDATES - Refresh all components
         performDynamicUpdates(petData);
 
         // Show success and return to dashboard
-        showSuccess(activePetIndex === null ? 'Profile created successfully!' : 'Profile updated successfully!');
+        showSuccess(activePetIndex === null ? 'Profile created successfully!' : 'Health assessment updated successfully!');
         returnToDashboard();
 
-        console.log('✅ FORM SUBMIT COMPLETED SUCCESSFULLY');
+        console.log('✅ HEALTH ASSESSMENT FORM SUBMIT COMPLETED SUCCESSFULLY');
 
     } catch (error) {
-        console.error('❌ CRITICAL ERROR in handleFormSubmit:', error);
-        AppHelper.showError('Failed to save profile: ' + error.message);
+        console.error('❌ CRITICAL ERROR in handleHealthAssessmentSubmit:', error);
+        AppHelper.showError('Failed to save health assessment: ' + error.message);
     }
 }
 
 // ===============================================
-// 2.VALIDATE FORM - COMPREHENSIVE VALIDATION
+//2. VALIDATE HEALTH ASSESSMENT FORM
 // ===============================================
-function validateForm() {
-    console.log('🔍 Validating form...');
+function validateHealthAssessmentForm() {
+    console.log('🔍 Validating health assessment form...');
     const errors = [];
     
-    // Required fields validation
-    if (!document.getElementById('petType')?.value) {
+    // Required fields validation - USING HEALTH ASSESSMENT FIELD IDs
+    if (!document.getElementById('healthPetType')?.value) {
         errors.push('Pet type is required');
     }
     
-    const petName = document.getElementById('petName')?.value.trim();
+    const petName = document.getElementById('healthPetName')?.value.trim();
     if (!petName) {
         errors.push('Pet name is required');
     }
     
-    // Exercise validation (if exercise data is provided)
-    const exerciseType = document.getElementById('exerciseType')?.value;
-    const duration = document.getElementById('exerciseDuration')?.value;
-    const date = document.getElementById('exerciseDate')?.value;
-    const calories = document.getElementById('caloriesBurned')?.value;
-    
-    // If any exercise field is filled, all required ones must be filled
-    if (exerciseType || duration || date || calories) {
-        if (!exerciseType) errors.push('Exercise type is required when logging exercise');
-        if (!duration || duration < 1) errors.push('Valid exercise duration is required');
-        if (!date) errors.push('Exercise date is required');
-        if (!calories || calories < 1) errors.push('Valid calories burned is required');
+    if (!document.getElementById('healthPetAge')?.value) {
+        errors.push('Pet age is required');
     }
     
-    console.log('📊 Validation results:', errors.length > 0 ? errors : 'No errors');
+    if (!document.getElementById('healthPetWeight')?.value) {
+        errors.push('Current weight is required');
+    }
+    
+    if (!document.getElementById('healthPetBreed')?.value?.trim()) {
+        errors.push('Breed is required');
+    }
+    
+    if (!document.getElementById('petBCS')?.value) {
+        errors.push('Body Condition Score is required');
+    }
+    
+    if (!document.getElementById('petEnergyLevel')?.value) {
+        errors.push('Energy level is required');
+    }
+    
+    console.log('📊 Health assessment validation results:', errors.length > 0 ? errors : 'No errors');
     return errors;
 }
 
 // ===============================================
-// 3.COLLECT FORM DATA
+//3. COLLECT HEALTH ASSESSMENT FORM DATA
 // ===============================================
-function collectFormData() {
+function collectHealthAssessmentData() {
+    // Get medical conditions checkboxes
+    const medicalCheckboxes = document.querySelectorAll('input[name="medicalConditions"]:checked');
+    const medicalConditions = Array.from(medicalCheckboxes).map(cb => cb.value);
+    
+    // Auto-calculate feeding recommendation if not set
+    let feedingRec = document.getElementById('petFeedingRecommendation')?.value;
+    if (!feedingRec) {
+        feedingRec = calculateFeedingRecommendation();
+    }
+    
     return {
-        petType: document.getElementById('petType')?.value,
-        petName: document.getElementById('petName')?.value,
-        petImage: document.getElementById('petImagePreview')?.src,
-        petAge: document.getElementById('petAge')?.value,
-        petWeight: document.getElementById('petWeight')?.value,
-        petBreed: document.getElementById('petBreed')?.value,
-        petGender: document.getElementById('petGender')?.value,
-        petColor: document.getElementById('petColor')?.value,
-        petMicrochip: document.getElementById('petMicrochip')?.value,
+        // Basic Information - USING HEALTH ASSESSMENT FIELD IDs
+        petType: document.getElementById('healthPetType')?.value,
+        petName: document.getElementById('healthPetName')?.value,
+        petImage: document.getElementById('healthPetImagePreview')?.src,
+        petAge: document.getElementById('healthPetAge')?.value,
+        petWeight: document.getElementById('healthPetWeight')?.value,
+        petBreed: document.getElementById('healthPetBreed')?.value,
+        petGender: document.getElementById('healthPetGender')?.value,
+        
+        // Health Assessment Fields
+        petBCS: document.getElementById('petBCS')?.value,
         petEnergyLevel: document.getElementById('petEnergyLevel')?.value,
-        petHealthStatus: document.getElementById('petHealthStatus')?.value,
-        petVetInfo: document.getElementById('petVetInfo')?.value,
-        petVaccinations: document.getElementById('petVaccinations')?.value,
-        petMedications: document.getElementById('petMedications')?.value,
-        petAllergies: document.getElementById('petAllergies')?.value,
-        petDiet: document.getElementById('petDiet')?.value,
-        petBehavior: document.getElementById('petBehavior')?.value,
-        petFavoriteExercise: document.getElementById('petFavoriteExercise')?.value,
-        petNotes: document.getElementById('petNotes')?.value,
-        exerciseType: document.getElementById('exerciseType')?.value,
-        duration: document.getElementById('exerciseDuration')?.value,
-        date: document.getElementById('exerciseDate')?.value,
-        calories: document.getElementById('caloriesBurned')?.value,
-        exerciseIntensity: document.getElementById('exerciseIntensity')?.value,
-        exerciseNotes: document.getElementById('exerciseNotes')?.value
+        petTargetWeight: document.getElementById('petTargetWeight')?.value,
+        medicalConditions: medicalConditions,
+        feedingRecommendation: feedingRec,
+        healthNotes: document.getElementById('petHealthNotes')?.value
     };
 }
 
 // ===============================================
-// 4.PERFORM DYNAMIC UPDATES - CORE CONNECTIVITY
+//4. PERFORM DYNAMIC UPDATES - CORE CONNECTIVITY
 // ===============================================
 function performDynamicUpdates(petData) {
     console.log('🔄 Performing dynamic updates for all components');
@@ -363,17 +332,13 @@ function performDynamicUpdates(petData) {
 }
 
 // ===============================================
-// 5.REFRESH CALENDAR HIGHLIGHTS
+//5. REFRESH CALENDAR HIGHLIGHTS
 // ===============================================
 function refreshCalendarHighlights(exerciseEntries) {
-    // This will ensure any open calendar shows the new exercise data
-    // The calendar in saved profiles will update via loadSavedProfiles()
     console.log('📅 Refreshing calendar with', exerciseEntries.length, 'exercise entries');
     
-    // If there's a specific calendar component open, refresh it
     const openCalendar = document.querySelector('.mini-calendar');
     if (openCalendar && exerciseEntries.length > 0) {
-        // Trigger a re-render of the mini calendar
         const calendarContainer = openCalendar.closest('.calendar-section');
         if (calendarContainer) {
             const petIndex = calendarContainer.closest('.profile-card')?.dataset.petIndex;
@@ -390,20 +355,18 @@ function refreshCalendarHighlights(exerciseEntries) {
 }
 
 // ===============================================
-// 6.UPDATE OPEN COMPONENTS
+//6. UPDATE OPEN COMPONENTS
 // ===============================================
 function updateOpenComponents(petData) {
-    // Update any other open UI components that might need refreshing
     const moodContainer = document.querySelector('.mood-section');
     if (moodContainer) {
-        // Re-render mood section with updated data
         const moodHTML = generateMoodSectionHTML(petData.moodLogs || []);
         moodContainer.innerHTML = moodHTML;
     }
 }
 
 // ===============================================
-// 7.GENERATE MOOD SECTION HTML
+//7. GENERATE MOOD SECTION HTML
 // ===============================================
 function generateMoodSectionHTML(moodLogs) {
     return `
@@ -424,7 +387,7 @@ function generateMoodSectionHTML(moodLogs) {
 }
 
 // ===============================================
-// 8.RETURN TO DASHBOARD
+//8. RETURN TO DASHBOARD
 // ===============================================
 function returnToDashboard() {
     console.log('🏠 Returning to dashboard');
@@ -433,9 +396,9 @@ function returnToDashboard() {
     document.getElementById('profileContainer').style.display = 'none';
     document.getElementById('profileContainer').innerHTML = '';
     
-    // Clear any temporary data
     clearTemporaryData();
 }
+
 
 // ===============================================
 //  Load saved profiles - REFACTORED STRUCTURE
@@ -1785,6 +1748,211 @@ function handleImageUpload(e) {
     reader.readAsDataURL(file);
 }
 
+// ===============================================
+// SUGGESTED EXERCISES LOGIC
+// ===============================================
+
+// Generate smart exercise suggestions based on health assessment
+function generateSuggestedExercises(pet) {
+    const suggestions = [];
+    const details = pet.petDetails;
+    
+    // Weight Management Suggestions
+    if (details.bcs && details.bcs >= 4) { // Overweight or obese
+        suggestions.push({
+            id: 'weight_walk',
+            name: 'Gentle Weight Loss Walk',
+            duration: 20,
+            intensity: 'Low',
+            reason: 'Helps with weight management - low impact',
+            type: 'walking'
+        });
+    }
+    
+    if (details.bcs && details.bcs <= 2) { // Underweight
+        suggestions.push({
+            id: 'strength_build',
+            name: 'Strength Building Play',
+            duration: 15,
+            intensity: 'Medium',
+            reason: 'Build muscle mass gradually',
+            type: 'playing'
+        });
+    }
+    
+    // Medical Condition Based Suggestions
+    if (details.medicalConditions) {
+        if (details.medicalConditions.includes('arthritis')) {
+            suggestions.push({
+                id: 'water_therapy',
+                name: 'Water Therapy',
+                duration: 15,
+                intensity: 'Low',
+                reason: 'Gentle on arthritic joints',
+                type: 'swimming'
+            });
+        }
+        
+        if (details.medicalConditions.includes('heart_condition')) {
+            suggestions.push({
+                id: 'gentle_walk',
+                name: 'Gentle Leisurely Walk',
+                duration: 10,
+                intensity: 'Low',
+                reason: 'Safe for heart condition',
+                type: 'walking'
+            });
+        }
+        
+        if (details.medicalConditions.includes('spinal_injury') || 
+            details.medicalConditions.includes('previous_fracture')) {
+            suggestions.push({
+                id: 'physio_walk',
+                name: 'Physio-Therapy Walk',
+                duration: 10,
+                intensity: 'Low',
+                reason: 'Controlled movement for recovery',
+                type: 'walking'
+            });
+        }
+        
+        if (details.medicalConditions.includes('lameness') || 
+            details.medicalConditions.includes('torn_muscle')) {
+            suggestions.push({
+                id: 'rest_recovery',
+                name: 'Controlled Rest Period',
+                duration: 5,
+                intensity: 'Low',
+                reason: 'Allow muscle/tissue recovery',
+                type: 'playing'
+            });
+        }
+    }
+    
+    // Age Based Suggestions
+    if (details.age && details.age >= 7) { // Senior pets
+        suggestions.push({
+            id: 'senior_stroll',
+            name: 'Senior Pet Stroll',
+            duration: 15,
+            intensity: 'Low',
+            reason: 'Age-appropriate gentle exercise',
+            type: 'walking'
+        });
+    }
+    
+    if (details.age && details.age <= 2) { // Young pets
+        suggestions.push({
+            id: 'young_play',
+            name: 'Young Pet Play Session',
+            duration: 25,
+            intensity: 'High',
+            reason: 'High energy appropriate for age',
+            type: 'playing'
+        });
+    }
+    
+    // Energy Level Based Suggestions
+    if (details.energyLevel === 'low') {
+        suggestions.push({
+            id: 'low_energy_walk',
+            name: 'Short Energizing Walk',
+            duration: 10,
+            intensity: 'Low',
+            reason: 'Gentle activity for low energy pets',
+            type: 'walking'
+        });
+    }
+    
+    if (details.energyLevel === 'high' || details.energyLevel === 'very high') {
+        suggestions.push({
+            id: 'high_energy_run',
+            name: 'Energy Burning Run',
+            duration: 30,
+            intensity: 'High',
+            reason: 'Burns excess energy',
+            type: 'running'
+        });
+    }
+    
+    // Default suggestion if none match
+    if (suggestions.length === 0) {
+        suggestions.push({
+            id: 'daily_walk',
+            name: 'Daily Maintenance Walk',
+            duration: 20,
+            intensity: 'Medium',
+            reason: 'General health maintenance',
+            type: 'walking'
+        });
+    }
+    
+    // Limit to 3 most relevant suggestions
+    return suggestions.slice(0, 3);
+}
+
+// Log a suggested exercise (convert to actual exercise entry)
+function logSuggestedExercise(petIndex, exerciseId) {
+    const pets = getPets();
+    const pet = pets[petIndex];
+    const suggestions = generateSuggestedExercises(pet);
+    const exercise = suggestions.find(s => s.id === exerciseId);
+    
+    if (!exercise) {
+        AppHelper.showError('Exercise not found');
+        return;
+    }
+    
+    // Create exercise entry from suggestion
+    const exerciseEntry = {
+        exerciseType: exercise.type,
+        duration: exercise.duration,
+        date: new Date().toISOString().split('T')[0],
+        caloriesBurned: calculateCaloriesFromExercise(exercise),
+        intensity: exercise.intensity,
+        notes: `Auto-logged: ${exercise.name} - ${exercise.reason}`,
+        timestamp: new Date().toISOString()
+    };
+    
+    // Add to pet's exercise entries
+    pet.exerciseEntries = pet.exerciseEntries || [];
+    pet.exerciseEntries.push(exerciseEntry);
+    
+    // Save and refresh
+    localStorage.setItem('pets', JSON.stringify(pets));
+    loadSavedProfiles(); // Refresh display
+    showSuccess(`Logged: ${exercise.name}`);
+}
+
+// Calculate calories based on exercise type and duration
+function calculateCaloriesFromExercise(exercise) {
+    const baseCalories = {
+        'walking': 5,    // calories per minute
+        'running': 8,
+        'swimming': 6,
+        'playing': 4,
+        'fetch': 5,
+        'agility': 7
+    };
+    
+    const baseRate = baseCalories[exercise.type] || 5;
+    return Math.round(baseRate * exercise.duration);
+}
+
+// Delete a suggested exercise (remove from display)
+function deleteSuggestion(petIndex, exerciseId) {
+    // For now, just remove from display - suggestions are regenerated each time
+    // In future, we could store dismissed suggestions
+    const suggestionElement = document.querySelector(`[data-exercise="${exerciseId}"]`);
+    if (suggestionElement) {
+        suggestionElement.style.opacity = '0.5';
+        setTimeout(() => {
+            loadSavedProfiles(); // Refresh to regenerate suggestions
+        }, 300);
+    }
+}
+
+
 //===============================================
    //     Mood Logs functionality
 //==========================================
@@ -3039,5 +3207,24 @@ document.querySelectorAll('.report-btn').forEach(btn => {
       }
     });
   });
+ 
+ // Suggested exercise buttons
+document.querySelectorAll('.log-exercise-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const index = parseInt(btn.dataset.index);
+        const exerciseId = btn.dataset.exercise;
+        logSuggestedExercise(index, exerciseId);
+    });
+});
+
+document.querySelectorAll('.delete-suggestion-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const index = parseInt(btn.dataset.index);
+        const exerciseId = btn.dataset.exercise;
+        deleteSuggestion(index, exerciseId);
+    });
+});
 }
 
