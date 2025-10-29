@@ -532,6 +532,39 @@ function loadSavedProfiles() {
         </div>
       </div>
 
+      <!-- SECTION: BCS REASSESSMENT -->
+      <div class="bcs-section">
+        <div class="section-header">
+          <span>⚖️ Body Condition Score</span>
+        </div>
+        <div class="bcs-content">
+          <div class="current-bcs">
+            <div class="bcs-display">
+              <span class="bcs-label">Current Score:</span>
+              <span class="bcs-value ${pet.petDetails.bcs ? 'bcs-' + pet.petDetails.bcs : 'bcs-none'}">
+                ${pet.petDetails.bcs ? getBCSDisplay(pet.petDetails.bcs) : 'Not assessed'}
+              </span>
+            </div>
+            ${pet.petDetails.bcs ? `
+            <div class="bcs-visual">
+              <div class="bcs-scale">
+                ${[1,2,3,4,5].map(score => `
+                  <div class="bcs-point ${score == pet.petDetails.bcs ? 'active' : ''} 
+                                       ${score < pet.petDetails.bcs ? 'filled' : ''}"
+                       data-bcs="${score}">
+                    ${score}
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+            ` : ''}
+          </div>
+          <button class="bcs-reassess-btn" data-index="${index}">
+            ${pet.petDetails.bcs ? '🔄 Update Scoring' : '⚖️ Assess Body Condition'}
+          </button>
+        </div>
+      </div>
+
       <!-- SECTION 3: SUGGESTED EXERCISES -->
       <div class="suggested-exercises-section">
         <div class="section-header">
@@ -616,7 +649,17 @@ function generateSuggestedExercises(pet) {
     return suggestions;
 }
 
-
+// Helper function for BCS display text/ ❤️
+function getBCSDisplay(bcs) {
+    const bcsMap = {
+        '1': '1 - Very Underweight',
+        '2': '2 - Underweight',
+        '3': '3 - Ideal Weight', 
+        '4': '4 - Overweight',
+        '5': '5 - Obese'
+    };
+    return bcsMap[bcs] || 'Unknown';
+}
 
 //=====================================================
 // UPDATE DASHBOARD FUNCTION
@@ -3217,7 +3260,16 @@ function generateExerciseSummaryHTML(exerciseEntries) {
         </div>
     `;
 }
-
+//======================================
+// BCS Reassessment Modal (we'll build the full modal next)
+function showBCSReassessmentModal(petIndex) {
+    console.log('Opening BCS reassessment for pet index:', petIndex);
+    // We'll build the full modal in the next step
+    AppHelper.showError('BCS reassessment modal coming soon!');
+    
+    // Store which pet we're assessing
+    sessionStorage.setItem('assessingBCSFor', petIndex);
+}
 
 //=================================
 // SETUP PROFILE EVENT LISTENERS
@@ -3308,5 +3360,17 @@ document.querySelectorAll('.delete-suggestion-btn').forEach(btn => {
         deleteSuggestion(index, exerciseId);
     });
 });
+ 
+ // BCS Reassessment button
+document.querySelectorAll('.bcs-reassess-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const index = parseInt(btn.dataset.index);
+        showBCSReassessmentModal(index);
+    });
+ });
 }
+
+
+
 
