@@ -616,21 +616,20 @@
 }
 
 /* Fixed Footer */
-/* Fixed Footer - Centered at Bottom */
+/* OR try viewport positioning */
 .dashboard-footer {
     position: fixed;
-    bottom: 2rem; /* Space from bottom */
-    left: 50% !important;
-    transform: translateX(-50%) !important;
+    bottom: 2rem;
+    left: calc(50vw - 150px); /* Half viewport minus half estimated width */
+    width: 300px;
     background: var(--light-charcoal);
     color: var(--dark-mustard);
     border: 2px solid var(--primary-mustard);
-    padding: 1rem 2rem;
+    padding: 1rem;
     text-align: center;
     font-size: 1rem;
     border-radius: 8px;
     z-index: 100;
-    white-space: nowrap;
 }
 
 .dark-mode .dashboard-footer {
