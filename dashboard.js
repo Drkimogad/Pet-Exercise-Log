@@ -510,27 +510,39 @@ function loadSavedProfiles() {
           </div>
           
           <!-- MOOD LOGS -->
-          <div class="mood-section">
-            <div class="section-header">
-              <span>😊 Recent Mood</span>
-            </div>
-            <div class="mood-entries">
-              ${pet.moodLogs && pet.moodLogs.length > 0 ? 
+<div class="mood-section">
+        <div class="mood-view-toggle">
+        <button class="mood-toggle-btn ${loadMoodViewPreference(index) === 'recent' ? 'active' : ''}" data-view="recent" data-index="${index}">
+            📝 Recent
+        </button>
+        <button class="mood-toggle-btn ${loadMoodViewPreference(index) === 'calendar' ? 'active' : ''}" data-view="calendar" data-index="${index}">
+            📅 Calendar
+        </button>
+    </div>
+    
+    <!-- Recent Mood View -->
+       <div class="mood-view mood-recent-view" ${loadMoodViewPreference(index) === 'recent' ? '' : 'style="display: none;"'}>
+        <div class="mood-entries">
+            ${pet.moodLogs && pet.moodLogs.length > 0 ? 
                 pet.moodLogs.slice(-3).map(log => {
-                  const mood = MOOD_OPTIONS.find(m => m.value === log.mood) || MOOD_OPTIONS[0];
-                  return `
-                    <div class="mood-entry">
-                      <span class="mood-emoji">${mood.emoji}</span>
-                      <span class="mood-date">${formatDate(log.date)}</span>
-                    </div>
-                  `;
+                    const mood = MOOD_OPTIONS.find(m => m.value === log.mood) || MOOD_OPTIONS[0];
+                    return `
+                        <div class="mood-entry">
+                            <span class="mood-emoji">${mood.emoji}</span>
+                            <span class="mood-date">${formatDate(log.date)}</span>
+                        </div>
+                    `;
                 }).join('') : 
                 '<p class="no-moods">No mood entries yet</p>'
-              }
-            </div>
-          </div>
+            }
         </div>
-      </div>
+    </div>
+    
+    <!-- Calendar Mood View -->
+        <div class="mood-view mood-calendar-view" ${loadMoodViewPreference(index) === 'calendar' ? '' : 'style="display: none;"'}>
+        ${generateMiniMoodCalendar(pet.moodLogs || [])}
+    </div>
+</div>
 
       <!-- SECTION: BCS REASSESSMENT -->
       <div class="bcs-section">
@@ -659,6 +671,52 @@ function getBCSDisplay(bcs) {
         '5': '5 - Obese'
     };
     return bcsMap[bcs] || 'Unknown';
+}
+//==============================================
+// Switch between recent and calendar mood views
+//===============================================
+function switchMoodView(petIndex, view) {
+    const petCard = document.querySelector(`[data-pet-index="${petIndex}"]`);
+    if (!petCard) return;
+    
+    const moodSection = petCard.querySelector('.mood-section');
+    const toggleBtns = moodSection.querySelectorAll('.mood-toggle-btn');
+    const recentView = moodSection.querySelector('.mood-recent-view');
+    const calendarView = moodSection.querySelector('.mood-calendar-view');
+    
+    // Update toggle buttons
+    toggleBtns.forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.view === view);
+    });
+    
+    // Switch views with smooth transition
+    if (view === 'recent') {
+        calendarView.style.display = 'none';
+        setTimeout(() => {
+            recentView.style.display = 'block';
+        }, 50);
+    } else {
+        recentView.style.display = 'none';
+        setTimeout(() => {
+            calendarView.style.display = 'block';
+        }, 50);
+    }
+    
+    // Save user preference
+    saveMoodViewPreference(petIndex, view);
+}
+
+// Save mood view preference to localStorage
+function saveMoodViewPreference(petIndex, view) {
+    const preferences = JSON.parse(localStorage.getItem('moodViewPreferences') || '{}');
+    preferences[petIndex] = view;
+    localStorage.setItem('moodViewPreferences', JSON.stringify(preferences));
+}
+
+// Load mood view preference (call this in loadSavedProfiles)
+function loadMoodViewPreference(petIndex) {
+    const preferences = JSON.parse(localStorage.getItem('moodViewPreferences') || '{}');
+    return preferences[petIndex] || 'recent'; // Default to recent view
 }
 
 //=====================================================
@@ -2251,7 +2309,57 @@ function saveTemporaryMoodData(petData) {
     console.log('✅ Final mood data:', petData.moodLogs);
     return petData;
 }
+
+
+// Generate mini mood calendar for pet cards
+function generateMiniMoodCalendar(moodLogs) {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = now.getMonth();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const firstDay = new Date(year, month, 1).getDay();
     
+    let calendarHTML = `
+        <div class="mini-mood-calendar">
+            <div class="mini-calendar-header">
+                ${now.toLocaleString('default', { month: 'short', year: 'numeric' })}
+            </div>
+            <div class="mini-mood-calendar-grid">
+    `;
+    
+    // Day headers (compact)
+    ['S', 'M', 'T', 'W', 'T', 'F', 'S'].forEach(day => {
+        calendarHTML += `<div class="mini-calendar-day-header">${day}</div>`;
+    });
+    
+    // Empty days for the first week
+    for (let i = 0; i < firstDay; i++) {
+        calendarHTML += `<div class="mini-mood-day empty"></div>`;
+    }
+    
+    // Actual days with mood data
+    for (let day = 1; day <= daysInMonth; day++) {
+        const dateStr = `${year}-${(month + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+        const moodEntry = moodLogs.find(log => log.date === dateStr);
+        const moodEmoji = moodEntry ? getMoodEmojiFromValue(moodEntry.mood) : '';
+        const isToday = day === now.getDate();
+        
+        calendarHTML += `
+            <div class="mini-mood-day ${isToday ? 'today' : ''} ${moodEmoji ? 'has-mood' : ''}">
+                ${moodEmoji || day}
+            </div>
+        `;
+    }
+    
+    calendarHTML += `</div></div>`;
+    return calendarHTML;
+}
+
+// Helper function to get mood emoji from value
+function getMoodEmojiFromValue(value) {
+    const mood = MOOD_OPTIONS.find(m => m.value === value);
+    return mood ? mood.emoji : '';
+}
 
 
 function formatDate(dateStr) {
@@ -2267,6 +2375,7 @@ function formatDate(dateStr) {
         return dateStr;
     }
 }
+
 // Calendar functionality
 // Add the Helper Function
 function generateMiniCalendar(exerciseEntries) {
@@ -3475,6 +3584,15 @@ document.querySelectorAll('.bcs-reassess-btn').forEach(btn => {
         showBCSReassessmentModal(index);
     });
  });
+ // Mood view toggle buttons
+document.querySelectorAll('.mood-toggle-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const index = parseInt(btn.dataset.index);
+        const view = btn.dataset.view;
+        switchMoodView(index, view);
+    });
+});
 }
 
 
