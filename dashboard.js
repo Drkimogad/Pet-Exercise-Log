@@ -3263,6 +3263,7 @@ function generateExerciseSummaryHTML(exerciseEntries) {
 //======================================
 // BCS Reassessment Modal - Complete Implementation
 //=====================
+// BCS Reassessment Modal - FIXED Version
 function showBCSReassessmentModal(petIndex) {
     console.log('Opening BCS reassessment for pet index:', petIndex);
     
@@ -3281,7 +3282,10 @@ function showBCSReassessmentModal(petIndex) {
     const modal = document.querySelector('.bcs-modal-overlay');
     const currentBCS = pet.petDetails.bcs;
     
-    // Set up event listeners
+    // Prevent background scrolling
+    document.body.style.overflow = 'hidden';
+    
+    // Set up event listeners with proper scoping
     setupBCSModalEvents(modal, petIndex, currentBCS);
     
     // Pre-select current BCS if exists
@@ -3289,13 +3293,20 @@ function showBCSReassessmentModal(petIndex) {
         const currentOption = modal.querySelector(`.bcs-option[data-bcs="${currentBCS}"]`);
         if (currentOption) {
             selectBCSOption(currentOption);
+            updateSelectedDisplay(currentBCS);
         }
     }
 }
 
-// Setup BCS Modal Event Listeners
+// Setup BCS Modal Event Listeners - FIXED
 function setupBCSModalEvents(modal, petIndex, currentBCS) {
     let selectedBCS = currentBCS;
+    
+    // Helper function to close modal
+    const closeModal = () => {
+        document.body.style.overflow = ''; // Restore scrolling
+        modal.remove();
+    };
     
     // BCS Option Clicks
     modal.querySelectorAll('.bcs-option').forEach(option => {
@@ -3306,33 +3317,48 @@ function setupBCSModalEvents(modal, petIndex, currentBCS) {
         });
     });
     
-    // Update Button
+    // Update Button - FIXED
     modal.querySelector('.bcs-update-btn').addEventListener('click', () => {
         if (!selectedBCS) {
             AppHelper.showError('Please select a body condition score');
             return;
         }
         updatePetBCS(petIndex, selectedBCS);
-        modal.remove();
+        closeModal();
     });
     
-    // Close Button
+    // Close Button - FIXED
     modal.querySelector('.bcs-close-btn').addEventListener('click', () => {
-        modal.remove();
+        closeModal();
     });
     
-    // Close on overlay click
+    // Close on overlay click - FIXED
     modal.addEventListener('click', (e) => {
         if (e.target === modal) {
-            modal.remove();
+            closeModal();
         }
     });
+    
+    // Close on Escape key - ADDED for better UX
+    const handleEscape = (e) => {
+        if (e.key === 'Escape') {
+            closeModal();
+            document.removeEventListener('keydown', handleEscape);
+        }
+    };
+    document.addEventListener('keydown', handleEscape);
+    
+    // Cleanup event listener when modal closes
+    modal._cleanup = () => {
+        document.removeEventListener('keydown', handleEscape);
+    };
 }
 
-// Select BCS Option and Update UI
+// Select BCS Option and Update UI - FIXED scope
 function selectBCSOption(option) {
-    // Remove selection from all options
-    document.querySelectorAll('.bcs-option').forEach(opt => {
+    // Remove selection from all options in the modal
+    const modal = option.closest('.bcs-modal-overlay');
+    modal.querySelectorAll('.bcs-option').forEach(opt => {
         opt.classList.remove('selected');
     });
     
@@ -3340,43 +3366,13 @@ function selectBCSOption(option) {
     option.classList.add('selected');
 }
 
-// Update Selected BCS Display
+// Update Selected BCS Display - FIXED scope
 function updateSelectedDisplay(bcs) {
-    const display = document.getElementById('selectedBCSValue');
+    const modal = document.querySelector('.bcs-modal-overlay');
+    const display = modal.querySelector('#selectedBCSValue');
     if (display) {
         display.textContent = getBCSDisplay(bcs);
         display.className = `selected-value bcs-${bcs}`;
-    }
-}
-
-// Update Pet BCS in Storage
-function updatePetBCS(petIndex, newBCS) {
-    const pets = getPets();
-    const pet = pets[petIndex];
-    
-    if (pet) {
-        // Update BCS
-        pet.petDetails.bcs = newBCS;
-        
-        // Auto-update feeding recommendation based on BCS
-        if (newBCS >= 4) {
-            pet.petDetails.feedingRecommendation = 'feed_less';
-        } else if (newBCS <= 2) {
-            pet.petDetails.feedingRecommendation = 'feed_more';
-        } else {
-            pet.petDetails.feedingRecommendation = 'maintain';
-        }
-        
-        // Save to storage
-        localStorage.setItem('pets', JSON.stringify(pets));
-        
-        // Refresh UI
-        loadSavedProfiles();
-        
-        // Show success
-        AppHelper.showSuccess(`Body Condition Score updated to: ${getBCSDisplay(newBCS)}`);
-        
-        console.log('✅ BCS updated for pet:', pet.petDetails.name);
     }
 }
 
