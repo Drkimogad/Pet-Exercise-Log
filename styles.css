@@ -1397,31 +1397,357 @@
     align-items: start;
 }
 
-/* Mini Charts */
-.mini-charts-container {
+/* ===============================================
+   MINI CHARTS SYSTEM STYLES
+   =============================================== */
+
+/* Exercise Stats Row */
+.exercise-stats-row {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 15px;
-    margin-bottom: 20px;
+    margin-bottom: 25px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid var(--primary-mustard);
 }
 
-.mini-chart {
+.exercise-stat {
+    text-align: center;
+    padding: 15px;
+    background: var(--off-white);
+    border-radius: 8px;
+    border: 1px solid var(--primary-mustard);
+}
+
+.exercise-number {
+    font-size: 1.8em;
+    font-weight: bold;
+    color: var(--dark-purple);
+    margin-bottom: 5px;
+}
+
+.exercise-label {
+    font-size: 0.85em;
+    color: var(--light-charcoal);
+    font-weight: 600;
+}
+
+
+/* Mini Charts Row */
+.mini-charts-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    width: 100%;
+}
+
+.mini-chart-container {
     background: var(--white);
     border: 1px solid var(--primary-mustard);
     border-radius: 8px;
     padding: 15px;
-    text-align: center;
-    min-height: 80px;
     display: flex;
     flex-direction: column;
-    justify-content: center;
 }
 
-.mini-chart p {
-    margin: 0;
-    color: var(--light-charcoal);
-    font-size: 0.8em;
+.mini-chart-title {
+    text-align: center;
+    font-weight: bold;
+    color: var(--dark-purple);
+    margin-bottom: 10px;
+    font-size: 0.9em;
 }
+
+.mini-chart {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 120px;
+}
+
+/* No Data State */
+.no-chart-data {
+    text-align: center;
+    color: var(--light-charcoal);
+    font-style: italic;
+    padding: 20px;
+}
+
+/* Mini Bar Chart (Duration) */
+.mini-bar-chart {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    height: 100px;
+    width: 100%;
+    gap: 8px;
+}
+
+.bar-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    height: 100%;
+}
+
+.bar {
+    width: 80%;
+    background: var(--light-purple);
+    border-radius: 4px 4px 0 0;
+    min-height: 5px;
+    transition: height 0.3s ease;
+}
+
+.bar-label {
+    font-size: 0.7em;
+    color: var(--light-charcoal);
+    margin-top: 5px;
+    text-align: center;
+}
+
+.bar-value {
+    font-size: 0.75em;
+    font-weight: bold;
+    color: var(--dark-purple);
+    margin-top: 2px;
+}
+
+/* Mini Line Chart (Calories) */
+.mini-line-chart {
+    width: 100%;
+    height: 100px;
+    display: flex;
+    flex-direction: column;
+}
+
+.line-chart-svg {
+    width: 100%;
+    height: 60px;
+    flex: 1;
+}
+
+.line-labels {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 5px;
+}
+
+.line-label {
+    font-size: 0.6em;
+    color: var(--light-charcoal);
+    transform: rotate(-45deg);
+    transform-origin: left top;
+    white-space: nowrap;
+}
+
+/* Mini Pie Chart (Intensity) */
+.mini-pie-chart {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    height: 100px;
+}
+
+.pie-chart-svg {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: conic-gradient(
+        var(--light-purple) 0% var(--percentage),
+        transparent var(--percentage) 100%
+    );
+    position: relative;
+    flex-shrink: 0;
+}
+
+.pie-slice {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    clip-path: polygon(50% 50%, 50% 0%, 100% 0%, 100% 100%, 50% 100%);
+    transform: rotate(var(--rotation));
+}
+
+/* Pie Slice Colors */
+.pie-slice.low { background: var(--primary-yellow); }
+.pie-slice.medium { background: var(--light-purple); }
+.pie-slice.high { background: var(--primary-mustard); }
+.pie-slice.very\ high { background: var(--dark-purple); }
+
+.pie-legend {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.75em;
+}
+
+.legend-color {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.legend-color.low { background: var(--primary-yellow); }
+.legend-color.medium { background: var(--light-purple); }
+.legend-color.high { background: var(--primary-mustard); }
+.legend-color.very\ high { background: var(--dark-purple); }
+
+.legend-label {
+    color: var(--dark-charcoal);
+    flex: 1;
+    text-transform: capitalize;
+}
+
+.legend-value {
+    color: var(--dark-purple);
+    font-weight: bold;
+}
+
+/* ===============================================
+   RESPONSIVE DESIGN FOR MINI CHARTS
+   =============================================== */
+
+/* Tablet (768px - 1024px) */
+@media (max-width: 1024px) {
+    .exercise-stats-row {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+    
+    .mini-charts-row {
+        gap: 15px;
+    }
+    
+    .mini-chart-container {
+        padding: 12px;
+    }
+    
+    .mini-chart {
+        min-height: 100px;
+    }
+    
+    .mini-bar-chart {
+        height: 80px;
+    }
+    
+    .mini-pie-chart {
+        height: 90px;
+    }
+    
+    .pie-chart-svg {
+        width: 70px;
+        height: 70px;
+    }
+}
+
+/* Large Phone (481px - 767px) */
+@media (max-width: 767px) {
+    .exercise-stats-row {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+    
+    .mini-charts-row {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+    
+    .mini-chart-container {
+        padding: 15px;
+    }
+    
+    .mini-chart {
+        min-height: 80px;
+    }
+    
+    .mini-bar-chart {
+        height: 60px;
+        gap: 6px;
+    }
+    
+    .bar-label {
+        font-size: 0.65em;
+    }
+    
+    .bar-value {
+        font-size: 0.7em;
+    }
+    
+    .mini-pie-chart {
+        height: 70px;
+        justify-content: center;
+    }
+    
+    .pie-chart-svg {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .legend-item {
+        font-size: 0.7em;
+    }
+}
+
+/* Small Phone (320px - 480px) */
+@media (max-width: 480px) {
+    .exercise-stats-row {
+        gap: 8px;
+    }
+    
+    .exercise-stat {
+        padding: 10px;
+    }
+    
+    .exercise-number {
+        font-size: 1.5em;
+    }
+    
+    .exercise-label {
+        font-size: 0.8em;
+    }
+    
+    .mini-charts-row {
+        gap: 12px;
+    }
+    
+    .mini-chart-container {
+        padding: 12px 10px;
+    }
+    
+    .mini-chart-title {
+        font-size: 0.85em;
+    }
+    
+    .mini-bar-chart {
+        height: 50px;
+    }
+    
+    .bar-label {
+        font-size: 0.6em;
+    }
+    
+    .pie-chart-svg {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .legend-item {
+        font-size: 0.65em;
+    }
+}
+
 
 /* Mini Calendar */
 .calendar-section {
