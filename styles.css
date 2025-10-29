@@ -2794,5 +2794,35 @@
     font-size: 1.1em;
 }
 
+/* Prevent background scrolling when modal is open */
+body.modal-open {
+    overflow: hidden;
+}
 
+.bcs-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    padding: 20px;
+    overflow: hidden; /* Prevent any overflow */
+}
+
+.bcs-modal {
+    background: var(--white);
+    border-radius: 12px;
+    width: 100%;
+    max-width: 800px;
+    max-height: 90vh;
+    overflow-y: auto; /* Only modal content scrolls */
+    box-shadow: var(--shadow-md);
+    display: flex;
+    flex-direction: column;
+}
 
