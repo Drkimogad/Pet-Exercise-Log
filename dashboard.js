@@ -489,25 +489,50 @@ function loadSavedProfiles() {
         </div>
         
         <div class="exercise-content">
-          <!-- MINI CHARTS - 3 charts -->
-          <div class="mini-charts-container">
-            <div class="mini-chart" id="mini-duration-chart-${index}">
-              ${generateMiniCharts(pet.exerciseEntries || [])}
+    <!-- EXERCISE STATS - Top Row -->
+    <div class="exercise-stats-row">
+        <div class="exercise-stat">
+            <div class="exercise-number">${totalSessions}</div>
+            <div class="exercise-label">Total Sessions</div>
+        </div>
+        <div class="exercise-stat">
+            <div class="exercise-number">${avgDuration}m</div>
+            <div class="exercise-label">Avg Duration</div>
+        </div>
+        <div class="exercise-stat">
+            <div class="exercise-number">${totalCalories}</div>
+            <div class="exercise-label">Total Calories</div>
+        </div>
+        <div class="exercise-stat">
+            <div class="exercise-number">${getFavoriteExercise(pet)}</div>
+            <div class="exercise-label">Favorite Activity</div>
+        </div>
+    </div>
+    
+    <!-- MINI CHARTS - Bottom Row -->
+    <div class="mini-charts-row">
+        <div class="mini-chart-container">
+            <div class="mini-chart-title">⏱️ Duration</div>
+            <div class="mini-chart" id="mini-duration-${index}">
+                ${generateMiniDurationChart(pet.exerciseEntries || [])}
             </div>
-            <div class="mini-chart" id="mini-calories-chart-${index}">
-              <!-- Calories chart placeholder -->
+        </div>
+        <div class="mini-chart-container">
+            <div class="mini-chart-title">🔥 Calories</div>
+            <div class="mini-chart" id="mini-calories-${index}">
+                ${generateMiniCaloriesChart(pet.exerciseEntries || [])}
             </div>
-            <div class="mini-chart" id="mini-intensity-chart-${index}">
-              <!-- Intensity chart placeholder -->
+        </div>
+        <div class="mini-chart-container">
+            <div class="mini-chart-title">⚡ Intensity</div>
+            <div class="mini-chart" id="mini-intensity-${index}">
+                ${generateMiniIntensityChart(pet.exerciseEntries || [])}
             </div>
-          </div>
-          
-          <!-- MINI CALENDAR -->
-          <div class="calendar-section">
-            <div class="mini-calendar" id="mini-calendar-${index}">
-              ${generateMiniCalendar(pet.exerciseEntries || [])}
-            </div>
-          </div>
+        </div>
+    </div>
+</div>
+        
+
           
           <!-- MOOD LOGS -->
 <div class="mood-section">
@@ -672,6 +697,23 @@ function getBCSDisplay(bcs) {
     };
     return bcsMap[bcs] || 'Unknown';
 }
+
+// Helper function to get most frequent exercise
+function getFavoriteExercise(pet) {
+    if (!pet.exerciseEntries || pet.exerciseEntries.length === 0) return 'N/A';
+    
+    const exerciseCount = {};
+    pet.exerciseEntries.forEach(entry => {
+        exerciseCount[entry.exerciseType] = (exerciseCount[entry.exerciseType] || 0) + 1;
+    });
+    
+    const favorite = Object.keys(exerciseCount).reduce((a, b) => 
+        exerciseCount[a] > exerciseCount[b] ? a : b
+    );
+    
+    return favorite.charAt(0).toUpperCase() + favorite.slice(1);
+}
+
 //==============================================
 // Switch between recent and calendar mood views
 //===============================================
@@ -3013,6 +3055,149 @@ function updateChartColors() {
     if (caloriesChart) caloriesChart.update();
     if (intensityChart) intensityChart.update();
 }
+
+// Generate mini charts functions for petcards display
+// Generate mini duration bar chart
+function generateMiniDurationChart(exerciseEntries) {
+    if (!exerciseEntries || exerciseEntries.length === 0) {
+        return '<div class="no-chart-data">No exercise data</div>';
+    }
+    
+    // Group by 15-min increments
+    const durationGroups = {
+        '0-15': 0,
+        '16-30': 0,
+        '31-45': 0, 
+        '46-60': 0,
+        '61+': 0
+    };
+    
+    exerciseEntries.forEach(entry => {
+        const duration = entry.duration;
+        if (duration <= 15) durationGroups['0-15']++;
+        else if (duration <= 30) durationGroups['16-30']++;
+        else if (duration <= 45) durationGroups['31-45']++;
+        else if (duration <= 60) durationGroups['46-60']++;
+        else durationGroups['61+']++;
+    });
+    
+    const maxCount = Math.max(...Object.values(durationGroups));
+    
+    return `
+        <div class="mini-bar-chart">
+            ${Object.entries(durationGroups).map(([range, count]) => `
+                <div class="bar-container">
+                    <div class="bar" style="height: ${maxCount ? (count / maxCount) * 100 : 0}%"></div>
+                    <div class="bar-label">${range}</div>
+                    <div class="bar-value">${count}</div>
+                </div>
+            `).join('')}
+        </div>
+    `;
+}
+
+// Generate mini calories line chart
+function generateMiniCaloriesChart(exerciseEntries) {
+    if (!exerciseEntries || exerciseEntries.length === 0) {
+        return '<div class="no-chart-data">No exercise data</div>';
+    }
+    
+    // Group by 25-calorie increments
+    const calorieGroups = {
+        '0-25': 0,
+        '26-50': 0,
+        '51-75': 0,
+        '76-100': 0,
+        '101+': 0
+    };
+    
+    exerciseEntries.forEach(entry => {
+        const calories = entry.caloriesBurned;
+        if (calories <= 25) calorieGroups['0-25']++;
+        else if (calories <= 50) calorieGroups['26-50']++;
+        else if (calories <= 75) calorieGroups['51-75']++;
+        else if (calories <= 100) calorieGroups['76-100']++;
+        else calorieGroups['101+']++;
+    });
+    
+    const maxCount = Math.max(...Object.values(calorieGroups));
+    const values = Object.values(calorieGroups);
+    
+    return `
+        <div class="mini-line-chart">
+            <svg viewBox="0 0 100 60" class="line-chart-svg">
+                <polyline 
+                    points="${values.map((count, i) => 
+                        `${(i / (values.length - 1)) * 100},${60 - (count / maxCount) * 50}`
+                    ).join(' ')}" 
+                    fill="none" 
+                    stroke="var(--light-purple)" 
+                    stroke-width="2"
+                />
+            </svg>
+            <div class="line-labels">
+                ${Object.keys(calorieGroups).map(range => 
+                    `<span class="line-label">${range}</span>`
+                ).join('')}
+            </div>
+        </div>
+    `;
+}
+
+// Generate mini intensity pie chart
+function generateMiniIntensityChart(exerciseEntries) {
+    if (!exerciseEntries || exerciseEntries.length === 0) {
+        return '<div class="no-chart-data">No exercise data</div>';
+    }
+    
+    // Count by intensity level
+    const intensityCounts = {
+        'low': 0,
+        'medium': 0,
+        'high': 0,
+        'very high': 0
+    };
+    
+    exerciseEntries.forEach(entry => {
+        const intensity = entry.intensity || 'medium';
+        intensityCounts[intensity] = (intensityCounts[intensity] || 0) + 1;
+    });
+    
+    const total = Object.values(intensityCounts).reduce((a, b) => a + b, 0);
+    
+    return `
+        <div class="mini-pie-chart">
+            <div class="pie-chart-svg">
+                ${Object.entries(intensityCounts).map(([intensity, count], index, array) => {
+                    if (count === 0) return '';
+                    const percentage = (count / total) * 100;
+                    const rotation = array.slice(0, index).reduce((sum, [, c]) => 
+                        sum + (c / total) * 360, 0
+                    );
+                    
+                    return `
+                        <div class="pie-slice ${intensity}" 
+                             style="--percentage: ${percentage}; --rotation: ${rotation}deg">
+                        </div>
+                    `;
+                }).join('')}
+            </div>
+            <div class="pie-legend">
+                ${Object.entries(intensityCounts).map(([intensity, count]) => 
+                    count > 0 ? `
+                    <div class="legend-item">
+                        <span class="legend-color ${intensity}"></span>
+                        <span class="legend-label">${intensity}</span>
+                        <span class="legend-value">${count}</span>
+                    </div>
+                    ` : ''
+                ).join('')}
+            </div>
+        </div>
+    `;
+}
+
+
 
 // ===============================================
 // Save temporary chart data (already handled by exercise data saving)
