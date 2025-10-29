@@ -975,12 +975,22 @@ function setupProfileEventListeners() {
     });
   });
 
-  // Edit button
-  document.querySelectorAll('.edit-btn').forEach(btn => {
+   // Edit button → Now becomes Daily Log button
+  document.querySelectorAll('.daily-log-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
       const index = parseInt(btn.dataset.index);
-      editPetProfile(index);
+      showDailyLogForm(index); // Changed from editPetProfile
+    });
+  });
+
+      // Edit Details button (for health assessment form)
+  document.querySelectorAll('.edit-details-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const index = parseInt(btn.dataset.index);
+      // We'll implement this later for health assessment editing
+      AppHelper.showError('Edit details coming soon!');
     });
   });
 
@@ -1037,7 +1047,7 @@ function selectPetProfile(index) {
 }
 
 //===========================================
-// ENHANCED WITH COMPLETE DATA POPULATION
+// ENHANCED EDIT WITH COMPLETE DATA POPULATION + DAILY LOG FORM FUNCTIONS
 
 // 1.EDIT PET PROFILE 
 // ===============================================
@@ -1421,6 +1431,257 @@ function forceReturnToDashboard() {
     AppHelper.showError('Returned to dashboard due to an error');
 }
 
+// =========================================================================================
+// DAILY LOG FORM FUNCTIONS, THESE FUNCTIONS WORK ALONGSIDE THE EDIT LOGIC FOR DAILY LOGGING 
+// ========================================================================================
+
+// 8.Show daily log form for exercise and mood logging
+function showDailyLogForm(index) {  
+    console.log('🔄 showDailyLogForm called for index:', index);
+    
+    try {
+        // Validate input and get pet data
+        if (index === undefined || index === null) {
+            throw new Error('Invalid pet index provided');
+        }
+
+        const pets = getPets();
+        if (!pets[index]) {
+            throw new Error(`Pet not found at index: ${index}`);
+        }
+
+        const pet = pets[index];
+        console.log('📝 Daily logging for:', pet.petDetails.name);
+        
+        // Set active pet
+        activePetIndex = index;
+        sessionStorage.setItem('activePetIndex', activePetIndex);
+
+        // Show the form container
+        document.getElementById('savedProfiles').style.display = 'none';
+        document.getElementById('profileContainer').style.display = 'block';
+        
+        // Load the daily log form template
+        const template = document.getElementById('dailyLogFormTemplate');
+        if (!template) {
+            throw new Error('Daily log form template not found');
+        }
+        
+        document.getElementById('profileContainer').innerHTML = template.innerHTML;
+        
+        // Set up mood tracker for daily log
+        initializeDailyLogMoodTracker();
+        
+        // Populate form with today's date and smart defaults
+        setTimeout(() => populateDailyLogForm(pet), 50);
+        
+        // Set up form submission handler
+        document.getElementById('dailyLogForm').addEventListener('submit', handleDailyLogSubmit);
+        
+        // Set up cancel button
+        document.getElementById('cancelDailyLogButton').addEventListener('click', function() {
+            returnToDashboard();
+        });
+        
+        console.log('✅ Daily log form initialized successfully');
+        
+    } catch (error) {
+        console.error('❌ Error in showDailyLogForm:', error);
+        AppHelper.showError(`Failed to load daily log: ${error.message}`);
+        returnToDashboard();
+    }
+}
+
+//9. Populate daily log form with smart defaults
+function populateDailyLogForm(pet) {  
+    console.log('🔄 Populating daily log form for:', pet.petDetails.name);
+    
+    // Set today's date as default
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('dailyExerciseDate').value = today;
+    
+    // Set smart defaults based on pet's usual activities
+    const lastExercise = pet.exerciseEntries.length > 0 ? 
+        pet.exerciseEntries[pet.exerciseEntries.length - 1] : null;
+    
+    if (lastExercise) {
+        // Pre-fill with last exercise type for convenience
+        document.getElementById('dailyExerciseType').value = lastExercise.exerciseType;
+        document.getElementById('dailyExerciseDuration').value = lastExercise.duration;
+        document.getElementById('dailyCaloriesBurned').value = lastExercise.caloriesBurned;
+        document.getElementById('dailyExerciseIntensity').value = lastExercise.intensity || 'medium';
+    } else {
+        // Default values for first exercise
+        document.getElementById('dailyExerciseDuration').value = 30;
+        document.getElementById('dailyCaloriesBurned').value = 150;
+    }
+    
+    // Set today's mood if already logged
+    const todayMood = pet.moodLogs?.find(log => log.date === today);
+    if (todayMood) {
+        const moodBtn = document.querySelector(`.emoji-btn[data-mood="${todayMood.mood}"]`);
+        if (moodBtn) {
+            moodBtn.classList.add('selected');
+        }
+    }
+    
+    console.log('✅ Daily log form populated');
+}
+
+//10. Initialize mood tracker for daily log form
+function initializeDailyLogMoodTracker() {
+    console.log('Initializing daily log mood tracker...');
+    
+    const moodContainer = document.getElementById('dailyMoodTracker');
+    if (!moodContainer) {
+        console.error('Daily mood tracker container not found!');
+        return;
+    }
+
+    const today = new Date().toISOString().split('T')[0];
+    
+    moodContainer.innerHTML = `
+        <div class="mood-container">
+            <div class="mood-selector">
+                ${MOOD_OPTIONS.map(mood => `
+                    <button type="button" class="emoji-btn" data-mood="${mood.value}" data-date="${today}" 
+                            title="${mood.label}">
+                        ${mood.emoji}
+                        <span class="mood-label">${mood.label}</span>
+                    </button>
+                `).join('')}
+            </div>
+        </div>
+    `;
+    
+    // Add event listeners for mood selection
+    moodContainer.addEventListener('click', handleDailyLogMoodSelection);
+}
+
+//11. Handle mood selection in daily log form
+function handleDailyLogMoodSelection(e) {
+    if (e.target.classList.contains('emoji-btn') || e.target.closest('.emoji-btn')) {
+        e.preventDefault();
+        const btn = e.target.classList.contains('emoji-btn') ? 
+                   e.target : e.target.closest('.emoji-btn');
+        
+        // Update button selection state
+        document.querySelectorAll('.emoji-btn').forEach(btn => 
+            btn.classList.remove('selected')
+        );
+        btn.classList.add('selected');
+    }
+}
+
+// 12.Handle daily log form submission
+function handleDailyLogSubmit(e) {
+    e.preventDefault();
+    console.log('🔄 Daily log form submission');
+    
+    try {
+        // Validate form
+        const validationErrors = validateDailyLogForm();
+        if (validationErrors.length > 0) {
+            console.error('❌ Daily log validation failed:', validationErrors);
+            AppHelper.showErrors(validationErrors);
+            return;
+        }
+        
+        // Collect form data
+        const formData = collectDailyLogData();
+        console.log('📋 Daily log data collected:', formData);
+        
+        // Update pet data
+        const pets = getPets();
+        const pet = { ...pets[activePetIndex] };
+        
+        // Add exercise entry
+        pet.exerciseEntries = pet.exerciseEntries || [];
+        pet.exerciseEntries.push({
+            exerciseType: formData.exerciseType,
+            duration: Number(formData.duration),
+            date: formData.date,
+            caloriesBurned: Number(formData.calories),
+            intensity: formData.intensity,
+            notes: formData.exerciseNotes.trim(),
+            timestamp: new Date().toISOString()
+        });
+        
+        // Add mood entry
+        if (formData.mood !== null) {
+            pet.moodLogs = pet.moodLogs || [];
+            pet.moodLogs = pet.moodLogs.filter(log => log.date !== formData.date);
+            pet.moodLogs.push({ 
+                date: formData.date, 
+                mood: formData.mood,
+                timestamp: new Date().toISOString()
+            });
+        }
+        
+        // Save to storage
+        pets[activePetIndex] = pet;
+        localStorage.setItem('pets', JSON.stringify(pets));
+        console.log('💾 Daily log saved');
+        
+        // Show success and return to dashboard
+        showSuccess('Exercise logged successfully!');
+        
+        // Return to dashboard and refresh
+        returnToDashboard();
+        loadSavedProfiles(); // This will now show the updated calendar/charts/mood
+        
+        console.log('✅ Daily log completed successfully');
+        
+    } catch (error) {
+        console.error('❌ Error in daily log submission:', error);
+        AppHelper.showError('Failed to save daily log: ' + error.message);
+    }
+}
+
+//13. Collect daily log form data
+function collectDailyLogData() {
+    // Get selected mood
+    const selectedMoodBtn = document.querySelector('.emoji-btn.selected');
+    const moodValue = selectedMoodBtn ? parseInt(selectedMoodBtn.dataset.mood) : null;
+    
+    return {
+        exerciseType: document.getElementById('dailyExerciseType')?.value,
+        duration: document.getElementById('dailyExerciseDuration')?.value,
+        date: document.getElementById('dailyExerciseDate')?.value,
+        calories: document.getElementById('dailyCaloriesBurned')?.value,
+        intensity: document.getElementById('dailyExerciseIntensity')?.value,
+        exerciseNotes: document.getElementById('dailyExerciseNotes')?.value,
+        mood: moodValue
+    };
+}
+
+// 14.Validate daily log form
+function validateDailyLogForm() {
+    console.log('🔍 Validating daily log form...');
+    const errors = [];
+    
+    // Required exercise fields
+    if (!document.getElementById('dailyExerciseType')?.value) {
+        errors.push('Exercise type is required');
+    }
+    
+    const duration = document.getElementById('dailyExerciseDuration')?.value;
+    if (!duration || duration < 1) {
+        errors.push('Valid exercise duration is required');
+    }
+    
+    if (!document.getElementById('dailyExerciseDate')?.value) {
+        errors.push('Exercise date is required');
+    }
+    
+    const calories = document.getElementById('dailyCaloriesBurned')?.value;
+    if (!calories || calories < 1) {
+        errors.push('Valid calories burned is required');
+    }
+    
+    console.log('📊 Daily log validation results:', errors.length > 0 ? errors : 'No errors');
+    return errors;
+}
 
 
 //=========================================
