@@ -961,7 +961,7 @@ function handleHealthImageUpload(e) {
 // ===============================================
 // HEALTH ASSESSMENT EDIT FUNCTIONS
 // ===============================================
-
+// IT USES CANCEL EDIT FUNCTION FOR EXERCISE LOGGING FORM AS WELL
 // Show health assessment form for editing existing profile
 function showHealthAssessmentEditForm(index) {  
     console.log('🔄 showHealthAssessmentEditForm called for index:', index);
@@ -1082,6 +1082,7 @@ function populateHealthAssessmentForm(pet) {
     console.log('✅ Health assessment form populated');
 }
 
+
 //===========================================================
    //      PROFILE ACTION FUNCTIONS
 //==========================================================
@@ -1154,31 +1155,7 @@ function editPetProfile(index) {
 function populateFormFields(pet) {  
     console.log('🔄 populateFormFields called for:', pet.petDetails.name);
     
-    const fieldMappings = {
-        // Basic Information
-        'petType': pet.petDetails.type,
-        'petName': pet.petDetails.name,
-        'petAge': pet.petDetails.age,
-        'petWeight': pet.petDetails.weight,
-        'petBreed': pet.petDetails.breed,
-        'petGender': pet.petDetails.gender,
-        'petColor': pet.petDetails.color,
-        'petEnergyLevel': pet.petDetails.energyLevel,
-        
-        // Medical Information
-        'petHealthStatus': pet.petDetails.healthStatus,
-        'petMicrochip': pet.petDetails.microchip,
-        'petVetInfo': pet.petDetails.vetInfo,
-        'petVaccinations': pet.petDetails.vaccinations,
-        'petMedications': pet.petDetails.medications,
-        'petAllergies': pet.petDetails.allergies,
-        
-        // Lifestyle & Behavior
-        'petDiet': pet.petDetails.diet,
-        'petBehavior': pet.petDetails.behavior,
-        'petFavoriteExercise': pet.petDetails.favoriteExercise,
-        'petNotes': pet.petDetails.notes,
-        
+    const fieldMappings = { 
         // Exercise Information (latest entry or empty)
         'exerciseType': pet.exerciseEntries.length > 0 ? pet.exerciseEntries[pet.exerciseEntries.length - 1].exerciseType : 'walking',
         'exerciseDuration': pet.exerciseEntries.length > 0 ? pet.exerciseEntries[pet.exerciseEntries.length - 1].duration : '',
@@ -1213,17 +1190,7 @@ function populateFormFields(pet) {
             errorCount++;
         }
     });
-
-    // Handle image preview
-    try {
-        const imagePreview = document.getElementById('petImagePreview');
-        if (imagePreview && pet.petDetails.image) {
-            imagePreview.src = pet.petDetails.image;
-        }
-    } catch (imageError) {
-        console.error('❌ Error setting image preview:', imageError);
-    }
-
+ 
     console.log(`✅ Form population complete: ${populatedCount} fields populated, ${errorCount} errors`);
 }
 
@@ -1254,12 +1221,6 @@ function setupEditModeForm() {
         if (cancelButton) {
             cancelButton.innerHTML = '❌ Cancel Edit';
             cancelButton.addEventListener('click', cancelEdit);
-        }
-
-        // Set up image upload handler
-        const imageInput = document.getElementById('petImage');
-        if (imageInput) {
-            imageInput.addEventListener('change', handleImageUpload);
         }
 
         console.log('✅ Edit mode form setup complete');
@@ -1308,70 +1269,93 @@ function hasUnsavedChanges() {
     console.log('🔍 Checking for unsaved changes...');
     
     try {
-        // If we're creating a new profile (no active pet), check if form has any data
-        if (activePetIndex === null) {
-            const petName = document.getElementById('petName')?.value.trim();
-            const petType = document.getElementById('petType')?.value;
-            return !!(petName || petType); // Return true if any data exists
-        }
+        // Check which form is currently open
+        const healthForm = document.getElementById('completeHealthAssessmentForm');
+        const dailyLogForm = document.getElementById('dailyLogForm');
         
-        // If we're editing an existing profile, compare with original data
-        const pets = getPets();
-        const originalPet = pets[activePetIndex];
-        if (!originalPet) return false;
+        if (healthForm) {
+            // Health Assessment Form checks
+            if (activePetIndex === null) {
+                const petName = document.getElementById('healthPetName')?.value.trim();
+                const petType = document.getElementById('healthPetType')?.value;
+                return !!(petName || petType);
+            }
+            
+            const pets = getPets();
+            const originalPet = pets[activePetIndex];
+            if (!originalPet) return false;
 
-        const currentFormData = getCurrentFormData();
-        return hasFormDataChanged(originalPet, currentFormData);
+            const currentFormData = getCurrentHealthFormData(); // Use health form data
+            return hasHealthFormDataChanged(originalPet, currentFormData);
+            
+        } else if (dailyLogForm) {
+            // Daily Log Form checks - always allow cancel for daily log (less critical)
+            console.log('Daily log form - allowing cancel without confirmation');
+            return false;
+            
+        } else {
+            // Unknown form or no form
+            return false;
+        }
         
     } catch (error) {
         console.error('❌ Error checking unsaved changes:', error);
-        return false; // Default to no changes on error
+        return false;
     }
 }
 
 // ===============================================
 // 3.GET CURRENT FORM DATA FOR COMPARISON
 // ===============================================
-function getCurrentFormData() {
+//getCurrentFormData() - Split for Each Form
+// For Health Assessment Form
+function getCurrentHealthFormData() {
     const formData = {
         // Basic Information
-        type: document.getElementById('petType')?.value || '',
-        name: document.getElementById('petName')?.value.trim() || '',
-        age: document.getElementById('petAge')?.value || '',
-        weight: document.getElementById('petWeight')?.value || '',
-        breed: document.getElementById('petBreed')?.value.trim() || '',
-        gender: document.getElementById('petGender')?.value || '',
-        color: document.getElementById('petColor')?.value.trim() || '',
+        type: document.getElementById('healthPetType')?.value || '',
+        name: document.getElementById('healthPetName')?.value.trim() || '',
+        age: document.getElementById('healthPetAge')?.value || '',
+        weight: document.getElementById('healthPetWeight')?.value || '',
+        breed: document.getElementById('healthPetBreed')?.value.trim() || '',
+        gender: document.getElementById('healthPetGender')?.value || '',
+        
+        // Health Assessment Fields
+        bcs: document.getElementById('petBCS')?.value || '',
         energyLevel: document.getElementById('petEnergyLevel')?.value || '',
-        
-        // Medical Information
-        healthStatus: document.getElementById('petHealthStatus')?.value || '',
-        microchip: document.getElementById('petMicrochip')?.value.trim() || '',
-        vetInfo: document.getElementById('petVetInfo')?.value.trim() || '',
-        vaccinations: document.getElementById('petVaccinations')?.value.trim() || '',
-        medications: document.getElementById('petMedications')?.value.trim() || '',
-        allergies: document.getElementById('petAllergies')?.value.trim() || '',
-        
-        // Lifestyle & Behavior
-        diet: document.getElementById('petDiet')?.value.trim() || '',
-        behavior: document.getElementById('petBehavior')?.value.trim() || '',
-        favoriteExercise: document.getElementById('petFavoriteExercise')?.value || '',
-        notes: document.getElementById('petNotes')?.value.trim() || '',
-        
-        // Image (simplified check)
-        image: document.getElementById('petImagePreview')?.src || ''
+        targetWeight: document.getElementById('petTargetWeight')?.value || '',
+        healthNotes: document.getElementById('petHealthNotes')?.value.trim() || '',
+        medicalConditions: getSelectedMedicalConditions(),
+        image: document.getElementById('healthPetImagePreview')?.src || ''
     };
     
     return formData;
 }
 
+// For Daily Log Form (if needed later)
+function getCurrentDailyLogFormData() {
+    return {
+        // Exercise fields only
+        exerciseType: document.getElementById('dailyExerciseType')?.value || '',
+        duration: document.getElementById('dailyExerciseDuration')?.value || '',
+        date: document.getElementById('dailyExerciseDate')?.value || '',
+        calories: document.getElementById('dailyCaloriesBurned')?.value || '',
+        intensity: document.getElementById('dailyExerciseIntensity')?.value || '',
+        exerciseNotes: document.getElementById('dailyExerciseNotes')?.value.trim() || ''
+    };
+}
+
+// Helper function to get selected medical conditions
+function getSelectedMedicalConditions() {
+    const checkboxes = document.querySelectorAll('input[name="medicalConditions"]:checked');
+    return Array.from(checkboxes).map(cb => cb.value);
+}
+
 // ===============================================
 // 4.COMPARE FORM DATA WITH ORIGINAL
 // ===============================================
-function hasFormDataChanged(originalPet, currentFormData) {
+function hasHealthFormDataChanged(originalPet, currentFormData) {
     const originalDetails = originalPet.petDetails;
     
-    // Compare each field
     const changes = [
         originalDetails.type !== currentFormData.type,
         originalDetails.name !== currentFormData.name,
@@ -1379,26 +1363,17 @@ function hasFormDataChanged(originalPet, currentFormData) {
         originalDetails.weight !== currentFormData.weight,
         originalDetails.breed !== currentFormData.breed,
         originalDetails.gender !== currentFormData.gender,
-        originalDetails.color !== currentFormData.color,
+        originalDetails.bcs !== currentFormData.bcs,
         originalDetails.energyLevel !== currentFormData.energyLevel,
-        originalDetails.healthStatus !== currentFormData.healthStatus,
-        originalDetails.microchip !== currentFormData.microchip,
-        originalDetails.vetInfo !== currentFormData.vetInfo,
-        originalDetails.vaccinations !== currentFormData.vaccinations,
-        originalDetails.medications !== currentFormData.medications,
-        originalDetails.allergies !== currentFormData.allergies,
-        originalDetails.diet !== currentFormData.diet,
-        originalDetails.behavior !== currentFormData.behavior,
-        originalDetails.favoriteExercise !== currentFormData.favoriteExercise,
-        originalDetails.notes !== currentFormData.notes,
-        // Image comparison (simplified - just check if different from default)
+        originalDetails.targetWeight !== currentFormData.targetWeight,
+        originalDetails.healthNotes !== currentFormData.healthNotes,
+        JSON.stringify(originalDetails.medicalConditions || []) !== JSON.stringify(currentFormData.medicalConditions || []),
         currentFormData.image !== 'https://drkimogad.github.io/Pet-Exercise-Log/images/default-pet.png' && 
         currentFormData.image !== originalDetails.image
     ];
     
     const hasChanges = changes.some(change => change === true);
-    console.log('📊 Form change detection:', hasChanges ? 'Changes found' : 'No changes');
-    
+    console.log('📊 Health form change detection:', hasChanges ? 'Changes found' : 'No changes');
     return hasChanges;
 }
 
