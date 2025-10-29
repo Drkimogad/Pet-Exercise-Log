@@ -383,6 +383,72 @@
         </div>
     </form>
 </div>
+
+    <!-- Daily Log Form Template -->
+<div id="dailyLogFormTemplate" style="display: none;">
+    <form id="dailyLogForm" class="profile-form">
+        <h2>📝 Daily Exercise Log</h2>
+        
+        <!-- Exercise Section Only -->
+        <section class="form-section" id="exerciseSection">
+            <h3>💪 Exercise Details</h3>
+            
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="dailyExerciseType">Type *</label>
+                    <select id="dailyExerciseType" required>
+                        <option value="walking">Walking</option>
+                        <option value="running">Running</option>
+                        <option value="swimming">Swimming</option>
+                        <option value="playing">Playing</option>
+                        <option value="fetch">Fetch</option>
+                        <option value="agility">Agility</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="dailyExerciseDuration">Duration (min) *</label>
+                    <input type="number" id="dailyExerciseDuration" min="1" required>
+                </div>
+                <div class="form-group">
+                    <label for="dailyExerciseDate">Date *</label>
+                    <input type="date" id="dailyExerciseDate" required>
+                </div>
+                <div class="form-group">
+                    <label for="dailyCaloriesBurned">Calories Burned *</label>
+                    <input type="number" id="dailyCaloriesBurned" min="1" required>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="dailyExerciseIntensity">Intensity Level</label>
+                <select id="dailyExerciseIntensity">
+                    <option value="low">Low</option>
+                    <option value="medium" selected>Medium</option>
+                    <option value="high">High</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="dailyExerciseNotes">Exercise Notes</label>
+                <textarea id="dailyExerciseNotes" rows="2" placeholder="Weather, route, behavior..."></textarea>
+            </div>
+        </section>
+
+        <!-- Mood Section Only -->
+        <section class="form-section" id="moodSection">
+            <h3>😊 Today's Mood</h3>
+            <div class="mood-tracker" id="dailyMoodTracker">
+                <!-- Mood tracker will be populated here -->
+            </div>
+        </section>
+
+        <!-- Action Buttons -->
+        <div class="form-actions">
+            <button type="submit" id="saveDailyLogButton" class="primary-btn">Save Daily Log</button>
+            <button type="button" id="cancelDailyLogButton" class="secondary-btn">Cancel</button>
+        </div>
+    </form>
+</div>
          
 </div> <!-- This closes the hidden templates div -->
 
