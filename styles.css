@@ -1467,47 +1467,295 @@
     background: transparent;
 }
 
-/* Mood Section */
+
+
+/* ===============================================
+   MOOD TOGGLE SYSTEM STYLES new
+   =============================================== */
+/* Mood Section Container */
 .mood-section {
-    grid-column: 1 / -1;
     background: var(--white);
     border: 1px solid var(--primary-mustard);
     border-radius: 8px;
-    padding: 15px;
-    margin-top: 15px;
+    padding: 20px;
+    margin-bottom: 20px;
+    width: 100%;
 }
 
+/* Toggle Buttons */
+.mood-view-toggle {
+    display: flex;
+    background: var(--off-white);
+    border: 1px solid var(--primary-mustard);
+    border-radius: 8px;
+    padding: 4px;
+    margin-bottom: 15px;
+}
+
+.mood-toggle-btn {
+    flex: 1;
+    padding: 10px 15px;
+    border: none;
+    background: transparent;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    color: var(--light-charcoal);
+}
+
+.mood-toggle-btn:hover {
+    background: var(--primary-yellow);
+    color: var(--dark-charcoal);
+}
+
+.mood-toggle-btn.active {
+    background: var(--light-purple);
+    color: var(--white);
+    box-shadow: var(--shadow-sm);
+}
+
+/* Mood Views Container */
+.mood-view {
+    transition: opacity 0.3s ease;
+}
+
+/* Recent Mood View (existing styles enhanced) */
 .mood-entries {
     display: flex;
-    gap: 15px;
+    gap: 12px;
     flex-wrap: wrap;
+    justify-content: center;
 }
 
 .mood-entry {
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 8px 12px;
+    padding: 10px 15px;
     background: var(--off-white);
     border-radius: 6px;
     border-left: 3px solid var(--light-purple);
+    min-width: 120px;
+    justify-content: center;
 }
 
 .mood-emoji {
-    font-size: 1.2em;
+    font-size: 1.3em;
 }
 
 .mood-date {
-    font-size: 0.8em;
+    font-size: 0.85em;
     color: var(--light-charcoal);
 }
 
 .no-moods {
+    text-align: center;
     color: var(--light-charcoal);
     font-style: italic;
-    text-align: center;
     margin: 0;
+    padding: 20px;
 }
+
+/* Mini Mood Calendar Styles */
+.mini-mood-calendar {
+    width: 100%;
+}
+
+.mini-calendar-header {
+    text-align: center;
+    font-weight: bold;
+    color: var(--dark-purple);
+    margin-bottom: 10px;
+    font-size: 0.9em;
+}
+
+.mini-mood-calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 3px;
+    font-size: 0.75em;
+}
+
+.mini-calendar-day-header {
+    text-align: center;
+    font-weight: bold;
+    color: var(--dark-purple);
+    padding: 5px 2px;
+    font-size: 0.7em;
+}
+
+.mini-mood-day {
+    text-align: center;
+    padding: 6px 2px;
+    border-radius: 4px;
+    background: var(--off-white);
+    border: 1px solid transparent;
+    min-height: 25px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.mini-mood-day.today {
+    border: 1px solid var(--light-purple);
+    background: var(--white);
+    font-weight: bold;
+}
+
+.mini-mood-day.has-mood {
+    background: var(--primary-yellow);
+    border-color: var(--primary-mustard);
+    font-size: 0.8em;
+}
+
+.mini-mood-day.empty {
+    background: transparent;
+    border: none;
+}
+
+/* ===============================================
+   RESPONSIVE DESIGN FOR MOOD SYSTEM
+   =============================================== */
+
+/* Tablet (768px - 1024px) */
+@media (max-width: 1024px) {
+    .mood-section {
+        padding: 15px;
+    }
+    
+    .mood-toggle-btn {
+        padding: 8px 12px;
+        font-size: 0.9em;
+    }
+    
+    .mood-entries {
+        gap: 10px;
+    }
+    
+    .mood-entry {
+        padding: 8px 12px;
+        min-width: 110px;
+    }
+    
+    .mini-mood-calendar-grid {
+        gap: 2px;
+    }
+    
+    .mini-mood-day {
+        padding: 5px 1px;
+        min-height: 22px;
+        font-size: 0.7em;
+    }
+}
+
+/* Large Phone (481px - 767px) */
+@media (max-width: 767px) {
+    .mood-section {
+        padding: 12px;
+    }
+    
+    .mood-view-toggle {
+        margin-bottom: 12px;
+    }
+    
+    .mood-toggle-btn {
+        padding: 10px 8px;
+        font-size: 0.85em;
+    }
+    
+    .mood-entries {
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .mood-entry {
+        min-width: auto;
+        justify-content: flex-start;
+        padding: 8px 12px;
+    }
+    
+    .mini-mood-calendar-grid {
+        gap: 1px;
+    }
+    
+    .mini-mood-day {
+        padding: 4px 1px;
+        min-height: 20px;
+        font-size: 0.65em;
+    }
+    
+    .mini-calendar-day-header {
+        padding: 4px 1px;
+        font-size: 0.65em;
+    }
+}
+
+/* Small Phone (320px - 480px) */
+@media (max-width: 480px) {
+    .mood-section {
+        padding: 10px;
+    }
+    
+    .mood-toggle-btn {
+        padding: 8px 6px;
+        font-size: 0.8em;
+    }
+    
+    .mood-entry {
+        padding: 6px 10px;
+        font-size: 0.9em;
+    }
+    
+    .mood-emoji {
+        font-size: 1.2em;
+    }
+    
+    .mini-mood-day {
+        padding: 3px 0;
+        min-height: 18px;
+        font-size: 0.6em;
+    }
+    
+    .mini-calendar-day-header {
+        padding: 3px 0;
+        font-size: 0.6em;
+    }
+}
+
+/* Landscape Phone Optimization */
+@media (max-height: 500px) and (orientation: landscape) {
+    .mood-section {
+        padding: 10px 15px;
+    }
+    
+    .mood-entries {
+        flex-direction: row;
+        gap: 8px;
+    }
+    
+    .mood-entry {
+        min-width: 100px;
+    }
+    
+    .mini-mood-day {
+        min-height: 18px;
+    }
+}
+
+/* High-DPI Displays */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    .mood-view-toggle {
+        border-width: 1.5px;
+    }
+    
+    .mood-entry {
+        border-left-width: 2px;
+    }
+}
+
+
 
 /* =======================
    BCS Section Styles  added recently 
