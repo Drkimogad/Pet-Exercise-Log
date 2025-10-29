@@ -3449,70 +3449,210 @@ function generateMoodCalendarHTML(pet) {
     return moodHtml;
 }
 
+//==========
+// Generate exercise charts
+//==========
 function generateExerciseChartsHTML(exerciseEntries) {
     if (!exerciseEntries || exerciseEntries.length === 0) return '<p>No exercise data available.</p>';
     
-    const labels = [...new Set(exerciseEntries.map(entry => entry.date))].sort();
-    const durationData = labels.map(date => 
-        exerciseEntries.filter(entry => entry.date === date)
-                       .reduce((sum, entry) => sum + entry.duration, 0)
-    );
+    // Process data for all 3 charts (consistent with mini charts)
+    const chartData = processReportChartData(exerciseEntries);
     
-    const caloriesData = labels.map(date => 
-        exerciseEntries.filter(entry => entry.date === date)
-                       .reduce((sum, entry) => sum + entry.caloriesBurned, 0)
-    );
-
     return `
-        <h2>Exercise Charts</h2>
+        <h2>Exercise Analysis</h2>
+        
+        <!-- Duration Chart -->
         <div class="chart-container">
             <canvas id="durationChart"></canvas>
         </div>
+        
+        <!-- Calories Chart -->
         <div class="chart-container">
             <canvas id="caloriesChart"></canvas>
         </div>
+        
+        <!-- NEW: Intensity Chart -->
+        <div class="chart-container">
+            <canvas id="intensityChart"></canvas>
+        </div>
+        
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         <script>
             setTimeout(function() {
-                new Chart(document.getElementById('durationChart').getContext('2d'), { 
-                    type: 'bar', 
-                    data: { 
-                        labels: ${JSON.stringify(labels)}, 
-                        datasets: [{ 
-                            label: 'Duration (minutes)', 
-                            data: ${JSON.stringify(durationData)}, 
-                            backgroundColor: 'rgba(54, 162, 235, 0.5)', 
-                            borderColor: 'rgba(54, 162, 235, 1)', 
-                            borderWidth: 1 
-                        }] 
-                    }, 
-                    options: { 
+                // Duration Bar Chart
+                new Chart(document.getElementById('durationChart').getContext('2d'), {
+                    type: 'bar',
+                    data: {
+                        labels: ${JSON.stringify(chartData.durationLabels)},
+                        datasets: [{
+                            label: 'Number of Sessions',
+                            data: ${JSON.stringify(chartData.durationData)},
+                            backgroundColor: '#3A86FF',
+                            borderColor: '#26547C',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
                         responsive: true,
-                        scales: { y: { beginAtZero: true } } 
-                    } 
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: 'Exercise Duration Distribution'
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Number of Sessions'
+                                }
+                            },
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Duration (minutes)'
+                                }
+                            }
+                        }
+                    }
                 });
                 
-                new Chart(document.getElementById('caloriesChart').getContext('2d'), { 
-                    type: 'line', 
-                    data: { 
-                        labels: ${JSON.stringify(labels)}, 
-                        datasets: [{ 
-                            label: 'Calories Burned', 
-                            data: ${JSON.stringify(caloriesData)}, 
-                            backgroundColor: 'rgba(255, 99, 132, 0.2)', 
-                            borderColor: 'rgba(255, 99, 132, 1)', 
+                // Calories Line Chart
+                new Chart(document.getElementById('caloriesChart').getContext('2d'), {
+                    type: 'line',
+                    data: {
+                        labels: ${JSON.stringify(chartData.calorieLabels)},
+                        datasets: [{
+                            label: 'Number of Sessions',
+                            data: ${JSON.stringify(chartData.calorieData)},
+                            backgroundColor: 'rgba(255, 209, 102, 0.2)',
+                            borderColor: '#EFB366',
                             borderWidth: 2,
-                            tension: 0.3
-                        }] 
-                    }, 
-                    options: { 
+                            tension: 0.3,
+                            fill: true
+                        }]
+                    },
+                    options: {
                         responsive: true,
-                        scales: { y: { beginAtZero: true } } 
-                    } 
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: 'Calories Burned Distribution'
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Number of Sessions'
+                                }
+                            },
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Calories Burned'
+                                }
+                            }
+                        }
+                    }
+                });
+                
+                // NEW: Intensity Pie Chart
+                new Chart(document.getElementById('intensityChart').getContext('2d'), {
+                    type: 'pie',
+                    data: {
+                        labels: ${JSON.stringify(chartData.intensityLabels)},
+                        datasets: [{
+                            data: ${JSON.stringify(chartData.intensityData)},
+                            backgroundColor: [
+                                '#FFD166', // Low - yellow
+                                '#3A86FF', // Medium - blue  
+                                '#EFB366', // High - mustard
+                                '#26547C'  // Very High - dark blue
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: 'Exercise Intensity Distribution'
+                            },
+                            legend: {
+                                position: 'bottom'
+                            }
+                        }
+                    }
                 });
             }, 100);
         </script>
     `;
+}
+
+// Process exercise data for report charts (consistent with mini charts)
+function processReportChartData(exerciseEntries) {
+    // Duration data - 15-min increments
+    const durationGroups = {
+        '0-15': 0,
+        '16-30': 0,
+        '31-45': 0,
+        '46-60': 0,
+        '61+': 0
+    };
+    
+    // Calories data - 25-calorie increments  
+    const calorieGroups = {
+        '0-25': 0,
+        '26-50': 0,
+        '51-75': 0,
+        '76-100': 0,
+        '101+': 0
+    };
+    
+    // Intensity data
+    const intensityGroups = {
+        'Low': 0,
+        'Medium': 0,
+        'High': 0,
+        'Very High': 0
+    };
+    
+    // Process all entries
+    exerciseEntries.forEach(entry => {
+        // Duration grouping
+        const duration = entry.duration;
+        if (duration <= 15) durationGroups['0-15']++;
+        else if (duration <= 30) durationGroups['16-30']++;
+        else if (duration <= 45) durationGroups['31-45']++;
+        else if (duration <= 60) durationGroups['46-60']++;
+        else durationGroups['61+']++;
+        
+        // Calories grouping
+        const calories = entry.caloriesBurned;
+        if (calories <= 25) calorieGroups['0-25']++;
+        else if (calories <= 50) calorieGroups['26-50']++;
+        else if (calories <= 75) calorieGroups['51-75']++;
+        else if (calories <= 100) calorieGroups['76-100']++;
+        else calorieGroups['101+']++;
+        
+        // Intensity grouping
+        const intensity = entry.intensity || 'Medium';
+        const intensityKey = intensity.charAt(0).toUpperCase() + intensity.slice(1);
+        intensityGroups[intensityKey] = (intensityGroups[intensityKey] || 0) + 1;
+    });
+    
+    return {
+        durationLabels: Object.keys(durationGroups),
+        durationData: Object.values(durationGroups),
+        calorieLabels: Object.keys(calorieGroups),
+        calorieData: Object.values(calorieGroups),
+        intensityLabels: Object.keys(intensityGroups),
+        intensityData: Object.values(intensityGroups)
+    };
 }
 
 function generateExerciseSummaryHTML(exerciseEntries) {
@@ -3554,6 +3694,9 @@ function generateExerciseSummaryHTML(exerciseEntries) {
         </div>
     `;
 }
+
+
+
 //======================================
 // BCS Reassessment Modal - Complete Implementation
 //=====================
