@@ -2868,12 +2868,6 @@ function updateChartColors() {
 // Note: Charts use the same temporary exercise data as the calendar
 // No separate saving function needed - uses window.tempExerciseEntries 
 
-
-
-
-
-
-
 // Report generation functionality
 function generateReport(pet) {
     const reportWindow = window.open('', '_blank');
@@ -2931,6 +2925,7 @@ function generateReport(pet) {
             <body>
                 <h1>Monthly Pet Report: ${pet.petDetails.name}</h1>
                 ${generatePetDetailsHTML(pet)}
+                ${generateHealthSummaryHTML(pet)}
                 ${generateExerciseSummaryHTML(pet.exerciseEntries)}
                 ${generateExerciseCalendarHTML(pet)}
                 ${pet.moodLogs && pet.moodLogs.length > 0 ? generateMoodCalendarHTML(pet) : ''}
@@ -2945,23 +2940,110 @@ function generateReport(pet) {
     reportWindow.document.close();
 }
 
+
+
 function generatePetDetailsHTML(pet) {
+    const details = pet.petDetails;
+    
     return `
         <div>
-            <h2>Pet Details</h2>
+            <h2>Pet Details & Health Assessment</h2>
             <table>
-                <tr><th>Name</th><th>Age</th><th>Weight</th><th>Breed</th><th>Gender</th></tr>
                 <tr>
-                    <td>${pet.petDetails.name || 'N/A'}</td>
-                    <td>${pet.petDetails.age || 'N/A'}</td>
-                    <td>${pet.petDetails.weight || 'N/A'}</td>
-                    <td>${pet.petDetails.breed || 'N/A'}</td>
-                    <td>${pet.petDetails.gender || 'N/A'}</td>
+                    <th>Name</th><th>Age</th><th>Current Weight</th><th>Target Weight</th><th>Breed</th>
+                </tr>
+                <tr>
+                    <td>${details.name || 'N/A'}</td>
+                    <td>${details.age || 'N/A'} years</td>
+                    <td>${details.weight || 'N/A'} lbs</td>
+                    <td>${details.targetWeight || 'N/A'} lbs</td>
+                    <td>${details.breed || 'N/A'}</td>
+                </tr>
+            </table>
+            
+            <table style="margin-top: 15px;">
+                <tr>
+                    <th>Body Condition</th><th>Energy Level</th><th>Feeding Recommendation</th><th>Gender</th>
+                </tr>
+                <tr>
+                    <td>${getBCSDescription(details.bcs) || 'N/A'}</td>
+                    <td>${details.energyLevel ? details.energyLevel.charAt(0).toUpperCase() + details.energyLevel.slice(1) : 'N/A'}</td>
+                    <td>${getFeedingDescription(details.feedingRecommendation) || 'N/A'}</td>
+                    <td>${details.gender ? details.gender.charAt(0).toUpperCase() + details.gender.slice(1) : 'N/A'}</td>
                 </tr>
             </table>
         </div>
     `;
 }
+
+// Helper function for BCS description
+function getBCSDescription(bcs) {
+    const bcsMap = {
+        '1': '1 - Very Underweight',
+        '2': '2 - Underweight', 
+        '3': '3 - Ideal Weight',
+        '4': '4 - Overweight',
+        '5': '5 - Obese'
+    };
+    return bcsMap[bcs] || 'Not assessed';
+}
+
+// Helper function for feeding description
+function getFeedingDescription(feeding) {
+    const feedingMap = {
+        'feed_less': 'Feed Less - Weight Loss',
+        'feed_more': 'Feed More - Weight Gain', 
+        'maintain': 'Maintain Current Diet',
+        'diet_change': 'Consider Diet Change'
+    };
+    return feedingMap[feeding] || 'Auto-calculated';
+}
+
+//generateHealthSummaryHTML()
+function generateHealthSummaryHTML(pet) {
+    const details = pet.petDetails;
+    
+    if (!details.medicalConditions || details.medicalConditions.length === 0) {
+        return '<p>No health conditions recorded.</p>';
+    }
+    
+    return `
+        <div>
+            <h2>Health Conditions & Notes</h2>
+            <div style="margin: 15px 0;">
+                <h3>Medical Conditions:</h3>
+                <ul>
+                    ${details.medicalConditions.map(condition => 
+                        `<li>${formatMedicalCondition(condition)}</li>`
+                    ).join('')}
+                </ul>
+            </div>
+            ${details.healthNotes ? `
+            <div style="margin: 15px 0;">
+                <h3>Health Notes:</h3>
+                <p>${details.healthNotes}</p>
+            </div>
+            ` : ''}
+        </div>
+    `;
+}
+
+// Helper function to format medical condition names
+function formatMedicalCondition(condition) {
+    const conditionMap = {
+        'arthritis': 'Arthritis',
+        'diabetes': 'Diabetes',
+        'heart_condition': 'Heart Condition',
+        'lameness': 'Lameness',
+        'torn_muscle': 'Torn Muscle',
+        'spinal_injury': 'Spinal Injury',
+        'previous_fracture': 'Previous Bone Fracture',
+        'seizure': 'Seizure Disorder'
+    };
+    return conditionMap[condition] || condition;
+}
+
+
 
 function generateExerciseCalendarHTML(pet) {
     const now = new Date();
