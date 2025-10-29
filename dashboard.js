@@ -3213,51 +3213,60 @@ function generateReport(pet) {
             <head>
                 <title>Monthly Pet Report: ${pet.petDetails.name}</title>
                 <style>
-                    body { font-family: sans-serif; padding: 20px; }
-                    h1, h2 { text-align: center; color: #301934; }
-                    table { width: 100%; border-collapse: collapse; margin: 15px 0; }
-                    th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
-                    .calendar-grid { 
-                        display: grid; 
-                        grid-template-columns: repeat(7, 1fr); 
-                        gap: 5px; 
-                        margin: 15px 0;
-                    }
-                    .calendar-day { 
-                        padding: 10px; 
-                        border: 1px solid #ddd; 
-                        text-align: center;
-                        min-height: 40px;
-                    }
-                    .mood-emoji { font-size: 1.5em; }
-                    .chart-container { width: 100%; height: 300px; margin: 20px 0; }
-                    .summary-stats { 
-                        display: grid; 
-                        grid-template-columns: repeat(3, 1fr); 
-                        gap: 15px; 
-                        margin: 20px 0;
-                    }
-                    .stat-box { 
-                        background: #f0f0f0; 
-                        padding: 15px; 
-                        border-radius: 8px; 
-                        text-align: center;
-                    }
-                    .button-container { 
-                        text-align: center; 
-                        margin: 20px 0;
-                    }
-                    button { 
-                        padding: 10px 20px; 
-                        margin: 0 10px; 
-                        background: #301934; 
-                        color: white; 
-                        border: none; 
-                        border-radius: 4px; 
-                        cursor: pointer;
-                    }
-                    button:hover { background: #4a235a; }
-                </style>
+    body { font-family: sans-serif; padding: 20px; }
+    h1, h2 { text-align: center; color: #301934; }
+    table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+    th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
+    .calendar-grid { 
+        display: grid; 
+        grid-template-columns: repeat(7, 1fr); 
+        gap: 5px; 
+        margin: 15px 0;
+    }
+    .calendar-day { 
+        padding: 10px; 
+        border: 1px solid #ddd; 
+        text-align: center;
+        min-height: 40px;
+    }
+    .mood-emoji { font-size: 1.5em; }
+    
+    /* ADD THIS FOR THE 3 CHARTS */
+    .chart-container { 
+        width: 100%; 
+        height: 400px; 
+        margin: 30px 0;
+        page-break-inside: avoid;
+    }
+    
+    .summary-stats { 
+        display: grid; 
+        grid-template-columns: repeat(3, 1fr); 
+        gap: 15px; 
+        margin: 20px 0;
+    }
+    .stat-box { 
+        background: #f0f0f0; 
+        padding: 15px; 
+        border-radius: 8px; 
+        text-align: center;
+    }
+    .button-container { 
+        text-align: center; 
+        margin: 20px 0;
+    }
+    button { 
+        padding: 10px 20px; 
+        margin: 0 10px; 
+        background: #301934; 
+        color: white; 
+        border: none; 
+        border-radius: 4px; 
+        cursor: pointer;
+    }
+    button:hover { background: #4a235a; }
+</style>
+
             </head>
             <body>
                 <h1>Monthly Pet Report: ${pet.petDetails.name}</h1>
