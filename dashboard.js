@@ -39,14 +39,6 @@ const MOOD_OPTIONS = [
 ];
 
 
-
-// Initialize dashboard
-document.addEventListener('DOMContentLoaded', function() {
-    if (sessionStorage.getItem('user')) {
-        showExerciseLog();
-    }
-});
-
 // ==================== PET ENTRY FUNCTIONS ====================
 function showExerciseLog() {
     toggleAuthHeader(false);
@@ -3962,5 +3954,10 @@ document.querySelectorAll('.mood-toggle-btn').forEach(btn => {
 });
 }
 
-
+// Initialize dashboard
+document.addEventListener('DOMContentLoaded', function() {
+    if (sessionStorage.getItem('user')) {
+        showExerciseLog();
+    }
+});
 
