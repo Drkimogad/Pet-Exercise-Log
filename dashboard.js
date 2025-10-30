@@ -3709,7 +3709,7 @@ function generateExerciseSummaryHTML(exerciseEntries) {
 //======================================
 // BCS Reassessment Modal - Complete Implementation
 //=====================
-// BCS Reassessment Modal - FIXED Version
+// BCS Reassessment Modal - BULLETPROOF Version
 function showBCSReassessmentModal(petIndex) {
     console.log('Opening BCS reassessment for pet index:', petIndex);
     
@@ -3725,13 +3725,13 @@ function showBCSReassessmentModal(petIndex) {
     const template = document.getElementById('bcsModalTemplate');
     document.body.insertAdjacentHTML('beforeend', template.innerHTML);
     
-    const modal = document.querySelector('.bcs-modal-overlay');
+    const modal = document.querySelector('.bcs-modal-overlay:last-child');
     const currentBCS = pet.petDetails.bcs;
     
     // Prevent background scrolling
     document.body.style.overflow = 'hidden';
     
-    // Set up event listeners with proper scoping
+    // Set up event listeners IMMEDIATELY
     setupBCSModalEvents(modal, petIndex, currentBCS);
     
     // Pre-select current BCS if exists
@@ -3744,49 +3744,61 @@ function showBCSReassessmentModal(petIndex) {
     }
 }
 
-// Setup BCS Modal Event Listeners - FIXED
+// FIXED Setup BCS Modal Event Listeners
 function setupBCSModalEvents(modal, petIndex, currentBCS) {
     let selectedBCS = currentBCS;
     
-    // Helper function to close modal
-    const closeModal = () => {
-        document.body.style.overflow = ''; // Restore scrolling
-        modal.remove();
+    // Create closure-safe close function
+    const closeModal = function() {
+        console.log('Closing modal...');
+        document.body.style.overflow = '';
+        if (modal && modal.parentNode) {
+            modal.parentNode.removeChild(modal);
+        }
     };
     
-    // BCS Option Clicks
+    // Update Button - DIRECT event binding
+    const updateBtn = modal.querySelector('.bcs-update-btn');
+    if (updateBtn) {
+        updateBtn.onclick = function(e) {
+            e.stopPropagation();
+            if (!selectedBCS) {
+                AppHelper.showError('Please select a body condition score');
+                return;
+            }
+            updatePetBCS(petIndex, selectedBCS);
+            closeModal();
+        };
+    }
+    
+    // Close Button - DIRECT event binding
+    const closeBtn = modal.querySelector('.bcs-close-btn');
+    if (closeBtn) {
+        closeBtn.onclick = function(e) {
+            e.stopPropagation();
+            closeModal();
+        };
+    }
+    
+    // BCS Option Clicks - DIRECT event binding
     modal.querySelectorAll('.bcs-option').forEach(option => {
-        option.addEventListener('click', () => {
-            selectedBCS = option.dataset.bcs;
-            selectBCSOption(option);
+        option.onclick = function(e) {
+            e.stopPropagation();
+            selectedBCS = this.dataset.bcs;
+            selectBCSOption(this);
             updateSelectedDisplay(selectedBCS);
-        });
+        };
     });
     
-    // Update Button - FIXED
-    modal.querySelector('.bcs-update-btn').addEventListener('click', () => {
-        if (!selectedBCS) {
-            AppHelper.showError('Please select a body condition score');
-            return;
-        }
-        updatePetBCS(petIndex, selectedBCS);
-        closeModal();
-    });
-    
-    // Close Button - FIXED
-    modal.querySelector('.bcs-close-btn').addEventListener('click', () => {
-        closeModal();
-    });
-    
-    // Close on overlay click - FIXED
-    modal.addEventListener('click', (e) => {
-        if (e.target === modal) {
+    // Overlay click - DIRECT event binding
+    modal.onclick = function(e) {
+        if (e.target === this) {
             closeModal();
         }
-    });
+    };
     
-    // Close on Escape key - ADDED for better UX
-    const handleEscape = (e) => {
+    // Escape key - DIRECT event binding
+    const handleEscape = function(e) {
         if (e.key === 'Escape') {
             closeModal();
             document.removeEventListener('keydown', handleEscape);
@@ -3794,27 +3806,24 @@ function setupBCSModalEvents(modal, petIndex, currentBCS) {
     };
     document.addEventListener('keydown', handleEscape);
     
-    // Cleanup event listener when modal closes
-    modal._cleanup = () => {
-        document.removeEventListener('keydown', handleEscape);
-    };
+    // Store cleanup reference
+    modal._escapeHandler = handleEscape;
 }
 
-// Select BCS Option and Update UI - FIXED scope
+// FIXED Select BCS Option
 function selectBCSOption(option) {
-    // Remove selection from all options in the modal
     const modal = option.closest('.bcs-modal-overlay');
     modal.querySelectorAll('.bcs-option').forEach(opt => {
         opt.classList.remove('selected');
     });
-    
-    // Add selection to clicked option
     option.classList.add('selected');
 }
 
-// Update Selected BCS Display - FIXED scope
+// FIXED Update Selected Display
 function updateSelectedDisplay(bcs) {
     const modal = document.querySelector('.bcs-modal-overlay');
+    if (!modal) return;
+    
     const display = modal.querySelector('#selectedBCSValue');
     if (display) {
         display.textContent = getBCSDisplay(bcs);
