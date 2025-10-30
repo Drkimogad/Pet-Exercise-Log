@@ -39,43 +39,7 @@ const MOOD_OPTIONS = [
 ];
 
 
-// ==================== PET ENTRY FUNCTIONS ====================
-function showExerciseLog() {
-    toggleAuthHeader(false);
-    document.getElementById('auth-container').style.display = 'none';
-    document.getElementById('main-banner').style.display = 'none';
-    
-    // Show dashboard with GRID display
-    document.querySelector('.dashboard-container').style.display = 'block';
 
-    // Show saved profiles with FLEX display (since it's flex in your CSS)
-//    document.getElementById('savedProfiles').style.display = 'block'; // ← Change from 'block' to 'flex'
-    
- //   document.getElementById('profileContainer').style.display = 'none';
-    
-loadSavedProfiles(); // This will handle empty state vs profiles
- setupEventListeners();
-    loadActivePetData();
-}
-
-
-// Setup event listeners
-function setupEventListeners() {
-        console.log('setupEventListeners called'); // ← ADD THIS
-
-    document.getElementById('logoutButton').addEventListener('click', logout);
-    
-    const newProfileBtn = document.getElementById('addNewProfileButton');
-    console.log('New Profile button:', newProfileBtn); // ← ADD THIS
-    if (newProfileBtn) {
-        newProfileBtn.addEventListener('click', function() {
-            console.log('New Profile button clicked!'); // ← ADD THIS
-            showCreateProfile();
-        });
-    }
-    
-    document.getElementById('toggleModeButton').addEventListener('click', toggleDarkMode);
-}
 
 //==========OLD SECTION =============================
 // Show create profile to show the profile form when "New Profile" is clicked  REPLACED
@@ -3954,6 +3918,45 @@ document.querySelectorAll('.mood-toggle-btn').forEach(btn => {
 });
 }
 
+
+ // ==================== PET ENTRY FUNCTIONS ====================
+function showExerciseLog() {
+    toggleAuthHeader(false);
+    document.getElementById('auth-container').style.display = 'none';
+    document.getElementById('main-banner').style.display = 'none';
+    
+    // Show dashboard with GRID display
+    document.querySelector('.dashboard-container').style.display = 'block';
+
+    // Show saved profiles with FLEX display (since it's flex in your CSS)
+//    document.getElementById('savedProfiles').style.display = 'block'; // ← Change from 'block' to 'flex'
+    
+ //   document.getElementById('profileContainer').style.display = 'none';
+    
+loadSavedProfiles(); // This will handle empty state vs profiles
+ setupEventListeners();
+    loadActivePetData();
+}
+
+
+// Setup event listeners
+function setupEventListeners() {
+        console.log('setupEventListeners called'); // ← ADD THIS
+
+    document.getElementById('logoutButton').addEventListener('click', logout);
+    
+    const newProfileBtn = document.getElementById('addNewProfileButton');
+    console.log('New Profile button:', newProfileBtn); // ← ADD THIS
+    if (newProfileBtn) {
+        newProfileBtn.addEventListener('click', function() {
+            console.log('New Profile button clicked!'); // ← ADD THIS
+            showCreateProfile();
+        });
+    }
+    
+    document.getElementById('toggleModeButton').addEventListener('click', toggleDarkMode);
+}
+ 
 // Initialize dashboard
 document.addEventListener('DOMContentLoaded', function() {
     if (sessionStorage.getItem('user')) {
