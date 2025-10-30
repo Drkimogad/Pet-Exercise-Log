@@ -3782,6 +3782,21 @@ function updateSelectedDisplay(bcs) {
     }
 }
 
+// FIXED Close Modal Function
+function closeModal() {
+    console.log('🔴 MODAL: Closing modal');
+    const modal = document.querySelector('.bcs-modal-overlay');
+    if (!modal) {
+        console.log('🔴 MODAL: No modal found to close');
+        return;
+    }
+    
+    document.body.style.overflow = '';
+    if (modal.parentNode) {
+        modal.parentNode.removeChild(modal);
+        console.log('🔴 MODAL: Modal closed successfully');
+    }
+}
 
 //=================================
 // SETUP PROFILE EVENT LISTENERS
