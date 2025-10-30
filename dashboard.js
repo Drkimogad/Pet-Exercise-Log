@@ -2462,8 +2462,8 @@ function initializeCalendar() {
     
     const calendarContainer = document.getElementById('exerciseCalendar');
     if (!calendarContainer) {
-        console.error('Calendar container not found!');
-        return;
+        console.log('Calendar container not found - this is normal for pet cards');
+        return; // Exit gracefully
     }
 
     // Check if we're creating new profile or editing existing
@@ -2938,8 +2938,8 @@ function processChartData(data) {
             return acc;
         }, {}),
         calories: data.reduce((acc, e) => {
-            acc[e.date] = (acc[edate] || 0) + e.caloriesBurned;
-            return acc;
+acc[e.date] = (acc[e.date] || 0) + e.caloriesBurned;
+         return acc;
         }, {}),
         activities: data.reduce((acc, e) => {
             acc[e.exerciseType] = (acc[e.exerciseType] || 0) + 1;
@@ -3718,6 +3718,7 @@ function showBCSReassessmentModal(petIndex) {
     const pet = pets[petIndex];
     if (!pet) {
         AppHelper.showError('Pet not found');
+        console.error('🔴 MODAL DEBUG: Pet not found');
         return;
     }
     
@@ -3726,6 +3727,8 @@ function showBCSReassessmentModal(petIndex) {
     document.body.insertAdjacentHTML('beforeend', template.innerHTML);
     
     const modal = document.querySelector('.bcs-modal-overlay:last-child');
+     console.log('🔴 MODAL DEBUG: Modal element found?', !!modal);
+ 
     const currentBCS = pet.petDetails.bcs;
     
     // Prevent background scrolling
@@ -3833,6 +3836,21 @@ function updateSelectedDisplay(bcs) {
 }
 
 
+// Add this temporary debug function
+function debugModalEvents() {
+    document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('bcs-close-btn') || 
+            e.target.classList.contains('bcs-update-btn') ||
+            e.target.closest('.bcs-close-btn') || 
+            e.target.closest('.bcs-update-btn')) {
+            console.log('🔴 MODAL DEBUG: Close/Update button clicked', e.target);
+        }
+        
+        if (e.target.classList.contains('bcs-modal-overlay')) {
+            console.log('🔴 MODAL DEBUG: Overlay clicked');
+        }
+    });
+}
 //=================================
 // SETUP PROFILE EVENT LISTENERS
 //===========================
@@ -3942,6 +3960,7 @@ document.querySelectorAll('.mood-toggle-btn').forEach(btn => {
 });
 }
 
-
+// Call this once at the bottom of your dashboard.js
+debugModalEvents();
 
 
