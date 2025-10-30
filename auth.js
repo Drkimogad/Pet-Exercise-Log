@@ -268,6 +268,7 @@ function initAuth() {
     handlePasswordResetFromEmail();
 
 // Firebase Auth State Listener
+// Firebase Auth State Listener
 firebase.auth().onAuthStateChanged((user) => {
     if (user) {
         // User is signed in
@@ -276,12 +277,25 @@ firebase.auth().onAuthStateChanged((user) => {
             username: user.displayName || user.email,
             email: user.email
         };
-            showExerciseLog();       
+        
+        // Wait for dashboard.js to load
+        setTimeout(() => {
+            if (typeof showExerciseLog === 'function') {
+                showExerciseLog();
+            } else {
+                // If still not available after delay, use manual fallback
+                console.log('Manual dashboard activation');
+                toggleAuthHeader(false);
+                document.getElementById('auth-container').style.display = 'none';
+                document.getElementById('main-banner').style.display = 'none';
+                document.querySelector('.dashboard-container').style.display = 'block';
+            }
+        }, 500);
     } else {
         // User is signed out
         currentUser = null;
     }
-}); 
+});
 }
 
 // Initialize when DOM is loaded
