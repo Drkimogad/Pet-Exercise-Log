@@ -3779,6 +3779,7 @@ function setupBCSModalEvents(modal, petIndex, currentBCS) {
             closeModal();
         };
     }
+ 
     
     // BCS Option Clicks - DIRECT event binding
     modal.querySelectorAll('.bcs-option').forEach(option => {
