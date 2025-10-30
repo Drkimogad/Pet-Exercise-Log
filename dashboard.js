@@ -3758,14 +3758,20 @@ function setupBCSModalEvents(modal, petIndex, currentBCS) {
     
     // Create closure-safe close function
 const closeModal = function() {
-    console.log('🔴 MODAL DEBUG: closeModal() called');
+    console.log('🔴 MODAL DEBUG: closeModal() called - Step 1');
+    console.log('🔴 MODAL DEBUG: Modal reference:', modal);
+    console.log('🔴 MODAL DEBUG: Modal parentNode:', modal?.parentNode);
+    console.log('🔴 MODAL DEBUG: Document body:', document.body);
+    
     document.body.style.overflow = '';
-    console.log('🔴 MODAL DEBUG: Modal element before removal:', modal);
+    console.log('🔴 MODAL DEBUG: Overflow reset - Step 2');
+    
     if (modal && modal.parentNode) {
+        console.log('🔴 MODAL DEBUG: Removing modal from DOM - Step 3');
         modal.parentNode.removeChild(modal);
-        console.log('🔴 MODAL DEBUG: Modal removed from DOM');
+        console.log('🔴 MODAL DEBUG: Modal removed successfully - Step 4');
     } else {
-        console.error('🔴 MODAL DEBUG: Could not remove modal - no parent node');
+        console.error('🔴 MODAL DEBUG: Cannot remove - no modal or parent');
     }
 };
     
