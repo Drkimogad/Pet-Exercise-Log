@@ -3687,6 +3687,8 @@ function showBCSReassessmentModal(petIndex) {
 
 // FIXED Setup BCS Modal Event Listeners
 function setupBCSModalEvents(modal, petIndex, currentBCS) {
+ console.log('🔴 MODAL: setupBCSModalEvents CALLED - checking if function executes');
+ 
     let selectedBCS = currentBCS;
     
     // Create closure-safe close function
@@ -3779,15 +3781,21 @@ function updateSelectedDisplay(bcs) {
         display.className = `selected-value bcs-${bcs}`;
     }
 }
+ // BCS Reassessment button listener 
+ // calls the modal 
+document.querySelectorAll('.bcs-reassess-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const index = parseInt(btn.dataset.index);
+        showBCSReassessmentModal(index);
+    });
+ }); 
 
 //=================================
 // SETUP PROFILE EVENT LISTENERS
 //===========================
 function setupProfileEventListeners() {
- function setupBCSModalEvents(modal, petIndex, currentBCS) {
-    console.log('🔴 MODAL: setupBCSModalEvents CALLED - checking if function executes');
-    // ... rest of your code ...
-
+ 
   // Select button
   document.querySelectorAll('.select-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
@@ -3874,15 +3882,6 @@ document.querySelectorAll('.delete-suggestion-btn').forEach(btn => {
     });
 });
  
- // BCS Reassessment button
- // calls the modal 
-document.querySelectorAll('.bcs-reassess-btn').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const index = parseInt(btn.dataset.index);
-        showBCSReassessmentModal(index);
-    });
- }); 
  
  // Mood view toggle buttons
 document.querySelectorAll('.mood-toggle-btn').forEach(btn => {
