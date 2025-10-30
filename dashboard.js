@@ -3827,7 +3827,20 @@ const closeModal = function() {
     
     // Store cleanup reference
     modal._escapeHandler = handleEscape;
-}
+
+     // ✅ CORRECT: Add debug logs HERE, before the function ends
+    console.log('🔴 MODAL DEBUG: Event listeners set up. Checking button references:');
+    console.log('🔴 MODAL DEBUG: Update button:', updateBtn);
+    console.log('🔴 MODAL DEBUG: Close button:', closeBtn);
+    console.log('🔴 MODAL DEBUG: Update button onclick:', updateBtn?.onclick);
+    console.log('🔴 MODAL DEBUG: Close button onclick:', closeBtn?.onclick);
+
+    // Test if we can manually call closeModal
+    window.testCloseModal = closeModal;
+    console.log('🔴 MODAL DEBUG: closeModal function available at window.testCloseModal');
+
+ 
+} // closes the function
 
 // FIXED Select BCS Option
 function selectBCSOption(option) {
