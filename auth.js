@@ -276,14 +276,20 @@ function initAuth() {
                 username: user.displayName || user.email,
                 email: user.email
             };
-            showExerciseLog();
-        } else {
+// Check if dashboard.js has loaded and function exists
+if (typeof showExerciseLog === 'function') {
+    showExerciseLog();
+    
+ } else {
+    console.error('showExerciseLog function not found - dashboard.js may not be loaded');
+    // Fallback: redirect to dashboard or show error
+    window.location.reload();
+} else {
             // User is signed out
             currentUser = null;
         }
     });
-    
-   
+       
 }
 
 // Initialize when DOM is loaded
