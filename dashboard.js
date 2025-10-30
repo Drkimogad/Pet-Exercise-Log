@@ -3759,7 +3759,7 @@ function setupBCSModalEvents(modal, petIndex, currentBCS) {
     modal._escapeHandler = handleEscape;
 
     console.log('🔴 MODAL: All event listeners set up successfully');
-}
+}// end of function 
 
 // FIXED Select BCS Option
 function selectBCSOption(option) {
@@ -3781,7 +3781,13 @@ function updateSelectedDisplay(bcs) {
         display.className = `selected-value bcs-${bcs}`;
     }
 }
- // BCS Reassessment button listener 
+
+
+//=================================
+// SETUP PROFILE EVENT LISTENERS
+//===========================
+function setupProfileEventListeners() {
+   // BCS Reassessment button listener 
  // calls the modal 
 document.querySelectorAll('.bcs-reassess-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
@@ -3790,11 +3796,6 @@ document.querySelectorAll('.bcs-reassess-btn').forEach(btn => {
         showBCSReassessmentModal(index);
     });
  }); 
-
-//=================================
-// SETUP PROFILE EVENT LISTENERS
-//===========================
-function setupProfileEventListeners() {
  
   // Select button
   document.querySelectorAll('.select-btn').forEach(btn => {
