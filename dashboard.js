@@ -3954,13 +3954,14 @@ document.querySelectorAll('.delete-suggestion-btn').forEach(btn => {
 });
  
  // BCS Reassessment button
-/*document.querySelectorAll('.bcs-reassess-btn').forEach(btn => {
+ // calls the modal 
+document.querySelectorAll('.bcs-reassess-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
         e.stopPropagation();
         const index = parseInt(btn.dataset.index);
         showBCSReassessmentModal(index);
     });
- }); */
+ }); 
  
  // Mood view toggle buttons
 document.querySelectorAll('.mood-toggle-btn').forEach(btn => {
