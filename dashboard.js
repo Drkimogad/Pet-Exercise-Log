@@ -39,29 +39,6 @@ const MOOD_OPTIONS = [
 ];
 
 
-
-
-//==========OLD SECTION =============================
-// Show create profile to show the profile form when "New Profile" is clicked  REPLACED
-//=====================================================
-function showCreateProfile() {
-    console.log('showCreateProfile called - Using health assessment form');
-    activePetIndex = null; // Reset for new profile
-    
-    // Use the new health assessment form instead of the old one
-    showHealthAssessmentForm();
-}
-
-//==================================================
-// Initialize dashboard and it's related Initializations
-//=====================================================
-function initializeDashboard() {
-    initializeCalendar();    // Handles empty or data state internally
-    initializeCharts();      // Handles empty or data state internally
-    initializeMoodTracker(); // Handles empty or data state internally Updated
-}
-
-
 // move it outside handleFormSubmit and initialized in it.
 // it retrieves everything via the helper
 function initializeNewPet() {
@@ -3939,6 +3916,17 @@ loadSavedProfiles(); // This will handle empty state vs profiles
 }
 
 
+ //=======================================
+// Show create profile to show the profile form when "New Profile" is clicked  REPLACED
+//=====================================================
+function showCreateProfile() {
+    console.log('showCreateProfile called - Using health assessment form');
+    activePetIndex = null; // Reset for new profile
+    
+    // Use the new health assessment form instead of the old one
+    showHealthAssessmentForm();
+}
+ 
 // Setup event listeners
 function setupEventListeners() {
         console.log('setupEventListeners called'); // ← ADD THIS
