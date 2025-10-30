@@ -8,16 +8,16 @@
   --light-purple: #3A86FF;      /* 🔷 Bright blue */
   --light-charcoal: #5A5A5A;    /* ⚫ Warm gray */
   --dark-charcoal: #363636;     /* ⚫ Charcoal */
-  --white: #FFFFFF;
-  --black: #000000;
-  --off-white: #F7F7F7;
+  --white: #000000;             /* ⚫ Changed to black */
+  --black: #FFFFFF;             /* ⚪ Changed to white */  
+  --off-white: #1a1a1a;         /* ⚫ Dark gray instead of off-white */
   --border-focus: var(--primary-mustard);
-  --input-bg: var(--white);
+  --input-bg: var(--off-white); /* ⚫ Dark background for inputs */
   --input-border: var(--primary-mustard);
-  --container-bg: var(--off-white);
+  --container-bg: var(--off-white); /* ⚫ Dark containers */
   --container-border: var(--primary-mustard);
-  --shadow-sm: 0 2px 4px rgba(0,0,0,0.1);
-  --shadow-md: 0 4px 6px rgba(0,0,0,0.15);
+  --shadow-sm: 0 2px 4px rgba(0,0,0,0.3);
+  --shadow-md: 0 4px 6px rgba(0,0,0,0.4);
   --dark-mustard: #D49A3D;      /* 🟡 Darker amber */
   --header-text: var(--primary-yellow);
 }
@@ -28,12 +28,12 @@
 /*
 :root {
   --primary-yellow: #A3B18A;    /* 🟢 Sage green */
-  --primary-mustard: #588157;   /* 🟢 Forest green */
-  --dark-purple: #3A5A40;       /* 🟢 Deep green */
-  --light-purple: #7BAE7F;      /* 🟢 Soft green */
-  --light-charcoal: #5D5D5D;    /* ⚫ Neutral gray */
-  --dark-charcoal: #344E41;     /* 🟢 Dark green-gray */
-  --white: #FFFFFF;
+/*  --primary-mustard: #588157;   /* 🟢 Forest green */
+/*  --dark-purple: #3A5A40;       /* 🟢 Deep green */
+ /* --light-purple: #7BAE7F;      /* 🟢 Soft green */
+/*  --light-charcoal: #5D5D5D;    /* ⚫ Neutral gray */
+/*  --dark-charcoal: #344E41;     /* 🟢 Dark green-gray */
+/*  --white: #FFFFFF;
   --black: #000000;
   --off-white: #F7F7F7;
   --border-focus: var(--primary-mustard);
@@ -44,8 +44,8 @@
   --shadow-sm: 0 2px 4px rgba(0,0,0,0.1);
   --shadow-md: 0 4px 6px rgba(0,0,0,0.15);
   --dark-mustard: #466443;      /* 🟢 Darker forest green */
-  --header-text: var(--primary-yellow);
-}
+/*  --header-text: var(--primary-yellow);
+} 
 */
 
 /* ============================================================
