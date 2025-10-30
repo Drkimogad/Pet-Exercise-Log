@@ -104,7 +104,23 @@ async function handleSignIn(e) {
         
         // Show success and show dashboard
         showSuccess('Signed in successfully!');
+
+          // Show success and show dashboard
+showSuccess('Signed in successfully!');
+
+// Wait for dashboard.js to load
+setTimeout(() => {
+    if (typeof showExerciseLog === 'function') {
         showExerciseLog();
+    } else {
+        // If still not available after delay, use manual fallback
+        console.log('Manual dashboard activation');
+        toggleAuthHeader(false);
+        document.getElementById('auth-container').style.display = 'none';
+        document.getElementById('main-banner').style.display = 'none';
+        document.querySelector('.dashboard-container').style.display = 'block';
+    }
+}, 500);
         
     } catch (error) {
         console.error('Firebase sign in error:', error);
