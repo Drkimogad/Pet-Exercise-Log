@@ -3863,22 +3863,6 @@ function updateSelectedDisplay(bcs) {
     }
 }
 
-
-// Add this temporary debug function
-function debugModalEvents() {
-    document.addEventListener('click', function(e) {
-        if (e.target.classList.contains('bcs-close-btn') || 
-            e.target.classList.contains('bcs-update-btn') ||
-            e.target.closest('.bcs-close-btn') || 
-            e.target.closest('.bcs-update-btn')) {
-            console.log('🔴 MODAL DEBUG: Close/Update button clicked', e.target);
-        }
-        
-        if (e.target.classList.contains('bcs-modal-overlay')) {
-            console.log('🔴 MODAL DEBUG: Overlay clicked');
-        }
-    });
-}
 //=================================
 // SETUP PROFILE EVENT LISTENERS
 //===========================
@@ -3970,13 +3954,14 @@ document.querySelectorAll('.delete-suggestion-btn').forEach(btn => {
 });
  
  // BCS Reassessment button
-document.querySelectorAll('.bcs-reassess-btn').forEach(btn => {
+/*document.querySelectorAll('.bcs-reassess-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
         e.stopPropagation();
         const index = parseInt(btn.dataset.index);
         showBCSReassessmentModal(index);
     });
- });
+ }); */
+ 
  // Mood view toggle buttons
 document.querySelectorAll('.mood-toggle-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
@@ -3988,7 +3973,5 @@ document.querySelectorAll('.mood-toggle-btn').forEach(btn => {
 });
 }
 
-// Call this once at the bottom of your dashboard.js
-debugModalEvents();
 
 
