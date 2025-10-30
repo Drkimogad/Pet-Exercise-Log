@@ -276,17 +276,12 @@ function initAuth() {
                 username: user.displayName || user.email,
                 email: user.email
             };
-// Check if dashboard.js has loaded and function exists
-if (user) {
-    // User is signed in
-    if (typeof showExerciseLog === 'function') {
-        showExerciseLog();
-    } else {
-        console.error('showExerciseLog function not found');
+            showExerciseLog();
+        } else {
             // User is signed out
             currentUser = null;
         }
-    });       
+    });   
 }
 
 // Initialize when DOM is loaded
