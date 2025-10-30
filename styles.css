@@ -8,16 +8,16 @@
   --light-purple: #3A86FF;      /* 🔷 Bright blue */
   --light-charcoal: #5A5A5A;    /* ⚫ Warm gray */
   --dark-charcoal: #363636;     /* ⚫ Charcoal */
-  --white: #000000;             /* ⚫ Changed to black */
-  --black: #FFFFFF;             /* ⚪ Changed to white */  
-  --off-white: #1a1a1a;         /* ⚫ Dark gray instead of off-white */
+  --white: #FFFFFF;
+  --black: #000000;
+  --off-white: #F7F7F7;
   --border-focus: var(--primary-mustard);
-  --input-bg: var(--off-white); /* ⚫ Dark background for inputs */
+  --input-bg: var(--white);
   --input-border: var(--primary-mustard);
-  --container-bg: var(--off-white); /* ⚫ Dark containers */
+  --container-bg: var(--off-white);
   --container-border: var(--primary-mustard);
-  --shadow-sm: 0 2px 4px rgba(0,0,0,0.3);
-  --shadow-md: 0 4px 6px rgba(0,0,0,0.4);
+  --shadow-sm: 0 2px 4px rgba(0,0,0,0.1);
+  --shadow-md: 0 4px 6px rgba(0,0,0,0.15);
   --dark-mustard: #D49A3D;      /* 🟡 Darker amber */
   --header-text: var(--primary-yellow);
 }
