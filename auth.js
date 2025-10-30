@@ -267,21 +267,27 @@ function initAuth() {
     // Check for password reset flow
     handlePasswordResetFromEmail();
 
-    // Firebase Auth State Listener
-    firebase.auth().onAuthStateChanged((user) => {
-        if (user) {
-            // User is signed in
-            currentUser = {
-                uid: user.uid,
-                username: user.displayName || user.email,
-                email: user.email
-            };
+// Firebase Auth State Listener
+firebase.auth().onAuthStateChanged((user) => {
+    if (user) {
+        // User is signed in
+        currentUser = {
+            uid: user.uid,
+            username: user.displayName || user.email,
+            email: user.email
+        };
+        // REPLACED: showExerciseLog();
+        if (typeof showExerciseLog === 'function') {
             showExerciseLog();
         } else {
-            // User is signed out
-            currentUser = null;
+            console.error('showExerciseLog function not found - dashboard.js may not be loaded');
+            window.location.reload();
         }
-    });   
+    } else {
+        // User is signed out
+        currentUser = null;
+    }
+}); 
 }
 
 // Initialize when DOM is loaded
