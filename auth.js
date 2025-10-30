@@ -276,13 +276,7 @@ firebase.auth().onAuthStateChanged((user) => {
             username: user.displayName || user.email,
             email: user.email
         };
-        // REPLACED: showExerciseLog();
-        if (typeof showExerciseLog === 'function') {
-            showExerciseLog();
-        } else {
-            console.error('showExerciseLog function not found - dashboard.js may not be loaded');
-            window.location.reload();
-        }
+            showExerciseLog();       
     } else {
         // User is signed out
         currentUser = null;
