@@ -3771,7 +3771,7 @@ function selectBCSOption(option) {
 }
 
 // FIXED Update Selected Display
-function updateSelectedDisplay(bcs) {
+function updateSelectedDisplay(selectedBCS) {
     const modal = document.querySelector('.bcs-modal-overlay');
     if (!modal) return;
     
