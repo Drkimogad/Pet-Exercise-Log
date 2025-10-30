@@ -3757,28 +3757,20 @@ function setupBCSModalEvents(modal, petIndex, currentBCS) {
     let selectedBCS = currentBCS;
     
     // Create closure-safe close function
-const closeModal = function() {
-    console.log('🔴 MODAL DEBUG: closeModal() called - Step 1');
-    console.log('🔴 MODAL DEBUG: Modal reference:', modal);
-    console.log('🔴 MODAL DEBUG: Modal parentNode:', modal?.parentNode);
-    console.log('🔴 MODAL DEBUG: Document body:', document.body);
+    const closeModal = function() {
+        console.log('🔴 MODAL: Closing modal');
+        document.body.style.overflow = '';
+        if (modal && modal.parentNode) {
+            modal.parentNode.removeChild(modal);
+            console.log('🔴 MODAL: Modal closed successfully');
+        }
+    };
     
-    document.body.style.overflow = '';
-    console.log('🔴 MODAL DEBUG: Overflow reset - Step 2');
-    
-    if (modal && modal.parentNode) {
-        console.log('🔴 MODAL DEBUG: Removing modal from DOM - Step 3');
-        modal.parentNode.removeChild(modal);
-        console.log('🔴 MODAL DEBUG: Modal removed successfully - Step 4');
-    } else {
-        console.error('🔴 MODAL DEBUG: Cannot remove - no modal or parent');
-    }
-};
-    
-    // Update Button - DIRECT event binding
+    // Update Button
     const updateBtn = modal.querySelector('.bcs-update-btn');
     if (updateBtn) {
         updateBtn.onclick = function(e) {
+            console.log('🔴 MODAL: Update button clicked');
             e.stopPropagation();
             if (!selectedBCS) {
                 AppHelper.showError('Please select a body condition score');
@@ -3789,19 +3781,20 @@ const closeModal = function() {
         };
     }
     
-    // Close Button - DIRECT event binding
+    // Close Button
     const closeBtn = modal.querySelector('.bcs-close-btn');
     if (closeBtn) {
         closeBtn.onclick = function(e) {
+            console.log('🔴 MODAL: Close button clicked');
             e.stopPropagation();
             closeModal();
         };
     }
- 
     
-    // BCS Option Clicks - DIRECT event binding
+    // BCS Option Clicks
     modal.querySelectorAll('.bcs-option').forEach(option => {
         option.onclick = function(e) {
+            console.log('🔴 MODAL: BCS option clicked:', this.dataset.bcs);
             e.stopPropagation();
             selectedBCS = this.dataset.bcs;
             selectBCSOption(this);
@@ -3809,16 +3802,18 @@ const closeModal = function() {
         };
     });
     
-    // Overlay click - DIRECT event binding
+    // Overlay click
     modal.onclick = function(e) {
         if (e.target === this) {
+            console.log('🔴 MODAL: Overlay clicked');
             closeModal();
         }
     };
     
-    // Escape key - DIRECT event binding
+    // Escape key
     const handleEscape = function(e) {
         if (e.key === 'Escape') {
+            console.log('🔴 MODAL: Escape key pressed');
             closeModal();
             document.removeEventListener('keydown', handleEscape);
         }
@@ -3828,19 +3823,8 @@ const closeModal = function() {
     // Store cleanup reference
     modal._escapeHandler = handleEscape;
 
-     // ✅ CORRECT: Add debug logs HERE, before the function ends
-    console.log('🔴 MODAL DEBUG: Event listeners set up. Checking button references:');
-    console.log('🔴 MODAL DEBUG: Update button:', updateBtn);
-    console.log('🔴 MODAL DEBUG: Close button:', closeBtn);
-    console.log('🔴 MODAL DEBUG: Update button onclick:', updateBtn?.onclick);
-    console.log('🔴 MODAL DEBUG: Close button onclick:', closeBtn?.onclick);
-
-    // Test if we can manually call closeModal
-    window.testCloseModal = closeModal;
-    console.log('🔴 MODAL DEBUG: closeModal function available at window.testCloseModal');
-
- 
-} // closes the function
+    console.log('🔴 MODAL: All event listeners set up successfully');
+}
 
 // FIXED Select BCS Option
 function selectBCSOption(option) {
