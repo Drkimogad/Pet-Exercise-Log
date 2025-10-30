@@ -3798,6 +3798,29 @@ function closeModal() {
     }
 }
 
+// NEW: Update Pet BCS Function
+function updatePetBCS(petIndex, newBCS) {
+    const pets = getPets();
+    const pet = pets[petIndex];
+    
+    if (pet) {
+        pet.petDetails.bcs = newBCS;
+        
+        // Auto-update feeding recommendation
+        if (newBCS >= 4) {
+            pet.petDetails.feedingRecommendation = 'feed_less';
+        } else if (newBCS <= 2) {
+            pet.petDetails.feedingRecommendation = 'feed_more';
+        } else {
+            pet.petDetails.feedingRecommendation = 'maintain';
+        }
+        
+        localStorage.setItem('pets', JSON.stringify(pets));
+        loadSavedProfiles();// yo check ❤️⛔️🚫
+        AppHelper.showSuccess(`Body Condition Score updated to: ${getBCSDisplay(newBCS)}`);
+    }
+}
+
 //=================================
 // SETUP PROFILE EVENT LISTENERS
 //===========================
