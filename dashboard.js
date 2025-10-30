@@ -3851,6 +3851,10 @@ function updateSelectedDisplay(bcs) {
 // SETUP PROFILE EVENT LISTENERS
 //===========================
 function setupProfileEventListeners() {
+ function setupBCSModalEvents(modal, petIndex, currentBCS) {
+    console.log('🔴 MODAL: setupBCSModalEvents CALLED - checking if function executes');
+    // ... rest of your code ...
+
   // Select button
   document.querySelectorAll('.select-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
