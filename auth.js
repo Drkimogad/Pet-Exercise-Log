@@ -44,7 +44,20 @@ async function handleSignUp(e) {
         
         // Show success and show dashboard
         showSuccess('Account created successfully!');
+      // showExerciseLog();
+              // Wait for dashboard.js to load
+   setTimeout(() => {
+    if (typeof showExerciseLog === 'function') {
         showExerciseLog();
+      } else {
+        // If still not available after delay, use manual fallback
+        console.log('Manual dashboard activation');
+        toggleAuthHeader(false);
+        document.getElementById('auth-container').style.display = 'none';
+        document.getElementById('main-banner').style.display = 'none';
+        document.querySelector('.dashboard-container').style.display = 'block';
+      }
+   }, 500);
         
     } catch (error) {
         console.error('Firebase sign up error:', error);
@@ -283,7 +296,6 @@ function initAuth() {
     // Check for password reset flow
     handlePasswordResetFromEmail();
 
-// Firebase Auth State Listener
 // Firebase Auth State Listener
 firebase.auth().onAuthStateChanged((user) => {
     if (user) {
