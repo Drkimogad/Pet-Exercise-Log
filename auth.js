@@ -283,14 +283,10 @@ if (user) {
         showExerciseLog();
     } else {
         console.error('showExerciseLog function not found');
-        window.location.reload();
-    }
-} else {
             // User is signed out
             currentUser = null;
         }
-    });
-       
+    });       
 }
 
 // Initialize when DOM is loaded
