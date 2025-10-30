@@ -531,7 +531,12 @@ function loadSavedProfiles() {
         </div>
     </div>
 </div>
-        
+      <!-- MINI CALENDAR -->
+          <div class="calendar-section">
+            <div class="mini-calendar" id="mini-calendar-${index}">
+              ${generateMiniCalendar(pet.exerciseEntries || [])}
+            </div>
+          </div>  
 
           
           <!-- MOOD LOGS -->
@@ -3752,13 +3757,17 @@ function setupBCSModalEvents(modal, petIndex, currentBCS) {
     let selectedBCS = currentBCS;
     
     // Create closure-safe close function
-    const closeModal = function() {
-        console.log('Closing modal...');
-        document.body.style.overflow = '';
-        if (modal && modal.parentNode) {
-            modal.parentNode.removeChild(modal);
-        }
-    };
+const closeModal = function() {
+    console.log('🔴 MODAL DEBUG: closeModal() called');
+    document.body.style.overflow = '';
+    console.log('🔴 MODAL DEBUG: Modal element before removal:', modal);
+    if (modal && modal.parentNode) {
+        modal.parentNode.removeChild(modal);
+        console.log('🔴 MODAL DEBUG: Modal removed from DOM');
+    } else {
+        console.error('🔴 MODAL DEBUG: Could not remove modal - no parent node');
+    }
+};
     
     // Update Button - DIRECT event binding
     const updateBtn = modal.querySelector('.bcs-update-btn');
