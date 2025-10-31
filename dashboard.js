@@ -709,7 +709,7 @@ function updateDashboard(petData) {
     if (petData.exerciseEntries && petData.exerciseEntries.length > 0) {
         refreshCalendar(petData.exerciseEntries);
     } else {
-        initializeEmptyCalendar();
+    initializeNewProfileCalendar(); // ✅ This is your actual function
     }
     
     // Update mood tracker
@@ -2356,7 +2356,9 @@ function formatDate(dateStr) {
     }
 }
 
-// Calendar functionality
+// ==============================================
+//  Calendar functionality
+//======================================
 // Add the Helper Function
 function generateMiniCalendar(exerciseEntries) {
     const today = new Date();
