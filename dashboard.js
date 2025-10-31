@@ -3986,7 +3986,7 @@ document.querySelectorAll('.bcs-reassess-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
         e.stopPropagation();
         const index = parseInt(btn.dataset.index);
-        showBCSReassessmentModal(index);
+        showBCSReassessmentModal(petIndex);
     });
  }); 
  
