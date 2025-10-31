@@ -3652,6 +3652,60 @@ function generateExerciseSummaryHTML(exerciseEntries) {
 // ===============================================
 // BCS MODAL SYSTEM - FULLY DEBUGGED VERSION
 // ===============================================
+// BCS Modal Template as a JS string
+const bcsModalTemplate = `
+<div class="bcs-modal-overlay">
+    <div class="bcs-modal">
+        <div class="bcs-modal-header">
+            <h2>Body Condition Score Assessment</h2>
+            <div class="bcs-modal-actions">
+                <button class="bcs-update-btn">✅ Update Score</button>
+                <button class="bcs-close-btn">❌ Close</button>
+            </div>
+        </div>
+
+        <div class="bcs-modal-content">
+            <div class="bcs-instructions">
+                <p>Select your pet's current body condition score:</p>
+            </div>
+
+            <div class="bcs-options">
+                <div class="bcs-option" data-bcs="1">
+                    <span class="bcs-number">1</span>
+                    <span class="bcs-title">Very Underweight</span>
+                </div>
+
+                <div class="bcs-option" data-bcs="2">
+                    <span class="bcs-number">2</span>
+                    <span class="bcs-title">Underweight</span>
+                </div>
+
+                <div class="bcs-option" data-bcs="3">
+                    <span class="bcs-number">3</span>
+                    <span class="bcs-title">Ideal Weight</span>
+                </div>
+
+                <div class="bcs-option" data-bcs="4">
+                    <span class="bcs-number">4</span>
+                    <span class="bcs-title">Overweight</span>
+                </div>
+
+                <div class="bcs-option" data-bcs="5">
+                    <span class="bcs-number">5</span>
+                    <span class="bcs-title">Obese</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="bcs-selection-display">
+            <div class="selected-bcs-info">
+                <span class="selected-label">Selected Score:</span>
+                <span class="selected-value selected-bcs-display">None</span>
+            </div>
+        </div>
+    </div>
+</div>
+`;
 
 // GLOBAL MODAL STATE
 let currentBCSModal = null;
@@ -3715,7 +3769,7 @@ function showBCSReassessmentModal(petIndex) {
     }
     
     console.log('🟢 MODAL: Template found, inserting into DOM');
-    document.body.insertAdjacentHTML('beforeend', template.innerHTML);
+   document.body.insertAdjacentHTML('beforeend', bcsModalTemplate); // Changed it
     
     // Find the newly created modal
     const modal = document.querySelector('.bcs-modal-overlay:last-child');
