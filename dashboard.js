@@ -3746,8 +3746,8 @@ function closeBCSModal() {
 }
 
 // DEBUGGED: Show BCS Reassessment Modal
-function showBCSReassessmentModal(petIndex) {
-    console.log('🟢 MODAL: showBCSReassessmentModal() called with index:', petIndex);
+function showBCSReassessmentModal(index) {
+    console.log('🟢 MODAL: showBCSReassessmentModal() called with index:', index);
     
     // Get pet data
     const pets = getPets();
@@ -3986,7 +3986,7 @@ document.querySelectorAll('.bcs-reassess-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
         e.stopPropagation();
         const index = parseInt(btn.dataset.index);
-        showBCSReassessmentModal(petIndex);
+        showBCSReassessmentModal(index);
     });
  }); 
  
