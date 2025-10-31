@@ -3799,17 +3799,17 @@ function closeModal() {
 }
 
 // NEW: Update Pet BCS Function
-function updatePetBCS(petIndex, newBCS) {
+function updatePetBCS(petIndex, selectedBCS) {
     const pets = getPets();
     const pet = pets[petIndex];
     
     if (pet) {
-        pet.petDetails.bcs = newBCS;
+        pet.petDetails.bcs = selectedBCS;
         
         // Auto-update feeding recommendation
-        if (newBCS >= 4) {
+        if (selectedBCS >= 4) {
             pet.petDetails.feedingRecommendation = 'feed_less';
-        } else if (newBCS <= 2) {
+        } else if (selectedBCS <= 2) {
             pet.petDetails.feedingRecommendation = 'feed_more';
         } else {
             pet.petDetails.feedingRecommendation = 'maintain';
@@ -3817,7 +3817,7 @@ function updatePetBCS(petIndex, newBCS) {
         
         localStorage.setItem('pets', JSON.stringify(pets));
         loadSavedProfiles();// yo check ❤️⛔️🚫
-        AppHelper.showSuccess(`Body Condition Score updated to: ${getBCSDisplay(newBCS)}`);
+        AppHelper.showSuccess(`Body Condition Score updated to: ${getBCSDisplay(selectedBCS)}`);
     }
 }
 
