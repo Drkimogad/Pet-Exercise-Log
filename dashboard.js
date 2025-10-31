@@ -3753,19 +3753,19 @@ function showBCSReassessmentModal(petIndex) {
     console.log('🟢 MODAL: Modal setup complete - ready for user interaction');
 }
 
-// DEBUGGED: Setup BCS Modal Events
 function setupBCSModalEvents(modal, petIndex, currentBCS) {
-    console.log('🟢 MODAL: setupBCSModalEvents() called');
+    console.log('🟢 MODAL: setupBCSModalEvents() called - USING DIRECT HANDLERS');
     
     let selectedBCS = currentBCS;
     
-    // DIRECT EVENT HANDLERS (simple and reliable)
+    // DIRECT EVENT HANDLERS - SIMPLE AND RELIABLE
     const updateBtn = modal.querySelector('.bcs-update-btn');
     const closeBtn = modal.querySelector('.bcs-close-btn');
     
     if (updateBtn) {
         updateBtn.onclick = function(e) {
             console.log('🟢 MODAL: Update button clicked directly');
+            e.stopPropagation();
             if (!selectedBCS) {
                 AppHelper.showError('Please select a body condition score');
                 return;
@@ -3773,31 +3773,42 @@ function setupBCSModalEvents(modal, petIndex, currentBCS) {
             updatePetBCS(petIndex, selectedBCS);
             closeBCSModal();
         };
+        console.log('🟢 MODAL: Update button handler attached');
     }
     
     if (closeBtn) {
         closeBtn.onclick = function(e) {
             console.log('🟢 MODAL: Close button clicked directly');
+            e.stopPropagation();
             closeBCSModal();
         };
+        console.log('🟢 MODAL: Close button handler attached');
     }
     
-    // BCS option clicks
+    // BCS OPTION CLICKS - DIRECT HANDLERS
     modal.querySelectorAll('.bcs-option').forEach(option => {
         option.onclick = function(e) {
-            console.log('🟢 MODAL: BCS option clicked directly');
+            console.log('🟢 MODAL: BCS option clicked directly:', this.dataset.bcs);
+            e.stopPropagation();
             selectedBCS = this.dataset.bcs;
             selectBCSOption(this);
             updateSelectedDisplay(selectedBCS);
         };
     });
+    console.log('🟢 MODAL: BCS option handlers attached');
     
-    // Escape key
+    // ESCAPE KEY HANDLER
     const handleEscape = function(e) {
-        if (e.key === 'Escape') closeBCSModal();
+        if (e.key === 'Escape') {
+            console.log('🟢 MODAL: Escape key pressed');
+            closeBCSModal();
+        }
     };
     document.addEventListener('keydown', handleEscape);
     modal._escapeHandler = handleEscape;
+    console.log('🟢 MODAL: Escape key handler attached');
+    
+    console.log('🟢 MODAL: All direct event handlers setup complete');
 }
 
 // DEBUGGED: Select BCS Option
