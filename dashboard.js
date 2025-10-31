@@ -3647,37 +3647,93 @@ function generateExerciseSummaryHTML(exerciseEntries) {
 //======================================
 // BCS Reassessment Modal - Complete Implementation
 //=====================
-// BCS Reassessment Modal - CORRECTED Version
+// ===============================================
+// BCS MODAL SYSTEM - FULLY DEBUGGED VERSION
+// ===============================================
+
+// GLOBAL MODAL STATE
+let currentBCSModal = null;
+let currentPetIndex = null;
+
+// STANDALONE CLOSE FUNCTION (GLOBALLY ACCESSIBLE)
+function closeBCSModal() {
+    console.log('🔴 MODAL: closeBCSModal() called');
+    
+    const modal = document.querySelector('.bcs-modal-overlay');
+    console.log('🔴 MODAL: Found modal element?', !!modal);
+    
+    if (!modal) {
+        console.error('🔴 MODAL: No modal found to close');
+        return;
+    }
+    
+    // Clean up event listeners
+    if (modal._escapeHandler) {
+        console.log('🔴 MODAL: Removing escape key handler');
+        document.removeEventListener('keydown', modal._escapeHandler);
+    }
+    
+    // Restore body scrolling
+    document.body.style.overflow = '';
+    console.log('🔴 MODAL: Body overflow restored');
+    
+    // Remove modal from DOM
+    if (modal.parentNode) {
+        modal.parentNode.removeChild(modal);
+        console.log('🔴 MODAL: Modal removed from DOM');
+    }
+    
+    // Clear global references
+    currentBCSModal = null;
+    currentPetIndex = null;
+    console.log('🔴 MODAL: Global references cleared');
+}
+
+// DEBUGGED: Show BCS Reassessment Modal
 function showBCSReassessmentModal(petIndex) {
-    console.log('Opening BCS reassessment for pet index:', petIndex);
+    console.log('🟢 MODAL: showBCSReassessmentModal() called with index:', petIndex);
     
     // Get pet data
     const pets = getPets();
     const pet = pets[petIndex];
     if (!pet) {
+        console.error('🔴 MODAL: Pet not found at index:', petIndex);
         AppHelper.showError('Pet not found');
         return;
     }
     
-    // Load modal template - FIXED: Check if template exists
+    console.log('🟢 MODAL: Found pet:', pet.petDetails.name);
+    
+    // Load modal template
     const template = document.getElementById('bcsModalTemplate');
     if (!template) {
-        AppHelper.showError('BCS modal template not found');
+        console.error('🔴 MODAL: bcsModalTemplate not found in DOM');
+        AppHelper.showError('Modal template not found');
         return;
     }
     
+    console.log('🟢 MODAL: Template found, inserting into DOM');
     document.body.insertAdjacentHTML('beforeend', template.innerHTML);
     
+    // Find the newly created modal
     const modal = document.querySelector('.bcs-modal-overlay:last-child');
     if (!modal) {
-        AppHelper.showError('Modal element not created');
+        console.error('🔴 MODAL: Modal element not created after template insertion');
         return;
     }
-
+    
+    console.log('🟢 MODAL: Modal element created successfully');
+    
+    // Set global references
+    currentBCSModal = modal;
+    currentPetIndex = petIndex;
+    
     const currentBCS = pet.petDetails.bcs;
+    console.log('🟢 MODAL: Current BCS:', currentBCS);
     
     // Prevent background scrolling
     document.body.style.overflow = 'hidden';
+    console.log('🟢 MODAL: Body scrolling disabled');
     
     // Set up event listeners
     setupBCSModalEvents(modal, petIndex, currentBCS);
@@ -3686,141 +3742,210 @@ function showBCSReassessmentModal(petIndex) {
     if (currentBCS) {
         const currentOption = modal.querySelector(`.bcs-option[data-bcs="${currentBCS}"]`);
         if (currentOption) {
+            console.log('🟢 MODAL: Pre-selecting current BCS option:', currentBCS);
             selectBCSOption(currentOption);
-            updateSelectedDisplay(currentBCS); // FIXED: Pass the variable correctly
+            updateSelectedDisplay(currentBCS);
         }
     }
+    
+    console.log('🟢 MODAL: Modal setup complete - ready for user interaction');
 }
 
-// CORRECTED Setup BCS Modal Event Listeners
+// DEBUGGED: Setup BCS Modal Events
 function setupBCSModalEvents(modal, petIndex, currentBCS) {
-    console.log('🔴 MODAL: setupBCSModalEvents CALLED');
+    console.log('🟢 MODAL: setupBCSModalEvents() called');
+    console.log('🟢 MODAL: Modal element:', modal);
+    console.log('🟢 MODAL: Pet index:', petIndex);
+    console.log('🟢 MODAL: Current BCS:', currentBCS);
     
     let selectedBCS = currentBCS;
+    console.log('🟢 MODAL: Initial selectedBCS:', selectedBCS);
     
-    // Create closure-safe close function
-    const closeModal = function() {
-        console.log('🔴 MODAL: Closing modal');
-        document.body.style.overflow = '';
-        if (modal && modal.parentNode) {
-            // Remove escape handler
-            document.removeEventListener('keydown', modal._escapeHandler);
-            modal.parentNode.removeChild(modal);
+    // Set up escape key handler
+    const handleEscape = function(e) {
+        console.log('🟢 MODAL: Key pressed:', e.key);
+        if (e.key === 'Escape') {
+            console.log('🟢 MODAL: Escape key detected - closing modal');
+            closeBCSModal();
         }
     };
     
-    // Update Button - FIXED: Use event delegation instead
+    document.addEventListener('keydown', handleEscape);
+    modal._escapeHandler = handleEscape;
+    console.log('🟢 MODAL: Escape key handler registered');
+    
+    // SINGLE EVENT DELEGATION FOR ALL CLICKS
     modal.addEventListener('click', function(e) {
-        const target = e.target;
+        console.log('🟢 MODAL: Click event detected on:', e.target.className);
+        console.log('🟢 MODAL: Click target:', e.target);
         
-        // Update button
+        const target = e.target;
+        e.stopPropagation();
+        
+        // UPDATE BUTTON
         if (target.classList.contains('bcs-update-btn') || target.closest('.bcs-update-btn')) {
-            console.log('🔴 MODAL: Update button clicked');
-            e.stopPropagation();
+            console.log('🟢 MODAL: Update button clicked');
+            console.log('🟢 MODAL: Current selectedBCS:', selectedBCS);
+            
             if (!selectedBCS) {
+                console.warn('🟡 MODAL: No BCS selected - showing error');
                 AppHelper.showError('Please select a body condition score');
                 return;
             }
+            
+            console.log('🟢 MODAL: Proceeding with BCS update:', selectedBCS);
             updatePetBCS(petIndex, selectedBCS);
-            closeModal();
+            closeBCSModal();
             return;
         }
         
-        // Close button
+        // CLOSE BUTTON
         if (target.classList.contains('bcs-close-btn') || target.closest('.bcs-close-btn')) {
-            console.log('🔴 MODAL: Close button clicked');
-            e.stopPropagation();
-            closeModal();
+            console.log('🟢 MODAL: Close button clicked');
+            closeBCSModal();
             return;
         }
         
-        // BCS Option clicks
+        // BCS OPTION CLICKS
         if (target.classList.contains('bcs-option') || target.closest('.bcs-option')) {
-            console.log('🔴 MODAL: BCS option clicked');
-            e.stopPropagation();
+            console.log('🟢 MODAL: BCS option area clicked');
+            
             const option = target.classList.contains('bcs-option') ? target : target.closest('.bcs-option');
+            if (!option) {
+                console.error('🔴 MODAL: Could not find bcs-option element');
+                return;
+            }
+            
             selectedBCS = option.dataset.bcs;
+            console.log('🟢 MODAL: New BCS selected:', selectedBCS);
+            
             selectBCSOption(option);
             updateSelectedDisplay(selectedBCS);
             return;
         }
         
-        // Overlay click (background)
+        // OVERLAY CLICK (background)
         if (target === modal) {
-            console.log('🔴 MODAL: Overlay clicked');
-            closeModal();
+            console.log('🟢 MODAL: Overlay background clicked');
+            closeBCSModal();
             return;
         }
+        
+        console.log('🟢 MODAL: Click handled by none of the conditions');
     });
     
-    // Escape key handler
-    const handleEscape = function(e) {
-        if (e.key === 'Escape') {
-            console.log('🔴 MODAL: Escape key pressed');
-            closeModal();
-        }
-    };
-    document.addEventListener('keydown', handleEscape);
-    
-    // Store cleanup reference
-    modal._escapeHandler = handleEscape;
+    console.log('🟢 MODAL: All event listeners setup complete');
 }
 
-// CORRECTED Select BCS Option
+// DEBUGGED: Select BCS Option
 function selectBCSOption(option) {
-    const modal = option.closest('.bcs-modal-overlay');
-    if (!modal) return;
+    console.log('🟢 MODAL: selectBCSOption() called');
+    console.log('🟢 MODAL: Option element:', option);
+    console.log('🟢 MODAL: Option BCS value:', option.dataset.bcs);
     
-    modal.querySelectorAll('.bcs-option').forEach(opt => {
+    const modal = option.closest('.bcs-modal-overlay');
+    if (!modal) {
+        console.error('🔴 MODAL: Could not find modal parent for option');
+        return;
+    }
+    
+    const allOptions = modal.querySelectorAll('.bcs-option');
+    console.log('🟢 MODAL: Found', allOptions.length, 'BCS options');
+    
+    // Remove selection from all options
+    allOptions.forEach(opt => {
         opt.classList.remove('selected');
     });
+    
+    // Add selection to clicked option
     option.classList.add('selected');
+    console.log('🟢 MODAL: Option selected visually');
 }
 
-// CORRECTED Update Selected Display - FIXED VARIABLE NAME
-function updateSelectedDisplay(bcs) { // FIXED: Changed parameter name from selectedBCS to bcs
+// DEBUGGED: Update Selected Display
+function updateSelectedDisplay(bcsValue) {
+    console.log('🟢 MODAL: updateSelectedDisplay() called with:', bcsValue);
+    
     const modal = document.querySelector('.bcs-modal-overlay');
-    if (!modal) return;
+    if (!modal) {
+        console.error('🔴 MODAL: No modal found for display update');
+        return;
+    }
     
     const display = modal.querySelector('#selectedBCSValue');
-    if (display) {
-        display.textContent = getBCSDisplay(bcs); // FIXED: Use bcs instead of undefined variable
-        display.className = `selected-value bcs-${bcs}`; // FIXED: Use bcs instead of undefined variable
+    if (!display) {
+        console.error('🔴 MODAL: #selectedBCSValue element not found');
+        return;
     }
+    
+    const displayText = getBCSDisplay(bcsValue);
+    console.log('🟢 MODAL: Setting display text to:', displayText);
+    
+    display.textContent = displayText;
+    display.className = `selected-value bcs-${bcsValue}`;
+    
+    console.log('🟢 MODAL: Display updated successfully');
 }
 
-// CORRECTED Update Pet BCS Function
+// DEBUGGED: Update Pet BCS
 function updatePetBCS(petIndex, selectedBCS) {
+    console.log('🟢 MODAL: updatePetBCS() called');
+    console.log('🟢 MODAL: Pet index:', petIndex);
+    console.log('🟢 MODAL: New BCS:', selectedBCS);
+    
     const pets = getPets();
     const pet = pets[petIndex];
     
-    if (pet) {
-        pet.petDetails.bcs = selectedBCS;
-        
-        // Auto-update feeding recommendation
-        if (selectedBCS >= 4) {
-            pet.petDetails.feedingRecommendation = 'feed_less';
-        } else if (selectedBCS <= 2) {
-            pet.petDetails.feedingRecommendation = 'feed_more';
-        } else {
-            pet.petDetails.feedingRecommendation = 'maintain';
-        }
-        
-        localStorage.setItem('pets', JSON.stringify(pets));
-        loadSavedProfiles();
-        AppHelper.showSuccess(`Body Condition Score updated to: ${getBCSDisplay(selectedBCS)}`);
+    if (!pet) {
+        console.error('🔴 MODAL: Pet not found during update');
+        AppHelper.showError('Pet not found during update');
+        return;
     }
+    
+    console.log('🟢 MODAL: Updating pet:', pet.petDetails.name);
+    console.log('🟢 MODAL: Old BCS:', pet.petDetails.bcs);
+    
+    pet.petDetails.bcs = selectedBCS;
+    console.log('🟢 MODAL: New BCS set in pet object');
+    
+    // Auto-update feeding recommendation
+    let newFeedingRec = '';
+    if (selectedBCS >= 4) {
+        newFeedingRec = 'feed_less';
+    } else if (selectedBCS <= 2) {
+        newFeedingRec = 'feed_more';
+    } else {
+        newFeedingRec = 'maintain';
+    }
+    
+    console.log('🟢 MODAL: Auto-setting feeding recommendation:', newFeedingRec);
+    pet.petDetails.feedingRecommendation = newFeedingRec;
+    
+    // Save to localStorage
+    localStorage.setItem('pets', JSON.stringify(pets));
+    console.log('🟢 MODAL: Pets saved to localStorage');
+    
+    // Refresh UI
+    loadSavedProfiles();
+    console.log('🟢 MODAL: Profiles reloaded');
+    
+    // Show success message
+    const successMessage = `Body Condition Score updated to: ${getBCSDisplay(selectedBCS)}`;
+    console.log('🟢 MODAL: Showing success:', successMessage);
+    AppHelper.showSuccess(successMessage);
 }
 
-
-
-
-
-
-
-
-
-
+// Helper function (ensure this exists)
+function getBCSDisplay(bcs) {
+    const bcsMap = {
+        '1': '1 - Very Underweight',
+        '2': '2 - Underweight',
+        '3': '3 - Ideal Weight', 
+        '4': '4 - Overweight',
+        '5': '5 - Obese'
+    };
+    return bcsMap[bcs] || 'Not assessed';
+}
 
 
 //=================================
