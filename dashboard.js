@@ -3756,90 +3756,48 @@ function showBCSReassessmentModal(petIndex) {
 // DEBUGGED: Setup BCS Modal Events
 function setupBCSModalEvents(modal, petIndex, currentBCS) {
     console.log('🟢 MODAL: setupBCSModalEvents() called');
-    console.log('🟢 MODAL: Modal element:', modal);
-    console.log('🟢 MODAL: Pet index:', petIndex);
-    console.log('🟢 MODAL: Current BCS:', currentBCS);
     
     let selectedBCS = currentBCS;
-    console.log('🟢 MODAL: Initial selectedBCS:', selectedBCS);
     
-    // Set up escape key handler
-    const handleEscape = function(e) {
-        console.log('🟢 MODAL: Key pressed:', e.key);
-        if (e.key === 'Escape') {
-            console.log('🟢 MODAL: Escape key detected - closing modal');
-            closeBCSModal();
-        }
-    };
+    // DIRECT EVENT HANDLERS (simple and reliable)
+    const updateBtn = modal.querySelector('.bcs-update-btn');
+    const closeBtn = modal.querySelector('.bcs-close-btn');
     
-    document.addEventListener('keydown', handleEscape);
-    modal._escapeHandler = handleEscape;
-    console.log('🟢 MODAL: Escape key handler registered');
-    
-    // SINGLE EVENT DELEGATION FOR ALL CLICKS
-    modal.addEventListener('click', function(e) {
-     console.log('🟢 MODAL CLICK DETECTED - Target:', e.target);
-    console.log('🟢 MODAL CLICK - Target classes:', e.target.className);
-    console.log('🟢 MODAL CLICK - Current element:', e.currentTarget);
-        console.log('🟢 MODAL: Click event detected on:', e.target.className);
-        console.log('🟢 MODAL: Click target:', e.target);
-        
-        const target = e.target;
-        e.stopPropagation();
-        
-        // UPDATE BUTTON
-        if (target.classList.contains('bcs-update-btn') || target.closest('.bcs-update-btn')) {
-            console.log('🟢 MODAL: Update button clicked');
-            console.log('🟢 MODAL: Current selectedBCS:', selectedBCS);
-            
+    if (updateBtn) {
+        updateBtn.onclick = function(e) {
+            console.log('🟢 MODAL: Update button clicked directly');
             if (!selectedBCS) {
-                console.warn('🟡 MODAL: No BCS selected - showing error');
                 AppHelper.showError('Please select a body condition score');
                 return;
             }
-            
-            console.log('🟢 MODAL: Proceeding with BCS update:', selectedBCS);
             updatePetBCS(petIndex, selectedBCS);
             closeBCSModal();
-            return;
-        }
-        
-        // CLOSE BUTTON
-        if (target.classList.contains('bcs-close-btn') || target.closest('.bcs-close-btn')) {
-            console.log('🟢 MODAL: Close button clicked');
+        };
+    }
+    
+    if (closeBtn) {
+        closeBtn.onclick = function(e) {
+            console.log('🟢 MODAL: Close button clicked directly');
             closeBCSModal();
-            return;
-        }
-        
-        // BCS OPTION CLICKS
-        if (target.classList.contains('bcs-option') || target.closest('.bcs-option')) {
-            console.log('🟢 MODAL: BCS option area clicked');
-            
-            const option = target.classList.contains('bcs-option') ? target : target.closest('.bcs-option');
-            if (!option) {
-                console.error('🔴 MODAL: Could not find bcs-option element');
-                return;
-            }
-            
-            selectedBCS = option.dataset.bcs;
-            console.log('🟢 MODAL: New BCS selected:', selectedBCS);
-            
-            selectBCSOption(option);
+        };
+    }
+    
+    // BCS option clicks
+    modal.querySelectorAll('.bcs-option').forEach(option => {
+        option.onclick = function(e) {
+            console.log('🟢 MODAL: BCS option clicked directly');
+            selectedBCS = this.dataset.bcs;
+            selectBCSOption(this);
             updateSelectedDisplay(selectedBCS);
-            return;
-        }
-        
-        // OVERLAY CLICK (background)
-        if (target === modal) {
-            console.log('🟢 MODAL: Overlay background clicked');
-            closeBCSModal();
-            return;
-        }
-        
-        console.log('🟢 MODAL: Click handled by none of the conditions');
+        };
     });
     
-    console.log('🟢 MODAL: All event listeners setup complete');
+    // Escape key
+    const handleEscape = function(e) {
+        if (e.key === 'Escape') closeBCSModal();
+    };
+    document.addEventListener('keydown', handleEscape);
+    modal._escapeHandler = handleEscape;
 }
 
 // DEBUGGED: Select BCS Option
