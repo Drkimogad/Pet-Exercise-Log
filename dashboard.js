@@ -3647,7 +3647,7 @@ function generateExerciseSummaryHTML(exerciseEntries) {
 //======================================
 // BCS Reassessment Modal - Complete Implementation
 //=====================
-// BCS Reassessment Modal - BULLETPROOF Version
+// BCS Reassessment Modal - CORRECTED Version
 function showBCSReassessmentModal(petIndex) {
     console.log('Opening BCS reassessment for pet index:', petIndex);
     
@@ -3656,23 +3656,30 @@ function showBCSReassessmentModal(petIndex) {
     const pet = pets[petIndex];
     if (!pet) {
         AppHelper.showError('Pet not found');
-        console.error('🔴 MODAL DEBUG: Pet not found');
         return;
     }
     
-    // Load modal template
+    // Load modal template - FIXED: Check if template exists
     const template = document.getElementById('bcsModalTemplate');
+    if (!template) {
+        AppHelper.showError('BCS modal template not found');
+        return;
+    }
+    
     document.body.insertAdjacentHTML('beforeend', template.innerHTML);
     
     const modal = document.querySelector('.bcs-modal-overlay:last-child');
-     console.log('🔴 MODAL DEBUG: Modal element found?', !!modal);
- 
+    if (!modal) {
+        AppHelper.showError('Modal element not created');
+        return;
+    }
+
     const currentBCS = pet.petDetails.bcs;
     
     // Prevent background scrolling
     document.body.style.overflow = 'hidden';
     
-    // Set up event listeners IMMEDIATELY
+    // Set up event listeners
     setupBCSModalEvents(modal, petIndex, currentBCS);
     
     // Pre-select current BCS if exists
@@ -3680,15 +3687,15 @@ function showBCSReassessmentModal(petIndex) {
         const currentOption = modal.querySelector(`.bcs-option[data-bcs="${currentBCS}"]`);
         if (currentOption) {
             selectBCSOption(currentOption);
-            updateSelectedDisplay(currentBCS);
+            updateSelectedDisplay(currentBCS); // FIXED: Pass the variable correctly
         }
     }
 }
 
-// FIXED Setup BCS Modal Event Listeners
+// CORRECTED Setup BCS Modal Event Listeners
 function setupBCSModalEvents(modal, petIndex, currentBCS) {
- console.log('🔴 MODAL: setupBCSModalEvents CALLED - checking if function executes');
- 
+    console.log('🔴 MODAL: setupBCSModalEvents CALLED');
+    
     let selectedBCS = currentBCS;
     
     // Create closure-safe close function
@@ -3696,15 +3703,18 @@ function setupBCSModalEvents(modal, petIndex, currentBCS) {
         console.log('🔴 MODAL: Closing modal');
         document.body.style.overflow = '';
         if (modal && modal.parentNode) {
+            // Remove escape handler
+            document.removeEventListener('keydown', modal._escapeHandler);
             modal.parentNode.removeChild(modal);
-            console.log('🔴 MODAL: Modal closed successfully');
         }
     };
     
-    // Update Button
-    const updateBtn = modal.querySelector('.bcs-update-btn');
-    if (updateBtn) {
-        updateBtn.onclick = function(e) {
+    // Update Button - FIXED: Use event delegation instead
+    modal.addEventListener('click', function(e) {
+        const target = e.target;
+        
+        // Update button
+        if (target.classList.contains('bcs-update-btn') || target.closest('.bcs-update-btn')) {
             console.log('🔴 MODAL: Update button clicked');
             e.stopPropagation();
             if (!selectedBCS) {
@@ -3713,92 +3723,73 @@ function setupBCSModalEvents(modal, petIndex, currentBCS) {
             }
             updatePetBCS(petIndex, selectedBCS);
             closeModal();
-        };
-    }
-    
-    // Close Button
-    const closeBtn = modal.querySelector('.bcs-close-btn');
-    if (closeBtn) {
-        closeBtn.onclick = function(e) {
+            return;
+        }
+        
+        // Close button
+        if (target.classList.contains('bcs-close-btn') || target.closest('.bcs-close-btn')) {
             console.log('🔴 MODAL: Close button clicked');
             e.stopPropagation();
             closeModal();
-        };
-    }
-    
-    // BCS Option Clicks
-    modal.querySelectorAll('.bcs-option').forEach(option => {
-        option.onclick = function(e) {
-            console.log('🔴 MODAL: BCS option clicked:', this.dataset.bcs);
+            return;
+        }
+        
+        // BCS Option clicks
+        if (target.classList.contains('bcs-option') || target.closest('.bcs-option')) {
+            console.log('🔴 MODAL: BCS option clicked');
             e.stopPropagation();
-            selectedBCS = this.dataset.bcs;
-            selectBCSOption(this);
+            const option = target.classList.contains('bcs-option') ? target : target.closest('.bcs-option');
+            selectedBCS = option.dataset.bcs;
+            selectBCSOption(option);
             updateSelectedDisplay(selectedBCS);
-        };
-    });
-    
-    // Overlay click
-    modal.onclick = function(e) {
-        if (e.target === this) {
+            return;
+        }
+        
+        // Overlay click (background)
+        if (target === modal) {
             console.log('🔴 MODAL: Overlay clicked');
             closeModal();
+            return;
         }
-    };
+    });
     
-    // Escape key
+    // Escape key handler
     const handleEscape = function(e) {
         if (e.key === 'Escape') {
             console.log('🔴 MODAL: Escape key pressed');
             closeModal();
-            document.removeEventListener('keydown', handleEscape);
         }
     };
     document.addEventListener('keydown', handleEscape);
     
     // Store cleanup reference
     modal._escapeHandler = handleEscape;
+}
 
-    console.log('🔴 MODAL: All event listeners set up successfully');
-}// end of function 
-
-// FIXED Select BCS Option
+// CORRECTED Select BCS Option
 function selectBCSOption(option) {
     const modal = option.closest('.bcs-modal-overlay');
+    if (!modal) return;
+    
     modal.querySelectorAll('.bcs-option').forEach(opt => {
         opt.classList.remove('selected');
     });
     option.classList.add('selected');
 }
 
-// FIXED Update Selected Display
-function updateSelectedDisplay(selectedBCS) {
+// CORRECTED Update Selected Display - FIXED VARIABLE NAME
+function updateSelectedDisplay(bcs) { // FIXED: Changed parameter name from selectedBCS to bcs
     const modal = document.querySelector('.bcs-modal-overlay');
     if (!modal) return;
     
     const display = modal.querySelector('#selectedBCSValue');
     if (display) {
-        display.textContent = getBCSDisplay(bcs);
-        display.className = `selected-value bcs-${bcs}`;
+        display.textContent = getBCSDisplay(bcs); // FIXED: Use bcs instead of undefined variable
+        display.className = `selected-value bcs-${bcs}`; // FIXED: Use bcs instead of undefined variable
     }
 }
 
-// FIXED Close Modal Function
-function closeModal() {
-    console.log('🔴 MODAL: Closing modal');
-    const modal = document.querySelector('.bcs-modal-overlay');
-    if (!modal) {
-        console.log('🔴 MODAL: No modal found to close');
-        return;
-    }
-    
-    document.body.style.overflow = '';
-    if (modal.parentNode) {
-        modal.parentNode.removeChild(modal);
-        console.log('🔴 MODAL: Modal closed successfully');
-    }
-}
-
-// NEW: Update Pet BCS Function
+// CORRECTED Update Pet BCS Function
 function updatePetBCS(petIndex, selectedBCS) {
     const pets = getPets();
     const pet = pets[petIndex];
@@ -3816,10 +3807,21 @@ function updatePetBCS(petIndex, selectedBCS) {
         }
         
         localStorage.setItem('pets', JSON.stringify(pets));
-        loadSavedProfiles();// yo check ❤️⛔️🚫
+        loadSavedProfiles();
         AppHelper.showSuccess(`Body Condition Score updated to: ${getBCSDisplay(selectedBCS)}`);
     }
 }
+
+
+
+
+
+
+
+
+
+
+
 
 //=================================
 // SETUP PROFILE EVENT LISTENERS
