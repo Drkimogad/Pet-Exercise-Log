@@ -3778,6 +3778,9 @@ function setupBCSModalEvents(modal, petIndex, currentBCS) {
     
     // SINGLE EVENT DELEGATION FOR ALL CLICKS
     modal.addEventListener('click', function(e) {
+     console.log('🟢 MODAL CLICK DETECTED - Target:', e.target);
+    console.log('🟢 MODAL CLICK - Target classes:', e.target.className);
+    console.log('🟢 MODAL CLICK - Current element:', e.currentTarget);
         console.log('🟢 MODAL: Click event detected on:', e.target.className);
         console.log('🟢 MODAL: Click target:', e.target);
         
