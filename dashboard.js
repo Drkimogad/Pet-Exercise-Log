@@ -3757,7 +3757,14 @@ function showBCSReassessmentModal(index) {
     }
     
     console.log('🟢 MODAL: Found pet:', pet.petDetails.name);
-    
+ 
+    // Add this safety check
+if (typeof showError === 'undefined') {
+    console.error('showError function not found - check utils.js loading order');
+    // Fallback to console
+    window.showError = function(msg) { console.error('ERROR:', msg); };
+    window.showSuccess = function(msg) { console.log('SUCCESS:', msg); };
+}
     // Load modal template - FIXED: Use JS string directly
     console.log('🟢 MODAL: Inserting template into DOM');
     document.body.insertAdjacentHTML('beforeend', bcsModalTemplate);
@@ -3917,7 +3924,7 @@ function updatePetBCS(petIndex, selectedBCS) {
     
     if (!pet) {
         console.error('🔴 MODAL: Pet not found during update');
-        AppHelper.showError('Pet not found during update');
+        showError('Pet not found during update');
         return;
     }
     
@@ -3951,7 +3958,7 @@ function updatePetBCS(petIndex, selectedBCS) {
     // Show success message
     const successMessage = `Body Condition Score updated to: ${getBCSDisplay(selectedBCS)}`;
     console.log('🟢 MODAL: Showing success:', successMessage);
-    AppHelper.showSuccess(successMessage);
+    showSuccess(successMessage);
 }
 
 // Helper function (ensure this exists)
