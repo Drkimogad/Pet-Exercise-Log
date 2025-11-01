@@ -358,59 +358,60 @@ function loadSavedProfiles() {
         return `
     <div class="profile-card ${index === activePetIndex ? 'active' : ''}" data-pet-index="${index}">
       <!-- SECTION 1: BASIC INFO WITH QUICK STATS AND EDIT BUTTON -->
-      <div class="basic-info-section">
-        <div class="profile-image-container">
-          <img src="${pet.petDetails.image}" alt="${pet.petDetails.name}" class="profile-image">
+ <div class="basic-info-section">
+  <!-- TOP ROW: Edit Button + Quick Stats -->
+  <div class="basic-info-top-row">
+    <button class="action-btn edit-details-btn" data-index="${index}" title="Edit pet details">
+      ✏️ Edit Details
+    </button>
+    <div class="quick-stats-section">
+      <div class="quick-stat">
+        <span class="quick-stat-icon">⏱️</span>
+        <span class="quick-stat-value">${totalDuration}m</span>
+      </div>
+      <div class="quick-stat">
+        <span class="quick-stat-icon">🔥</span>
+        <span class="quick-stat-value">${totalCalories}</span>
+      </div>
+      <div class="quick-stat">
+        <span class="quick-stat-icon">📈</span>
+        <span class="quick-stat-value">${totalSessions}</span>
+      </div>
+    </div>
+  </div>
+  
+  <!-- BOTTOM ROW: Image + Fields -->
+  <div class="basic-info-bottom-row">
+    <div class="profile-image-container">
+      <img src="${pet.petDetails.image}" alt="${pet.petDetails.name}" class="profile-image">
+    </div>
+    <div class="basic-info-content">
+      <div class="basic-fields">
+        <div class="field-item">
+          <span class="field-icon">🐶</span>
+          <span class="field-text">${pet.petDetails.name || 'Unknown'}</span>
         </div>
-        <div class="basic-info-content">
-          <!-- QUICK STATS - Top Right -->
-          <div class="quick-stats-section">
-            <div class="quick-stat">
-              <span class="quick-stat-icon">⏱️</span>
-              <span class="quick-stat-value">${totalDuration}m</span>
-            </div>
-            <div class="quick-stat">
-              <span class="quick-stat-icon">🔥</span>
-              <span class="quick-stat-value">${totalCalories}</span>
-            </div>
-            <div class="quick-stat">
-              <span class="quick-stat-icon">📈</span>
-              <span class="quick-stat-value">${totalSessions}</span>
-            </div>
-          </div>
-          
-          <!-- BASIC FIELDS -->
-          <div class="basic-fields">
-            <div class="field-item">
-              <span class="field-icon">🐶</span>
-              <span class="field-text">${pet.petDetails.name || 'Unknown'}</span>
-            </div>
-            <div class="field-item">
-              <span class="field-icon">🏷️</span>
-              <span class="field-text">${pet.petDetails.breed || 'Mixed'}</span>
-            </div>
-            <div class="field-item">
-              <span class="field-icon">⚖️</span>
-              <span class="field-text">${pet.petDetails.weight || '?'} ${pet.petDetails.weight ? 'lbs' : ''}</span>
-            </div>
-            <div class="field-item">
-              <span class="field-icon">🎂</span>
-              <span class="field-text">${pet.petDetails.age || '?'} ${pet.petDetails.age ? 'years' : ''}</span>
-            </div>
-            <div class="field-item">
-              <span class="field-icon">♂️</span>
-              <span class="field-text">${pet.petDetails.gender || 'Unknown'}</span>
-            </div>
-          </div>
-          
-          <!-- EDIT DETAILS BUTTON - Top Right -->
-          <div class="top-action-buttons">
-            <button class="action-btn edit-details-btn" data-index="${index}" title="Edit pet details">
-              ✏️ Edit Details
-            </button>
-          </div>
+        <div class="field-item">
+          <span class="field-icon">🏷️</span>
+          <span class="field-text">${pet.petDetails.breed || 'Mixed'}</span>
+        </div>
+        <div class="field-item">
+          <span class="field-icon">⚖️</span>
+          <span class="field-text">${pet.petDetails.weight || '?'} ${pet.petDetails.weight ? 'lbs' : ''}</span>
+        </div>
+        <div class="field-item">
+          <span class="field-icon">🎂</span>
+          <span class="field-text">${pet.petDetails.age || '?'} ${pet.petDetails.age ? 'years' : ''}</span>
+        </div>
+        <div class="field-item">
+          <span class="field-icon">♂️</span>
+          <span class="field-text">${pet.petDetails.gender || 'Unknown'}</span>
         </div>
       </div>
+    </div>
+  </div>
+</div>
+
 
       <!-- SECTION 2: DAILY EXERCISE LOG SECTION -->
       <div class="daily-exercise-section">
