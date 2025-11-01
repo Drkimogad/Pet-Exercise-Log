@@ -3644,8 +3644,6 @@ function generateExerciseSummaryHTML(exerciseEntries) {
     `;
 }
 
-
-
 //======================================
 // BCS Reassessment Modal - Complete Implementation
 //=====================
@@ -3749,27 +3747,20 @@ function closeBCSModal() {
 function showBCSReassessmentModal(index) {
     console.log('🟢 MODAL: showBCSReassessmentModal() called with index:', index);
     
-    // Get pet data
+    // Get pet data - FIXED: Use 'index' parameter instead of 'petIndex'
     const pets = getPets();
-    const pet = pets[petIndex];
+    const pet = pets[index];
     if (!pet) {
-        console.error('🔴 MODAL: Pet not found at index:', petIndex);
+        console.error('🔴 MODAL: Pet not found at index:', index);
         AppHelper.showError('Pet not found');
         return;
     }
     
     console.log('🟢 MODAL: Found pet:', pet.petDetails.name);
     
-    // Load modal template
-    const template = document.getElementById('bcsModalTemplate');
-    if (!template) {
-        console.error('🔴 MODAL: bcsModalTemplate not found in DOM');
-        AppHelper.showError('Modal template not found');
-        return;
-    }
-    
-    console.log('🟢 MODAL: Template found, inserting into DOM');
-   document.body.insertAdjacentHTML('beforeend', bcsModalTemplate); // Changed it
+    // Load modal template - FIXED: Use JS string directly
+    console.log('🟢 MODAL: Inserting template into DOM');
+    document.body.insertAdjacentHTML('beforeend', bcsModalTemplate);
     
     // Find the newly created modal
     const modal = document.querySelector('.bcs-modal-overlay:last-child');
@@ -3780,9 +3771,9 @@ function showBCSReassessmentModal(index) {
     
     console.log('🟢 MODAL: Modal element created successfully');
     
-    // Set global references
+    // Set global references - FIXED: Use 'index' parameter
     currentBCSModal = modal;
-    currentPetIndex = petIndex;
+    currentPetIndex = index;
     
     const currentBCS = pet.petDetails.bcs;
     console.log('🟢 MODAL: Current BCS:', currentBCS);
@@ -3791,8 +3782,8 @@ function showBCSReassessmentModal(index) {
     document.body.style.overflow = 'hidden';
     console.log('🟢 MODAL: Body scrolling disabled');
     
-    // Set up event listeners
-    setupBCSModalEvents(modal, petIndex, currentBCS);
+    // Set up event listeners - FIXED: Use 'index' parameter
+    setupBCSModalEvents(modal, index, currentBCS);
     
     // Pre-select current BCS if exists
     if (currentBCS) {
@@ -3890,7 +3881,7 @@ function selectBCSOption(option) {
     console.log('🟢 MODAL: Option selected visually');
 }
 
-// DEBUGGED: Update Selected Display
+// DEBUGGED: Update Selected Display - FIXED: Use correct class selector
 function updateSelectedDisplay(bcsValue) {
     console.log('🟢 MODAL: updateSelectedDisplay() called with:', bcsValue);
     
@@ -3900,9 +3891,9 @@ function updateSelectedDisplay(bcsValue) {
         return;
     }
     
-    const display = modal.querySelector('#selectedBCSValue');
+    const display = modal.querySelector('.selected-bcs-display');
     if (!display) {
-        console.error('🔴 MODAL: #selectedBCSValue element not found');
+        console.error('🔴 MODAL: .selected-bcs-display element not found');
         return;
     }
     
@@ -3910,7 +3901,7 @@ function updateSelectedDisplay(bcsValue) {
     console.log('🟢 MODAL: Setting display text to:', displayText);
     
     display.textContent = displayText;
-    display.className = `selected-value bcs-${bcsValue}`;
+    display.className = `selected-value selected-bcs-display bcs-${bcsValue}`;
     
     console.log('🟢 MODAL: Display updated successfully');
 }
