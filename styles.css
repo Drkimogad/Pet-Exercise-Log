@@ -1,5 +1,5 @@
 /* ============================================================
-    CSS VARIABLES: PALETTE DEFINITION - SCHEME 2 (ACTIVE)
+    CSS VARIABLES: PALETTE DEFINITION - SCHEME 2 (original)
 ============================================================ */
 :root {
   --primary-yellow: #FFD166;    /* 🟡 Soft gold */
@@ -21,8 +21,29 @@
   --dark-mustard: #D49A3D;      /* 🟡 Darker amber */
   --header-text: var(--primary-yellow);
 }
+
+:root {
+  --primary-yellow: #EAB308;    /* 🟡 Mustard yellow - Accent color */
+  --primary-mustard: #CA8A04;   /* 🟡 Darker mustard - For better contrast */
+  --dark-purple: #C2410C;       /* 🟠 Terracotta - Primary brand */
+  --light-purple: #EA580C;      /* 🟠 Bright terracotta - Secondary */
+  --light-charcoal: #57534E;    /* ⚫ Warm stone gray - Better text contrast */
+  --dark-charcoal: #44403C;     /* ⚫ Dark stone gray */
+  --white: #FFFFFF;
+  --black: #000000;
+  --off-white: #FEFCE8;         /* 🟡 Very pale yellow - Warm off-white */
+  --border-focus: #65A30D;      /* 🟢 Sage green - Focus states */
+  --input-bg: var(--white);
+  --input-border: #D6D3D1;      /* ⚫ Warm light gray border */
+  --container-bg: var(--off-white);
+  --container-border: #E7E5E4;  /* ⚫ Warm soft border */
+  --shadow-sm: 0 2px 4px rgba(0,0,0,0.1);
+  --shadow-md: 0 4px 6px rgba(0,0,0,0.15);
+  --dark-mustard: #A16207;      /* 🟡 Dark mustard */
+  --header-text: var(--primary-yellow);
+}
 /* ============================================================
-    CSS VARIABLES: PALETTE DEFINITION - SCHEME 3 (BACKUP)
+    CSS VARIABLES: PALETTE DEFINITION - SCHEME 3 (BACKUP)interesting
 ============================================================ */
 :root {
   --primary-yellow: #D97706;    /* 🟠 Amber gold - Accent color */
