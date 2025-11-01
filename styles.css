@@ -1,52 +1,50 @@
 /* ============================================================
     CSS VARIABLES: PALETTE DEFINITION - SCHEME 2 (ACTIVE)
 ============================================================ */
-:root {
+/*:root {
   --primary-yellow: #FFD166;    /* 🟡 Soft gold */
   --primary-mustard: #EFB366;   /* 🟡 Muted amber */
   --dark-purple: #26547C;       /* 🔷 Deep blue */
   --light-purple: #3A86FF;      /* 🔷 Bright blue */
-  --light-charcoal: #5A5A5A;    /* ⚫ Warm gray */
-  --dark-charcoal: #363636;     /* ⚫ Charcoal */
+  --light-charcoal: #444444;    /* ⚫ Darker gray - CHANGED from #5A5A5A */
+  --dark-charcoal: #2A2A2A;     /* ⚫ Darker charcoal - CHANGED from #363636 */
+ /* --white: #FFFFFF;
+  --black: #000000;
+  --off-white: #F7F7F7;
+  --border-focus: var(--primary-mustard);
+  --input-bg: var(--white);
+  --input-border: #CC9933;  */    /* 🟡 Darker mustard - CHANGED from var(--primary-mustard) */
+ /* --container-bg: var(--off-white);
+  --container-border: var(--primary-mustard);
+  --shadow-sm: 0 2px 4px rgba(0,0,0,0.1);
+  --shadow-md: 0 4px 6px rgba(0,0,0,0.15);
+  --dark-mustard: #D49A3D; */     /* 🟡 Darker amber */
+ /* --header-text: var(--primary-yellow);
+}
+*/
+/* ============================================================
+    CSS VARIABLES: PALETTE DEFINITION - SCHEME 3 (BACKUP)
+============================================================ */
+:root {
+  --primary-yellow: #8A9A7B;    /* 🟢 Darker sage green - CHANGED from #A3B18A */
+  --primary-mustard: #4A6B47;   /* 🟢 Darker forest green - CHANGED from #588157 */
+  --dark-purple: #2D4A33;       /* 🟢 Darker deep green - CHANGED from #3A5A40 */
+  --light-purple: #6B9975;      /* 🟢 Darker soft green - CHANGED from #7BAE7F */
+  --light-charcoal: #4A4A4A;    /* ⚫ Darker neutral gray - CHANGED from #5D5D5D */
+  --dark-charcoal: #2A382D;     /* 🟢 Darker green-gray - CHANGED from #344E41 */
   --white: #FFFFFF;
   --black: #000000;
   --off-white: #F7F7F7;
   --border-focus: var(--primary-mustard);
   --input-bg: var(--white);
-  --input-border: var(--primary-mustard);
+  --input-border: #3A5A3A;      /* 🟢 Darker green border - NEW */
   --container-bg: var(--off-white);
   --container-border: var(--primary-mustard);
   --shadow-sm: 0 2px 4px rgba(0,0,0,0.1);
   --shadow-md: 0 4px 6px rgba(0,0,0,0.15);
-  --dark-mustard: #D49A3D;      /* 🟡 Darker amber */
+  --dark-mustard: #3A5538;      /* 🟢 Darker forest green - CHANGED from #466443 */
   --header-text: var(--primary-yellow);
 }
-
-/* ============================================================
-    CSS VARIABLES: PALETTE DEFINITION - SCHEME 3 (BACKUP)
-============================================================ */
-/*
-:root {
-  --primary-yellow: #A3B18A;    /* 🟢 Sage green */
-/*  --primary-mustard: #588157;   /* 🟢 Forest green */
-/*  --dark-purple: #3A5A40;       /* 🟢 Deep green */
- /* --light-purple: #7BAE7F;      /* 🟢 Soft green */
-/*  --light-charcoal: #5D5D5D;    /* ⚫ Neutral gray */
-/*  --dark-charcoal: #344E41;     /* 🟢 Dark green-gray */
-/*  --white: #FFFFFF;
-  --black: #000000;
-  --off-white: #F7F7F7;
-  --border-focus: var(--primary-mustard);
-  --input-bg: var(--white);
-  --input-border: var(--primary-mustard);
-  --container-bg: var(--off-white);
-  --container-border: var(--primary-mustard);
-  --shadow-sm: 0 2px 4px rgba(0,0,0,0.1);
-  --shadow-md: 0 4px 6px rgba(0,0,0,0.15);
-  --dark-mustard: #466443;      /* 🟢 Darker forest green */
-/*  --header-text: var(--primary-yellow);
-} 
-*/
 
 /* ============================================================
     CLEAN AUTH PAGE CSS - FIXED POSITIONING
