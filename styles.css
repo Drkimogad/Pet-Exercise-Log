@@ -2276,6 +2276,8 @@
     background: var(--dark-charcoal);
 }
 
+
+
 /* SECTION 4: ACTION BUTTONS */
 .action-buttons-section {
     display: flex;
@@ -2406,13 +2408,7 @@
         padding: 15px;
         margin: 10px;
     }
-    
-     .basic-info-section {
-        grid-template-columns: 1fr;
-        gap: 15px;
-        text-align: center;
-    }
-    
+     
     .profile-image {
         height: 120px;
         width: 120px;
@@ -2484,20 +2480,39 @@
     .suggested-exercise-item {
         flex-direction: column;
         gap: 10px;
-        align-items: flex-start;
+        align-items: stretch;
+        text-align: center;
     }
-    
+
     .exercise-actions {
-        align-self: flex-end;
-    }
+    align-self: center; /* Change from flex-end to center */
+    width: 100%;
+    justify-content: center;
+    gap: 10px;
+}
     
     .action-buttons-section {
         flex-direction: column;
+    }
+    .small-btn {
+    flex: 1;
+    max-width: 120px;
     }
     
     .action-btn {
         width: 100%;
     }
+    .bcs-content {
+    flex-direction: column;
+    gap: 15px;
+    text-align: center;
+}
+
+.bcs-reassess-btn {
+    width: 100%;
+    max-width: 200px;
+    margin: 0 auto;
+}
 }
 
 /* Small Phone Styles (320px - 480px) */
