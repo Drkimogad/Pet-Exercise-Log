@@ -1,48 +1,47 @@
 /* ============================================================
     CSS VARIABLES: PALETTE DEFINITION - SCHEME 2 (ACTIVE)
 ============================================================ */
-/*:root {
+:root {
   --primary-yellow: #FFD166;    /* 🟡 Soft gold */
   --primary-mustard: #EFB366;   /* 🟡 Muted amber */
   --dark-purple: #26547C;       /* 🔷 Deep blue */
   --light-purple: #3A86FF;      /* 🔷 Bright blue */
   --light-charcoal: #444444;    /* ⚫ Darker gray - CHANGED from #5A5A5A */
   --dark-charcoal: #2A2A2A;     /* ⚫ Darker charcoal - CHANGED from #363636 */
- /* --white: #FFFFFF;
-  --black: #000000;
-  --off-white: #F7F7F7;
-  --border-focus: var(--primary-mustard);
-  --input-bg: var(--white);
-  --input-border: #CC9933;  */    /* 🟡 Darker mustard - CHANGED from var(--primary-mustard) */
- /* --container-bg: var(--off-white);
-  --container-border: var(--primary-mustard);
-  --shadow-sm: 0 2px 4px rgba(0,0,0,0.1);
-  --shadow-md: 0 4px 6px rgba(0,0,0,0.15);
-  --dark-mustard: #D49A3D; */     /* 🟡 Darker amber */
- /* --header-text: var(--primary-yellow);
-}
-*/
-/* ============================================================
-    CSS VARIABLES: PALETTE DEFINITION - SCHEME 3 (BACKUP)
-============================================================ */
-:root {
-  --primary-yellow: #8A9A7B;    /* 🟢 Darker sage green - CHANGED from #A3B18A */
-  --primary-mustard: #4A6B47;   /* 🟢 Darker forest green - CHANGED from #588157 */
-  --dark-purple: #2D4A33;       /* 🟢 Darker deep green - CHANGED from #3A5A40 */
-  --light-purple: #6B9975;      /* 🟢 Darker soft green - CHANGED from #7BAE7F */
-  --light-charcoal: #4A4A4A;    /* ⚫ Darker neutral gray - CHANGED from #5D5D5D */
-  --dark-charcoal: #2A382D;     /* 🟢 Darker green-gray - CHANGED from #344E41 */
   --white: #FFFFFF;
   --black: #000000;
   --off-white: #F7F7F7;
   --border-focus: var(--primary-mustard);
   --input-bg: var(--white);
-  --input-border: #3A5A3A;      /* 🟢 Darker green border - NEW */
+  --input-border: #CC9933;      /* 🟡 Darker mustard - CHANGED from var(--primary-mustard) */
   --container-bg: var(--off-white);
   --container-border: var(--primary-mustard);
   --shadow-sm: 0 2px 4px rgba(0,0,0,0.1);
   --shadow-md: 0 4px 6px rgba(0,0,0,0.15);
-  --dark-mustard: #3A5538;      /* 🟢 Darker forest green - CHANGED from #466443 */
+  --dark-mustard: #D49A3D;      /* 🟡 Darker amber */
+  --header-text: var(--primary-yellow);
+}
+/* ============================================================
+    CSS VARIABLES: PALETTE DEFINITION - SCHEME 3 (BACKUP)
+============================================================ */
+:root {
+  --primary-yellow: #D97706;    /* 🟠 Amber gold - Accent color */
+  --primary-mustard: #B45309;   /* 🟠 Darker amber - For better contrast */
+  --dark-purple: #6B46C1;       /* 🟣 Royal purple - Primary brand */
+  --light-purple: #7C3AED;      /* 🟣 Bright purple - Secondary */
+  --light-charcoal: #4B5563;    /* ⚫ Slate gray - Better text contrast */
+  --dark-charcoal: #374151;     /* ⚫ Charcoal gray */
+  --white: #FFFFFF;
+  --black: #000000;
+  --off-white: #F9FAFB;
+  --border-focus: #059669;      /* 🟢 Emerald green - Focus states */
+  --input-bg: var(--white);
+  --input-border: #D1D5DB;      /* ⚫ Light gray border - Better form readability */
+  --container-bg: var(--off-white);
+  --container-border: #E5E7EB;  /* ⚫ Soft border */
+  --shadow-sm: 0 2px 4px rgba(0,0,0,0.1);
+  --shadow-md: 0 4px 6px rgba(0,0,0,0.15);
+  --dark-mustard: #92400E;      /* 🟠 Dark amber */
   --header-text: var(--primary-yellow);
 }
 
