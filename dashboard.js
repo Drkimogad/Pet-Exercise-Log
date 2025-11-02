@@ -4061,17 +4061,15 @@ function getBCSDisplay(bcs) {
 
 
 // ===============================================
-// ACTION BAR COMPLETE IMPLEMENTATION                         TO BE REFINEDXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+// ACTION BAR COMPLETE IMPLEMENTATION           
 // ===============================================
-//function createActionBar() {  not needed anymore, the template is moved to index.html
 function initializeActionBar() {
-    // Add action bar to dashboard header
-    const dashboardHeader = document.querySelector('.dashboard-header');
-    if (dashboardHeader && !document.querySelector('.action-bar')) {
-        dashboardHeader.insertAdjacentHTML('afterend', createActionBar());
-        setupActionBarEventListeners();
-        updateActionBarData(); // Initial data load
-    }
+    console.log('🔄 Initializing action bar');
+    
+    // Action bar HTML is already in index.html - just setup events
+    setupActionBarEventListeners();
+    updateActionBarData();
+    console.log('✅ Action bar initialized');
 }
 
 function setupActionBarEventListeners() {
@@ -4083,55 +4081,15 @@ function setupActionBarEventListeners() {
     
     // Timeline button
     document.getElementById('timelineBtn')?.addEventListener('click', showTimelineModal);
+    
+    console.log('✅ Action bar event listeners setup');
 }
 
 function updateActionBarData() {
     updateRemindersBadge();
     updateGoalsProgress();
-    // Timeline doesn't need live updates - loaded on click
 }
 
-// ===============================================
-// ACTION BAR IMPLEMENTATION - GENERAL 
-// ===============================================
-//STEP 1: Action Bar Initialization
-function initializeActionBar() {
-    console.log('🔄 Initializing action bar');
-    
-    const dashboardHeader = document.querySelector('.dashboard-header');
-    if (!dashboardHeader) {
-        console.error('❌ Dashboard header not found');
-        return;
-    }
-    
-    // Check if action bar already exists
-    if (document.querySelector('.action-bar')) {
-        console.log('ℹ️ Action bar already exists, skipping creation');
-        return;
-    }
-    
-    // Insert action bar after dashboard header
-    dashboardHeader.insertAdjacentHTML('afterend', createActionBar());
-    console.log('✅ Action bar HTML inserted');
-    
-    // Set up event listeners
-    setupActionBarEventListeners();
-    console.log('✅ Action bar event listeners set up');
-    
-    // Initial data update
-    updateActionBarData();
-    console.log('✅ Action bar data initialized');
-}
-
-//STEP 4: Add Basic Data Update Functions
-function updateActionBarData() {
-    console.log('🔄 Updating action bar data');
-    
-    // For now, just initialize with basic data
-    // We'll enhance these in later steps
-    updateRemindersBadge();
-    updateGoalsProgress();
-}
 
 
 
