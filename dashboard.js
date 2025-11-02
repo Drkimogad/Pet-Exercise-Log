@@ -4205,20 +4205,23 @@ function getDaysSinceLastExercise(pet) {
         return 999; // Never exercised
     }
     
-    // Sort exercises by date (newest first)
+    // Get today's date at midnight for accurate day calculation
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    // Find the most recent exercise date (could be today or in the past)
     const sortedExercises = [...pet.exerciseEntries].sort((a, b) => 
         new Date(b.date) - new Date(a.date)
     );
     
     const lastExerciseDate = new Date(sortedExercises[0].date);
-    const today = new Date();
+    lastExerciseDate.setHours(0, 0, 0, 0);
+    
+    // Calculate full days difference
     const timeDiff = today - lastExerciseDate;
     const daysDiff = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
     
-    // ADD DEBUG LOGGING:
-    console.log(`Last exercise: ${sortedExercises[0].date}`);
-    console.log(`Today: ${today.toISOString().split('T')[0]}`);
-    console.log(`Days difference: ${daysDiff}`);
+    console.log(`Last exercise: ${sortedExercises[0].date}, Today: ${today.toISOString().split('T')[0]}, Days since: ${daysDiff}`);
     
     return Math.max(0, daysDiff);
 }
