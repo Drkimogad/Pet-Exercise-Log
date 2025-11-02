@@ -1701,7 +1701,10 @@ function handleDailyLogSubmit(e) {
         loadSavedProfiles(); // This will now show the updated calendar/charts/mood
         
         console.log('✅ Daily log completed successfully');
-        
+     
+        // NEW: Refresh timeline if open
+        refreshTimelineIfOpen();
+
     } catch (error) {
         console.error('❌ Error in daily log submission:', error);
         AppHelper.showError('Failed to save daily log: ' + error.message);
