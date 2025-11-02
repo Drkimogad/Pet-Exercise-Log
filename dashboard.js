@@ -4250,10 +4250,12 @@ function formatDisplayDate(dateString) {
         return dateString;
     }
 }
+
 function loadRemindersContent() {
     const content = document.getElementById('remindersContent');
     if (!content) return;
     
+    // FORCE RECALCULATION with current settings
     const reminders = calculateReminders();
     
     if (reminders.length === 0) {
@@ -4287,7 +4289,6 @@ function loadRemindersContent() {
         </div>
     `;
     
-    // Add event listeners for reminder actions
     setupRemindersActionListeners();
 }
 
