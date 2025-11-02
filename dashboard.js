@@ -2107,8 +2107,9 @@ function calculateCaloriesFromExercise(exercise) {
 function deleteSuggestion(petIndex, exerciseId) {
     console.log(`🗑️ Deleting suggestion ${exerciseId} for pet ${petIndex}`);
     
-    // Find the suggestion element
-    const suggestionElement = document.querySelector(`.suggested-exercise-item [data-exercise="${exerciseId}"]`)?.closest('.suggested-exercise-item');
+    // FIXED SELECTOR: Look for the delete button itself
+    const deleteBtn = document.querySelector(`.delete-suggestion-btn[data-exercise="${exerciseId}"]`);
+    const suggestionElement = deleteBtn?.closest('.suggested-exercise-item');
     
     if (suggestionElement) {
         // Add fade-out animation
@@ -2118,10 +2119,6 @@ function deleteSuggestion(petIndex, exerciseId) {
         // Remove after animation
         setTimeout(() => {
             suggestionElement.remove();
-            
-            // Refresh the suggestions display to regenerate without the deleted one
-            loadSavedProfiles();
-            
             console.log(`✅ Suggestion ${exerciseId} removed`);
         }, 300);
     } else {
