@@ -21,6 +21,16 @@ let caloriesChart = null;
 let intensityChart = null;
 let activityChart = null; // If you use activity chart elsewhere
 
+// Add to top of dashboard.js for dismissed suggestions 
+const DISMISSED_SUGGESTIONS_KEY = 'dismissedSuggestions';
+
+// Initialize dismissed suggestions if not exists
+function initializeDismissedSuggestions() {
+    if (!localStorage.getItem(DISMISSED_SUGGESTIONS_KEY)) {
+        localStorage.setItem(DISMISSED_SUGGESTIONS_KEY, JSON.stringify({}));
+    }
+}
+
  
 const MOOD_EMOJIS = ['😀', '😊', '😐', '😞', '😠', '🤢', '😤', '😔', '😴', '😰'];
 
@@ -1918,8 +1928,12 @@ function handleImageUpload(e) {
 
 // Generate smart exercise suggestions based on health assessment
 function generateSuggestedExercises(pet) {
+    const pets = getPets();
+    const petIndex = pets.findIndex(p => p.petDetails.name === pet.petDetails.name);
+    const dismissed = JSON.parse(localStorage.getItem(DISMISSED_SUGGESTIONS_KEY) || '{}')[petIndex] || [];
+    
+    // Your existing suggestions logic
     const suggestions = [];
-    const details = pet.petDetails;
     
     // Weight Management Suggestions
     if (details.bcs && details.bcs >= 4) { // Overweight or obese
@@ -2053,6 +2067,9 @@ function generateSuggestedExercises(pet) {
     
     // Limit to 3 most relevant suggestions
     return suggestions.slice(0, 3);
+ 
+ // FILTER OUT DISMISSED SUGGESTIONS
+    return suggestions.filter(suggestion => !dismissed.includes(suggestion.id));
 }
 
 // Log a suggested exercise (convert to actual exercise entry)
@@ -2107,25 +2124,26 @@ function calculateCaloriesFromExercise(exercise) {
 function deleteSuggestion(petIndex, exerciseId) {
     console.log(`🗑️ Deleting suggestion ${exerciseId} for pet ${petIndex}`);
     
-    // FIXED SELECTOR: Look for the delete button itself
+    // Get current dismissed suggestions
+    const dismissed = JSON.parse(localStorage.getItem(DISMISSED_SUGGESTIONS_KEY) || '{}');
+    if (!dismissed[petIndex]) dismissed[petIndex] = [];
+    
+    // Add to dismissed list
+    if (!dismissed[petIndex].includes(exerciseId)) {
+        dismissed[petIndex].push(exerciseId);
+        localStorage.setItem(DISMISSED_SUGGESTIONS_KEY, JSON.stringify(dismissed));
+    }
+    
+    // Remove from display
     const deleteBtn = document.querySelector(`.delete-suggestion-btn[data-exercise="${exerciseId}"]`);
     const suggestionElement = deleteBtn?.closest('.suggested-exercise-item');
     
     if (suggestionElement) {
-        // Add fade-out animation
-        suggestionElement.style.opacity = '0.5';
-        suggestionElement.style.transition = 'opacity 0.3s ease';
-        
-        // Remove after animation
-        setTimeout(() => {
-            suggestionElement.remove();
-            console.log(`✅ Suggestion ${exerciseId} removed`);
-        }, 300);
-    } else {
-        console.error('❌ Suggestion element not found');
+        suggestionElement.remove();
     }
+    
+    console.log(`✅ Suggestion ${exerciseId} dismissed for pet ${petIndex}`);
 }
-
 
 //===============================================
    //     Mood Logs functionality
@@ -5640,9 +5658,10 @@ function showExerciseLog() {
     
  //   document.getElementById('profileContainer').style.display = 'none';
     
-loadSavedProfiles(); // This will handle empty state vs profiles
- setupEventListeners();
-    loadActivePetData();
+   loadSavedProfiles(); // This will handle empty state vs profiles
+   setupEventListeners();
+   loadActivePetData();
+   initializeDismissedSuggestions(); // to be filtered on refreshing 
      // NEW: Initialize action bar
 // NEW: Initialize action bar - BUT DELAY IT until dashboard is visible
     setTimeout(() => {
