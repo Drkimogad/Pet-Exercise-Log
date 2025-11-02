@@ -62,8 +62,30 @@ function initializeNewPet() {
             healthNotes: ''       // Additional Health Notes
         },
         exerciseEntries: [],
-        moodLogs: []
+        moodLogs: [],
+        // NEW FIELDS FOR ACTION BAR SYSTEMS
+        reminderSettings: {
+            enabled: true,
+            threshold: 3, // Default 3 days, can change it
+            lastChecked: new Date().toISOString().split('T')[0]
+        },
+        goalSettings: {
+            enabled: false,
+            weeklyTarget: 5, // Default 5 exercises per week can be changed too
+            currentWeekStart: getCurrentWeekStart(),
+            exercisesThisWeek: 0,
+            streak: 0
+        }
     };
+}
+
+// Add this helper function if not exists
+function getCurrentWeekStart() {
+    const now = new Date();
+    const dayOfWeek = now.getDay();
+    const diff = now.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1);
+    const weekStart = new Date(now.setDate(diff));
+    return weekStart.toISOString().split('T')[0];
 }
 
 // ===============================================
@@ -127,6 +149,27 @@ function handleHealthAssessmentSubmit(e) {
             feedingRecommendation: formData.feedingRecommendation,
             healthNotes: formData.healthNotes.trim()
         };
+     // PRESERVE THE ACTION BAR SETTINGS - ADD THIS
+if (activePetIndex !== null) {
+    // Keep existing reminderSettings and goalSettings when editing
+    petData.reminderSettings = pets[activePetIndex].reminderSettings || {
+        enabled: true,
+        threshold: 3,
+        lastChecked: new Date().toISOString().split('T')[0]
+    };
+    petData.goalSettings = pets[activePetIndex].goalSettings || {
+        enabled: false,
+        weeklyTarget: 5,
+        currentWeekStart: getCurrentWeekStart(),
+        exercisesThisWeek: 0,
+        streak: 0
+    };
+} else {
+    // For new pets, use default settings from initializeNewPet
+    const newPet = initializeNewPet();
+    petData.reminderSettings = newPet.reminderSettings;
+    petData.goalSettings = newPet.goalSettings;
+}
 
         console.log('✅ Health assessment details updated');
 
@@ -880,7 +923,20 @@ function initializeNewPetWithHealth(formData) {
             healthNotes: formData.healthNotes.trim()
         },
         exerciseEntries: [],
-        moodLogs: []
+        moodLogs: [],
+      // ADD ACTION BAR SETTINGS
+        reminderSettings: {
+            enabled: true,
+            threshold: 3,
+            lastChecked: new Date().toISOString().split('T')[0]
+        },
+        goalSettings: {
+            enabled: false,
+            weeklyTarget: 5,
+            currentWeekStart: getCurrentWeekStart(),
+            exercisesThisWeek: 0,
+            streak: 0
+        }
     };
 }
 
