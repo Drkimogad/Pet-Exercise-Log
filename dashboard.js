@@ -4215,6 +4215,11 @@ function getDaysSinceLastExercise(pet) {
     const timeDiff = today - lastExerciseDate;
     const daysDiff = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
     
+    // ADD DEBUG LOGGING:
+    console.log(`Last exercise: ${sortedExercises[0].date}`);
+    console.log(`Today: ${today.toISOString().split('T')[0]}`);
+    console.log(`Days difference: ${daysDiff}`);
+    
     return Math.max(0, daysDiff);
 }
 
