@@ -1673,6 +1673,9 @@ function handleDailyLogSubmit(e) {
             notes: formData.exerciseNotes.trim(),
             timestamp: new Date().toISOString()
         });
+     
+     // NEW: Update goals tracking
+        updateGoalsOnExerciseLogged(activePetIndex);   // ADDED FOR TRACKING
         
         // Add mood entry
         if (formData.mood !== null) {
