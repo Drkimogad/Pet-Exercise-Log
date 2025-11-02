@@ -4137,6 +4137,31 @@ function updateReminderSettings(petIndex, settings) {
     }
     return false;
 }
+// was missing
+function setupRemindersModalEvents() {
+    const modal = document.getElementById('remindersModal');
+    if (!modal) return;
+    
+    // Close button
+    modal.querySelector('.close-modal-btn').addEventListener('click', () => {
+        modal.remove();
+    });
+    
+    // Close when clicking overlay
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            modal.remove();
+        }
+    });
+    
+    // Escape key to close
+    document.addEventListener('keydown', function escapeHandler(e) {
+        if (e.key === 'Escape' && modal) {
+            modal.remove();
+            document.removeEventListener('keydown', escapeHandler);
+        }
+    });
+}
 // ===============================================
 // REMINDERS CALCULATION LOGIC
 // ===============================================
