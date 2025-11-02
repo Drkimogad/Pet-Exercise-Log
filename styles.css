@@ -3295,3 +3295,126 @@ body.modal-open {
     display: flex;
     gap: 10px;
 }
+/* REMINDERS MODAL STYLES - TEMPORARY */
+.action-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.action-modal {
+    background: white;
+    border-radius: 12px;
+    padding: 0;
+    max-width: 500px;
+    width: 90%;
+    max-height: 80vh;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.modal-header h3 {
+    margin: 0;
+    color: #333;
+}
+
+.close-modal-btn {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #666;
+}
+
+.modal-content {
+    padding: 20px;
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+.reminder-item {
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+    background: #f8f9fa;
+}
+
+.reminder-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.pet-name {
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.days-missed {
+    background: #ff4444;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.reminder-details p {
+    margin: 5px 0;
+    font-size: 14px;
+    color: #666;
+}
+
+.reminder-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.noted-btn, .log-now-btn {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.noted-btn {
+    background: #28a745;
+    color: white;
+}
+
+.log-now-btn {
+    background: #007bff;
+    color: white;
+}
+
+.no-reminders {
+    text-align: center;
+    padding: 40px 20px;
+    color: #666;
+}
+
+.reminders-loading {
+    text-align: center;
+    padding: 20px;
+    color: #666;
+}
+
