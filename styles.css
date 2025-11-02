@@ -428,7 +428,7 @@
     max-width: 300px;
 }
 /* ============================================================
-    SIMPLIFIED DASHBOARD LAYOUT
+    SIMPLIFIED DASHBOARD LAYOUT - UPDATED
 ============================================================ */
 .dashboard-container {
     display: block;
@@ -437,27 +437,28 @@
     margin: 0 auto;
     min-height: 100vh;
     position: relative;
+    background: var(--container-bg);
 }
 
 /* Dashboard Header - Two Line Layout */
 .dashboard-header {
-    display: block; /* Change from flex to block */
+    display: block;
     padding: 1.5rem 2rem;
     background-color: var(--dark-purple);
     color: var(--primary-yellow);
     border-radius: 12px;
     box-shadow: var(--shadow-md);
     border: 2px solid var(--primary-mustard);
-    margin-bottom: 2rem;
+    margin-bottom: 1rem; /* Reduced margin since action bar follows */
 }
 
 .dashboard-header-brand {
     text-align: center;
-    margin-bottom: 1.5rem; /* Space between title and buttons */
+    margin-bottom: 1.5rem;
 }
 
 .dashboard-header-brand h1 {
-    font-size: 2.5rem; /* Much larger title */
+    font-size: 2.5rem;
     margin-bottom: 0.5rem;
     color: var(--primary-yellow);
     line-height: 1.1;
@@ -518,31 +519,6 @@
     background-color: var(--primary-mustard);
     color: var(--dark-charcoal);
 }
-/* Responsive */
-@media (max-width: 768px) {
-    .dashboard-header {
-        padding: 1.5rem 1rem;
-    }
-    
-    .dashboard-header-brand h1 {
-        font-size: 2rem;
-    }
-    
-    .dashboard-header-brand p {
-        font-size: 1rem;
-    }
-    
-    .dashboard-header-actions {
-        flex-direction: column;
-        gap: 0.8rem;
-    }
-    
-    .dashboard-header .icon-btn {
-        width: 100%;
-        min-width: auto;
-    }
-}
-
 
 /* Main Content Area */
 .dashboard-main {
@@ -612,9 +588,35 @@
     color: var(--primary-yellow);
 }
 
-/* Responsive */
+/* Responsive  for tablets */
 @media (max-width: 768px) {
-    .saved-profiles {
+    .dashboard-header {
+        padding: 1.5rem 1rem;
+        margin-bottom: 1rem;
+    }
+    
+    .dashboard-header-brand h1 {
+        font-size: 2rem;
+    }
+    
+    .dashboard-header-brand p {
+        font-size: 1rem;
+    }
+    
+    .dashboard-header-actions {
+        flex-direction: column;
+        gap: 0.8rem;
+    }
+    
+    .dashboard-header .icon-btn {
+        width: 100%;
+        min-width: auto;
+    }
+    
+    .dashboard-container {
+        padding: 0.5rem;
+    }
+        .saved-profiles {
         grid-template-columns: 1fr;
         padding: 0.5rem;
     }
@@ -624,7 +626,6 @@
         margin: 1rem 0;
     }
 }
-
 
 /* ===============================================
    FORM STYLES - HEALTH ASSESSMENT & DAILY LOG
@@ -3241,309 +3242,769 @@ body.modal-open {
     flex-direction: column;
 }
 
-/* TEMPORARY ACTION BAR STYLES - WILL BE REPLACED LATER */
+/* ============================================================
+    ACTION BAR STYLES - UPDATED WITH YOUR ROOT COLORS
+============================================================ */
+
+/* Action Bar Container */
 .action-bar {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 15px 20px;
-    background: #f8f9fa;
-    border-bottom: 1px solid #e9ecef;
-    margin-bottom: 20px;
+    padding: 1rem 2rem;
+    background-color: var(--light-purple);
+    color: var(--primary-yellow);
+    border-radius: 12px;
+    box-shadow: var(--shadow-md);
+    border: 2px solid var(--primary-mustard);
+    margin-bottom: 2rem;
 }
 
 .action-bar-left {
     display: flex;
-    gap: 15px;
+    gap: 1rem;
+    align-items: center;
 }
 
+.action-bar-right {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+/* Action Bar Buttons */
 .action-bar-btn {
-    padding: 10px 15px;
-    border: 1px solid #ddd;
-    background: white;
+    padding: 0.8rem 1.2rem;
+    border: 2px solid var(--primary-yellow);
+    background-color: transparent;
     border-radius: 8px;
     cursor: pointer;
+    color: var(--primary-yellow);
+    font-weight: 600;
     display: flex;
     align-items: center;
-    gap: 8px;
-    font-size: 14px;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
     position: relative;
+    font-size: 0.95rem;
 }
 
+.action-bar-btn:hover {
+    background-color: var(--primary-yellow);
+    color: var(--light-purple);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+/* Action Badge */
 .action-badge {
-    background: #ff4444;
-    color: white;
+    background: var(--primary-yellow);
+    color: var(--light-purple);
     border-radius: 50%;
     width: 20px;
     height: 20px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 12px;
+    font-size: 0.75rem;
+    font-weight: bold;
     position: absolute;
-    top: -5px;
-    right: -5px;
+    top: -8px;
+    right: -8px;
+    border: 2px solid var(--light-purple);
 }
 
+/* Goals Progress */
 .goals-progress {
-    font-size: 12px;
-    color: #666;
-    margin-left: 5px;
+    background: var(--primary-mustard);
+    color: var(--white);
+    padding: 2px 6px;
+    border-radius: 10px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    margin-left: 4px;
 }
 
-.action-bar-right {
-    display: flex;
-    gap: 10px;
-}
-/* REMINDERS MODAL STYLES - TEMPORARY */
+/* ============================================================
+    MODAL STYLES - UPDATED WITH YOUR ROOT COLORS
+============================================================ */
+
 .action-modal-overlay {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.7);
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 1000;
+    backdrop-filter: blur(4px);
 }
 
 .action-modal {
-    background: white;
-    border-radius: 12px;
+    background: var(--white);
+    border-radius: 16px;
     padding: 0;
     max-width: 500px;
     width: 90%;
     max-height: 80vh;
     overflow: hidden;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    box-shadow: var(--shadow-md);
+    border: 2px solid var(--primary-mustard);
+}
+
+.wide-modal {
+    max-width: 800px;
+    width: 95%;
 }
 
 .modal-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 20px;
-    border-bottom: 1px solid #e9ecef;
+    padding: 1.5rem 2rem;
+    border-bottom: 2px solid var(--container-border);
+    background: var(--dark-purple);
+    color: var(--primary-yellow);
 }
 
 .modal-header h3 {
     margin: 0;
-    color: #333;
+    color: var(--primary-yellow);
+    font-size: 1.4rem;
+    font-weight: 700;
 }
 
 .close-modal-btn {
     background: none;
     border: none;
-    font-size: 24px;
+    font-size: 1.5rem;
     cursor: pointer;
-    color: #666;
+    color: var(--primary-yellow);
+    transition: transform 0.2s ease;
+}
+
+.close-modal-btn:hover {
+    transform: scale(1.2);
+    color: var(--white);
 }
 
 .modal-content {
-    padding: 20px;
+    padding: 2rem;
     max-height: 60vh;
     overflow-y: auto;
+    background: var(--container-bg);
 }
 
+/* ============================================================
+    REMINDERS MODAL STYLES
+============================================================ */
+
 .reminder-item {
-    border: 1px solid #e9ecef;
-    border-radius: 8px;
-    padding: 15px;
-    margin-bottom: 15px;
-    background: #f8f9fa;
+    border: 2px solid var(--container-border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    background: var(--white);
+    box-shadow: var(--shadow-sm);
+    transition: all 0.3s ease;
+}
+
+.reminder-item:hover {
+    border-color: var(--primary-yellow);
+    box-shadow: var(--shadow-md);
 }
 
 .reminder-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 10px;
+    margin-bottom: 0.75rem;
 }
 
 .pet-name {
     font-weight: bold;
-    font-size: 16px;
+    font-size: 1.1rem;
+    color: var(--dark-purple);
 }
 
 .days-missed {
-    background: #ff4444;
-    color: white;
-    padding: 4px 8px;
+    background: var(--primary-yellow);
+    color: var(--dark-purple);
+    padding: 0.4rem 0.8rem;
     border-radius: 12px;
-    font-size: 12px;
+    font-size: 0.8rem;
     font-weight: bold;
 }
 
 .reminder-details p {
-    margin: 5px 0;
-    font-size: 14px;
-    color: #666;
+    margin: 0.5rem 0;
+    font-size: 0.9rem;
+    color: var(--light-charcoal);
 }
 
 .reminder-actions {
     display: flex;
-    gap: 10px;
-    margin-top: 10px;
+    gap: 0.75rem;
+    margin-top: 1rem;
 }
 
 .noted-btn, .log-now-btn {
-    padding: 8px 12px;
+    padding: 0.6rem 1rem;
     border: none;
     border-radius: 6px;
     cursor: pointer;
-    font-size: 12px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    flex: 1;
 }
 
 .noted-btn {
-    background: #28a745;
-    color: white;
+    background: var(--dark-purple);
+    color: var(--primary-yellow);
+    border: 2px solid var(--dark-purple);
+}
+
+.noted-btn:hover {
+    background: var(--primary-yellow);
+    color: var(--dark-purple);
+    transform: translateY(-2px);
 }
 
 .log-now-btn {
-    background: #007bff;
-    color: white;
+    background: var(--primary-yellow);
+    color: var(--dark-purple);
+    border: 2px solid var(--primary-yellow);
+}
+
+.log-now-btn:hover {
+    background: var(--dark-purple);
+    color: var(--primary-yellow);
+    transform: translateY(-2px);
 }
 
 .no-reminders {
     text-align: center;
-    padding: 40px 20px;
-    color: #666;
+    padding: 3rem 2rem;
+    color: var(--light-charcoal);
+}
+
+.no-reminders p {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+    color: var(--dark-purple);
 }
 
 .reminders-loading {
     text-align: center;
-    padding: 20px;
-    color: #666;
+    padding: 2rem;
+    color: var(--light-charcoal);
 }
 
-/* WEEKLY GOALS MODAL STYLES - TEMPORARY */
+/* ============================================================
+    WEEKLY GOALS MODAL STYLES
+============================================================ */
+
 .no-goals {
     text-align: center;
-    padding: 40px 20px;
-    color: #666;
+    padding: 3rem 2rem;
+    color: var(--light-charcoal);
+}
+
+.no-goals p {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+    color: var(--dark-purple);
 }
 
 .goals-summary {
-    padding: 10px 0;
+    padding: 0.5rem 0;
 }
 
 .weekly-progress h4 {
-    margin-bottom: 20px;
-    color: #333;
+    margin-bottom: 1.5rem;
+    color: var(--dark-purple);
     text-align: center;
+    font-size: 1.3rem;
+    font-weight: 700;
 }
 
 .goal-item {
-    border: 1px solid #e9ecef;
-    border-radius: 8px;
-    padding: 15px;
-    margin-bottom: 15px;
-    background: #f8f9fa;
+    border: 2px solid var(--container-border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    background: var(--white);
+    box-shadow: var(--shadow-sm);
+    transition: all 0.3s ease;
+}
+
+.goal-item:hover {
+    border-color: var(--primary-yellow);
+    box-shadow: var(--shadow-md);
 }
 
 .goal-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 10px;
-}
-
-.pet-name {
-    font-weight: bold;
-    font-size: 16px;
+    margin-bottom: 0.75rem;
 }
 
 .goal-count {
-    background: #007bff;
-    color: white;
-    padding: 4px 8px;
+    background: var(--light-purple);
+    color: var(--white);
+    padding: 0.4rem 0.8rem;
     border-radius: 12px;
-    font-size: 12px;
+    font-size: 0.8rem;
     font-weight: bold;
 }
 
 .progress-bar {
     width: 100%;
-    height: 8px;
-    background: #e9ecef;
-    border-radius: 4px;
+    height: 10px;
+    background: var(--container-border);
+    border-radius: 5px;
     overflow: hidden;
-    margin: 10px 0;
+    margin: 1rem 0;
 }
 
 .progress-fill {
     height: 100%;
-    background: #28a745;
-    border-radius: 4px;
-    transition: width 0.3s ease;
+    background: linear-gradient(90deg, var(--primary-yellow), var(--primary-mustard));
+    border-radius: 5px;
+    transition: width 0.5s ease;
 }
 
 .goal-status {
-    font-size: 14px;
-    margin: 5px 0;
+    font-size: 0.9rem;
+    margin: 0.5rem 0;
+    font-weight: 600;
 }
 
 .goal-met {
-    color: #28a745;
-    font-weight: bold;
+    color: var(--primary-mustard);
 }
 
 .goal-almost {
-    color: #ffc107;
-    font-weight: bold;
+    color: var(--light-purple);
 }
 
 .goal-progress {
-    color: #666;
+    color: var(--light-charcoal);
 }
 
 .streak-display {
-    background: #ff6b6b;
-    color: white;
-    padding: 4px 8px;
+    background: var(--primary-yellow);
+    color: var(--dark-purple);
+    padding: 0.4rem 0.8rem;
     border-radius: 12px;
-    font-size: 12px;
+    font-size: 0.8rem;
     display: inline-block;
-    margin-top: 5px;
+    margin-top: 0.5rem;
+    font-weight: bold;
 }
 
 .goals-actions {
     display: flex;
-    gap: 10px;
+    gap: 1rem;
     justify-content: center;
-    margin-top: 20px;
+    margin-top: 1.5rem;
 }
 
 .enable-goals-btn, .manage-goals-btn, .log-exercise-btn {
-    padding: 10px 15px;
-    border: none;
-    border-radius: 6px;
+    padding: 0.8rem 1.2rem;
+    border: 2px solid;
+    border-radius: 8px;
     cursor: pointer;
-    font-size: 14px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
 }
 
 .enable-goals-btn {
-    background: #28a745;
-    color: white;
+    background: var(--dark-purple);
+    color: var(--primary-yellow);
+    border-color: var(--dark-purple);
+}
+
+.enable-goals-btn:hover {
+    background: var(--primary-yellow);
+    color: var(--dark-purple);
+    transform: translateY(-2px);
 }
 
 .manage-goals-btn {
-    background: #6c757d;
-    color: white;
+    background: var(--light-charcoal);
+    color: var(--white);
+    border-color: var(--light-charcoal);
+}
+
+.manage-goals-btn:hover {
+    background: var(--dark-charcoal);
+    transform: translateY(-2px);
 }
 
 .log-exercise-btn {
-    background: #007bff;
-    color: white;
+    background: var(--primary-yellow);
+    color: var(--dark-purple);
+    border-color: var(--primary-yellow);
+}
+
+.log-exercise-btn:hover {
+    background: var(--dark-purple);
+    color: var(--primary-yellow);
+    transform: translateY(-2px);
 }
 
 .goals-loading {
     text-align: center;
-    padding: 20px;
-    color: #666;
+    padding: 2rem;
+    color: var(--light-charcoal);
 }
+
+/* ============================================================
+    TIMELINE MODAL STYLES
+============================================================ */
+
+.no-timeline {
+    text-align: center;
+    padding: 3rem 2rem;
+    color: var(--light-charcoal);
+}
+
+.no-timeline p {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+    color: var(--dark-purple);
+}
+
+.timeline-container {
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+.timeline-stats {
+    display: flex;
+    justify-content: space-around;
+    padding: 1.5rem;
+    background: var(--white);
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+    border: 2px solid var(--container-border);
+}
+
+.timeline-stat {
+    text-align: center;
+}
+
+.stat-number {
+    display: block;
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: var(--light-purple);
+}
+
+.stat-label {
+    font-size: 0.8rem;
+    color: var(--light-charcoal);
+    text-transform: uppercase;
+    font-weight: 600;
+}
+
+.timeline-entries {
+    padding: 0.5rem 0;
+}
+
+.timeline-day-group {
+    margin-bottom: 2rem;
+}
+
+.timeline-date-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    background: var(--dark-purple);
+    color: var(--primary-yellow);
+    border-radius: 8px;
+    margin-bottom: 1rem;
+}
+
+.timeline-date {
+    font-weight: bold;
+    color: var(--primary-yellow);
+    font-size: 1.1rem;
+}
+
+.exercise-count {
+    background: var(--primary-yellow);
+    color: var(--dark-purple);
+    padding: 0.4rem 0.8rem;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+
+.timeline-day-exercises {
+    padding-left: 1.5rem;
+}
+
+.timeline-entry {
+    display: flex;
+    align-items: flex-start;
+    padding: 1.5rem;
+    border: 2px solid var(--container-border);
+    border-radius: 12px;
+    margin-bottom: 1rem;
+    background: var(--white);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: var(--shadow-sm);
+}
+
+.timeline-entry:hover {
+    background: var(--off-white);
+    border-color: var(--primary-yellow);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.timeline-icon {
+    font-size: 2rem;
+    margin-right: 1.5rem;
+    flex-shrink: 0;
+}
+
+.timeline-content {
+    flex: 1;
+}
+
+.timeline-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+}
+
+.pet-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.pet-avatar {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--primary-yellow);
+}
+
+.pet-name {
+    font-weight: bold;
+    color: var(--dark-purple);
+    font-size: 1.1rem;
+}
+
+.exercise-type {
+    background: var(--light-purple);
+    color: var(--white);
+    padding: 0.4rem 0.8rem;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    text-transform: capitalize;
+    font-weight: 600;
+}
+
+.timeline-details {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 0.75rem;
+    font-size: 0.9rem;
+    color: var(--light-charcoal);
+}
+
+.duration, .calories, .intensity {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-weight: 500;
+}
+
+.exercise-notes {
+    margin: 0.75rem 0;
+    padding: 0.75rem;
+    background: var(--off-white);
+    border-radius: 6px;
+    font-size: 0.9rem;
+    color: var(--dark-charcoal);
+    border-left: 3px solid var(--primary-yellow);
+}
+
+.exercise-notes p {
+    margin: 0;
+}
+
+.timeline-meta {
+    text-align: right;
+    font-size: 0.8rem;
+    color: var(--light-charcoal);
+    font-style: italic;
+}
+
+.timeline-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 2px solid var(--container-border);
+}
+
+.export-timeline-btn, .log-exercise-timeline-btn {
+    padding: 0.8rem 1.2rem;
+    border: 2px solid;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.export-timeline-btn {
+    background: var(--light-charcoal);
+    color: var(--white);
+    border-color: var(--light-charcoal);
+}
+
+.export-timeline-btn:hover {
+    background: var(--dark-charcoal);
+    transform: translateY(-2px);
+}
+
+.log-exercise-timeline-btn {
+    background: var(--primary-yellow);
+    color: var(--dark-purple);
+    border-color: var(--primary-yellow);
+}
+
+.log-exercise-timeline-btn:hover {
+    background: var(--dark-purple);
+    color: var(--primary-yellow);
+    transform: translateY(-2px);
+}
+
+.timeline-loading {
+    text-align: center;
+    padding: 2rem;
+    color: var(--light-charcoal);
+}
+
+/* ============================================================
+    DARK MODE STYLES
+============================================================ */
+
+.dark-mode .action-bar {
+    background-color: var(--dark-charcoal);
+    border-color: var(--primary-mustard);
+}
+
+.dark-mode .action-modal {
+    background: var(--dark-charcoal);
+    border-color: var(--primary-mustard);
+}
+
+.dark-mode .modal-header {
+    background: var(--dark-purple);
+    border-bottom-color: var(--primary-mustard);
+}
+
+.dark-mode .modal-content {
+    background: var(--light-charcoal);
+    color: var(--white);
+}
+
+.dark-mode .reminder-item,
+.dark-mode .goal-item,
+.dark-mode .timeline-entry {
+    background: var(--dark-charcoal);
+    border-color: var(--light-charcoal);
+    color: var(--white);
+}
+
+.dark-mode .timeline-stats {
+    background: var(--dark-charcoal);
+    border-color: var(--light-charcoal);
+}
+
+.dark-mode .exercise-notes {
+    background: var(--light-charcoal);
+    color: var(--white);
+}
+
+/* ============================================================
+    RESPONSIVE STYLES
+============================================================ */
+
+@media (max-width: 768px) {
+    .action-bar {
+        flex-direction: column;
+        gap: 1rem;
+        padding: 1rem;
+    }
+    
+    .action-bar-left {
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    .action-bar-btn {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .action-bar-right {
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    .wide-modal {
+        width: 98%;
+        margin: 1%;
+    }
+    
+    .timeline-details {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .timeline-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+    
+    .reminder-actions,
+    .goals-actions,
+    .timeline-actions {
+        flex-direction: column;
+    }
+    
+    .modal-content {
+        padding: 1rem;
+    }
+    
+    .modal-header {
+        padding: 1rem 1.5rem;
+    }
+}
+
+
+
 
 
 
