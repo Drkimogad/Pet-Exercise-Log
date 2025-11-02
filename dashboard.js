@@ -149,21 +149,12 @@ function handleHealthAssessmentSubmit(e) {
             feedingRecommendation: formData.feedingRecommendation,
             healthNotes: formData.healthNotes.trim()
         };
-     // PRESERVE THE ACTION BAR SETTINGS - ADD THIS
+     
+// PRESERVE THE ACTION BAR SETTINGS
 if (activePetIndex !== null) {
-    // Keep existing reminderSettings and goalSettings when editing
-    petData.reminderSettings = pets[activePetIndex].reminderSettings || {
-        enabled: true,
-        threshold: 3,
-        lastChecked: new Date().toISOString().split('T')[0]
-    };
-    petData.goalSettings = pets[activePetIndex].goalSettings || {
-        enabled: false,
-        weeklyTarget: 5,
-        currentWeekStart: getCurrentWeekStart(),
-        exercisesThisWeek: 0,
-        streak: 0
-    };
+    // Keep existing settings when editing
+    petData.reminderSettings = pets[activePetIndex].reminderSettings;
+    petData.goalSettings = pets[activePetIndex].goalSettings;
 } else {
     // For new pets, use default settings from initializeNewPet
     const newPet = initializeNewPet();
