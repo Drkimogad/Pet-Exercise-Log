@@ -4175,6 +4175,7 @@ function loadRemindersContent() {
     // Add event listeners for reminder actions
     setupRemindersActionListeners();
 }
+
 function setupRemindersActionListeners() {
     // "Noted" buttons
     document.querySelectorAll('.noted-btn').forEach(btn => {
@@ -4220,6 +4221,18 @@ function handleNotedReminder(petIndex) {
     // Update the badge count
     updateRemindersBadge();
 }
+function updateRemindersBadge() {                     //UPDATED
+    const badge = document.getElementById('remindersBadge');
+    if (!badge) return;
+    
+    const reminders = calculateReminders();
+    const reminderCount = reminders.length;
+    
+    badge.textContent = reminderCount;
+    badge.style.display = reminderCount > 0 ? 'inline-block' : 'none';
+    
+    console.log(`✅ Reminders badge updated: ${reminderCount}`);
+}
 
 function handleLogExerciseFromReminder(petIndex) {
     console.log(`📝 Opening exercise log for pet ${petIndex}`);
@@ -4239,7 +4252,10 @@ function handleLogExerciseFromReminder(petIndex) {
 
 
 
-
+//================================================
+// WEEKLY GOALS SYSTEM IMPLEMENTATION
+//================================================
+//1. CREATE THE MODAL FIRST
 function createGoalsModal() {
     return `
         <div class="action-modal-overlay" id="goalsModal">
@@ -4255,6 +4271,389 @@ function createGoalsModal() {
         </div>
     `;
 }
+//Replace the placeholder showGoalsModal() function:
+function showGoalsModal() {
+    console.log('🎯 Showing weekly goals modal');
+    
+    // Remove any existing modal first
+    const existingModal = document.getElementById('goalsModal');
+    if (existingModal) {
+        existingModal.remove();
+    }
+    
+    // Create and insert the modal
+    document.body.insertAdjacentHTML('beforeend', createGoalsModal());
+    
+    // Load and display goals
+    loadGoalsContent();
+    
+    // Setup modal event listeners
+    setupGoalsModalEvents();
+}
+
+function createGoalsModal() {
+    return `
+        <div class="action-modal-overlay" id="goalsModal">
+            <div class="action-modal">
+                <div class="modal-header">
+                    <h3>🎯 Weekly Exercise Goals</h3>
+                    <button class="close-modal-btn">&times;</button>
+                </div>
+                <div class="modal-content" id="goalsContent">
+                    <div class="goals-loading">
+                        <p>Loading goals progress...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+function setupGoalsModalEvents() {
+    const modal = document.getElementById('goalsModal');
+    if (!modal) return;
+    
+    // Close button
+    modal.querySelector('.close-modal-btn').addEventListener('click', () => {
+        modal.remove();
+    });
+    
+    // Close when clicking overlay
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            modal.remove();
+        }
+    });
+    
+    // Escape key to close
+    document.addEventListener('keydown', function escapeHandler(e) {
+        if (e.key === 'Escape' && modal) {
+            modal.remove();
+            document.removeEventListener('keydown', escapeHandler);
+        }
+    });
+}
+// ===============================================
+// WEEKLY GOALS DATA STRUCTURE
+// ===============================================
+
+function initializeGoalsData() {
+    const pets = getPets();
+    let needsUpdate = false;
+    
+    pets.forEach((pet, index) => {
+        if (!pet.goalSettings) {
+            pet.goalSettings = {
+                enabled: false,
+                weeklyTarget: 5, // Default 5 exercises per week
+                currentWeekStart: getCurrentWeekStart(),
+                exercisesThisWeek: 0,
+                streak: 0
+            };
+            needsUpdate = true;
+        }
+        
+        // Reset weekly count if new week
+        if (pet.goalSettings.currentWeekStart !== getCurrentWeekStart()) {
+            pet.goalSettings.currentWeekStart = getCurrentWeekStart();
+            pet.goalSettings.exercisesThisWeek = 0;
+            needsUpdate = true;
+        }
+    });
+    
+    if (needsUpdate) {
+        localStorage.setItem('pets', JSON.stringify(pets));
+    }
+}
+
+function getCurrentWeekStart() {
+    const now = new Date();
+    const dayOfWeek = now.getDay(); // 0 = Sunday, 1 = Monday, etc.
+    const diff = now.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1); // Adjust to Monday start
+    const weekStart = new Date(now.setDate(diff));
+    return weekStart.toISOString().split('T')[0];
+}
+
+function getGoalSettings(petIndex) {
+    const pets = getPets();
+    const pet = pets[petIndex];
+    return pet?.goalSettings || { 
+        enabled: false, 
+        weeklyTarget: 5, 
+        currentWeekStart: getCurrentWeekStart(),
+        exercisesThisWeek: 0,
+        streak: 0
+    };
+}
+
+function updateGoalSettings(petIndex, settings) {
+    const pets = getPets();
+    if (pets[petIndex]) {
+        pets[petIndex].goalSettings = { ...pets[petIndex].goalSettings, ...settings };
+        localStorage.setItem('pets', JSON.stringify(pets));
+        return true;
+    }
+    return false;
+}
+// ===============================================
+// WEEKLY GOALS CALCULATION LOGIC
+// ===============================================
+
+function calculateWeeklyGoals() {
+    console.log('🔄 Calculating weekly goals progress');
+    const pets = getPets();
+    const goalsProgress = [];
+    
+    // First, update exercise counts for all pets
+    updateAllExerciseCounts();
+    
+    pets.forEach((pet, index) => {
+        const goals = getGoalSettings(index);
+        if (!goals.enabled) return;
+        
+        const progress = calculatePetGoalProgress(pet, index);
+        goalsProgress.push(progress);
+    });
+    
+    console.log(`✅ Processed ${goalsProgress.length} active goals`);
+    return goalsProgress;
+}
+
+function updateAllExerciseCounts() {
+    const pets = getPets();
+    const currentWeekStart = getCurrentWeekStart();
+    let needsUpdate = false;
+    
+    pets.forEach((pet, index) => {
+        if (!pet.goalSettings) return;
+        
+        // Reset if new week
+        if (pet.goalSettings.currentWeekStart !== currentWeekStart) {
+            pet.goalSettings.currentWeekStart = currentWeekStart;
+            pet.goalSettings.exercisesThisWeek = 0;
+            pet.goalSettings.streak = 0; // Reset streak for now - we'll implement streak logic separately
+            needsUpdate = true;
+        }
+        
+        // Count exercises for current week
+        const weeklyExercises = countExercisesThisWeek(pet, currentWeekStart);
+        if (pet.goalSettings.exercisesThisWeek !== weeklyExercises) {
+            pet.goalSettings.exercisesThisWeek = weeklyExercises;
+            needsUpdate = true;
+        }
+    });
+    
+    if (needsUpdate) {
+        localStorage.setItem('pets', JSON.stringify(pets));
+    }
+}
+
+function countExercisesThisWeek(pet, weekStart) {
+    if (!pet.exerciseEntries || pet.exerciseEntries.length === 0) {
+        return 0;
+    }
+    
+    const weekStartDate = new Date(weekStart);
+    const weekEndDate = new Date(weekStartDate);
+    weekEndDate.setDate(weekEndDate.getDate() + 6); // End of week (Sunday)
+    
+    return pet.exerciseEntries.filter(entry => {
+        const exerciseDate = new Date(entry.date);
+        return exerciseDate >= weekStartDate && exerciseDate <= weekEndDate;
+    }).length;
+}
+
+function calculatePetGoalProgress(pet, petIndex) {
+    const goals = getGoalSettings(petIndex);
+    const exercisesDone = goals.exercisesThisWeek || 0;
+    const target = goals.weeklyTarget || 5;
+    const progressPercent = Math.min(100, (exercisesDone / target) * 100);
+    const exercisesRemaining = Math.max(0, target - exercisesDone);
+    
+    return {
+        petIndex: petIndex,
+        petName: pet.petDetails.name,
+        exercisesDone: exercisesDone,
+        target: target,
+        progressPercent: progressPercent,
+        exercisesRemaining: exercisesRemaining,
+        streak: goals.streak || 0,
+        goalMet: exercisesDone >= target,
+        goalAlmostMet: exercisesDone >= target - 1 && exercisesDone < target
+    };
+}
+// Update the Goals Content Loader
+function loadGoalsContent() {
+    const content = document.getElementById('goalsContent');
+    if (!content) return;
+    
+    const goalsProgress = calculateWeeklyGoals();
+    
+    if (goalsProgress.length === 0) {
+        content.innerHTML = `
+            <div class="no-goals">
+                <p>📊 No active goals</p>
+                <small>Enable weekly goals in pet settings to track progress</small>
+                <div class="goals-actions">
+                    <button class="enable-goals-btn" id="enableGoalsBtn">🎯 Enable Goals</button>
+                </div>
+            </div>
+        `;
+        
+        // Add event listener for enable button
+        document.getElementById('enableGoalsBtn')?.addEventListener('click', showGoalsSetupGuide);
+        return;
+    }
+    
+    content.innerHTML = `
+        <div class="goals-summary">
+            <div class="weekly-progress">
+                <h4>This Week's Progress</h4>
+                ${goalsProgress.map(goal => `
+                    <div class="goal-item" data-pet-index="${goal.petIndex}">
+                        <div class="goal-header">
+                            <span class="pet-name">${goal.petName}</span>
+                            <span class="goal-count">${goal.exercisesDone}/${goal.target}</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${goal.progressPercent}%"></div>
+                        </div>
+                        <div class="goal-status">
+                            ${goal.goalMet ? 
+                                '<span class="goal-met">🎉 Goal Achieved!</span>' :
+                                goal.goalAlmostMet ?
+                                `<span class="goal-almost">Almost there! ${goal.exercisesRemaining} to go</span>` :
+                                `<span class="goal-progress">${goal.exercisesRemaining} exercises remaining</span>`
+                            }
+                        </div>
+                        ${goal.streak > 0 ? `
+                            <div class="streak-display">
+                                🔥 ${goal.streak} week streak
+                            </div>
+                        ` : ''}
+                    </div>
+                `).join('')}
+            </div>
+            
+            <div class="goals-actions">
+                <button class="manage-goals-btn" id="manageGoalsBtn">⚙️ Manage Goals</button>
+                <button class="log-exercise-btn" id="logExerciseGoalsBtn">📝 Log Exercise</button>
+            </div>
+        </div>
+    `;
+    
+    // Add event listeners for goals actions
+    setupGoalsActionListeners();
+}
+// STEP 3.5: Add Goals Action Handlers
+function setupGoalsActionListeners() {
+    // Manage Goals button
+    document.getElementById('manageGoalsBtn')?.addEventListener('click', showGoalsManagement);
+    
+    // Log Exercise button
+    document.getElementById('logExerciseGoalsBtn')?.addEventListener('click', showExerciseLogFromGoals);
+}
+
+function showGoalsSetupGuide() {
+    alert('Goals setup guide will be implemented in the next step. For now, goals are automatically calculated based on exercise data.');
+    
+    // For testing, enable goals for first pet
+    const pets = getPets();
+    if (pets.length > 0) {
+        updateGoalSettings(0, { enabled: true, weeklyTarget: 5 });
+        loadGoalsContent(); // Refresh the display
+        updateGoalsProgress(); // Update the action bar
+    }
+}
+
+function showGoalsManagement() {
+    alert('Goals management interface will be implemented in the next step. Each pet can have individual weekly targets.');
+    
+    // Close the modal
+    const modal = document.getElementById('goalsModal');
+    if (modal) {
+        modal.remove();
+    }
+}
+
+function showExerciseLogFromGoals() {
+    console.log('📝 Opening exercise log from goals');
+    
+    // Close the goals modal
+    const modal = document.getElementById('goalsModal');
+    if (modal) {
+        modal.remove();
+    }
+    
+    // Open daily log form - you can enhance this to show pet selection
+    if (getPets().length > 0) {
+        showDailyLogForm(0); // Open for first pet, can be enhanced
+    }
+}
+//STEP 3.6: Update the Goals Progress Display
+
+function updateGoalsProgress() {
+    const progressElement = document.getElementById('goalsProgress');
+    if (!progressElement) return;
+    
+    const goalsProgress = calculateWeeklyGoals();
+    
+    if (goalsProgress.length === 0) {
+        progressElement.textContent = '';
+        progressElement.style.display = 'none';
+        console.log('✅ Goals progress: No active goals');
+        return;
+    }
+    
+    // Calculate overall progress
+    const totalExercises = goalsProgress.reduce((sum, goal) => sum + goal.exercisesDone, 0);
+    const totalTarget = goalsProgress.reduce((sum, goal) => sum + goal.target, 0);
+    const overallProgress = totalTarget > 0 ? Math.round((totalExercises / totalTarget) * 100) : 0;
+    
+    // Show progress in action bar
+    progressElement.textContent = `${totalExercises}/${totalTarget}`;
+    progressElement.style.display = 'inline-block';
+    progressElement.title = `${overallProgress}% of weekly goals completed`;
+    
+    console.log(`✅ Goals progress updated: ${totalExercises}/${totalTarget} (${overallProgress}%)`);
+}
+// STEP 3.7: Add Auto-Goal Tracking to Exercise Logging
+// Call this function whenever a new exercise is logged
+function updateGoalsOnExerciseLogged(petIndex) {
+    console.log(`🎯 Updating goals for pet ${petIndex} after exercise logged`);
+    
+    const pets = getPets();
+    if (!pets[petIndex] || !pets[petIndex].goalSettings) return;
+    
+    // Increment exercise count for current week
+    const currentWeekStart = getCurrentWeekStart();
+    if (pets[petIndex].goalSettings.currentWeekStart === currentWeekStart) {
+        pets[petIndex].goalSettings.exercisesThisWeek += 1;
+        
+        // Check for goal achievement
+        if (pets[petIndex].goalSettings.exercisesThisWeek >= pets[petIndex].goalSettings.weeklyTarget) {
+            showGoalAchievedNotification(pets[petIndex].petDetails.name);
+        }
+        
+        localStorage.setItem('pets', JSON.stringify(pets));
+        
+        // Update UI
+        updateGoalsProgress();
+    }
+}
+
+function showGoalAchievedNotification(petName) {
+    console.log(`🎉 Goal achieved for ${petName}`);
+    // You can enhance this with a nice notification later
+    // For now, we'll just log it
+}
+
+
+
+
+
+
+
 
 function createTimelineModal() {
     return `
@@ -4273,11 +4672,9 @@ function createTimelineModal() {
 }
 
 // ===============================================
-// ACTION BAR IMPLEMENTATION - 
+// ACTION BAR IMPLEMENTATION - GENERAL 
 // ===============================================
-//STEP 1: BASIC STRUCTURE moved to index.html
-
-// STEP 2: Add Action Bar Initialization
+//STEP 1: Action Bar Initialization
 function initializeActionBar() {
     console.log('🔄 Initializing action bar');
     
@@ -4316,40 +4713,11 @@ function updateActionBarData() {
     updateGoalsProgress();
 }
 
-function updateRemindersBadge() {                     //UPDATED
-    const badge = document.getElementById('remindersBadge');
-    if (!badge) return;
-    
-    const reminders = calculateReminders();
-    const reminderCount = reminders.length;
-    
-    badge.textContent = reminderCount;
-    badge.style.display = reminderCount > 0 ? 'inline-block' : 'none';
-    
-    console.log(`✅ Reminders badge updated: ${reminderCount}`);
-}
 
-function updateGoalsProgress() {
-    const progress = document.getElementById('goalsProgress');
-    if (!progress) return;
-    
-    // Temporary: Empty progress until we implement the logic
-    progress.textContent = '';
-    progress.style.display = 'none';
-    console.log('✅ Goals progress updated: empty');
-}
+
+
 
 //STEP 5: Add Modal Placeholder Functions
-// Placeholder functions - we'll implement these step by step
-function showRemindersModal() {
-    console.log('🔔 Reminders button clicked - Modal coming in Step 2');
-    alert('Reminders modal will be implemented in Step 2');
-}
-
-function showGoalsModal() {
-    console.log('🎯 Goals button clicked - Modal coming in Step 3');
-    alert('Goals modal will be implemented in Step 3');
-}
 
 function showTimelineModal() {
     console.log('📅 Timeline button clicked - Modal coming in Step 4');
