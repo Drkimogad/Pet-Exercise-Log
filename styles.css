@@ -4003,6 +4003,112 @@ body.modal-open {
     }
 }
 
+/* ==============================
+  Reminder modal/ setting modal css
+==========================================*/
+/* Reminders Settings Styles */
+.modal-header-actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.settings-btn {
+    background: var(--light-purple);
+    color: var(--white);
+    border: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.settings-description {
+    color: var(--light-charcoal);
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.pet-reminder-settings {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.pet-setting-item {
+    border: 1px solid var(--container-border);
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 10px;
+    background: var(--white);
+}
+
+.pet-setting-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.pet-name {
+    font-weight: bold;
+    color: var(--dark-purple);
+}
+
+.pet-type {
+    background: var(--light-purple);
+    color: var(--white);
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    text-transform: capitalize;
+}
+
+.setting-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.threshold-select {
+    padding: 5px 10px;
+    border: 1px solid var(--input-border);
+    border-radius: 4px;
+    background: var(--input-bg);
+}
+
+.settings-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid var(--container-border);
+}
+
+.save-settings-btn, .cancel-settings-btn {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.save-settings-btn {
+    background: var(--dark-purple);
+    color: var(--primary-yellow);
+}
+
+.cancel-settings-btn {
+    background: var(--light-charcoal);
+    color: var(--white);
+}
+
+.no-pets-settings {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--light-charcoal);
+}
+
 
 
 
