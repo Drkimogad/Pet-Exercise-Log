@@ -3979,38 +3979,9 @@ function getBCSDisplay(bcs) {
 
 
 // ===============================================
-// ACTION BAR IMPLEMENTATION
+// ACTION BAR COMPLETE IMPLEMENTATION
 // ===============================================
-
-function createActionBar() {
-    return `
-        <div class="action-bar">
-            <div class="action-bar-left">
-                <button class="action-bar-btn reminders-btn" id="remindersBtn">
-                    🔔 Reminders
-                    <span class="action-badge" id="remindersBadge" style="display: none;">0</span>
-                </button>
-                
-                <button class="action-bar-btn goals-btn" id="goalsBtn">
-                    🎯 Weekly Goals
-                    <span class="goals-progress" id="goalsProgress"></span>
-                </button>
-                
-                <button class="action-bar-btn timeline-btn" id="timelineBtn">
-                    📅 Exercise History
-                </button>
-            </div>
-            
-            <div class="action-bar-right">
-                <!-- Your existing buttons stay here -->
-                <button id="addNewProfileButton" class="icon-btn">＋ New Profile</button>
-                <button id="toggleModeButton" class="icon-btn">🌓 Toggle Mode</button>
-                <button id="logoutButton" class="icon-btn">🚪 Logout</button>
-            </div>
-        </div>
-    `;
-}
-
+//function createActionBar() {  not needed anymore, the template is moved to index.html
 function initializeActionBar() {
     // Add action bar to dashboard header
     const dashboardHeader = document.querySelector('.dashboard-header');
@@ -4037,9 +4008,11 @@ function updateActionBarData() {
     updateGoalsProgress();
     // Timeline doesn't need live updates - loaded on click
 }
+
 //============================
-// ACTION BAR MODALS
+// ACTION BAR MODALS  3 MODALS
 //===============================
+//1. CREATE REMINDERS MODAL 
 function createRemindersModal() {
     return `
         <div class="action-modal-overlay" id="remindersModal">
@@ -4055,6 +4028,217 @@ function createRemindersModal() {
         </div>
     `;
 }
+
+// ===============================================
+// REMINDERS DATA STRUCTURE
+// ===============================================
+
+function initializeRemindersData() {
+    // This will be called when we implement the settings form later
+    const pets = getPets();
+    pets.forEach((pet, index) => {
+        if (!pet.reminderSettings) {
+            pet.reminderSettings = {
+                enabled: true,
+                threshold: 3, // Default 3 days
+                lastChecked: new Date().toISOString().split('T')[0]
+            };
+        }
+    });
+    localStorage.setItem('pets', JSON.stringify(pets));
+}
+
+function getReminderSettings(petIndex) {
+    const pets = getPets();
+    const pet = pets[petIndex];
+    return pet?.reminderSettings || { enabled: true, threshold: 3, lastChecked: new Date().toISOString().split('T')[0] };
+}
+
+function updateReminderSettings(petIndex, settings) {
+    const pets = getPets();
+    if (pets[petIndex]) {
+        pets[petIndex].reminderSettings = { ...pets[petIndex].reminderSettings, ...settings };
+        localStorage.setItem('pets', JSON.stringify(pets));
+        return true;
+    }
+    return false;
+}
+// ===============================================
+// REMINDERS CALCULATION LOGIC
+// ===============================================
+
+function calculateReminders() {
+    console.log('🔄 Calculating exercise reminders');
+    const pets = getPets();
+    const reminders = [];
+    
+    pets.forEach((pet, index) => {
+        const settings = getReminderSettings(index);
+        if (!settings.enabled) return;
+        
+        const daysSinceLastExercise = getDaysSinceLastExercise(pet);
+        
+        if (daysSinceLastExercise >= settings.threshold) {
+            reminders.push({
+                petIndex: index,
+                petName: pet.petDetails.name,
+                daysMissed: daysSinceLastExercise,
+                threshold: settings.threshold,
+                lastExerciseDate: getLastExerciseDate(pet)
+            });
+        }
+    });
+    
+    console.log(`✅ Found ${reminders.length} reminders`);
+    return reminders;
+}
+
+function getDaysSinceLastExercise(pet) {
+    if (!pet.exerciseEntries || pet.exerciseEntries.length === 0) {
+        return 999; // Never exercised
+    }
+    
+    // Sort exercises by date (newest first)
+    const sortedExercises = [...pet.exerciseEntries].sort((a, b) => 
+        new Date(b.date) - new Date(a.date)
+    );
+    
+    const lastExerciseDate = new Date(sortedExercises[0].date);
+    const today = new Date();
+    const timeDiff = today - lastExerciseDate;
+    const daysDiff = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+    
+    return Math.max(0, daysDiff);
+}
+
+function getLastExerciseDate(pet) {
+    if (!pet.exerciseEntries || pet.exerciseEntries.length === 0) {
+        return 'Never';
+    }
+    
+    const sortedExercises = [...pet.exerciseEntries].sort((a, b) => 
+        new Date(b.date) - new Date(a.date)
+    );
+    
+    return formatDisplayDate(sortedExercises[0].date);
+}
+
+function formatDisplayDate(dateString) {
+    try {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('en-US', { 
+            weekday: 'short', 
+            month: 'short', 
+            day: 'numeric' 
+        });
+    } catch (e) {
+        return dateString;
+    }
+}
+function loadRemindersContent() {
+    const content = document.getElementById('remindersContent');
+    if (!content) return;
+    
+    const reminders = calculateReminders();
+    
+    if (reminders.length === 0) {
+        content.innerHTML = `
+            <div class="no-reminders">
+                <p>🎉 All caught up!</p>
+                <small>No exercise reminders at this time.</small>
+            </div>
+        `;
+        return;
+    }
+    
+    content.innerHTML = `
+        <div class="reminders-list">
+            ${reminders.map(reminder => `
+                <div class="reminder-item" data-pet-index="${reminder.petIndex}">
+                    <div class="reminder-header">
+                        <span class="pet-name">${reminder.petName}</span>
+                        <span class="days-missed">${reminder.daysMissed} days</span>
+                    </div>
+                    <div class="reminder-details">
+                        <p>Last exercise: ${reminder.lastExerciseDate}</p>
+                        <p>Threshold: ${reminder.threshold} days</p>
+                    </div>
+                    <div class="reminder-actions">
+                        <button class="noted-btn" data-reminder-id="${reminder.petIndex}">✅ Noted</button>
+                        <button class="log-now-btn" data-pet-index="${reminder.petIndex}">📝 Log Exercise</button>
+                    </div>
+                </div>
+            `).join('')}
+        </div>
+    `;
+    
+    // Add event listeners for reminder actions
+    setupRemindersActionListeners();
+}
+function setupRemindersActionListeners() {
+    // "Noted" buttons
+    document.querySelectorAll('.noted-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const petIndex = parseInt(btn.dataset.reminderId);
+            handleNotedReminder(petIndex);
+        });
+    });
+    
+    // "Log Exercise" buttons
+    document.querySelectorAll('.log-now-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const petIndex = parseInt(btn.dataset.petIndex);
+            handleLogExerciseFromReminder(petIndex);
+        });
+    });
+}
+
+function handleNotedReminder(petIndex) {
+    console.log(`✅ Marking reminder as noted for pet ${petIndex}`);
+    
+    // Update last checked date
+    updateReminderSettings(petIndex, {
+        lastChecked: new Date().toISOString().split('T')[0]
+    });
+    
+    // Remove the reminder item from view
+    const reminderItem = document.querySelector(`.reminder-item[data-pet-index="${petIndex}"]`);
+    if (reminderItem) {
+        reminderItem.style.opacity = '0.5';
+        setTimeout(() => {
+            reminderItem.remove();
+            // If no reminders left, show empty state
+            const remindersList = document.querySelector('.reminders-list');
+            if (!remindersList || remindersList.children.length === 0) {
+                loadRemindersContent(); // This will show empty state
+            }
+        }, 300);
+    }
+    
+    // Update the badge count
+    updateRemindersBadge();
+}
+
+function handleLogExerciseFromReminder(petIndex) {
+    console.log(`📝 Opening exercise log for pet ${petIndex}`);
+    
+    // Close the reminders modal
+    const modal = document.getElementById('remindersModal');
+    if (modal) {
+        modal.remove();
+    }
+    
+    // Open the daily log form for this pet
+    showDailyLogForm(petIndex);
+}
+
+
+
+
+
+
 
 function createGoalsModal() {
     return `
@@ -4089,42 +4273,9 @@ function createTimelineModal() {
 }
 
 // ===============================================
-// ACTION BAR IMPLEMENTATION - STEP 1: BASIC STRUCTURE
+// ACTION BAR IMPLEMENTATION - 
 // ===============================================
-
-function createActionBar() {
-    console.log('🔄 Creating action bar HTML structure');
-    
-    return `
-        <div class="action-bar">
-            <div class="action-bar-left">
-                <!-- Reminders Button with Badge -->
-                <button class="action-bar-btn reminders-btn" id="remindersBtn" title="Exercise Reminders">
-                    🔔 Reminders
-                    <span class="action-badge" id="remindersBadge">0</span>
-                </button>
-                
-                <!-- Weekly Goals Button with Progress -->
-                <button class="action-bar-btn goals-btn" id="goalsBtn" title="Weekly Goals Progress">
-                    🎯 Weekly Goals
-                    <span class="goals-progress" id="goalsProgress"></span>
-                </button>
-                
-                <!-- Timeline Button -->
-                <button class="action-bar-btn timeline-btn" id="timelineBtn" title="Exercise History Timeline">
-                    📅 Exercise History
-                </button>
-            </div>
-            
-            <div class="action-bar-right">
-                <!-- Your existing action buttons remain unchanged -->
-                <button id="addNewProfileButton" class="icon-btn">＋ New Profile</button>
-                <button id="toggleModeButton" class="icon-btn">🌓 Toggle Mode</button>
-                <button id="logoutButton" class="icon-btn">🚪 Logout</button>
-            </div>
-        </div>
-    `;
-}
+//STEP 1: BASIC STRUCTURE moved to index.html
 
 // STEP 2: Add Action Bar Initialization
 function initializeActionBar() {
@@ -4165,14 +4316,17 @@ function updateActionBarData() {
     updateGoalsProgress();
 }
 
-function updateRemindersBadge() {
+function updateRemindersBadge() {                     //UPDATED
     const badge = document.getElementById('remindersBadge');
     if (!badge) return;
     
-    // Temporary: Show 0 reminders until we implement the logic
-    badge.textContent = '0';
-    badge.style.display = '0' > 0 ? 'inline-block' : 'none';
-    console.log('✅ Reminders badge updated: 0');
+    const reminders = calculateReminders();
+    const reminderCount = reminders.length;
+    
+    badge.textContent = reminderCount;
+    badge.style.display = reminderCount > 0 ? 'inline-block' : 'none';
+    
+    console.log(`✅ Reminders badge updated: ${reminderCount}`);
 }
 
 function updateGoalsProgress() {
