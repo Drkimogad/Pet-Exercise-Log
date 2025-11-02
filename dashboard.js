@@ -4361,7 +4361,7 @@ function handleLogExerciseFromReminder(petIndex) {
 
 
 //===========================================
-// REMINDERS SETTINGS MODAL all implementations
+// REMINDERS SETTINGS MODAL all implementations   TO DEBUG AND FIX LATERXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 //=============================================
 function showRemindersSettings() {
     console.log('⚙️ Showing reminders settings');
@@ -4539,7 +4539,10 @@ function createGoalsModal() {
             <div class="action-modal">
                 <div class="modal-header">
                     <h3>🎯 Weekly Exercise Goals</h3>
-                    <button class="close-modal-btn">&times;</button>
+                    <div class="modal-header-actions">
+                        <button class="settings-btn" id="goalsSettingsBtn" title="Goals Settings">⚙️ Manage Goals</button>
+                        <button class="close-modal-btn">&times;</button>
+                    </div>
                 </div>
                 <div class="modal-content" id="goalsContent">
                     <div class="goals-loading">
@@ -4579,6 +4582,9 @@ function setupGoalsModalEvents() {
     modal.querySelector('.close-modal-btn').addEventListener('click', () => {
         modal.remove();
     });
+    
+    // Settings button
+    modal.querySelector('#goalsSettingsBtn').addEventListener('click', showGoalsSettings);
     
     // Close when clicking overlay
     modal.addEventListener('click', (e) => {
@@ -4909,6 +4915,213 @@ function showGoalAchievedNotification(petName) {
     // You can enhance this with a nice notification later
     // For now, we'll just log it
 }
+
+//=============================
+// WEEKLY GOALS SETTING MODAL
+//================================
+function showGoalsSettings() {
+    console.log('⚙️ Showing goals settings');
+    
+    // Remove any existing settings modal
+    const existingModal = document.getElementById('goalsSettingsModal');
+    if (existingModal) {
+        existingModal.remove();
+    }
+    
+    // Create and insert the settings modal
+    document.body.insertAdjacentHTML('beforeend', createGoalsSettingsModal());
+    
+    // Load and display settings
+    loadGoalsSettingsContent();
+    
+    // Setup settings modal event listeners
+    setupGoalsSettingsEvents();
+}
+
+function createGoalsSettingsModal() {
+    return `
+        <div class="action-modal-overlay" id="goalsSettingsModal">
+            <div class="action-modal">
+                <div class="modal-header">
+                    <h3>⚙️ Goals Settings</h3>
+                    <button class="close-modal-btn">&times;</button>
+                </div>
+                <div class="modal-content" id="goalsSettingsContent">
+                    <div class="settings-loading">
+                        <p>Loading settings...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+}
+function loadGoalsSettingsContent() {
+    const content = document.getElementById('goalsSettingsContent');
+    if (!content) return;
+    
+    const pets = getPets();
+    
+    if (pets.length === 0) {
+        content.innerHTML = `
+            <div class="no-pets-settings">
+                <p>No pets found</p>
+                <small>Create pet profiles first to set goal preferences</small>
+            </div>
+        `;
+        return;
+    }
+    
+    content.innerHTML = `
+        <div class="goals-settings">
+            <p class="settings-description">Set weekly exercise goals for each pet:</p>
+            
+            <div class="pet-goal-settings">
+                ${pets.map((pet, index) => `
+                    <div class="pet-goal-item" data-pet-index="${index}">
+                        <div class="pet-goal-header">
+                            <div class="pet-info">
+                                <span class="pet-name">${pet.petDetails.name}</span>
+                                <span class="pet-type">${pet.petDetails.type}</span>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" class="goal-toggle" data-pet-index="${index}" 
+                                    ${pet.goalSettings.enabled ? 'checked' : ''}>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        
+                        <div class="goal-controls ${pet.goalSettings.enabled ? 'enabled' : 'disabled'}">
+                            <label>Weekly target:</label>
+                            <select class="target-select" data-pet-index="${index}" 
+                                ${pet.goalSettings.enabled ? '' : 'disabled'}>
+                                <option value="3" ${pet.goalSettings.weeklyTarget == 3 ? 'selected' : ''}>3 exercises</option>
+                                <option value="5" ${pet.goalSettings.weeklyTarget == 5 ? 'selected' : ''}>5 exercises</option>
+                                <option value="7" ${pet.goalSettings.weeklyTarget == 7 ? 'selected' : ''}>7 exercises</option>
+                                <option value="10" ${pet.goalSettings.weeklyTarget == 10 ? 'selected' : ''}>10 exercises</option>
+                            </select>
+                            <div class="current-progress">
+                                This week: <strong>${pet.goalSettings.exercisesThisWeek || 0}</strong> exercises
+                            </div>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+            
+            <div class="settings-actions">
+                <button class="save-settings-btn" id="saveGoalsSettings">💾 Save Settings</button>
+                <button class="cancel-settings-btn" id="cancelGoalsSettings">❌ Cancel</button>
+            </div>
+        </div>
+    `;
+    
+    // Add toggle switch event listeners
+    document.querySelectorAll('.goal-toggle').forEach(toggle => {
+        toggle.addEventListener('change', function() {
+            const petIndex = parseInt(this.dataset.petIndex);
+            const goalControls = document.querySelector(`.pet-goal-item[data-pet-index="${petIndex}"] .goal-controls`);
+            const targetSelect = document.querySelector(`.target-select[data-pet-index="${petIndex}"]`);
+            
+            if (this.checked) {
+                goalControls.classList.add('enabled');
+                goalControls.classList.remove('disabled');
+                targetSelect.disabled = false;
+            } else {
+                goalControls.classList.add('disabled');
+                goalControls.classList.remove('enabled');
+                targetSelect.disabled = true;
+            }
+        });
+    });
+}
+function setupGoalsSettingsEvents() {
+    const modal = document.getElementById('goalsSettingsModal');
+    if (!modal) return;
+    
+    // Remove any existing listeners first
+    const saveBtn = modal.querySelector('#saveGoalsSettings');
+    const cancelBtn = modal.querySelector('#cancelGoalsSettings');
+    const closeBtn = modal.querySelector('.close-modal-btn');
+    
+    saveBtn.replaceWith(saveBtn.cloneNode(true));
+    cancelBtn.replaceWith(cancelBtn.cloneNode(true));
+    closeBtn.replaceWith(closeBtn.cloneNode(true));
+    
+    // Add fresh listeners
+    modal.querySelector('#saveGoalsSettings').addEventListener('click', saveGoalsSettings);
+    modal.querySelector('#cancelGoalsSettings').addEventListener('click', () => {
+        modal.remove();
+    });
+    modal.querySelector('.close-modal-btn').addEventListener('click', () => {
+        modal.remove();
+    });
+    
+    // Close when clicking overlay
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            modal.remove();
+        }
+    });
+    
+    // Escape key to close
+    document.addEventListener('keydown', function escapeHandler(e) {
+        if (e.key === 'Escape' && modal) {
+            modal.remove();
+            document.removeEventListener('keydown', escapeHandler);
+        }
+    });
+}
+
+function saveGoalsSettings() {
+    console.log('💾 Saving goals settings');
+    
+    const pets = getPets();
+    let settingsChanged = false;
+    
+    // Update each pet's goal settings
+    document.querySelectorAll('.pet-goal-item').forEach(item => {
+        const petIndex = parseInt(item.dataset.petIndex);
+        const toggle = document.querySelector(`.goal-toggle[data-pet-index="${petIndex}"]`);
+        const targetSelect = document.querySelector(`.target-select[data-pet-index="${petIndex}"]`);
+        
+        const enabled = toggle.checked;
+        const weeklyTarget = parseInt(targetSelect.value);
+        
+        if (pets[petIndex]) {
+            if (pets[petIndex].goalSettings.enabled !== enabled || 
+                pets[petIndex].goalSettings.weeklyTarget !== weeklyTarget) {
+                
+                pets[petIndex].goalSettings.enabled = enabled;
+                pets[petIndex].goalSettings.weeklyTarget = weeklyTarget;
+                settingsChanged = true;
+                
+                console.log(`Updated ${pets[petIndex].petDetails.name} goals: ${enabled ? 'enabled' : 'disabled'}, target: ${weeklyTarget}`);
+            }
+        }
+    });
+    
+    if (settingsChanged) {
+        localStorage.setItem('pets', JSON.stringify(pets));
+        showSuccess('Goals settings saved!');
+        
+        // Close settings modal
+        const modal = document.getElementById('goalsSettingsModal');
+        if (modal) modal.remove();
+        
+        // Refresh goals display
+        const goalsModal = document.getElementById('goalsModal');
+        if (goalsModal) {
+            loadGoalsContent();
+        }
+        
+        // Update action bar progress
+        updateGoalsProgress();
+    } else {
+        showSuccess('No changes made');
+    }
+}
+
+
+
 
 
 
