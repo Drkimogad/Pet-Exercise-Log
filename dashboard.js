@@ -4066,17 +4066,22 @@ function getBCSDisplay(bcs) {
 //============================
 // ACTION BAR MODALS  3 MODALS
 //===============================
-//1. CREATE REMINDERS MODAL 
+//1. CREATE REMINDERS MODAL  updated
 function createRemindersModal() {
     return `
         <div class="action-modal-overlay" id="remindersModal">
             <div class="action-modal">
                 <div class="modal-header">
                     <h3>🔔 Exercise Reminders</h3>
-                    <button class="close-modal-btn">&times;</button>
+                    <div class="modal-header-actions">
+                        <button class="settings-btn" id="remindersSettingsBtn" title="Reminder Settings">⚙️ Settings</button>
+                        <button class="close-modal-btn">&times;</button>
+                    </div>
                 </div>
                 <div class="modal-content" id="remindersContent">
-                    <!-- Dynamic content will go here -->
+                    <div class="reminders-loading">
+                        <p>Loading reminders...</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -4146,6 +4151,9 @@ function setupRemindersModalEvents() {
     modal.querySelector('.close-modal-btn').addEventListener('click', () => {
         modal.remove();
     });
+    
+    // Settings button
+    modal.querySelector('#remindersSettingsBtn').addEventListener('click', showRemindersSettings);
     
     // Close when clicking overlay
     modal.addEventListener('click', (e) => {
@@ -4345,6 +4353,169 @@ function handleLogExerciseFromReminder(petIndex) {
     // Open the daily log form for this pet
     showDailyLogForm(petIndex);
 }
+
+
+//===========================================
+// REMINDERS SETTINGS MODAL all implementations
+//=============================================
+function showRemindersSettings() {
+    console.log('⚙️ Showing reminders settings');
+    
+    // Remove any existing settings modal
+    const existingModal = document.getElementById('remindersSettingsModal');
+    if (existingModal) {
+        existingModal.remove();
+    }
+    
+    // Create and insert the settings modal
+    document.body.insertAdjacentHTML('beforeend', createRemindersSettingsModal());
+    
+    // Load and display settings
+    loadRemindersSettingsContent();
+    
+    // Setup settings modal event listeners
+    setupRemindersSettingsEvents();
+}
+
+function createRemindersSettingsModal() {
+    return `
+        <div class="action-modal-overlay" id="remindersSettingsModal">
+            <div class="action-modal">
+                <div class="modal-header">
+                    <h3>⚙️ Reminder Settings</h3>
+                    <button class="close-modal-btn">&times;</button>
+                </div>
+                <div class="modal-content" id="remindersSettingsContent">
+                    <div class="settings-loading">
+                        <p>Loading settings...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+}
+//STEP 4: LOAD REMINDERS SETTINGS CONTENT
+function loadRemindersSettingsContent() {
+    const content = document.getElementById('remindersSettingsContent');
+    if (!content) return;
+    
+    const pets = getPets();
+    
+    if (pets.length === 0) {
+        content.innerHTML = `
+            <div class="no-pets-settings">
+                <p>No pets found</p>
+                <small>Create pet profiles first to set reminder preferences</small>
+            </div>
+        `;
+        return;
+    }
+    
+    content.innerHTML = `
+        <div class="reminders-settings">
+            <p class="settings-description">Set how many days without exercise before reminding you:</p>
+            
+            <div class="pet-reminder-settings">
+                ${pets.map((pet, index) => `
+                    <div class="pet-setting-item" data-pet-index="${index}">
+                        <div class="pet-setting-header">
+                            <span class="pet-name">${pet.petDetails.name}</span>
+                            <span class="pet-type">${pet.petDetails.type}</span>
+                        </div>
+                        <div class="setting-controls">
+                            <label>Remind after:</label>
+                            <select class="threshold-select" data-pet-index="${index}">
+                                <option value="1" ${pet.reminderSettings.threshold == 1 ? 'selected' : ''}>1 day</option>
+                                <option value="2" ${pet.reminderSettings.threshold == 2 ? 'selected' : ''}>2 days</option>
+                                <option value="3" ${pet.reminderSettings.threshold == 3 ? 'selected' : ''}>3 days</option>
+                                <option value="5" ${pet.reminderSettings.threshold == 5 ? 'selected' : ''}>5 days</option>
+                                <option value="7" ${pet.reminderSettings.threshold == 7 ? 'selected' : ''}>7 days</option>
+                            </select>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+            
+            <div class="settings-actions">
+                <button class="save-settings-btn" id="saveRemindersSettings">💾 Save Settings</button>
+                <button class="cancel-settings-btn" id="cancelRemindersSettings">❌ Cancel</button>
+            </div>
+        </div>
+    `;
+}
+//STEP 5: SETUP REMINDERS SETTINGS EVENTS
+function setupRemindersSettingsEvents() {
+    const modal = document.getElementById('remindersSettingsModal');
+    if (!modal) return;
+    
+    // Close button
+    modal.querySelector('.close-modal-btn').addEventListener('click', () => {
+        modal.remove();
+    });
+    
+    // Save button
+    modal.querySelector('#saveRemindersSettings').addEventListener('click', saveRemindersSettings);
+    
+    // Cancel button
+    modal.querySelector('#cancelRemindersSettings').addEventListener('click', () => {
+        modal.remove();
+    });
+    
+    // Close when clicking overlay
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            modal.remove();
+        }
+    });
+    
+    // Escape key to close
+    document.addEventListener('keydown', function escapeHandler(e) {
+        if (e.key === 'Escape' && modal) {
+            modal.remove();
+            document.removeEventListener('keydown', escapeHandler);
+        }
+    });
+}
+
+function saveRemindersSettings() {
+    console.log('💾 Saving reminder settings');
+    
+    const pets = getPets();
+    let settingsChanged = false;
+    
+    // Update each pet's threshold
+    document.querySelectorAll('.threshold-select').forEach(select => {
+        const petIndex = parseInt(select.dataset.petIndex);
+        const newThreshold = parseInt(select.value);
+        
+        if (pets[petIndex] && pets[petIndex].reminderSettings.threshold !== newThreshold) {
+            pets[petIndex].reminderSettings.threshold = newThreshold;
+            settingsChanged = true;
+            console.log(`Updated ${pets[petIndex].petDetails.name} threshold to ${newThreshold} days`);
+        }
+    });
+    
+    if (settingsChanged) {
+        localStorage.setItem('pets', JSON.stringify(pets));
+        showSuccess('Reminder settings saved!');
+        
+        // Close settings modal
+        const modal = document.getElementById('remindersSettingsModal');
+        if (modal) modal.remove();
+        
+        // Refresh reminders display
+        const remindersModal = document.getElementById('remindersModal');
+        if (remindersModal) {
+            loadRemindersContent();
+        }
+        
+        // Update action bar badge
+        updateRemindersBadge();
+    } else {
+        showSuccess('No changes made');
+    }
+}
+
 
 
 //================================================
