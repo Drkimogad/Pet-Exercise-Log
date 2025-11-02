@@ -1108,7 +1108,7 @@ function showHealthAssessmentEditForm(index) {
         
     } catch (error) {
         console.error('❌ Error in showHealthAssessmentEditForm:', error);
-        AppHelper.showError(`Failed to load health assessment: ${error.message}`);
+        showError(`Failed to load health assessment: ${error.message}`);
         returnToDashboard();
     }
 }
@@ -5114,23 +5114,6 @@ function refreshTimelineIfOpen() {
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 //STEP Add Basic Event Listeners
 function setupActionBarEventListeners() {
     console.log('🔄 Setting up action bar event listeners');
@@ -5158,14 +5141,6 @@ function setupActionBarEventListeners() {
     
     // Close modal handlers will be added when modals are created    XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 }
-
-
-
-
-
-
-
-
 
 
 //=================================
@@ -5299,8 +5274,11 @@ loadSavedProfiles(); // This will handle empty state vs profiles
  setupEventListeners();
     loadActivePetData();
      // NEW: Initialize action bar
-    initializeActionBar(); // ← ADD THIS LINE
-     console.log('✅ Action bar integrated into dashboard');
+// NEW: Initialize action bar - BUT DELAY IT until dashboard is visible
+    setTimeout(() => {
+        initializeActionBar();
+    }, 100);
+ console.log('✅ Action bar integrated into dashboard');
 }
 
 
