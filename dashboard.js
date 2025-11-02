@@ -2071,7 +2071,7 @@ function generateSuggestedExercises(pet) {
     return suggestions.filter(suggestion => !dismissed.includes(suggestion.id)).slice(0, 3);
 }
 
-// Log a suggested exercise (convert to actual exercise entry)
+// Log a suggested exercise (convert to actual exercise entry) updated
 function logSuggestedExercise(petIndex, exerciseId) {
     const pets = getPets();
     const pet = pets[petIndex];
@@ -2100,7 +2100,21 @@ function logSuggestedExercise(petIndex, exerciseId) {
     
     // Save and refresh
     localStorage.setItem('pets', JSON.stringify(pets));
-    loadSavedProfiles(); // Refresh display
+    
+    // Update the button to show "LOGGED" and disable it
+    const logBtn = document.querySelector(`.log-exercise-btn[data-exercise="${exerciseId}"]`);
+    if (logBtn) {
+        logBtn.textContent = 'LOGGED ✅';
+        logBtn.disabled = true;
+        logBtn.style.opacity = '0.7';
+        logBtn.style.cursor = 'not-allowed';
+    }
+    
+    // Refresh displays
+    loadSavedProfiles();
+    updateGoalsOnExerciseLogged(petIndex);
+    refreshTimelineIfOpen();
+    
     showSuccess(`Logged: ${exercise.name}`);
 }
 
