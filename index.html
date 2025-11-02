@@ -137,13 +137,35 @@
         <div class="dashboard-header-brand">
             <h1>Your Pet Exercise Log</h1>
             <p>Track your pet's exercise routine and health metrics</p>
-        </div>
-        <div class="dashboard-header-actions">
-            <button id="addNewProfileButton" class="icon-btn">＋ New Profile</button>
-            <button id="toggleModeButton" class="icon-btn">🌓 Toggle Mode</button>
-            <button id="logoutButton" class="icon-btn">🚪 Logout</button>
-        </div>
     </header>
+      <div class="action-bar">
+            <div class="action-bar-left">
+                <!-- Reminders Button with Badge -->
+                <button class="action-bar-btn reminders-btn" id="remindersBtn" title="Exercise Reminders">
+                    🔔 Reminders
+                    <span class="action-badge" id="remindersBadge">0</span>
+                </button>
+                
+                <!-- Weekly Goals Button with Progress -->
+                <button class="action-bar-btn goals-btn" id="goalsBtn" title="Weekly Goals Progress">
+                    🎯 Weekly Goals
+                    <span class="goals-progress" id="goalsProgress"></span>
+                </button>
+                
+                <!-- Timeline Button -->
+                <button class="action-bar-btn timeline-btn" id="timelineBtn" title="Exercise History Timeline">
+                    📅 Exercise History
+                </button>
+            </div>
+            
+            <div class="action-bar-right">
+                <!-- Your existing action buttons remain unchanged -->
+                <button id="addNewProfileButton" class="icon-btn">＋ New Profile</button>
+                <button id="toggleModeButton" class="icon-btn">🌓 Toggle Mode</button>
+                <button id="logoutButton" class="icon-btn">🚪 Logout</button>
+            </div>
+    </div>   <!-- closes action bar buttons div -->
+
     
     <!-- Profile Container - Will hold either form or saved profiles -->
     <main class="profile-container" id="profileContainer">
