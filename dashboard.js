@@ -4755,6 +4755,25 @@ function createTimelineModal() {
     `;
 }
 
+//function showTimelineModal() {
+ //   console.log('📅 Showing exercise history timeline');
+    
+    // Remove any existing modal first
+//    const existingModal = document.getElementById('timelineModal');
+ //   if (existingModal) {
+ //       existingModal.remove();
+ //   }
+    
+    // Create and insert the modal
+  //  document.body.insertAdjacentHTML('beforeend', createTimelineModal());
+    
+    // Load and display timeline
+    //loadTimelineContent();
+    
+    // Setup modal event listeners
+   // setupTimelineModalEvents();
+//}
+
 function showTimelineModal() {
     console.log('📅 Showing exercise history timeline');
     
@@ -4767,12 +4786,24 @@ function showTimelineModal() {
     // Create and insert the modal
     document.body.insertAdjacentHTML('beforeend', createTimelineModal());
     
+    // TEST: Force visible and check if it exists
+    const modal = document.getElementById('timelineModal');
+    console.log('Modal created:', modal);
+    if (modal) {
+        modal.style.display = 'flex';
+        modal.style.zIndex = '9999';
+        modal.style.background = 'red'; // Temporary to see it
+    }
+    
     // Load and display timeline
     loadTimelineContent();
     
     // Setup modal event listeners
     setupTimelineModalEvents();
 }
+
+
+
 
 function createTimelineModal() {
     return `
