@@ -4802,25 +4802,10 @@ function loadGoalsContent() {
                     </div>
                 `).join('')}
             </div>
-            
-            <div class="goals-actions">
-                <button class="manage-goals-btn" id="manageGoalsBtn">⚙️ Manage Goals</button>
-                <button class="log-exercise-btn" id="logExerciseGoalsBtn">📝 Log Exercise</button>
-            </div>
+                <!-- REMOVED THE OLD BUTTONS SECTION -->
         </div>
     `;
-    
-    // Add event listeners for goals actions
-    setupGoalsActionListeners();
-}
-// STEP 3.5: Add Goals Action Handlers
-function setupGoalsActionListeners() {
-    // Manage Goals button
-    document.getElementById('manageGoalsBtn')?.addEventListener('click', showGoalsManagement);
-    
-    // Log Exercise button
-    document.getElementById('logExerciseGoalsBtn')?.addEventListener('click', showExerciseLogFromGoals);
-}
+    }
 
 function showGoalsSetupGuide() {
     alert('Goals setup guide will be implemented in the next step. For now, goals are automatically calculated based on exercise data.');
@@ -4834,30 +4819,6 @@ function showGoalsSetupGuide() {
     }
 }
 
-function showGoalsManagement() {
-    alert('Goals management interface will be implemented in the next step. Each pet can have individual weekly targets.');
-    
-    // Close the modal
-    const modal = document.getElementById('goalsModal');
-    if (modal) {
-        modal.remove();
-    }
-}
-
-function showExerciseLogFromGoals() {
-    console.log('📝 Opening exercise log from goals');
-    
-    // Close the goals modal
-    const modal = document.getElementById('goalsModal');
-    if (modal) {
-        modal.remove();
-    }
-    
-    // Open daily log form - you can enhance this to show pet selection
-    if (getPets().length > 0) {
-        showDailyLogForm(0); // Open for first pet, can be enhanced
-    }
-}
 //STEP 3.6: Update the Goals Progress Display
 
 function updateGoalsProgress() {
