@@ -4063,36 +4063,6 @@ function getBCSDisplay(bcs) {
 // ===============================================
 // ACTION BAR COMPLETE IMPLEMENTATION           
 // ===============================================
-function initializeActionBar() {
-    console.log('🔄 Initializing action bar');
-    
-    // Action bar HTML is already in index.html - just setup events
-    setupActionBarEventListeners();
-    updateActionBarData();
-    console.log('✅ Action bar initialized');
-}
-
-function setupActionBarEventListeners() {
-    // Reminders button
-    document.getElementById('remindersBtn')?.addEventListener('click', showRemindersModal);
-    
-    // Goals button  
-    document.getElementById('goalsBtn')?.addEventListener('click', showGoalsModal);
-    
-    // Timeline button
-    document.getElementById('timelineBtn')?.addEventListener('click', showTimelineModal);
-    
-    console.log('✅ Action bar event listeners setup');
-}
-
-function updateActionBarData() {
-    updateRemindersBadge();
-    updateGoalsProgress();
-}
-
-
-
-
 //============================
 // ACTION BAR MODALS  3 MODALS
 //===============================
@@ -5144,8 +5114,9 @@ function refreshTimelineIfOpen() {
     }
 }
 
-
-//STEP Add Basic Event Listeners
+//=======================================
+   //  SETUP Event Listeners FOR 3 MODALS
+//=========================================
 function setupActionBarEventListeners() {
     console.log('🔄 Setting up action bar event listeners');
     
@@ -5169,8 +5140,25 @@ function setupActionBarEventListeners() {
         timelineBtn.addEventListener('click', showTimelineModal);
         console.log('✅ Timeline button listener added');
     }
+    //     console.log('✅ Action bar event listeners setup');
+    // Close modal handlers will be added when modals are created
+}
+
+function updateActionBarData() {
+    updateRemindersBadge();
+    updateGoalsProgress();
+}
+
+//=========================================================================================
+  // INITIALIZE ACTION BAR FUNCTION CALLED IN SHOWEXERCISELOG FUNCTION FOR INITIALIZATION
+//=================================================================================================
+function initializeActionBar() {
+    console.log('🔄 Initializing action bar');
     
-    // Close modal handlers will be added when modals are created    XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+    // Action bar HTML is already in index.html - just setup events
+    setupActionBarEventListeners();
+    updateActionBarData();
+    console.log('✅ Action bar initialized');
 }
 
 
