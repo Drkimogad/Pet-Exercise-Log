@@ -3975,6 +3975,274 @@ function getBCSDisplay(bcs) {
 }
 
 
+
+
+
+// ===============================================
+// ACTION BAR IMPLEMENTATION
+// ===============================================
+
+function createActionBar() {
+    return `
+        <div class="action-bar">
+            <div class="action-bar-left">
+                <button class="action-bar-btn reminders-btn" id="remindersBtn">
+                    🔔 Reminders
+                    <span class="action-badge" id="remindersBadge" style="display: none;">0</span>
+                </button>
+                
+                <button class="action-bar-btn goals-btn" id="goalsBtn">
+                    🎯 Weekly Goals
+                    <span class="goals-progress" id="goalsProgress"></span>
+                </button>
+                
+                <button class="action-bar-btn timeline-btn" id="timelineBtn">
+                    📅 Exercise History
+                </button>
+            </div>
+            
+            <div class="action-bar-right">
+                <!-- Your existing buttons stay here -->
+                <button id="addNewProfileButton" class="icon-btn">＋ New Profile</button>
+                <button id="toggleModeButton" class="icon-btn">🌓 Toggle Mode</button>
+                <button id="logoutButton" class="icon-btn">🚪 Logout</button>
+            </div>
+        </div>
+    `;
+}
+
+function initializeActionBar() {
+    // Add action bar to dashboard header
+    const dashboardHeader = document.querySelector('.dashboard-header');
+    if (dashboardHeader && !document.querySelector('.action-bar')) {
+        dashboardHeader.insertAdjacentHTML('afterend', createActionBar());
+        setupActionBarEventListeners();
+        updateActionBarData(); // Initial data load
+    }
+}
+
+function setupActionBarEventListeners() {
+    // Reminders button
+    document.getElementById('remindersBtn')?.addEventListener('click', showRemindersModal);
+    
+    // Goals button  
+    document.getElementById('goalsBtn')?.addEventListener('click', showGoalsModal);
+    
+    // Timeline button
+    document.getElementById('timelineBtn')?.addEventListener('click', showTimelineModal);
+}
+
+function updateActionBarData() {
+    updateRemindersBadge();
+    updateGoalsProgress();
+    // Timeline doesn't need live updates - loaded on click
+}
+//============================
+// ACTION BAR MODALS
+//===============================
+function createRemindersModal() {
+    return `
+        <div class="action-modal-overlay" id="remindersModal">
+            <div class="action-modal">
+                <div class="modal-header">
+                    <h3>🔔 Exercise Reminders</h3>
+                    <button class="close-modal-btn">&times;</button>
+                </div>
+                <div class="modal-content" id="remindersContent">
+                    <!-- Dynamic content will go here -->
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+function createGoalsModal() {
+    return `
+        <div class="action-modal-overlay" id="goalsModal">
+            <div class="action-modal">
+                <div class="modal-header">
+                    <h3>🎯 Weekly Exercise Goals</h3>
+                    <button class="close-modal-btn">&times;</button>
+                </div>
+                <div class="modal-content" id="goalsContent">
+                    <!-- Dynamic content will go here -->
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+function createTimelineModal() {
+    return `
+        <div class="action-modal-overlay" id="timelineModal">
+            <div class="action-modal wide-modal">
+                <div class="modal-header">
+                    <h3>📅 Exercise History Timeline</h3>
+                    <button class="close-modal-btn">&times;</button>
+                </div>
+                <div class="modal-content" id="timelineContent">
+                    <!-- Dynamic content will go here -->
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+// ===============================================
+// ACTION BAR IMPLEMENTATION - STEP 1: BASIC STRUCTURE
+// ===============================================
+
+function createActionBar() {
+    console.log('🔄 Creating action bar HTML structure');
+    
+    return `
+        <div class="action-bar">
+            <div class="action-bar-left">
+                <!-- Reminders Button with Badge -->
+                <button class="action-bar-btn reminders-btn" id="remindersBtn" title="Exercise Reminders">
+                    🔔 Reminders
+                    <span class="action-badge" id="remindersBadge">0</span>
+                </button>
+                
+                <!-- Weekly Goals Button with Progress -->
+                <button class="action-bar-btn goals-btn" id="goalsBtn" title="Weekly Goals Progress">
+                    🎯 Weekly Goals
+                    <span class="goals-progress" id="goalsProgress"></span>
+                </button>
+                
+                <!-- Timeline Button -->
+                <button class="action-bar-btn timeline-btn" id="timelineBtn" title="Exercise History Timeline">
+                    📅 Exercise History
+                </button>
+            </div>
+            
+            <div class="action-bar-right">
+                <!-- Your existing action buttons remain unchanged -->
+                <button id="addNewProfileButton" class="icon-btn">＋ New Profile</button>
+                <button id="toggleModeButton" class="icon-btn">🌓 Toggle Mode</button>
+                <button id="logoutButton" class="icon-btn">🚪 Logout</button>
+            </div>
+        </div>
+    `;
+}
+
+// STEP 2: Add Action Bar Initialization
+function initializeActionBar() {
+    console.log('🔄 Initializing action bar');
+    
+    const dashboardHeader = document.querySelector('.dashboard-header');
+    if (!dashboardHeader) {
+        console.error('❌ Dashboard header not found');
+        return;
+    }
+    
+    // Check if action bar already exists
+    if (document.querySelector('.action-bar')) {
+        console.log('ℹ️ Action bar already exists, skipping creation');
+        return;
+    }
+    
+    // Insert action bar after dashboard header
+    dashboardHeader.insertAdjacentHTML('afterend', createActionBar());
+    console.log('✅ Action bar HTML inserted');
+    
+    // Set up event listeners
+    setupActionBarEventListeners();
+    console.log('✅ Action bar event listeners set up');
+    
+    // Initial data update
+    updateActionBarData();
+    console.log('✅ Action bar data initialized');
+}
+
+//STEP 4: Add Basic Data Update Functions
+function updateActionBarData() {
+    console.log('🔄 Updating action bar data');
+    
+    // For now, just initialize with basic data
+    // We'll enhance these in later steps
+    updateRemindersBadge();
+    updateGoalsProgress();
+}
+
+function updateRemindersBadge() {
+    const badge = document.getElementById('remindersBadge');
+    if (!badge) return;
+    
+    // Temporary: Show 0 reminders until we implement the logic
+    badge.textContent = '0';
+    badge.style.display = '0' > 0 ? 'inline-block' : 'none';
+    console.log('✅ Reminders badge updated: 0');
+}
+
+function updateGoalsProgress() {
+    const progress = document.getElementById('goalsProgress');
+    if (!progress) return;
+    
+    // Temporary: Empty progress until we implement the logic
+    progress.textContent = '';
+    progress.style.display = 'none';
+    console.log('✅ Goals progress updated: empty');
+}
+
+//STEP 5: Add Modal Placeholder Functions
+// Placeholder functions - we'll implement these step by step
+function showRemindersModal() {
+    console.log('🔔 Reminders button clicked - Modal coming in Step 2');
+    alert('Reminders modal will be implemented in Step 2');
+}
+
+function showGoalsModal() {
+    console.log('🎯 Goals button clicked - Modal coming in Step 3');
+    alert('Goals modal will be implemented in Step 3');
+}
+
+function showTimelineModal() {
+    console.log('📅 Timeline button clicked - Modal coming in Step 4');
+    alert('Timeline modal will be implemented in Step 4');
+}
+
+
+
+
+
+//STEP 3: Add Basic Event Listeners
+function setupActionBarEventListeners() {
+    console.log('🔄 Setting up action bar event listeners');
+    
+    // Reminders button
+    const remindersBtn = document.getElementById('remindersBtn');
+    if (remindersBtn) {
+        remindersBtn.addEventListener('click', showRemindersModal);
+        console.log('✅ Reminders button listener added');
+    }
+    
+    // Goals button  
+    const goalsBtn = document.getElementById('goalsBtn');
+    if (goalsBtn) {
+        goalsBtn.addEventListener('click', showGoalsModal);
+        console.log('✅ Goals button listener added');
+    }
+    
+    // Timeline button
+    const timelineBtn = document.getElementById('timelineBtn');
+    if (timelineBtn) {
+        timelineBtn.addEventListener('click', showTimelineModal);
+        console.log('✅ Timeline button listener added');
+    }
+    
+    // Close modal handlers will be added when modals are created    XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+}
+
+
+
+
+
+
+
+
+
+
 //=================================
 // SETUP PROFILE EVENT LISTENERS
 //===========================
@@ -4105,6 +4373,9 @@ function showExerciseLog() {
 loadSavedProfiles(); // This will handle empty state vs profiles
  setupEventListeners();
     loadActivePetData();
+     // NEW: Initialize action bar
+    initializeActionBar(); // ← ADD THIS LINE
+     console.log('✅ Action bar integrated into dashboard');
 }
 
 
