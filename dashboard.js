@@ -4509,10 +4509,10 @@ function saveRemindersSettings() {
         const modal = document.getElementById('remindersSettingsModal');
         if (modal) modal.remove();
         
-        // Refresh reminders display
+        // FIX: REFRESH THE REMINDERS DISPLAY
         const remindersModal = document.getElementById('remindersModal');
         if (remindersModal) {
-            loadRemindersContent();
+            loadRemindersContent(); // ← THIS RELOADS THE REMINDERS LIST
         }
         
         // Update action bar badge
