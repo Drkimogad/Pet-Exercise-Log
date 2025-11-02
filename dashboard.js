@@ -4448,16 +4448,22 @@ function setupRemindersSettingsEvents() {
     const modal = document.getElementById('remindersSettingsModal');
     if (!modal) return;
     
-    // Close button
-    modal.querySelector('.close-modal-btn').addEventListener('click', () => {
+    // REMOVE ANY EXISTING LISTENERS FIRST
+    const saveBtn = modal.querySelector('#saveRemindersSettings');
+    const cancelBtn = modal.querySelector('#cancelRemindersSettings');
+    const closeBtn = modal.querySelector('.close-modal-btn');
+    
+    // Clone and replace to remove old listeners
+    saveBtn.replaceWith(saveBtn.cloneNode(true));
+    cancelBtn.replaceWith(cancelBtn.cloneNode(true));
+    closeBtn.replaceWith(closeBtn.cloneNode(true));
+    
+    // NOW ADD FRESH LISTENERS
+    modal.querySelector('#saveRemindersSettings').addEventListener('click', saveRemindersSettings);
+    modal.querySelector('#cancelRemindersSettings').addEventListener('click', () => {
         modal.remove();
     });
-    
-    // Save button
-    modal.querySelector('#saveRemindersSettings').addEventListener('click', saveRemindersSettings);
-    
-    // Cancel button
-    modal.querySelector('#cancelRemindersSettings').addEventListener('click', () => {
+    modal.querySelector('.close-modal-btn').addEventListener('click', () => {
         modal.remove();
     });
     
