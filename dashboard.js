@@ -4082,7 +4082,27 @@ function createRemindersModal() {
         </div>
     `;
 }
-
+//=================
+// show reminders
+//============
+function showRemindersModal() {
+    console.log('🔔 Showing reminders modal');
+    
+    // Remove any existing modal first
+    const existingModal = document.getElementById('remindersModal');
+    if (existingModal) {
+        existingModal.remove();
+    }
+    
+    // Create and insert the modal
+    document.body.insertAdjacentHTML('beforeend', createRemindersModal());
+    
+    // Load and display reminders
+    loadRemindersContent();
+    
+    // Setup modal event listeners
+    setupRemindersModalEvents();
+}
 // ===============================================
 // REMINDERS DATA STRUCTURE
 // ===============================================
@@ -4302,10 +4322,6 @@ function handleLogExerciseFromReminder(petIndex) {
 }
 
 
-
-
-
-
 //================================================
 // WEEKLY GOALS SYSTEM IMPLEMENTATION
 //================================================
@@ -4319,12 +4335,15 @@ function createGoalsModal() {
                     <button class="close-modal-btn">&times;</button>
                 </div>
                 <div class="modal-content" id="goalsContent">
-                    <!-- Dynamic content will go here -->
+                    <div class="goals-loading">
+                        <p>Loading goals progress...</p>
+                    </div>
                 </div>
             </div>
         </div>
     `;
 }
+
 //Replace the placeholder showGoalsModal() function:
 function showGoalsModal() {
     console.log('🎯 Showing weekly goals modal');
@@ -4343,24 +4362,6 @@ function showGoalsModal() {
     
     // Setup modal event listeners
     setupGoalsModalEvents();
-}
-
-function createGoalsModal() {
-    return `
-        <div class="action-modal-overlay" id="goalsModal">
-            <div class="action-modal">
-                <div class="modal-header">
-                    <h3>🎯 Weekly Exercise Goals</h3>
-                    <button class="close-modal-btn">&times;</button>
-                </div>
-                <div class="modal-content" id="goalsContent">
-                    <div class="goals-loading">
-                        <p>Loading goals progress...</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    `;
 }
 
 function setupGoalsModalEvents() {
@@ -4718,7 +4719,9 @@ function createTimelineModal() {
                     <button class="close-modal-btn">&times;</button>
                 </div>
                 <div class="modal-content" id="timelineContent">
-                    <!-- Dynamic content will go here -->
+                    <div class="timeline-loading">
+                        <p>Loading exercise history...</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -4742,24 +4745,6 @@ function showTimelineModal() {
     
      //Setup modal event listeners
     setupTimelineModalEvents();
-}
-
-function createTimelineModal() {
-    return `
-        <div class="action-modal-overlay" id="timelineModal">
-            <div class="action-modal wide-modal">
-                <div class="modal-header">
-                    <h3>📅 Exercise History Timeline</h3>
-                    <button class="close-modal-btn">&times;</button>
-                </div>
-                <div class="modal-content" id="timelineContent">
-                    <div class="timeline-loading">
-                        <p>Loading exercise history...</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    `;
 }
 
 function setupTimelineModalEvents() {
@@ -5132,8 +5117,8 @@ function initializeActionBar() {
 
 
 //=================================
-// SETUP PROFILE EVENT LISTENERS
-//===========================
+// SETUP PROFILE EVENT LISTENERS for petcards
+//=============================================
 function setupProfileEventListeners() {
    // BCS Reassessment button listener 
  // calls the modal 
