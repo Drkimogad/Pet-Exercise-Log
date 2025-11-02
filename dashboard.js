@@ -2103,16 +2103,29 @@ function calculateCaloriesFromExercise(exercise) {
     return Math.round(baseRate * exercise.duration);
 }
 
-// Delete a suggested exercise (remove from display)
+// Delete a suggested exercise (remove from display) updated
 function deleteSuggestion(petIndex, exerciseId) {
-    // For now, just remove from display - suggestions are regenerated each time
-    // In future, we could store dismissed suggestions
-    const suggestionElement = document.querySelector(`[data-exercise="${exerciseId}"]`);
+    console.log(`🗑️ Deleting suggestion ${exerciseId} for pet ${petIndex}`);
+    
+    // Find the suggestion element
+    const suggestionElement = document.querySelector(`.suggested-exercise-item [data-exercise="${exerciseId}"]`)?.closest('.suggested-exercise-item');
+    
     if (suggestionElement) {
+        // Add fade-out animation
         suggestionElement.style.opacity = '0.5';
+        suggestionElement.style.transition = 'opacity 0.3s ease';
+        
+        // Remove after animation
         setTimeout(() => {
-            loadSavedProfiles(); // Refresh to regenerate suggestions
+            suggestionElement.remove();
+            
+            // Refresh the suggestions display to regenerate without the deleted one
+            loadSavedProfiles();
+            
+            console.log(`✅ Suggestion ${exerciseId} removed`);
         }, 300);
+    } else {
+        console.error('❌ Suggestion element not found');
     }
 }
 
@@ -5542,14 +5555,16 @@ document.querySelectorAll('.edit-details-btn').forEach(btn => {
   });
 });
 
-  // Delete button
-  document.querySelectorAll('.delete-btn').forEach(btn => {
+  // Delete button updated
+// In setupProfileEventListeners() - find the delete suggestion button section:
+document.querySelectorAll('.delete-suggestion-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const index = parseInt(btn.dataset.index);
-      deletePetProfile(index);
+        e.stopPropagation();
+        const petIndex = parseInt(btn.dataset.index);
+        const exerciseId = btn.dataset.exercise;
+        deleteSuggestion(petIndex, exerciseId);
     });
-  });
+});
 
   // Report button
 document.querySelectorAll('.report-btn').forEach(btn => {
