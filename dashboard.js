@@ -1868,7 +1868,36 @@ function sharePetProfile(index) {
 // Get pets from localStorage
 //It retrieves ALL saved pet profiles from the browser's localStorage.
 function getPets() {
-    return JSON.parse(localStorage.getItem('pets') || '[]');
+    const pets = JSON.parse(localStorage.getItem('pets') || '[]');
+    
+    // ADD DATA MIGRATION FOR EXISTING PETS
+    let needsSave = false;
+    pets.forEach(pet => {
+        if (!pet.reminderSettings) {
+            pet.reminderSettings = {
+                enabled: true,
+                threshold: 3,
+                lastChecked: new Date().toISOString().split('T')[0]
+            };
+            needsSave = true;
+        }
+        if (!pet.goalSettings) {
+            pet.goalSettings = {
+                enabled: false,
+                weeklyTarget: 5,
+                currentWeekStart: getCurrentWeekStart(),
+                exercisesThisWeek: 0,
+                streak: 0
+            };
+            needsSave = true;
+        }
+    });
+    
+    if (needsSave) {
+        localStorage.setItem('pets', JSON.stringify(pets));
+    }
+    
+    return pets;
 }
 
 //===============================
