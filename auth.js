@@ -305,6 +305,8 @@ firebase.auth().onAuthStateChanged((user) => {
             username: user.displayName || user.email,
             email: user.email
         };
+    // ADD THIS LINE FOR PETDATA SERVICE INITIALIZATION FROM UTILS.JS
+    if (window.petDataService) await window.petDataService.initialize(user.uid);
         
         // Wait for dashboard.js to load
         setTimeout(() => {
