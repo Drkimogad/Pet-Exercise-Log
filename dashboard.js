@@ -7045,15 +7045,15 @@ document.querySelectorAll('.report-btn').forEach(btn => {
     });
   });
 
-  // Click anywhere on card to select
-  document.querySelectorAll('.profile-card').forEach(card => {
-    card.addEventListener('click', (e) => {
-      if (!e.target.closest('.profile-actions')) {
-        const index = parseInt(card.dataset.petIndex);
-        selectPetProfile(index);
-      }
-    });
+  // Click anywhere on card to select  
+document.querySelectorAll('.profile-card').forEach(card => {
+  card.addEventListener('click', async (e) => { // ← ADD ASYNC
+    if (!e.target.closest('.profile-actions')) {
+      const index = parseInt(card.dataset.petIndex);
+      await selectPetProfile(index); // ← ADD AWAIT
+    }
   });
+});
  
  // Suggested exercise buttons
 document.querySelectorAll('.log-exercise-btn').forEach(btn => {
