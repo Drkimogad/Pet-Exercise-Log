@@ -58,12 +58,18 @@ const MOOD_OPTIONS = [
     { value: 9, emoji: '😰', label: 'Anxious' }
 ];
 
+// user ID management                       WILL NEED TO BE MODIFIED 
+function getCurrentUserId() {
+    // Replace with your actual user ID retrieval
+    return sessionStorage.getItem('userId') || 'demo_user';
+}
 
 // move it outside handleFormSubmit and initialized in it.
 // it retrieves everything via the helper
 function initializeNewPet() {
     return {
         petDetails: {
+            id: 'pet_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9), //for archive system
             // Basic Information
             type: '',
             name: '',
