@@ -713,9 +713,10 @@ async function loadSavedProfiles() {
         </button>
       </div>
     </div>
-  `}).join('');
+ `;
+    })); // ← Close Promise.all and map
 
-  document.getElementById('savedProfiles').innerHTML = profilesHTML;
+ document.getElementById('savedProfiles').innerHTML = profilesHTML.join(''); // ← .join() HERE
   setupProfileEventListeners();
 }
 
