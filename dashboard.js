@@ -1243,9 +1243,11 @@ function populateHealthAssessmentForm(pet) {
    //      PROFILE ACTION FUNCTIONS
 //==========================================================
 // SELECT PROFILE TO VIEW AND WORK WITH WITHOUT EDITTING MODE
-function selectPetProfile(index) {
+async function selectPetProfile(index) { // ← ADD ASYNC
   activePetIndex = index;
   sessionStorage.setItem('activePetIndex', activePetIndex);
+    
+const pets = await getPets(); // ← ADD AWAIT
   updateDashboard(getPets()[activePetIndex]);
   loadSavedProfiles(); // Refresh to show selected state
 }
