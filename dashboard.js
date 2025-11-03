@@ -723,6 +723,23 @@ async function loadSavedProfiles() {
 // Helper function for suggested exercises (placeholder - we'll enhance this)
 async function generateSuggestedExercises(pet) {
         const pets = await getPets(); // ← ADD AWAIT
+      // ADD SAFETY CHECK:
+    if (!pets || !Array.isArray(pets)) {
+        console.warn('⚠️ No pets array found for suggestions');
+        return [];
+    }
+          // ADD SAFETY CHECK FOR PET DETAILS:
+    if (!pet || !pet.petDetails) {
+        console.warn('⚠️ No pet details found for suggestions');
+        return [{
+            id: 'default_walk',
+            name: 'Daily Walk',
+            duration: 30,
+            intensity: 'Medium', 
+            reason: 'General health maintenance'
+        }];
+    }
+    
     // This will be enhanced with smart logic based on health assessment
     const suggestions = [];
     
