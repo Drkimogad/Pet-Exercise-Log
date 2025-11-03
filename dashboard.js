@@ -1645,7 +1645,8 @@ function forceReturnToDashboard() {
 // 8.Show daily log form for exercise and mood logging
 function showDailyLogForm(index) {  
     console.log('🔄 showDailyLogForm called for index:', index);
-    
+   const pets = await getPets(); // ADD AWAIT       we may have to remove cont!
+
     try {
         // Validate input and get pet data
         if (index === undefined || index === null) {
