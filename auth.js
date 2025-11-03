@@ -273,7 +273,7 @@ function logout() {
 }
 
 // Finally, update initAuth to handle Firebase auth state:
-async function initAuth() {  // await petDataService 
+function initAuth() {  // await petDataService 
     // Show auth logo initially
     toggleAuthHeader(true);
     
@@ -297,7 +297,7 @@ async function initAuth() {  // await petDataService
     handlePasswordResetFromEmail();
 
 // Firebase Auth State Listener
-firebase.auth().onAuthStateChanged((user) => {
+firebase.auth().onAuthStateChanged(async (user) => {  // ADD ASYNC HERE
     if (user) {
         // User is signed in
         currentUser = {
