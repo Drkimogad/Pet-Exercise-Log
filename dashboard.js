@@ -1609,7 +1609,7 @@ function forceReturnToDashboard() {
         loadSavedProfiles();
     }, 100);
     
-    AppHelper.showError('Returned to dashboard due to an error');
+    showError('Returned to dashboard due to an error');
 }
 
 // =========================================================================================
@@ -1827,7 +1827,7 @@ if (window.petDataService) {
 
     } catch (error) {
         console.error('❌ Error in daily log submission:', error);
-        AppHelper.showError('Failed to save daily log: ' + error.message);
+        showError('Failed to save daily log: ' + error.message);
     }
 }
 
@@ -1927,7 +1927,7 @@ function sharePetProfile(index) {
       })
       .catch(err => {
         console.error('Failed to copy: ', err);
-        AppHelper.showError('Sharing not supported on this browser');
+        showError('Sharing not supported on this browser');
       });
   }
 }
