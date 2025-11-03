@@ -673,7 +673,7 @@ async function loadSavedProfiles() {
           <span>💡 Suggested Exercises</span>
         </div>
         <div class="suggested-exercises-list">
-         ${generateSuggestedExercises(pet).map((exercise, i) => {
+${suggestedExercises.map((exercise, i) => {
     const isLogged = logged.includes(exercise.id);
     return `
         <div class="suggested-exercise-item">
