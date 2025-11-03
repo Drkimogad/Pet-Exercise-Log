@@ -181,7 +181,7 @@ async function handleHealthAssessmentSubmit(e) {
         console.log('📋 Health assessment data collected:', formData);
 
         // Get current pets and prepare pet data
-        const pets = getPets();
+        const pets = await getPets();
         let petData;
 
         if (activePetIndex === null) {
@@ -273,7 +273,7 @@ sessionStorage.setItem('activePetIndex', activePetIndex);
 
     } catch (error) {
         console.error('❌ CRITICAL ERROR in handleHealthAssessmentSubmit:', error);
-        AppHelper.showError('Failed to save health assessment: ' + error.message);
+        showError('Failed to save health assessment: ' + error.message);
     }
 }
 
