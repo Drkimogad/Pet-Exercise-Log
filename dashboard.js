@@ -86,7 +86,7 @@ window.addEventListener('message', function(event) {
     }
 });
 
-/===============================================
+//===============================================
 // ONE TIME MIGRATION FUNCTION FOR FUTURE USE
 //===========================================
 //function migrateExistingPets() {
