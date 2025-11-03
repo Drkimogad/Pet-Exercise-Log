@@ -58,10 +58,14 @@ const MOOD_OPTIONS = [
     { value: 9, emoji: '😰', label: 'Anxious' }
 ];
 
-// user ID management                       WILL NEED TO BE MODIFIED 
+// Simple user ID - replace with your auth later
 function getCurrentUserId() {
-    // Replace with your actual user ID retrieval
-    return sessionStorage.getItem('userId') || 'demo_user';
+    let userId = sessionStorage.getItem('userId');
+    if (!userId) {
+        userId = 'user_' + Date.now();
+        sessionStorage.setItem('userId', userId);
+    }
+    return userId;
 }
 
 // ===============================================
@@ -89,8 +93,8 @@ window.addEventListener('message', function(event) {
 // it retrieves everything via the helper
 function initializeNewPet() {
     return {
-        petDetails: {
             id: 'pet_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9), //for archive system
+            petDetails: {
             // Basic Information
             type: '',
             name: '',
