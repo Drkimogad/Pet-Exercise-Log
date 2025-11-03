@@ -452,9 +452,8 @@ function returnToDashboard() {
 //  Load saved profiles - REFACTORED STRUCTURE
 //==========================================
 function loadSavedProfiles() {
-   // pets = await getPets();
-    const pets = await getPets(); // ADD AWAIT
-
+    pets = await getPets(); // ← Update global pets
+    
     if (pets.length === 0) { 
         document.getElementById('profileContainer').innerHTML = `
             <div class="empty-state">
@@ -1646,7 +1645,7 @@ function forceReturnToDashboard() {
 // 8.Show daily log form for exercise and mood logging
 function showDailyLogForm(index) {  
     console.log('🔄 showDailyLogForm called for index:', index);
-   const pets = await getPets(); // ADD AWAIT       we may have to remove cont!
+    const pets = await getPets(); // ← This is fine (local scope)
 
     try {
         // Validate input and get pet data
