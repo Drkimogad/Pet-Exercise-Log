@@ -6329,9 +6329,10 @@ function updateGoalsProgress() {
     
     console.log(`✅ Goals progress updated: ${totalExercises}/${totalTarget} (${overallProgress}%)`);
 }
+
 // STEP 3.7: Add Auto-Goal Tracking to Exercise Logging
 // Call this function whenever a new exercise is logged
-function updateGoalsOnExerciseLogged(petIndex) {
+async function updateGoalsOnExerciseLogged(petIndex) { // ADD ASYNC
     console.log(`🎯 Updating goals for pet ${petIndex} after exercise logged`);
     
     const pets = getPets();
@@ -6347,7 +6348,12 @@ function updateGoalsOnExerciseLogged(petIndex) {
             showGoalAchievedNotification(pets[petIndex].petDetails.name);
         }
         
+// REPLACED: Save using PetDataService
+    if (window.petDataService) {
+        await window.petDataService.savePet(pets[petIndex]);
+    } else {
         localStorage.setItem('pets', JSON.stringify(pets));
+    }     
         
         // Update UI
         updateGoalsProgress();
