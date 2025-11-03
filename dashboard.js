@@ -1649,7 +1649,7 @@ function forceReturnToDashboard() {
 // ========================================================================================
 
 // 8.Show daily log form for exercise and mood logging
-function showDailyLogForm(index) {  
+async function showDailyLogForm(index) {  
     console.log('🔄 showDailyLogForm called for index:', index);
     const pets = await getPets(); // ← This is fine (local scope)
 
