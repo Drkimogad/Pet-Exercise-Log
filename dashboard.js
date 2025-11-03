@@ -720,62 +720,7 @@ async function loadSavedProfiles() {
   setupProfileEventListeners();
 }
 
-// Helper function for suggested exercises (placeholder - we'll enhance this)
-async function generateSuggestedExercises(pet) {
-        const pets = await getPets(); // ← ADD AWAIT
-      // ADD SAFETY CHECK:
-    if (!pets || !Array.isArray(pets)) {
-        console.warn('⚠️ No pets array found for suggestions');
-        return [];
-    }
-          // ADD SAFETY CHECK FOR PET DETAILS:
-    if (!pet || !pet.petDetails) {
-        console.warn('⚠️ No pet details found for suggestions');
-        return [{
-            id: 'default_walk',
-            name: 'Daily Walk',
-            duration: 30,
-            intensity: 'Medium', 
-            reason: 'General health maintenance'
-        }];
-    }
-    
-    // This will be enhanced with smart logic based on health assessment
-    const suggestions = [];
-    
-    if (pet.petDetails.bcs && pet.petDetails.bcs >= 4) {
-        suggestions.push({
-            id: 'weight_walk',
-            name: 'Gentle Weight Loss Walk',
-            duration: 20,
-            intensity: 'Low',
-            reason: 'Helps with weight management'
-        });
-    }
-    
-    if (pet.petDetails.medicalConditions && pet.petDetails.medicalConditions.includes('arthritis')) {
-        suggestions.push({
-            id: 'water_therapy',
-            name: 'Water Therapy',
-            duration: 15,
-            intensity: 'Low',
-            reason: 'Gentle on joints'
-        });
-    }
-    
-    // Default suggestion if none match
-    if (suggestions.length === 0) {
-        suggestions.push({
-            id: 'daily_walk',
-            name: 'Daily Walk',
-            duration: 30,
-            intensity: 'Medium', 
-            reason: 'General health maintenance'
-        });
-    }
-    
-    return suggestions;
-}
+
 
 // Helper function for BCS display text/ ❤️
 function getBCSDisplay(bcs) {
@@ -2064,8 +2009,8 @@ function handleImageUpload(e) {
 // ===============================================
 
 // Generate smart exercise suggestions based on health assessment
-function generateSuggestedExercises(pet) {
-    const pets = getPets();
+async function generateSuggestedExercises(pet) {
+    const pets = await getPets();
     const petIndex = pets.findIndex(p => p.petDetails.name === pet.petDetails.name); //defined petdetails
     
     const dismissed = JSON.parse(localStorage.getItem(DISMISSED_SUGGESTIONS_KEY) || '{}')[petIndex] || [];
@@ -2209,7 +2154,8 @@ function generateSuggestedExercises(pet) {
 // SINGLE RETURN STATEMENT - filter dismissed and limit to 3
     return suggestions.filter(suggestion => 
         !dismissed.includes(suggestion.id) && !logged.includes(suggestion.id) // filter by logged and dismissed suggesions 
-    ).slice(0, 3);}
+    ).slice(0, 3);
+}
 
 // Log a suggested exercise (convert to actual exercise entry) updated
 async function logSuggestedExercise(petIndex, exerciseId) { // ADD ASYNC
