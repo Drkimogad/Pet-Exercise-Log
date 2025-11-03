@@ -2185,7 +2185,7 @@ function generateSuggestedExercises(pet) {
     ).slice(0, 3);}
 
 // Log a suggested exercise (convert to actual exercise entry) updated
-function logSuggestedExercise(petIndex, exerciseId) {
+async function logSuggestedExercise(petIndex, exerciseId) { // ADD ASYNC
     const pets = getPets();
     const pet = pets[petIndex];
     const suggestions = generateSuggestedExercises(pet);
@@ -2211,8 +2211,12 @@ function logSuggestedExercise(petIndex, exerciseId) {
     pet.exerciseEntries = pet.exerciseEntries || [];
     pet.exerciseEntries.push(exerciseEntry);
     
-    // Save and refresh
-    localStorage.setItem('pets', JSON.stringify(pets));
+// REPLACED: Save using PetDataService
+    if (window.petDataService) {
+        await window.petDataService.savePet(pet);
+    } else {
+        localStorage.setItem('pets', JSON.stringify(pets));
+    }  
     
     // Update the button to show "LOGGED" and disable it
    // ADD TO LOGGED SUGGESTIONS
