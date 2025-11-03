@@ -273,7 +273,7 @@ function logout() {
 }
 
 // Finally, update initAuth to handle Firebase auth state:
-function initAuth() {
+async function initAuth() {  // await petDataService 
     // Show auth logo initially
     toggleAuthHeader(true);
     
