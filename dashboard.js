@@ -3374,6 +3374,7 @@ function generateReport(pet) {
                 ${generatePetDetailsHTML(pet)}
                 ${generateHealthSummaryHTML(pet)}
                 ${generateExerciseSummaryHTML(pet.exerciseEntries)}
+                ${generateSuggestedExercisesReportHTML(pet)}
                 ${generateExerciseCalendarHTML(pet)}
                 ${pet.moodLogs && pet.moodLogs.length > 0 ? generateMoodCalendarHTML(pet) : ''}
                 ${pet.exerciseEntries && pet.exerciseEntries.length > 0 ? generateExerciseChartsHTML(pet.exerciseEntries) : ''}
@@ -3490,7 +3491,42 @@ function formatMedicalCondition(condition) {
     return conditionMap[condition] || condition;
 }
 
-
+// GENERATE SUGGESTED EXERCISES R
+function generateSuggestedExercisesReportHTML(pet) {
+    const pets = getPets();
+    const petIndex = pets.findIndex(p => p.petDetails.name === pet.petDetails.name);
+    const logged = JSON.parse(localStorage.getItem(LOGGED_SUGGESTIONS_KEY) || '{}')[petIndex] || [];
+    
+    if (logged.length === 0) {
+        return '<p>No suggested exercises logged yet.</p>';
+    }
+    
+    const suggestions = generateSuggestedExercises(pet);
+    const loggedSuggestions = suggestions.filter(s => logged.includes(s.id));
+    
+    return `
+        <div style="margin-top: 30px;">
+            <h2>Suggested Exercises Used</h2>
+            <table style="width: 100%; border-collapse: collapse; margin: 15px 0;">
+                <tr>
+                    <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Exercise</th>
+                    <th style="border: 1px solid #ddd; padding: 8px; text-align: center;">Duration</th>
+                    <th style="border: 1px solid #ddd; padding: 8px; text-align: center;">Intensity</th>
+                    <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Reason</th>
+                </tr>
+                ${loggedSuggestions.map(suggestion => `
+                    <tr>
+                        <td style="border: 1px solid #ddd; padding: 8px;">${suggestion.name}</td>
+                        <td style="border: 1px solid #ddd; padding: 8px; text-align: center;">${suggestion.duration} min</td>
+                        <td style="border: 1px solid #ddd; padding: 8px; text-align: center;">${suggestion.intensity}</td>
+                        <td style="border: 1px solid #ddd; padding: 8px;">${suggestion.reason}</td>
+                    </tr>
+                `).join('')}
+            </table>
+            <p><small>Total suggested exercises used: ${loggedSuggestions.length}</small></p>
+        </div>
+    `;
+}
 
 function generateExerciseCalendarHTML(pet) {
     const now = new Date();
