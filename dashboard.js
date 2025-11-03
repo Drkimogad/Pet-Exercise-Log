@@ -3555,8 +3555,8 @@ function checkAndTriggerMonthlyArchive() {
  */
 async function archiveAllPetsForMonth(year, month) {
     console.log(`📦 Archiving all pets for ${year}-${month}`);
-    
-    const pets = getPets();
+    const pets = await getPets(); // ← ADD THIS LINE
+
     const userId = getCurrentUserId(); // We'll need to implement this
     // In archiveAllPetsForMonth()
     const reportData = generateEnhancedReportData(pet, year, month);
@@ -5660,9 +5660,14 @@ function setupRemindersModalEvents() {
 
 function calculateReminders() {
     console.log('🔄 Calculating exercise reminders');
-    const pets = getPets();
+    const pets = getPets(); // ← This might be returning undefined
     const reminders = [];
     
+        // ADD SAFETY CHECK:
+    if (!pets || !Array.isArray(pets)) {
+        console.warn('⚠️ No pets array found for reminders');
+        return [];
+    }
     pets.forEach((pet, index) => {
         const settings = getReminderSettings(index);
         if (!settings.enabled) return;
