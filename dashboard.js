@@ -1627,7 +1627,6 @@ async function showDailyLogForm(index) {
             throw new Error('Invalid pet index provided');
         }
 
-        const pets = getPets();
         if (!pets[index]) {
             throw new Error(`Pet not found at index: ${index}`);
         }
@@ -1669,7 +1668,7 @@ async function showDailyLogForm(index) {
         
     } catch (error) {
         console.error('❌ Error in showDailyLogForm:', error);
-        AppHelper.showError(`Failed to load daily log: ${error.message}`);
+        showError(`Failed to load daily log: ${error.message}`);
         returnToDashboard();
     }
 }
