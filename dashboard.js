@@ -5001,9 +5001,148 @@ function generateExerciseSummaryHTML(exerciseEntries) {
     `;
 }
 
-//======================================
+//FIRESTORE
+// ===============================================
+// 🗂️ FIRESTORE SCHEMA SETUP
+// ===============================================
+
+/**
+ * Ensures the yearly report collection exists
+ */
+async function setupYearlySchema(year) {
+    try {
+        console.log(`🗂️ Setting up schema for year ${year}`);
+        
+        // Create metadata document if it doesn't exist
+        await db.collection(`yearlyreport${year}`)
+                .doc('metadata')
+                .set({
+                    year: year,
+                    totalReports: 0,
+                    lastUpdated: new Date().toISOString(),
+                    schemaVersion: '1.0'
+                }, { merge: true });
+                
+        console.log(`✅ Schema ready for year ${year}`);
+        return true;
+    } catch (error) {
+        console.error('❌ Schema setup failed:', error);
+        return false;
+    }
+}
+// ===============================================
+// 💾 SAVE REPORT TO FIRESTORE
+// ===============================================
+
+/**
+ * Saves enhanced report data to Firestore
+ * @param {string} userId - Current user ID
+ * @param {Object} reportData - From generateEnhancedReportData()
+ * @returns {Promise<boolean>} Success status
+ */
+async function saveReportToFirestore(userId, reportData) {
+    try {
+        console.log(`💾 Saving report to Firestore: ${reportData.reportPeriod}`);
+        
+        const year = reportData.year;
+        const reportId = `${userId}_${reportData.petId}_${year}${reportData.month.toString().padStart(2, '0')}`;
+        
+        // 1. Ensure schema exists
+        await setupYearlySchema(year);
+        
+        // 2. Save the report document
+        await db.collection(`yearlyreport${year}`)
+                .doc('reports')
+                .collection('reports')
+                .doc(reportId)
+                .set({
+                    ...reportData,
+                    userId: userId,
+                    archivedAt: new Date().toISOString()
+                });
+        
+        // 3. Update metadata count
+        await db.collection(`yearlyreport${year}`)
+                .doc('metadata')
+                .update({
+                    totalReports: firebase.firestore.FieldValue.increment(1),
+                    lastUpdated: new Date().toISOString()
+                });
+        
+        console.log(`✅ Report saved: ${reportId}`);
+        return true;
+        
+    } catch (error) {
+        console.error('❌ Save failed:', error);
+        return false;
+    }
+}
+// ===============================================
+// 📥 LOAD REPORTS FROM FIRESTORE
+// ===============================================
+
+/**
+ * Loads user's archived reports for a specific year
+ */
+async function loadUserReportsFromFirestore(userId, year, petId = null) {
+    try {
+        console.log(`📥 Loading reports for user ${userId}, year ${year}`);
+        
+        let query = db.collection(`yearlyreport${year}`)
+                     .doc('reports')
+                     .collection('reports')
+                     .where('userId', '==', userId);
+        
+        // Filter by pet if specified
+        if (petId) {
+            query = query.where('petId', '==', petId);
+        }
+        
+        const snapshot = await query.get();
+        const reports = snapshot.docs.map(doc => doc.data());
+        
+        console.log(`✅ Loaded ${reports.length} reports for ${year}`);
+        return reports;
+        
+    } catch (error) {
+        console.error('❌ Load failed:', error);
+        return [];
+    }
+}
+
+/**
+ * Loads a specific archived report
+ */
+async function loadSpecificReportFromFirestore(userId, petId, year, month) {
+    try {
+        const reportId = `${userId}_${petId}_${year}${month.toString().padStart(2, '0')}`;
+        
+        const doc = await db.collection(`yearlyreport${year}`)
+                           .doc('reports')
+                           .collection('reports')
+                           .doc(reportId)
+                           .get();
+        
+        if (doc.exists) {
+            console.log(`✅ Found archived report: ${reportId}`);
+            return doc.data();
+        } else {
+            console.log(`📭 No archived report found: ${reportId}`);
+            return null;
+        }
+        
+    } catch (error) {
+        console.error('❌ Load specific report failed:', error);
+        return null;
+    }
+}
+
+
+
+
+//==================================================
 // BCS Reassessment Modal - Complete Implementation
-//=====================
+//===============================================
 // ===============================================
 // BCS MODAL SYSTEM - FULLY DEBUGGED VERSION
 // ===============================================
