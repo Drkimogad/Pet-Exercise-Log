@@ -2013,7 +2013,8 @@ function handleImageUpload(e) {
 // Generate smart exercise suggestions based on health assessment
 async function generateSuggestedExercises(pet) {
     const pets = await getPets();
-    const petIndex = pets.findIndex(p => p.petDetails.name === pet.petDetails.name); //defined petdetails
+    //const petIndex = pets.findIndex(p => p.petDetails.name === pet.petDetails.name); //defined petdetails
+    const petIndex = pets.findIndex(p => p.petDetails?.name === pet.petDetails?.name);
     
     const dismissed = JSON.parse(localStorage.getItem(DISMISSED_SUGGESTIONS_KEY) || '{}')[petIndex] || [];
     const logged = JSON.parse(localStorage.getItem(LOGGED_SUGGESTIONS_KEY) || '{}')[petIndex] || [];
