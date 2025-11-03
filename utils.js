@@ -727,11 +727,15 @@ function generateGoalsHTML(goalsProgress) {
 // ===============================================
 // PET DATA SERVICE new firestore implementation
 // ===============================================
+// ===============================================
+// PET DATA SERVICE - FIRESTORE IMPLEMENTATION
+// ===============================================
 
 class PetDataService {
     constructor() {
         this.userId = null;
         this.isOnline = true;
+        this.db = firebase.firestore();
     }
     
     async initialize(userId) {
@@ -741,25 +745,85 @@ class PetDataService {
     }
     
     async savePet(petData) {
-        console.log('💾 Would save pet:', petData.petDetails.name);
-        // Firestore save will be implemented later
-        return true;
+        try {
+            console.log('💾 Saving pet to Firestore:', petData.petDetails.name);
+            
+            // Ensure pet has ID
+            if (!petData.id) {
+                petData.id = 'pet_' + Date.now();
+            }
+            
+            // Save to Firestore
+            await this.db.collection('petProfiles')
+                .doc(this.userId)
+                .collection('pets')
+                .doc(petData.id)
+                .set({
+                    ...petData,
+                    updatedAt: new Date().toISOString()
+                }, { merge: true }); // merge=true updates existing fields
+            
+            console.log('✅ Pet saved to Firestore:', petData.id);
+            
+            // Also update localStorage as fallback
+            this.updateLocalStorage(petData);
+            
+            return true;
+            
+        } catch (error) {
+            console.error('❌ Firestore save failed:', error);
+            // Fallback to localStorage only
+            this.updateLocalStorage(petData);
+            return false;
+        }
     }
     
     async loadUserPets() {
-        console.log('📥 Would load pets for user:', this.userId);
-        // Firestore load will be implemented later  
-        return [];
+        try {
+            console.log('📥 Loading pets from Firestore for user:', this.userId);
+            
+            const snapshot = await this.db.collection('petProfiles')
+                .doc(this.userId)
+                .collection('pets')
+                .get();
+            
+            const pets = snapshot.docs.map(doc => doc.data());
+            console.log(`✅ Loaded ${pets.length} pets from Firestore`);
+            
+            // Update localStorage with fresh data
+            localStorage.setItem('pets', JSON.stringify(pets));
+            
+            return pets;
+            
+        } catch (error) {
+            console.error('❌ Firestore load failed, using localStorage:', error);
+            // Fallback to localStorage
+            const pets = JSON.parse(localStorage.getItem('pets') || '[]');
+            return pets;
+        }
+    }
+    
+    updateLocalStorage(petData) {
+        try {
+            const pets = JSON.parse(localStorage.getItem('pets') || '[]');
+            const existingIndex = pets.findIndex(p => p.id === petData.id);
+            
+            if (existingIndex >= 0) {
+                pets[existingIndex] = petData;
+            } else {
+                pets.push(petData);
+            }
+            
+            localStorage.setItem('pets', JSON.stringify(pets));
+            console.log('💾 Updated localStorage backup');
+            
+        } catch (error) {
+            console.warn('LocalStorage update failed:', error);
+        }
     }
 }
 
 // Create global instance
 window.petDataService = new PetDataService();
-
-
-
-
-
-
 
 
