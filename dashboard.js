@@ -1912,10 +1912,14 @@ function validateDailyLogForm() {
 //=========================================
      // DELETE FUNCTION 
 //====================================
-function deletePetProfile(index) {
+async function deletePetProfile(index) { // ADD ASYNC
   if (confirm('Are you sure you want to delete this pet profile? This action cannot be undone.')) {
-    const pets = getPets();
+    const pets = await getPets();
     pets.splice(index, 1);
+
+      
+        // REPLACED: We'll handle delete in PetDataService later
+        // For now, use localStorage
     localStorage.setItem('pets', JSON.stringify(pets));
     
     if (activePetIndex === index) {
