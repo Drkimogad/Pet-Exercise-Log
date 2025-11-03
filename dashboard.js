@@ -477,6 +477,7 @@ async function loadSavedProfiles() {
         const totalCalories = pet.exerciseEntries.reduce((sum, entry) => sum + entry.caloriesBurned, 0);
         const avgDuration = totalSessions > 0 ? (totalDuration / totalSessions).toFixed(1) : 0;
         
+        const suggestedExercises = await generateSuggestedExercises(pet); // ← ADD AWAIT
         const logged = JSON.parse(localStorage.getItem(LOGGED_SUGGESTIONS_KEY) || '{}')[index] || []; 
         
         return `
