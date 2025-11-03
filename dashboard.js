@@ -4622,6 +4622,11 @@ function generateReport(pet) {
 
 function generatePetDetailsHTML(pet) {
     const details = pet.petDetails;
+     // ADD SAFETY CHECK:
+    if (!petDetails) {
+        console.warn('⚠️ No pet details found for report');
+        return '<p>Pet details not available</p>';
+    }
     
     return `
         <div>
