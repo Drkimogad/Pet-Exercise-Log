@@ -6164,7 +6164,7 @@ function updateGoalSettings(petIndex, settings) {
 
 async function calculateWeeklyGoals() {
     console.log('🔄 Calculating weekly goals progress');
-    const pets = getPets();
+    const pets = await getPets();
     const goalsProgress = [];
     
     // First, update exercise counts for all pets
