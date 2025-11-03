@@ -5467,7 +5467,7 @@ function updateSelectedDisplay(bcsValue) {
 }
 
 // DEBUGGED: Update Pet BCS
-function updatePetBCS(petIndex, selectedBCS) {
+async function updatePetBCS(petIndex, selectedBCS) { // ADD ASYNC
     console.log('🟢 MODAL: updatePetBCS() called');
     console.log('🟢 MODAL: Pet index:', petIndex);
     console.log('🟢 MODAL: New BCS:', selectedBCS);
@@ -5500,8 +5500,13 @@ function updatePetBCS(petIndex, selectedBCS) {
     console.log('🟢 MODAL: Auto-setting feeding recommendation:', newFeedingRec);
     pet.petDetails.feedingRecommendation = newFeedingRec;
     
-    // Save to localStorage
-    localStorage.setItem('pets', JSON.stringify(pets));
+    // REPLACED: Save using PetDataService
+    if (window.petDataService) {
+        await window.petDataService.savePet(pet);
+    } else {
+        localStorage.setItem('pets', JSON.stringify(pets));
+        console.log('🟢 MODAL: Pets saved to localStorage');
+    }    
     console.log('🟢 MODAL: Pets saved to localStorage');
     
     // Refresh UI
