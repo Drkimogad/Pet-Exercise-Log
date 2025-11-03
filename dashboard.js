@@ -3560,9 +3560,6 @@ async function archiveAllPetsForMonth(year, month) {
     const pets = await getPets(); // ← ADD THIS LINE
 
     const userId = getCurrentUserId(); // We'll need to implement this
-    // In archiveAllPetsForMonth()
-    const reportData = generateEnhancedReportData(pet, year, month);
-    await saveReportToFirestore(userId, reportData);
 
     if (!userId) {
         console.warn('❌ Cannot archive: No user ID available');
@@ -3575,6 +3572,8 @@ async function archiveAllPetsForMonth(year, month) {
         try {
             // 1. Generate enhanced report data
             const reportData = generateEnhancedReportData(pet, year, month);
+            await saveReportToFirestore(userId, reportData);
+
             
             // 2. Archive to Firestore
             const success = await ReportArchiveService.archiveMonthlyReport(userId, reportData);
