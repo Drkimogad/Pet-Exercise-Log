@@ -942,7 +942,7 @@ function showHealthAssessmentForm() {
 }
 
 // Handle health assessment form submission
-function handleHealthAssessmentSubmit(e) {
+async function handleHealthAssessmentSubmit(e) { // ← ADD ASYNC
     e.preventDefault();
     console.log('🔄 Health assessment form submission');
     
@@ -1787,7 +1787,7 @@ function handleDailyLogMoodSelection(e) {
 }
 
 // 12.Handle daily log form submission
-function handleDailyLogSubmit(e) {
+async function handleDailyLogSubmit(e) { // ← ADD ASYNC  
     e.preventDefault();
     console.log('🔄 Daily log form submission');
     
@@ -1835,8 +1835,14 @@ function handleDailyLogSubmit(e) {
         }
         
         // Save to storage
-        pets[activePetIndex] = pet;
-        localStorage.setItem('pets', JSON.stringify(pets));
+pets[activePetIndex] = pet;
+
+// REPLACED: Save using PetDataService
+if (window.petDataService) {
+    await window.petDataService.savePet(pet);
+} else {
+    localStorage.setItem('pets', JSON.stringify(pets));
+}
         console.log('💾 Daily log saved');
         
         // Show success and return to dashboard
