@@ -457,7 +457,7 @@ function returnToDashboard() {
 // ===============================================
 //  Load saved profiles - REFACTORED STRUCTURE
 //==========================================
-function loadSavedProfiles() {
+async function loadSavedProfiles() {
     pets = await getPets(); // ← Update global pets
     
     if (pets.length === 0) { 
