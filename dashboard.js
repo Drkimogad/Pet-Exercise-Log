@@ -21,8 +21,18 @@ let caloriesChart = null;
 let intensityChart = null;
 let activityChart = null; // If you use activity chart elsewhere
 
+// FOR SUGGESTED EXERCISES LOG AND CLOSE BUTTONS
 // Add to top of dashboard.js for dismissed suggestions 
 const DISMISSED_SUGGESTIONS_KEY = 'dismissedSuggestions';
+// Add to top with other global variables
+const LOGGED_SUGGESTIONS_KEY = 'loggedSuggestions';
+
+// Initialize logged suggestions
+function initializeLoggedSuggestions() {
+    if (!localStorage.getItem(LOGGED_SUGGESTIONS_KEY)) {
+        localStorage.setItem(LOGGED_SUGGESTIONS_KEY, JSON.stringify({}));
+    }
+}
 
 // Initialize dismissed suggestions if not exists
 function initializeDismissedSuggestions() {
@@ -399,7 +409,10 @@ function loadSavedProfiles() {
         const totalCalories = pet.exerciseEntries.reduce((sum, entry) => sum + entry.caloriesBurned, 0);
         const avgDuration = totalSessions > 0 ? (totalDuration / totalSessions).toFixed(1) : 0;
         
+        const logged = JSON.parse(localStorage.getItem(LOGGED_SUGGESTIONS_KEY) || '{}')[index] || []; 
+        
         return `
+        
     <div class="profile-card ${index === activePetIndex ? 'active' : ''}" data-pet-index="${index}">
       <!-- SECTION 1: BASIC INFO WITH QUICK STATS AND EDIT BUTTON -->
  <div class="basic-info-section">
@@ -591,23 +604,31 @@ function loadSavedProfiles() {
           <span>💡 Suggested Exercises</span>
         </div>
         <div class="suggested-exercises-list">
-          ${generateSuggestedExercises(pet).map((exercise, i) => `
-            <div class="suggested-exercise-item">
-              <div class="exercise-info">
+         ${generateSuggestedExercises(pet).map((exercise, i) => {
+    const isLogged = logged.includes(exercise.id);
+    return `
+        <div class="suggested-exercise-item">
+            <div class="exercise-info">
                 <strong>${exercise.name}</strong>
                 <small>${exercise.duration} min • ${exercise.intensity}</small>
                 <p>${exercise.reason}</p>
-              </div>
-              <div class="exercise-actions">
-                <button class="small-btn log-exercise-btn" data-index="${index}" data-exercise="${exercise.id}">
-                  LOG
-                </button>
-                <button class="small-btn delete-suggestion-btn" data-index="${index}" data-exercise="${exercise.id}">
-                  ✕
-                </button>
-              </div>
             </div>
-          `).join('')}
+            <div class="exercise-actions">
+                <button class="small-btn log-exercise-btn" 
+                    data-index="${index}" 
+                    data-exercise="${exercise.id}"
+                    ${isLogged ? 'disabled style="opacity:0.7; cursor:not-allowed;"' : ''}>
+                    ${isLogged ? 'LOGGED ✅' : 'LOG'}
+                </button>
+                <button class="small-btn delete-suggestion-btn" 
+                    data-index="${index}" 
+                    data-exercise="${exercise.id}">
+                    ✕
+                </button>
+            </div>
+        </div>
+    `;
+}).join('')}
         </div>
       </div>
 
@@ -1929,8 +1950,10 @@ function handleImageUpload(e) {
 // Generate smart exercise suggestions based on health assessment
 function generateSuggestedExercises(pet) {
     const pets = getPets();
-    const petIndex = pets.findIndex(p => p.petDetails.name === pet.petDetails.name);
+    const petIndex = pets.findIndex(p => p.petDetails.name === pet.petDetails.name); //defined petdetails
+    
     const dismissed = JSON.parse(localStorage.getItem(DISMISSED_SUGGESTIONS_KEY) || '{}')[petIndex] || [];
+    const logged = JSON.parse(localStorage.getItem(LOGGED_SUGGESTIONS_KEY) || '{}')[petIndex] || [];
     
     // Use pet.petDetails instead of undefined 'details'
     const details = pet.petDetails;
@@ -2068,8 +2091,9 @@ function generateSuggestedExercises(pet) {
     }
     
 // SINGLE RETURN STATEMENT - filter dismissed and limit to 3
-    return suggestions.filter(suggestion => !dismissed.includes(suggestion.id)).slice(0, 3);
-}
+    return suggestions.filter(suggestion => 
+        !dismissed.includes(suggestion.id) && !logged.includes(suggestion.id) // filter by logged and dismissed suggesions 
+    ).slice(0, 3);}
 
 // Log a suggested exercise (convert to actual exercise entry) updated
 function logSuggestedExercise(petIndex, exerciseId) {
@@ -2079,7 +2103,7 @@ function logSuggestedExercise(petIndex, exerciseId) {
     const exercise = suggestions.find(s => s.id === exerciseId);
     
     if (!exercise) {
-        AppHelper.showError('Exercise not found');
+        showError('Exercise not found');
         return;
     }
     
@@ -2102,14 +2126,14 @@ function logSuggestedExercise(petIndex, exerciseId) {
     localStorage.setItem('pets', JSON.stringify(pets));
     
     // Update the button to show "LOGGED" and disable it
-    const logBtn = document.querySelector(`.log-exercise-btn[data-exercise="${exerciseId}"]`);
-    if (logBtn) {
-        logBtn.textContent = 'LOGGED ✅';
-        logBtn.disabled = true;
-        logBtn.style.opacity = '0.7';
-        logBtn.style.cursor = 'not-allowed';
+   // ADD TO LOGGED SUGGESTIONS
+    const logged = JSON.parse(localStorage.getItem(LOGGED_SUGGESTIONS_KEY) || '{}');
+    if (!logged[petIndex]) logged[petIndex] = [];
+    if (!logged[petIndex].includes(exerciseId)) {
+        logged[petIndex].push(exerciseId);
+        localStorage.setItem(LOGGED_SUGGESTIONS_KEY, JSON.stringify(logged));
     }
-    
+        
     // Refresh displays
     loadSavedProfiles();
     updateGoalsOnExerciseLogged(petIndex);
