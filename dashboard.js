@@ -1949,9 +1949,9 @@ function sharePetProfile(index) {
   }
 }
 
-
-// Get pets from localStorage
-//It retrieves ALL saved pet profiles from the browser's localStorage.
+//===============================================================================
+// IT RETRIEVES ALL pets from  PETDAT SERVICE THEN FALLBACK TO localStorage
+//============================================================================
 async function getPets() {
     // Try PetDataService first, fallback to localStorage
     if (window.petDataService && window.petDataService.userId) {
@@ -1967,6 +1967,8 @@ async function getPets() {
     
     // Fallback to localStorage
     const pets = JSON.parse(localStorage.getItem('pets') || '[]');
+
+    // WE CAN TRY FIRSTORE DIRECTLY IN THE FUTURE IF THIS FAILS 
     
     // ADD DATA MIGRATION FOR EXISTING PETS
     let needsSave = false;
