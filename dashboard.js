@@ -469,7 +469,8 @@ async function loadSavedProfiles() {
         return;
     }
     
-    const profilesHTML = pets.map((pet, index) => {
+    const profilesHTML = await Promise.all(pets.map(async (pet, index) => { // ← ADD ASYNC/AWAIT
+        
         // Calculate exercise stats
         const totalSessions = pet.exerciseEntries.length;
         const totalDuration = pet.exerciseEntries.reduce((sum, entry) => sum + entry.duration, 0);
@@ -719,7 +720,8 @@ async function loadSavedProfiles() {
 }
 
 // Helper function for suggested exercises (placeholder - we'll enhance this)
-function generateSuggestedExercises(pet) {
+async function generateSuggestedExercises(pet) {
+        const pets = await getPets(); // ← ADD AWAIT
     // This will be enhanced with smart logic based on health assessment
     const suggestions = [];
     
