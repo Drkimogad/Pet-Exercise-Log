@@ -5698,12 +5698,16 @@ function showExerciseLog() {
    loadSavedProfiles(); // This will handle empty state vs profiles
    setupEventListeners();
    loadActivePetData();
+    // FOR SUGGESTED EXERCISES FILTRATION
    initializeDismissedSuggestions(); // to be filtered on refreshing 
-     // NEW: Initialize action bar
-// NEW: Initialize action bar - BUT DELAY IT until dashboard is visible
+    initializeLoggedSuggestions();
+        console.log('✅ Suggested exercises systems initialized');
+
+    // NEW: Initialize action bar - BUT DELAY IT until dashboard is visible
     setTimeout(() => {
         initializeActionBar();
     }, 100);
+    
  console.log('✅ Action bar integrated into dashboard');
 }
 
