@@ -6162,13 +6162,13 @@ function updateGoalSettings(petIndex, settings) {
 // WEEKLY GOALS CALCULATION LOGIC
 // ===============================================
 
-function calculateWeeklyGoals() {
+async function calculateWeeklyGoals() {
     console.log('🔄 Calculating weekly goals progress');
     const pets = getPets();
     const goalsProgress = [];
     
     // First, update exercise counts for all pets
-    updateAllExerciseCounts();
+   await updateAllExerciseCounts();
     
     pets.forEach((pet, index) => {
         const goals = getGoalSettings(index);
@@ -6182,8 +6182,8 @@ function calculateWeeklyGoals() {
     return goalsProgress;
 }
 
-function updateAllExerciseCounts() {
-    const pets = getPets();
+async function updateAllExerciseCounts() {
+    const pets = await getPets();
     const currentWeekStart = getCurrentWeekStart();
     let needsUpdate = false;
     
@@ -6246,11 +6246,11 @@ function calculatePetGoalProgress(pet, petIndex) {
     };
 }
 // Update the Goals Content Loader
-function loadGoalsContent() {
+async function loadGoalsContent() {
     const content = document.getElementById('goalsContent');
     if (!content) return;
     
-    const goalsProgress = calculateWeeklyGoals();
+    const goalsProgress =await calculateWeeklyGoals();
     
     if (goalsProgress.length === 0) {
         content.innerHTML = `
@@ -6302,25 +6302,25 @@ function loadGoalsContent() {
     `;
     }
 
-function showGoalsSetupGuide() {
+async function showGoalsSetupGuide() {
     alert('Goals setup guide will be implemented in the next step. For now, goals are automatically calculated based on exercise data.');
     
     // For testing, enable goals for first pet
-    const pets = getPets();
+    const pets = await getPets();
     if (pets.length > 0) {
         updateGoalSettings(0, { enabled: true, weeklyTarget: 5 });
         loadGoalsContent(); // Refresh the display
-        updateGoalsProgress(); // Update the action bar
+        await updateGoalsProgress(); // Update the action bar
     }
 }
 
 //STEP 3.6: Update the Goals Progress Display
 
-function updateGoalsProgress() {
+async function updateGoalsProgress() {
     const progressElement = document.getElementById('goalsProgress');
     if (!progressElement) return;
     
-    const goalsProgress = calculateWeeklyGoals();
+    const goalsProgress = await calculateWeeklyGoals();
     
     if (goalsProgress.length === 0) {
         progressElement.textContent = '';
