@@ -270,6 +270,7 @@ sessionStorage.setItem('activePetIndex', activePetIndex);
         returnToDashboard();
 
         console.log('✅ HEALTH ASSESSMENT FORM SUBMIT COMPLETED SUCCESSFULLY');
+    } // ← ADD THIS CLOSING BRACE FOR THE TRY BLOCK
 
     } catch (error) {
         console.error('❌ CRITICAL ERROR in handleHealthAssessmentSubmit:', error);
