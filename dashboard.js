@@ -952,7 +952,7 @@ async function handleHealthAssessmentSubmit(e) { // ← ADD ASYNC
         const validationErrors = validateHealthAssessmentForm();
         if (validationErrors.length > 0) {
             console.error('❌ Health form validation failed:', validationErrors);
-            AppHelper.showErrors(validationErrors);
+            showErrors(validationErrors);
             return;
         }
         
@@ -961,7 +961,7 @@ async function handleHealthAssessmentSubmit(e) { // ← ADD ASYNC
         console.log('📋 Health assessment data collected:', formData);
         
         // Create new pet profile
-        const pets = getPets();
+        const pets = await getPets();
         if (pets.length >= MAX_PETS) {
             AppHelper.showError(`Maximum of ${MAX_PETS} profiles reached`);
             return;
@@ -988,7 +988,7 @@ async function handleHealthAssessmentSubmit(e) { // ← ADD ASYNC
         
     } catch (error) {
         console.error('❌ Error in health assessment submission:', error);
-        AppHelper.showError('Failed to save health assessment: ' + error.message);
+        showError('Failed to save health assessment: ' + error.message);
     }
 }
 
