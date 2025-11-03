@@ -1286,6 +1286,7 @@ function selectPetProfile(index) {
 // ===============================================
 function editPetProfile(index) {  
     console.log('🔄 editPetProfile called for index:', index);
+    const pets = await getPets(); // ← This is fine (local scope)
     
     try {
         // Validate input
