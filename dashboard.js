@@ -3384,7 +3384,8 @@ const ReportArchiveService = {
         // Implementation depends on your Firebase setup
         // This is the structure you approved:
         // yearlyreport2025/reports/user1_petA_202501/
-        
+            return await saveReportToFirestore(userId, reportData);
+
         const year = reportData.year;
         const month = reportData.month.toString().padStart(2, '0');
         const reportId = `${userId}_${reportData.petId}_${year}${month}`;
@@ -3394,13 +3395,12 @@ const ReportArchiveService = {
         console.log(`📍 Would save to: yearlyreport${year}/reports/${reportId}`);
         
         // Example implementation (commented out until Firebase setup):
-        /*
         await db.collection(`yearlyreport${year}`)
                 .doc('reports')
                 .collection('reports')
                 .doc(reportId)
                 .set(archiveDoc);
-        */
+        
         
         return true; // Simulate success for now
     },
@@ -3500,7 +3500,10 @@ async function archiveAllPetsForMonth(year, month) {
     
     const pets = getPets();
     const userId = getCurrentUserId(); // We'll need to implement this
-    
+    // In archiveAllPetsForMonth()
+    const reportData = generateEnhancedReportData(pet, year, month);
+    await saveReportToFirestore(userId, reportData);
+
     if (!userId) {
         console.warn('❌ Cannot archive: No user ID available');
         return;
@@ -3585,6 +3588,9 @@ function archiveCurrentMonthManual() {
  * Manual trigger to archive specific month
  */
 function archiveSpecificMonthManual(year, month) {
+    // In manual archive triggers
+  await saveReportToFirestore(userId, reportData);
+    
     if (confirm(`Archive ${year}-${month} reports for all pets?`)) {
         archiveAllPetsForMonth(year, month);
     }
@@ -3867,6 +3873,8 @@ function createArchivedReportsModal(petName, petId) {
  */
 async function loadArchivedReportsContent(petId) {
     const content = document.getElementById('archivedReportsContent');
+    // In loadArchivedReports()
+   const reports = await loadUserReportsFromFirestore(userId, year, petId);
     if (!content) return;
     
     try {
@@ -4005,11 +4013,12 @@ async function loadArchivedReports(userId, petId, year) {
 /**
  * Loads archives from Firestore
  */
-async function loadArchivesFromFirestore(userId, petId, year) {
+async function loadArchivesFromFirestore(userId, petId, year,month) {
+        return await loadSpecificReportFromFirestore(userId, petId, year, month);
     // Placeholder - will be implemented with your Firebase config
+    
     console.log(`🔍 Checking Firestore for ${year} archives...`);
     
-    /*
     const snapshot = await db.collection(`yearlyreport${year}`)
                             .doc('reports')
                             .collection('reports')
@@ -4021,7 +4030,6 @@ async function loadArchivesFromFirestore(userId, petId, year) {
         id: doc.id,
         ...doc.data()
     }));
-    */
     
     // Simulate empty for now
     return [];
