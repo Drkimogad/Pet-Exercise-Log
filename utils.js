@@ -724,7 +724,37 @@ function generateGoalsHTML(goalsProgress) {
 }
 
 
+// ===============================================
+// PET DATA SERVICE new firestore implementation
+// ===============================================
 
+class PetDataService {
+    constructor() {
+        this.userId = null;
+        this.isOnline = true;
+    }
+    
+    async initialize(userId) {
+        this.userId = userId;
+        console.log('📡 PetDataService initialized for user:', userId);
+        return true;
+    }
+    
+    async savePet(petData) {
+        console.log('💾 Would save pet:', petData.petDetails.name);
+        // Firestore save will be implemented later
+        return true;
+    }
+    
+    async loadUserPets() {
+        console.log('📥 Would load pets for user:', this.userId);
+        // Firestore load will be implemented later  
+        return [];
+    }
+}
+
+// Create global instance
+window.petDataService = new PetDataService();
 
 
 
