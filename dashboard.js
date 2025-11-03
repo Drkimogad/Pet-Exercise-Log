@@ -6738,7 +6738,15 @@ function showExerciseLog() {
     // FOR SUGGESTED EXERCISES FILTRATION
    initializeDismissedSuggestions(); // to be filtered on refreshing 
     initializeLoggedSuggestions();
-        console.log('✅ Suggested exercises systems initialized');
+    console.log('✅ Suggested exercises systems initialized');
+    
+    // ADD THESE LINES TO YOUR EXISTING INITIALIZATION:
+    // Initialize archive system
+    initializeCompleteArchiveSystem();
+    
+    // Setup message listener for archive actions
+    setupArchiveMessageListener();
+
 
     // NEW: Initialize action bar - BUT DELAY IT until dashboard is visible
     setTimeout(() => {
