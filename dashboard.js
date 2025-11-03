@@ -1289,7 +1289,7 @@ function selectPetProfile(index) {
 
 // 1.EDIT PET PROFILE 
 // ===============================================
-function editPetProfile(index) {  
+async function editPetProfile(index) {  
     console.log('🔄 editPetProfile called for index:', index);
     const pets = await getPets(); // ← This is fine (local scope)
     
