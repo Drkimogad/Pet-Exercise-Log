@@ -1983,7 +1983,9 @@ async function getPets() {
     
     // Fallback to localStorage
     const pets = JSON.parse(localStorage.getItem('pets') || '[]');
-
+     // Ensure it's always an array
+    return Array.isArray(pets) ? pets : [];
+    
     // WE CAN TRY FIRSTORE DIRECTLY IN THE FUTURE IF THIS FAILS 
     
     // ADD DATA MIGRATION FOR EXISTING PETS
@@ -5658,9 +5660,10 @@ function setupRemindersModalEvents() {
 // REMINDERS CALCULATION LOGIC
 // ===============================================
 
-function calculateReminders() {
+async function calculateReminders() {
     console.log('🔄 Calculating exercise reminders');
-    const pets = getPets(); // ← This might be returning undefined
+  //  const pets = getPets(); // ← This might be returning undefined
+ const pets = await getPets(); // ← ADD AWAIT
     const reminders = [];
     
         // ADD SAFETY CHECK:
@@ -5826,11 +5829,11 @@ function handleNotedReminder(petIndex) {
     // Update the badge count
     updateRemindersBadge();
 }
-function updateRemindersBadge() {                     //UPDATED
+async function updateRemindersBadge() {                     //UPDATED
     const badge = document.getElementById('remindersBadge');
     if (!badge) return;
     
-    const reminders = calculateReminders();
+    const reminders = await calculateReminders();
     const reminderCount = reminders.length;
     
     badge.textContent = reminderCount;
@@ -6978,20 +6981,20 @@ function setupActionBarEventListeners() {
     // Close modal handlers will be added when modals are created
 }
 
-function updateActionBarData() {
-    updateRemindersBadge();
-    updateGoalsProgress();
+async function updateActionBarData() {
+   await updateRemindersBadge();
+   await updateGoalsProgress();
 }
 
 //=========================================================================================
   // INITIALIZE ACTION BAR FUNCTION CALLED IN SHOWEXERCISELOG FUNCTION FOR INITIALIZATION
 //=================================================================================================
-function initializeActionBar() {
+async function initializeActionBar() {
     console.log('🔄 Initializing action bar');
     
     // Action bar HTML is already in index.html - just setup events
     setupActionBarEventListeners();
-    updateActionBarData();
+   await updateActionBarData();
     console.log('✅ Action bar initialized');
 }
 
