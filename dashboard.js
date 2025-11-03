@@ -3645,7 +3645,7 @@ function archiveCurrentMonthManual() {
 /**
  * Manual trigger to archive specific month
  */
-function archiveSpecificMonthManual(year, month) {
+async function archiveSpecificMonthManual(year, month) {
     // In manual archive triggers
   await saveReportToFirestore(userId, reportData);
     
