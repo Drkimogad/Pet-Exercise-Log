@@ -6986,15 +6986,15 @@ document.querySelectorAll('.bcs-reassess-btn').forEach(btn => {
     });
  }); 
  
-  // Select button
-  document.querySelectorAll('.select-btn').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const index = parseInt(btn.dataset.index);
-      selectPetProfile(index);
-    });
+ // Select button
+document.querySelectorAll('.select-btn').forEach(btn => {
+  btn.addEventListener('click', async (e) => { // ← ADD ASYNC
+    e.stopPropagation();
+    const index = parseInt(btn.dataset.index);
+    await selectPetProfile(index); // ← ADD AWAIT
   });
-
+});
+    
    // Edit button → Now becomes Daily Log button
   document.querySelectorAll('.daily-log-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
