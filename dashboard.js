@@ -4587,13 +4587,14 @@ function generateReport(pet) {
 
 
 function generatePetDetailsHTML(pet) {
-    const details = pet.petDetails;
-     // ADD SAFETY CHECK:
-    if (!petDetails) {
+        // ADD SAFETY CHECK FIRST:
+    if (!pet || !pet.petDetails) {
         console.warn('⚠️ No pet details found for report');
         return '<p>Pet details not available</p>';
     }
     
+    const details = pet.petDetails;
+ 
     return `
         <div>
             <h2>Pet Details & Health Assessment</h2>
