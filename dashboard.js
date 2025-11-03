@@ -64,6 +64,27 @@ function getCurrentUserId() {
     return sessionStorage.getItem('userId') || 'demo_user';
 }
 
+// ===============================================
+// MESSAGE LISTENERS FOR REPORT SYSTEM
+// ===============================================
+// Listen for archive requests from report windows
+window.addEventListener('message', function(event) {
+    if (event.data.action === 'showArchivedReports') {
+        console.log('📨 Received archive request for:', event.data.petName);
+        showArchivedReportsModal(event.data.petName, event.data.petId);
+    }
+});
+
+// Listen for other potential report actions
+window.addEventListener('message', function(event) {
+    if (event.data.action === 'manualArchive') {
+        archiveCurrentMonthManual();
+    }
+});
+
+
+
+// FUNCTIONS DEFINITION STARTS HERE
 // move it outside handleFormSubmit and initialized in it.
 // it retrieves everything via the helper
 function initializeNewPet() {
@@ -4299,19 +4320,69 @@ function setupArchiveMessageListener() {
 
 //===============================================
 //old code
-// Report generation functionality
+// Report generation functionality  ENHANCED WITH THE ARCHIVE AND EXPORT BUTTONS 
 //===================================================
 function generateReport(pet) {
     const reportWindow = window.open('', '_blank');
+    const reportId = `report_${Date.now()}`;
+    
     reportWindow.document.write(`
         <html>
             <head>
                 <title>Monthly Pet Report: ${pet.petDetails.name}</title>
                 <style>
-    body { font-family: sans-serif; padding: 20px; }
-    h1, h2 { text-align: center; color: #301934; }
-    table { width: 100%; border-collapse: collapse; margin: 15px 0; }
-    th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
+    body { 
+        font-family: sans-serif; 
+        padding: 20px; 
+        background: var(--off-white);
+        color: var(--black);
+    }
+    :root {
+        --primary-yellow: #D97706;
+        --primary-mustard: #B45309;
+        --dark-purple: #6B46C1;
+        --light-purple: #7C3AED;
+        --light-charcoal: #4B5563;
+        --dark-charcoal: #374151;
+        --white: #FFFFFF;
+        --black: #000000;
+        --off-white: #F9FAFB;
+        --border-focus: #059669;
+        --input-bg: var(--white);
+        --input-border: #D1D5DB;
+        --container-bg: var(--off-white);
+        --container-border: #E5E7EB;
+        --shadow-sm: 0 2px 4px rgba(0,0,0,0.1);
+        --shadow-md: 0 4px 6px rgba(0,0,0,0.15);
+        --dark-mustard: #92400E;
+        --header-text: var(--primary-yellow);
+    }
+    h1, h2 { 
+        text-align: center; 
+        color: var(--dark-purple); 
+    }
+    h1 {
+        border-bottom: 3px solid var(--primary-yellow);
+        padding-bottom: 10px;
+        margin-bottom: 20px;
+    }
+    table { 
+        width: 100%; 
+        border-collapse: collapse; 
+        margin: 15px 0; 
+        background: var(--white);
+        box-shadow: var(--shadow-sm);
+    }
+    th, td { 
+        border: 1px solid var(--input-border); 
+        padding: 12px; 
+        text-align: center; 
+    }
+    th {
+        background: var(--dark-purple);
+        color: var(--white);
+        font-weight: 600;
+    }
     .calendar-grid { 
         display: grid; 
         grid-template-columns: repeat(7, 1fr); 
@@ -4319,19 +4390,24 @@ function generateReport(pet) {
         margin: 15px 0;
     }
     .calendar-day { 
-        padding: 10px; 
-        border: 1px solid #ddd; 
+        padding: 12px; 
+        border: 1px solid var(--input-border); 
         text-align: center;
-        min-height: 40px;
+        min-height: 45px;
+        background: var(--white);
     }
     .mood-emoji { font-size: 1.5em; }
     
-    /* ADD THIS FOR THE 3 CHARTS */
     .chart-container { 
         width: 100%; 
         height: 400px; 
         margin: 30px 0;
         page-break-inside: avoid;
+        background: var(--white);
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: var(--shadow-sm);
+        border: 1px solid var(--container-border);
     }
     
     .summary-stats { 
@@ -4341,25 +4417,72 @@ function generateReport(pet) {
         margin: 20px 0;
     }
     .stat-box { 
-        background: #f0f0f0; 
-        padding: 15px; 
+        background: var(--white); 
+        padding: 20px; 
         border-radius: 8px; 
         text-align: center;
+        box-shadow: var(--shadow-sm);
+        border: 1px solid var(--container-border);
     }
+    .stat-number {
+        font-size: 24px;
+        font-weight: bold;
+        color: var(--dark-purple);
+        margin-bottom: 5px;
+    }
+    .stat-label {
+        color: var(--light-charcoal);
+        font-size: 0.9rem;
+    }
+    
     .button-container { 
         text-align: center; 
-        margin: 20px 0;
+        margin: 30px 0;
+        padding: 25px;
+        background: var(--white);
+        border-radius: 8px;
+        box-shadow: var(--shadow-sm);
+        border-top: 3px solid var(--primary-yellow);
     }
-    button { 
-        padding: 10px 20px; 
+    .action-btn { 
+        padding: 12px 24px; 
         margin: 0 10px; 
-        background: #301934; 
+        background: var(--dark-purple); 
         color: white; 
         border: none; 
-        border-radius: 4px; 
+        border-radius: 6px; 
         cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        box-shadow: var(--shadow-sm);
     }
-    button:hover { background: #4a235a; }
+    .action-btn:hover { 
+        background: var(--light-purple); 
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+    .action-btn:active {
+        transform: translateY(0);
+    }
+    .archive-btn {
+        background: var(--primary-yellow);
+    }
+    .archive-btn:hover {
+        background: var(--primary-mustard);
+    }
+    .export-btn {
+        background: var(--border-focus);
+    }
+    .export-btn:hover {
+        background: #047857;
+    }
+    
+    /* Print-specific styles */
+    @media print {
+        .button-container { display: none; }
+        body { background: white; }
+        .stat-box { box-shadow: none; border: 1px solid #ddd; }
+    }
 </style>
 
             </head>
@@ -4372,15 +4495,58 @@ function generateReport(pet) {
                 ${generateExerciseCalendarHTML(pet)}
                 ${pet.moodLogs && pet.moodLogs.length > 0 ? generateMoodCalendarHTML(pet) : ''}
                 ${pet.exerciseEntries && pet.exerciseEntries.length > 0 ? generateExerciseChartsHTML(pet.exerciseEntries) : ''}
+                
                 <div class="button-container">
-                    <button onclick="window.print()">Print Report</button>
-                    <button onclick="window.close()">Close</button>
+                    <button class="action-btn" onclick="window.print()">
+                        🖨️ Print Report
+                    </button>
+                    <button class="action-btn export-btn" onclick="exportCurrentReport()">
+                        📤 Export as CSV
+                    </button>
+                    <button class="action-btn archive-btn" onclick="showArchivedReports()">
+                        📚 Archived Reports
+                    </button>
+                    <button class="action-btn" onclick="window.close()">
+                        ❌ Close
+                    </button>
                 </div>
+
+                <script>
+                    function showArchivedReports() {
+                        // Send message to main app to open archives modal
+                        if (window.opener && !window.opener.closed) {
+                            window.opener.postMessage({
+                                action: 'showArchivedReports',
+                                petName: '${pet.petDetails.name}',
+                                petId: '${pet.id || 'unknown'}'
+                            }, '*');
+                            window.close();
+                        } else {
+                            alert('Please keep the main app window open to view archived reports');
+                        }
+                    }
+
+                    function exportCurrentReport() {
+                        // This will use the enhanced report data we created
+                        alert('CSV export will be available in the next update - currently using enhanced archive system');
+                        // Future implementation: generateEnhancedReportData() + CSV export
+                    }
+
+                    // Add keyboard shortcut support
+                    document.addEventListener('keydown', function(e) {
+                        if (e.key === 'Escape') window.close();
+                        if (e.ctrlKey && e.key === 'p') {
+                            e.preventDefault();
+                            window.print();
+                        }
+                    });
+                </script>
             </body>
         </html>
     `);
     reportWindow.document.close();
 }
+
 
 
 
