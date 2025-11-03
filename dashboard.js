@@ -452,8 +452,9 @@ function returnToDashboard() {
 //  Load saved profiles - REFACTORED STRUCTURE
 //==========================================
 function loadSavedProfiles() {
-    pets = getPets();
-    
+   // pets = await getPets();
+    const pets = await getPets(); // ADD AWAIT
+
     if (pets.length === 0) { 
         document.getElementById('profileContainer').innerHTML = `
             <div class="empty-state">
@@ -1950,7 +1951,20 @@ function sharePetProfile(index) {
 
 // Get pets from localStorage
 //It retrieves ALL saved pet profiles from the browser's localStorage.
-function getPets() {
+async function getPets() {
+    // Try PetDataService first, fallback to localStorage
+    if (window.petDataService && window.petDataService.userId) {
+        try {
+            const pets = await window.petDataService.loadUserPets();
+            if (pets && pets.length > 0) {
+                return pets;
+            }
+        } catch (error) {
+            console.warn('PetDataService load failed, using localStorage:', error);
+        }
+    }
+    
+    // Fallback to localStorage
     const pets = JSON.parse(localStorage.getItem('pets') || '[]');
     
     // ADD DATA MIGRATION FOR EXISTING PETS
