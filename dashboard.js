@@ -245,16 +245,21 @@ if (activePetIndex !== null) {
 
         console.log('✅ Health assessment details updated');
 
-        // Save to storage
-        if (activePetIndex === null) {
-            pets.push(petData);
-            activePetIndex = pets.length - 1;
-        } else {
-            pets[activePetIndex] = petData;
-        }
+       // Save to storage
+if (activePetIndex === null) {
+    pets.push(petData);
+    activePetIndex = pets.length - 1;
+} else {
+    pets[activePetIndex] = petData;
+}
 
-        localStorage.setItem('pets', JSON.stringify(pets));
-        sessionStorage.setItem('activePetIndex', activePetIndex);
+// REPLACED: Save using PetDataService THAT SAVES TO FIRESTORE COLLECTION IN UTILS.JS
+if (window.petDataService) {
+    await window.petDataService.savePet(petData);
+} else {
+    localStorage.setItem('pets', JSON.stringify(pets));
+}
+sessionStorage.setItem('activePetIndex', activePetIndex);
         console.log('💾 Health assessment saved to storage');
 
         // DYNAMIC UPDATES - Refresh all components
