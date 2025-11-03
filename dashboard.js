@@ -145,30 +145,43 @@ function handleHealthAssessmentSubmit(e) {
             }
             petData = initializeNewPet();
         } else {
-            // UPDATE EXISTING PROFILE
-            console.log('📝 Updating existing profile at index:', activePetIndex);
-            petData = { ...pets[activePetIndex] };
-        }
-
-        // Update pet details with HEALTH ASSESSMENT data
-        petData.petDetails = {
-            // Basic Information
-            type: formData.petType,
-            name: formData.petName.trim(),
-            image: formData.petImage,
-            age: formData.petAge,
-            weight: formData.petWeight,
-            breed: formData.petBreed.trim(),
-            gender: formData.petGender,
             
-            // Health Assessment Fields
-            bcs: formData.petBCS,
-            energyLevel: formData.petEnergyLevel,
-            targetWeight: formData.petTargetWeight,
-            medicalConditions: formData.medicalConditions,
-            feedingRecommendation: formData.feedingRecommendation,
-            healthNotes: formData.healthNotes.trim()
-        };
+           // UPDATE EXISTING PROFILE - PRESERVE EXISTING DATA
+console.log('📝 Updating existing profile at index:', activePetIndex);
+petData = { ...pets[activePetIndex] };
+
+// PRESERVE EXISTING EXERCISE ENTRIES AND MOOD LOGS
+console.log('💾 Preserving existing data:', {
+  exerciseEntries: petData.exerciseEntries?.length || 0,
+  moodLogs: petData.moodLogs?.length || 0
+});
+
+        // Update pet details with HEALTH ASSESSMENT data - PRESERVE EXERCISE DATA
+petData.petDetails = {
+    // Basic Information
+    type: formData.petType,
+    name: formData.petName.trim(),
+    image: formData.petImage,
+    age: formData.petAge,
+    weight: formData.petWeight,
+    breed: formData.petBreed.trim(),
+    gender: formData.petGender,
+    
+    // Health Assessment Fields
+    bcs: formData.petBCS,
+    energyLevel: formData.petEnergyLevel,
+    targetWeight: formData.petTargetWeight,
+    medicalConditions: formData.medicalConditions,
+    feedingRecommendation: formData.feedingRecommendation,
+    healthNotes: formData.healthNotes.trim()
+};
+
+// EXERCISE ENTRIES AND MOOD LOGS ARE AUTOMATICALLY PRESERVED 
+// because we used spread operator: petData = { ...pets[activePetIndex] }
+console.log('✅ Health assessment updated, exercise data preserved:', {
+    exerciseEntries: petData.exerciseEntries?.length || 0,
+    moodLogs: petData.moodLogs?.length || 0
+});
      
 // PRESERVE THE ACTION BAR SETTINGS
 if (activePetIndex !== null) {
