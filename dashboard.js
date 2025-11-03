@@ -2021,6 +2021,11 @@ async function generateSuggestedExercises(pet) {
     
     // Use pet.petDetails instead of undefined 'details'
     const details = pet.petDetails;
+    // Add this safety check:
+    if (!details) {
+    console.warn('No pet details found for suggestions');
+    return []; // Return empty array if no details
+}
     
     const suggestions = [];
     
