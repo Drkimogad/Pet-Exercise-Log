@@ -86,7 +86,24 @@ window.addEventListener('message', function(event) {
     }
 });
 
-
+/===============================================
+// ONE TIME MIGRATION FUNCTION FOR FUTURE USE
+//===========================================
+//function migrateExistingPets() {
+//    const pets = getPets();
+//    let needsUpdate = false;
+    
+//    pets.forEach(pet => {
+//        if (!pet.id) {
+//           pet.id = 'pet_' + Date.now();
+//         needsUpdate = true;
+//       }
+//    });
+    
+//    if (needsUpdate) {
+ //       localStorage.setItem('pets', JSON.stringify(pets));
+//    }
+//}
 
 // FUNCTIONS DEFINITION STARTS HERE
 // move it outside handleFormSubmit and initialized in it.
@@ -7062,7 +7079,14 @@ function showExerciseLog() {
    initializeDismissedSuggestions(); // to be filtered on refreshing 
     initializeLoggedSuggestions();
     console.log('✅ Suggested exercises systems initialized');
+
+// NEW: Initialize action bar - BUT DELAY IT until dashboard is visible
+    setTimeout(() => {
+        initializeActionBar();
+    }, 100);
     
+ console.log('✅ Action bar integrated into dashboard');
+  
     // ADD THESE LINES TO YOUR EXISTING INITIALIZATION:
     // Initialize archive system
     initializeCompleteArchiveSystem();
@@ -7070,13 +7094,9 @@ function showExerciseLog() {
     // Setup message listener for archive actions
     setupArchiveMessageListener();
 
-
-    // NEW: Initialize action bar - BUT DELAY IT until dashboard is visible
-    setTimeout(() => {
-        initializeActionBar();
-    }, 100);
+    // migrateExistingPets(); // Ensure all pets have IDs FOR FUTURE PURPOSES IF NEEDED
+    getCurrentUserId();    // Ensure user ID exists
     
- console.log('✅ Action bar integrated into dashboard');
 }
 
 
