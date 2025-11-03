@@ -3301,12 +3301,1000 @@ function generateMiniIntensityChart(exerciseEntries) {
 
 
 // ===============================================
-// Save temporary chart data (already handled by exercise data saving)
+           //  REPORT 
 // ===============================================
-// Note: Charts use the same temporary exercise data as the calendar
-// No separate saving function needed - uses window.tempExerciseEntries 
+// ENHANCED REPORT DATA GENERATION
+// PHASE 1: HELPERS MOVED TO UTILS.JS
+//PHASE 2: ARCHIVE SYSTEM IMPLEMENTATION
+//STEP 2A: CREATE FIREBASE ARCHIVE SERVICE
+// ===============================================
+// FIREBASE ARCHIVE SERVICE
+// ===============================================
 
+const ReportArchiveService = {
+    /**
+     * Archives a monthly report to Firestore
+     * @param {string} userId - Current user ID
+     * @param {Object} reportData - Enhanced report data from generateEnhancedReportData()
+     * @returns {Promise<boolean>} Success status
+     */
+    async archiveMonthlyReport(userId, reportData) {
+        try {
+            console.log(`📦 Archiving report for user: ${userId}, pet: ${reportData.petName}`);
+            
+            // 1. Prepare Firestore document structure
+            const archiveDoc = {
+                ...reportData,
+                userId: userId,
+                archivedAt: new Date().toISOString(),
+                // Add any additional metadata needed
+            };
+            
+            // 2. Archive to Firestore using approved structure
+            const archiveSuccess = await this.saveToFirestore(userId, archiveDoc);
+            
+            // 3. Update local cache as fallback
+            this.cacheReportLocally(userId, archiveDoc);
+            
+            // 4. Update monthly metadata
+            await this.updateMonthlyMetadata(userId, reportData.year, reportData.month);
+            
+            console.log('✅ Report archived successfully');
+            return true;
+            
+        } catch (error) {
+            console.error('❌ Archive failed:', error);
+            // Fallback to local storage only
+            this.cacheReportLocally(userId, reportData);
+            return false;
+        }
+    },
+    
+    /**
+     * Saves report to Firestore using approved structure
+     */
+    async saveToFirestore(userId, reportData) {
+        // Implementation depends on your Firebase setup
+        // This is the structure you approved:
+        // yearlyreport2025/reports/user1_petA_202501/
+        
+        const year = reportData.year;
+        const month = reportData.month.toString().padStart(2, '0');
+        const reportId = `${userId}_${reportData.petId}_${year}${month}`;
+        
+        // We'll need your Firebase configuration here
+        // For now, this is a placeholder
+        console.log(`📍 Would save to: yearlyreport${year}/reports/${reportId}`);
+        
+        // Example implementation (commented out until Firebase setup):
+        /*
+        await db.collection(`yearlyreport${year}`)
+                .doc('reports')
+                .collection('reports')
+                .doc(reportId)
+                .set(archiveDoc);
+        */
+        
+        return true; // Simulate success for now
+    },
+    
+    /**
+     * Caches report locally as fallback
+     */
+    cacheReportLocally(userId, reportData) {
+        try {
+            const key = `archived_report_${userId}_${reportData.petId}_${reportData.year}_${reportData.month}`;
+            const cacheData = {
+                ...reportData,
+                cachedAt: new Date().toISOString(),
+                source: 'local_cache'
+            };
+            localStorage.setItem(key, JSON.stringify(cacheData));
+            console.log('💾 Report cached locally');
+        } catch (error) {
+            console.warn('Local cache failed:', error);
+        }
+    },
+    
+    /**
+     * Updates monthly metadata in Firestore
+     */
+    async updateMonthlyMetadata(userId, year, month) {
+        // Update the monthly summary document
+        // yearlyreport2025/months/01_January/
+        console.log(`📊 Updating metadata for ${year}-${month}`);
+        
+        // Placeholder implementation
+        /*
+        const monthKey = `${month.toString().padStart(2, '0')}_${getMonthName(month)}`;
+        await db.collection(`yearlyreport${year}`)
+                .doc('months')
+                .collection('months')
+                .doc(monthKey)
+                .set({
+                    totalReports: firebase.firestore.FieldValue.increment(1),
+                    lastUpdated: new Date().toISOString()
+                }, { merge: true });
+        */
+    }
+};
+// STEP 2B: AUTO-ARCHIVE TRIGGER SYSTEM
+// ===============================================
+// AUTO-ARCHIVE TRIGGER SYSTEM
+// ===============================================
+
+/**
+ * Checks if monthly archive should be triggered
+ * Runs on app startup and periodically
+ */
+function initializeArchiveSystem() {
+    console.log('🔄 Initializing archive system');
+    
+    // 1. Check if we need to archive previous month
+    checkAndTriggerMonthlyArchive();
+    
+    // 2. Set up periodic checks (daily)
+    setupArchivePeriodicCheck();
+}
+
+/**
+ * Checks if it's time to archive the previous month
+ */
+function checkAndTriggerMonthlyArchive() {
+    const today = new Date();
+    const currentMonth = today.getMonth() + 1; // 1-12
+    const currentYear = today.getFullYear();
+    
+    // Check if we're in the first 3 days of month (archive previous month)
+    if (today.getDate() <= 3) {
+        const previousMonth = currentMonth === 1 ? 12 : currentMonth - 1;
+        const previousYear = currentMonth === 1 ? currentYear - 1 : currentYear;
+        
+        console.log(`📅 Checking archive for ${previousYear}-${previousMonth}`);
+        
+        // Check if already archived this month
+        const lastArchiveKey = `last_archive_${previousYear}_${previousMonth}`;
+        const lastArchiveDate = localStorage.getItem(lastArchiveKey);
+        
+        if (!lastArchiveDate) {
+            console.log(`🚀 Triggering archive for ${previousYear}-${previousMonth}`);
+            archiveAllPetsForMonth(previousYear, previousMonth);
+        } else {
+            console.log(`✅ Already archived ${previousYear}-${previousMonth} on ${lastArchiveDate}`);
+        }
+    }
+}
+
+/**
+ * Archives all pets for a specific month
+ */
+async function archiveAllPetsForMonth(year, month) {
+    console.log(`📦 Archiving all pets for ${year}-${month}`);
+    
+    const pets = getPets();
+    const userId = getCurrentUserId(); // We'll need to implement this
+    
+    if (!userId) {
+        console.warn('❌ Cannot archive: No user ID available');
+        return;
+    }
+    
+    let archivedCount = 0;
+    
+    for (const pet of pets) {
+        try {
+            // 1. Generate enhanced report data
+            const reportData = generateEnhancedReportData(pet, year, month);
+            
+            // 2. Archive to Firestore
+            const success = await ReportArchiveService.archiveMonthlyReport(userId, reportData);
+            
+            if (success) {
+                archivedCount++;
+                console.log(`✅ Archived ${pet.petDetails.name}`);
+            }
+            
+        } catch (error) {
+            console.error(`❌ Failed to archive ${pet.petDetails.name}:`, error);
+        }
+    }
+    
+    // Mark as archived in localStorage
+    if (archivedCount > 0) {
+        const archiveKey = `last_archive_${year}_${month}`;
+        localStorage.setItem(archiveKey, new Date().toISOString());
+        
+        console.log(`🎉 Successfully archived ${archivedCount}/${pets.length} pets for ${year}-${month}`);
+        showSuccess(`Monthly reports archived for ${archivedCount} pets`);
+    }
+}
+
+/**
+ * Sets up daily checks for archive triggers
+ */
+function setupArchivePeriodicCheck() {
+    // Check once per day at midnight
+    const now = new Date();
+    const midnight = new Date(now);
+    midnight.setHours(24, 0, 0, 0);
+    const timeUntilMidnight = midnight - now;
+    
+    setTimeout(() => {
+        checkAndTriggerMonthlyArchive();
+        // Continue checking daily
+        setInterval(checkAndTriggerMonthlyArchive, 24 * 60 * 60 * 1000);
+    }, timeUntilMidnight);
+    
+    console.log('⏰ Archive periodic check scheduled');
+}
+
+/**
+ * Gets current user ID (placeholder - needs your auth implementation)
+ */
+function getCurrentUserId() {
+    // This depends on your authentication system
+    // Return user ID from your auth system
+    return sessionStorage.getItem('userId') || 'demo_user'; // Placeholder
+}
+//STEP 2C: MANUAL ARCHIVE TRIGGERS if user wante to archive at a certain point
+// ===============================================
+// MANUAL ARCHIVE TRIGGERS
+// ===============================================
+
+/**
+ * Manual trigger to archive current month immediately
+ */
+function archiveCurrentMonthManual() {
+    const today = new Date();
+    const currentMonth = today.getMonth() + 1;
+    const currentYear = today.getFullYear();
+    
+    if (confirm(`Archive ${currentYear}-${currentMonth} reports for all pets now?`)) {
+        archiveAllPetsForMonth(currentYear, currentMonth);
+    }
+}
+
+/**
+ * Manual trigger to archive specific month
+ */
+function archiveSpecificMonthManual(year, month) {
+    if (confirm(`Archive ${year}-${month} reports for all pets?`)) {
+        archiveAllPetsForMonth(year, month);
+    }
+}
+
+/**
+ * Manual trigger for single pet archive
+ */
+function archiveSinglePetManual(petIndex, year, month) {
+    const pets = getPets();
+    const pet = pets[petIndex];
+    
+    if (!pet) {
+        showError('Pet not found');
+        return;
+    }
+    
+    if (confirm(`Archive ${year}-${month} report for ${pet.petDetails.name}?`)) {
+        archiveSinglePetForMonth(petIndex, year, month);
+    }
+}
+
+/**
+ * Archives single pet for specific month
+ */
+async function archiveSinglePetForMonth(petIndex, year, month) {
+    const pets = getPets();
+    const pet = pets[petIndex];
+    const userId = getCurrentUserId();
+    
+    if (!userId) {
+        showError('Cannot archive: User not authenticated');
+        return;
+    }
+    
+    try {
+        showLoading('Archiving report...');
+        
+        // Generate enhanced report data
+        const reportData = generateEnhancedReportData(pet, year, month);
+        
+        // Archive to Firestore
+        const success = await ReportArchiveService.archiveMonthlyReport(userId, reportData);
+        
+        if (success) {
+            showSuccess(`Report archived for ${pet.petDetails.name}`);
+        } else {
+            showError('Archive failed - using local cache only');
+        }
+        
+    } catch (error) {
+        console.error('Archive failed:', error);
+        showError('Archive failed: ' + error.message);
+    } finally {
+        hideLoading();
+    }
+}
+
+/**
+ * Shows archive management modal
+ */
+function showArchiveManagementModal() {
+    // This would open a modal for managing archives
+    // For now, simple manual triggers
+    const action = prompt(
+        'Archive Management:\n\n' +
+        '1 - Archive current month\n' +
+        '2 - Archive specific month\n' +
+        '3 - Check archive status\n\n' +
+        'Enter choice:'
+    );
+    
+    switch (action) {
+        case '1':
+            archiveCurrentMonthManual();
+            break;
+        case '2':
+            const year = prompt('Enter year (e.g., 2024):');
+            const month = prompt('Enter month (1-12):');
+            if (year && month) {
+                archiveSpecificMonthManual(parseInt(year), parseInt(month));
+            }
+            break;
+        case '3':
+            checkArchiveStatus();
+            break;
+    }
+}
+
+/**
+ * Checks and displays archive status
+ */
+function checkArchiveStatus() {
+    const today = new Date();
+    const currentYear = today.getFullYear();
+    const currentMonth = today.getMonth() + 1;
+    
+    let statusMessage = 'Archive Status:\n\n';
+    
+    // Check last 3 months
+    for (let i = 0; i < 3; i++) {
+        const checkMonth = currentMonth - i;
+        let year = currentYear;
+        
+        if (checkMonth < 1) {
+            year = currentYear - 1;
+        }
+        
+        const month = checkMonth < 1 ? checkMonth + 12 : checkMonth;
+        const archiveKey = `last_archive_${year}_${month}`;
+        const archiveDate = localStorage.getItem(archiveKey);
+        
+        statusMessage += `${year}-${month}: ${archiveDate ? '✅ Archived' : '❌ Not archived'}\n`;
+        if (archiveDate) {
+            statusMessage += `   Date: ${new Date(archiveDate).toLocaleDateString()}\n`;
+        }
+    }
+    
+    alert(statusMessage);
+}
+
+/*THE COMPLETE USER JOURNEY WILL BE:
+Generate Report Button 
+    ↓
+Current Report Modal (with Print/Export)
+    ↓  
+Archived Reports Button (new)
+    ↓
+Yearly Calendar Modal (2025, 2026 blocks)
+    ↓
+Click Archived Month 
+    ↓
+View Archived Report (with Export/Close)
+*/
+
+// PHASE 3: ARCHIVED REPORTS UI
+//STEP 3A: ENHANCE CURRENT REPORT MODAL WITH ARCHIVE BUTTON
+// ===============================================
+// ENHANCED REPORT MODAL WITH ARCHIVE ACCESS
+// ===============================================
+
+/**
+ * Enhanced generateReport function with archive button
+ * Replaces your current generateReport function
+ */
+function generateEnhancedReport(pet) {
+    const reportWindow = window.open('', '_blank');
+    const reportId = `report_${Date.now()}`;
+    
+    reportWindow.document.write(`
+        <html>
+            <head>
+                <title>Monthly Pet Report: ${pet.petDetails.name}</title>
+                <style>
+                    /* Your existing report styles */
+                    body { font-family: sans-serif; padding: 20px; }
+                    .report-actions { 
+                        text-align: center; 
+                        margin: 30px 0; 
+                        padding: 20px;
+                        border-top: 2px solid #301934;
+                    }
+                    .action-btn {
+                        padding: 12px 24px;
+                        margin: 0 10px;
+                        background: #301934;
+                        color: white;
+                        border: none;
+                        border-radius: 6px;
+                        cursor: pointer;
+                        font-size: 14px;
+                    }
+                    .action-btn:hover { background: #4a235a; }
+                    .action-btn:disabled { 
+                        background: #cccccc; 
+                        cursor: not-allowed; 
+                    }
+                </style>
+            </head>
+            <body>
+                ${generateReportContent(pet)} <!-- Your existing report content -->
+                
+                <div class="report-actions">
+                    <button class="action-btn" onclick="window.print()">
+                        🖨️ Print Report
+                    </button>
+                    <button class="action-btn" onclick="exportToCSV()">
+                        📤 Export as CSV
+                    </button>
+                    <button class="action-btn" onclick="showArchivedReports()">
+                        📚 Archived Reports
+                    </button>
+                    <button class="action-btn" onclick="window.close()">
+                        ❌ Close
+                    </button>
+                </div>
+
+                <script>
+                    function showArchivedReports() {
+                        // Send message to parent window to open archives modal
+                        if (window.opener && !window.opener.closed) {
+                            window.opener.postMessage({
+                                action: 'showArchivedReports',
+                                petName: '${pet.petDetails.name}',
+                                petId: '${pet.id || 'unknown'}'
+                            }, '*');
+                        } else {
+                            alert('Please keep the main app window open to view archived reports');
+                        }
+                        window.close();
+                    }
+
+                    function exportToCSV() {
+                        // We'll implement this using the enhanced report data
+                        alert('CSV export will be available in the next update');
+                    }
+                </script>
+            </body>
+        </html>
+    `);
+    reportWindow.document.close();
+}
+//STEP 3B: CREATE ARCHIVED REPORTS MODAL
+// ===============================================
+// ARCHIVED REPORTS MODAL
+// ===============================================
+
+/**
+ * Shows the archived reports modal with yearly calendar view
+ */
+function showArchivedReportsModal(petName = '', petId = '') {
+    console.log('📚 Opening archived reports modal');
+    
+    // Remove any existing modal first
+    const existingModal = document.getElementById('archivedReportsModal');
+    if (existingModal) {
+        existingModal.remove();
+    }
+    
+    // Create and insert the modal
+    document.body.insertAdjacentHTML('beforeend', createArchivedReportsModal(petName, petId));
+    
+    // Load archived reports data
+    loadArchivedReportsContent(petId);
+}
+
+/**
+ * Creates the archived reports modal HTML
+ */
+function createArchivedReportsModal(petName, petId) {
+    const currentYear = new Date().getFullYear();
+    
+    return `
+        <div class="action-modal-overlay" id="archivedReportsModal">
+            <div class="action-modal wide-modal">
+                <div class="modal-header">
+                    <h3>📚 Archived Reports ${petName ? `- ${petName}` : ''}</h3>
+                    <button class="close-modal-btn">&times;</button>
+                </div>
+                <div class="modal-content" id="archivedReportsContent">
+                    <div class="archived-loading">
+                        <p>Loading archived reports...</p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="action-btn" onclick="manualArchiveCurrentMonth()">
+                        📦 Archive Current Month
+                    </button>
+                    <button class="action-btn" onclick="closeArchivedReportsModal()">
+                        🔙 Back to Current Report
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+/**
+ * Loads content for archived reports modal
+ */
+async function loadArchivedReportsContent(petId) {
+    const content = document.getElementById('archivedReportsContent');
+    if (!content) return;
+    
+    try {
+        const userId = getCurrentUserId();
+        const currentYear = new Date().getFullYear();
+        
+        // Get archived reports for current and previous year
+        const archives = await loadArchivedReports(userId, petId, currentYear);
+        const previousArchives = await loadArchivedReports(userId, petId, currentYear - 1);
+        
+        content.innerHTML = createYearlyCalendarView(currentYear, archives, previousArchives);
+        
+        // Add event listeners to month buttons
+        setupArchiveMonthListeners();
+        
+    } catch (error) {
+        console.error('Failed to load archived reports:', error);
+        content.innerHTML = `
+            <div class="archived-error">
+                <p>❌ Failed to load archived reports</p>
+                <small>${error.message}</small>
+                <p>Check your connection or try manual archive.</p>
+            </div>
+        `;
+    }
+}
+//STEP 3C: CREATE YEARLY CALENDAR VIEW
+// ===============================================
+// YEARLY CALENDAR VIEW FOR ARCHIVES
+// ===============================================
+
+/**
+ * Creates yearly calendar view with archived months
+ */
+function createYearlyCalendarView(currentYear, currentYearArchives, previousYearArchives) {
+    const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", 
+                       "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    
+    return `
+        <div class="archived-calendars">
+            <!-- Current Year -->
+            <div class="year-section">
+                <h4>${currentYear}</h4>
+                <div class="month-grid">
+                    ${monthNames.map((month, index) => {
+                        const monthNumber = index + 1;
+                        const hasArchive = currentYearArchives.some(archive => 
+                            archive.month === monthNumber
+                        );
+                        return `
+                            <button class="month-btn ${hasArchive ? 'has-archive' : 'no-archive'}" 
+                                    data-year="${currentYear}" 
+                                    data-month="${monthNumber}"
+                                    ${hasArchive ? '' : 'disabled'}>
+                                ${month}
+                                ${hasArchive ? '✅' : '📭'}
+                            </button>
+                        `;
+                    }).join('')}
+                </div>
+            </div>
+            
+            <!-- Previous Year -->
+            <div class="year-section">
+                <h4>${currentYear - 1}</h4>
+                <div class="month-grid">
+                    ${monthNames.map((month, index) => {
+                        const monthNumber = index + 1;
+                        const hasArchive = previousYearArchives.some(archive => 
+                            archive.month === monthNumber
+                        );
+                        return `
+                            <button class="month-btn ${hasArchive ? 'has-archive' : 'no-archive'}" 
+                                    data-year="${currentYear - 1}" 
+                                    data-month="${monthNumber}"
+                                    ${hasArchive ? '' : 'disabled'}>
+                                ${month}
+                                ${hasArchive ? '✅' : '📭'}
+                            </button>
+                        `;
+                    }).join('')}
+                </div>
+            </div>
+            
+            ${currentYearArchives.length === 0 && previousYearArchives.length === 0 ? `
+                <div class="no-archives">
+                    <p>📭 No archived reports found</p>
+                    <small>Archived reports will appear here at the end of each month</small>
+                    <p>You can manually archive the current month using the button below.</p>
+                </div>
+            ` : ''}
+        </div>
+    `;
+}
+
+/**
+ * Sets up event listeners for month buttons
+ */
+function setupArchiveMonthListeners() {
+    document.querySelectorAll('.month-btn.has-archive').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const year = parseInt(btn.dataset.year);
+            const month = parseInt(btn.dataset.month);
+            loadArchivedReport(year, month);
+        });
+    });
+}
+//STEP 3D: IMPLEMENT ARCHIVE LOADING FUNCTIONS
+// ===============================================
+// ARCHIVE LOADING AND RETRIEVAL
+// ===============================================
+
+/**
+ * Loads archived reports for a specific year
+ */
+async function loadArchivedReports(userId, petId, year) {
+    console.log(`📂 Loading archives for ${year}, pet: ${petId}`);
+    
+    try {
+        // Try Firestore first
+        const firestoreArchives = await loadArchivesFromFirestore(userId, petId, year);
+        if (firestoreArchives.length > 0) {
+            return firestoreArchives;
+        }
+        
+        // Fallback to local storage
+        const localArchives = loadArchivesFromLocalStorage(userId, petId, year);
+        return localArchives;
+        
+    } catch (error) {
+        console.warn(`Failed to load ${year} archives:`, error);
+        return loadArchivesFromLocalStorage(userId, petId, year);
+    }
+}
+
+/**
+ * Loads archives from Firestore
+ */
+async function loadArchivesFromFirestore(userId, petId, year) {
+    // Placeholder - will be implemented with your Firebase config
+    console.log(`🔍 Checking Firestore for ${year} archives...`);
+    
+    /*
+    const snapshot = await db.collection(`yearlyreport${year}`)
+                            .doc('reports')
+                            .collection('reports')
+                            .where('userId', '==', userId)
+                            .where('petId', '==', petId)
+                            .get();
+    
+    return snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+    }));
+    */
+    
+    // Simulate empty for now
+    return [];
+}
+
+/**
+ * Loads archives from local storage
+ */
+function loadArchivesFromLocalStorage(userId, petId, year) {
+    const archives = [];
+    const prefix = `archived_report_${userId}_${petId}_${year}_`;
+    
+    for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && key.startsWith(prefix)) {
+            try {
+                const data = JSON.parse(localStorage.getItem(key));
+                archives.push(data);
+            } catch (error) {
+                console.warn(`Invalid archive data in ${key}:`, error);
+            }
+        }
+    }
+    
+    console.log(`📁 Found ${archives.length} local archives for ${year}`);
+    return archives;
+}
+
+/**
+ * Loads and displays a specific archived report
+ */
+async function loadArchivedReport(year, month) {
+    console.log(`📄 Loading archived report: ${year}-${month}`);
+    
+    const userId = getCurrentUserId();
+    const pets = getPets();
+    // For now, use first pet - we'll enhance this later
+    const petId = pets[0]?.id || 'unknown';
+    
+    try {
+        showLoading('Loading archived report...');
+        
+        // Try to load the report
+        const report = await loadSpecificArchive(userId, petId, year, month);
+        
+        if (report) {
+            // Display the archived report
+            displayArchivedReport(report);
+        } else {
+            showError(`No archived report found for ${year}-${month}`);
+        }
+        
+    } catch (error) {
+        console.error('Failed to load archived report:', error);
+        showError('Failed to load archived report: ' + error.message);
+    } finally {
+        hideLoading();
+    }
+}
+
+/**
+ * Loads a specific archived report
+ */
+async function loadSpecificArchive(userId, petId, year, month) {
+    // Try Firestore first
+    try {
+        const report = await loadArchiveFromFirestore(userId, petId, year, month);
+        if (report) return report;
+    } catch (error) {
+        console.warn('Firestore load failed:', error);
+    }
+    
+    // Fallback to local storage
+    return loadArchiveFromLocalStorage(userId, petId, year, month);
+}
+
+/**
+ * Loads specific archive from Firestore
+ */
+async function loadArchiveFromFirestore(userId, petId, year, month) {
+    // Placeholder - will be implemented with your Firebase config
+    console.log(`🔍 Loading from Firestore: ${year}-${month}`);
+    
+    /*
+    const reportId = `${userId}_${petId}_${year}${month.toString().padStart(2, '0')}`;
+    const doc = await db.collection(`yearlyreport${year}`)
+                       .doc('reports')
+                       .collection('reports')
+                       .doc(reportId)
+                       .get();
+    
+    if (doc.exists) {
+        return doc.data();
+    }
+    */
+    
+    return null;
+}
+
+/**
+ * Loads specific archive from local storage
+ */
+function loadArchiveFromLocalStorage(userId, petId, year, month) {
+    const key = `archived_report_${userId}_${petId}_${year}_${month}`;
+    const data = localStorage.getItem(key);
+    
+    if (data) {
+        try {
+            return JSON.parse(data);
+        } catch (error) {
+            console.warn(`Invalid local archive: ${key}`, error);
+        }
+    }
+    
+    return null;
+}
+//STEP 3E: DISPLAY ARCHIVED REPORT
+// ===============================================
+// ARCHIVED REPORT DISPLAY
+// ===============================================
+
+/**
+ * Displays an archived report in a modal
+ */
+function displayArchivedReport(report) {
+    // Close the archives browser modal
+    closeArchivedReportsModal();
+    
+    // Create and show the archived report modal
+    document.body.insertAdjacentHTML('beforeend', createArchivedReportModal(report));
+    
+    // Setup event listeners for the report modal
+    setupArchivedReportEvents();
+}
+
+/**
+ * Creates modal for displaying archived report
+ */
+function createArchivedReportModal(report) {
+    const monthNames = ["January", "February", "March", "April", "May", "June",
+                       "July", "August", "September", "October", "November", "December"];
+    const monthName = monthNames[report.month - 1];
+    
+    return `
+        <div class="action-modal-overlay" id="archivedReportModal">
+            <div class="action-modal extra-wide-modal">
+                <div class="modal-header">
+                    <h3>📄 ${report.petName} - ${monthName} ${report.year} (Archived)</h3>
+                    <button class="close-modal-btn">&times;</button>
+                </div>
+                <div class="modal-content">
+                    <div class="archived-report-meta">
+                        <small>Archived on: ${new Date(report.archivedAt).toLocaleDateString()}</small>
+                        <small>Report period: ${report.reportPeriod}</small>
+                    </div>
+                    
+                    <div id="archivedReportContent">
+                        ${report.exportContent?.html || 'No report content available'}
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="action-btn" onclick="printArchivedReport()">
+                        🖨️ Print
+                    </button>
+                    <button class="action-btn" onclick="exportArchivedReport()">
+                        📤 Export CSV
+                    </button>
+                    <button class="action-btn" onclick="closeArchivedReportModal()">
+                        ❌ Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+/**
+ * Sets up event listeners for archived report modal
+ */
+function setupArchivedReportEvents() {
+    const modal = document.getElementById('archivedReportModal');
+    if (!modal) return;
+    
+    // Close button
+    modal.querySelector('.close-modal-btn').addEventListener('click', closeArchivedReportModal);
+    
+    // Close on overlay click
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            closeArchivedReportModal();
+        }
+    });
+    
+    // Escape key to close
+    document.addEventListener('keydown', function escapeHandler(e) {
+        if (e.key === 'Escape' && modal) {
+            closeArchivedReportModal();
+            document.removeEventListener('keydown', escapeHandler);
+        }
+    });
+}
+
+/**
+ * Closes archived report modal
+ */
+function closeArchivedReportModal() {
+    const modal = document.getElementById('archivedReportModal');
+    if (modal) {
+        modal.remove();
+    }
+}
+
+/**
+ * Prints archived report
+ */
+function printArchivedReport() {
+    const content = document.getElementById('archivedReportContent');
+    if (content) {
+        const printWindow = window.open('', '_blank');
+        printWindow.document.write(content.innerHTML);
+        printWindow.document.close();
+        printWindow.print();
+    }
+}
+
+/**
+ * Exports archived report as CSV
+ */
+function exportArchivedReport() {
+    const modal = document.getElementById('archivedReportModal');
+    const report = window.currentArchivedReport; // We'd need to store this
+    
+    if (report && report.exportContent?.csv) {
+        // Create download link for CSV
+        const blob = new Blob([report.exportContent.csv], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `pet_report_${report.petName}_${report.reportPeriod}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+    } else {
+        alert('CSV export not available for this report');
+    }
+}
+
+/**
+ * Closes archived reports browser modal
+ */
+function closeArchivedReportsModal() {
+    const modal = document.getElementById('archivedReportsModal');
+    if (modal) {
+        modal.remove();
+    }
+}
+// STEP 3F: INTEGRATION WITH EXISTING SYSTEM
+// ===============================================
+// SYSTEM INTEGRATION
+// ===============================================
+
+/**
+ * Listen for messages from report windows
+ */
+window.addEventListener('message', function(event) {
+    if (event.data.action === 'showArchivedReports') {
+        showArchivedReportsModal(event.data.petName, event.data.petId);
+    }
+});
+
+/**
+ * Manual archive trigger for current month
+ */
+function manualArchiveCurrentMonth() {
+    const today = new Date();
+    archiveCurrentMonthManual();
+}
+
+/**
+ * Initialize archive system when app starts
+ */
+// Add this to your existing initialization in showExerciseLog():
+function initializeCompleteArchiveSystem() {
+    initializeArchiveSystem(); // From Phase 2
+    setupArchiveMessageListener();
+}
+
+/**
+ * Sets up the message listener for archive actions
+ */
+function setupArchiveMessageListener() {
+    // Already implemented above
+    console.log('📨 Archive message listener ready');
+}
+
+//===============================================
+//old code
 // Report generation functionality
+//===================================================
 function generateReport(pet) {
     const reportWindow = window.open('', '_blank');
     reportWindow.document.write(`
