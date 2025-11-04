@@ -7094,7 +7094,7 @@ document.querySelectorAll('.mood-toggle-btn').forEach(btn => {
 
 
  // ==================== PET ENTRY FUNCTIONS ====================
-function showExerciseLog() {
+async function showExerciseLog() {
     toggleAuthHeader(false);
     document.getElementById('auth-container').style.display = 'none';
     document.getElementById('main-banner').style.display = 'none';
@@ -7107,9 +7107,9 @@ function showExerciseLog() {
     
  //   document.getElementById('profileContainer').style.display = 'none';
     
-   loadSavedProfiles(); // This will handle empty state vs profiles
+   await loadSavedProfiles(); // This will handle empty state vs profiles
    setupEventListeners();
-   loadActivePetData();
+    await loadActivePetData();
     // FOR SUGGESTED EXERCISES FILTRATION
    initializeDismissedSuggestions(); // to be filtered on refreshing 
     initializeLoggedSuggestions();
@@ -7117,14 +7117,14 @@ function showExerciseLog() {
 
 // NEW: Initialize action bar - BUT DELAY IT until dashboard is visible
     setTimeout(() => {
-        initializeActionBar();
+       await initializeActionBar();
     }, 100);
     
  console.log('✅ Action bar integrated into dashboard');
   
     // ADD THESE LINES TO YOUR EXISTING INITIALIZATION:
     // Initialize archive system
-    initializeCompleteArchiveSystem();
+   await initializeCompleteArchiveSystem();
     
     // Setup message listener for archive actions
     setupArchiveMessageListener();
