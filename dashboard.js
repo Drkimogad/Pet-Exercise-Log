@@ -512,28 +512,28 @@ async function loadSavedProfiles() {
 <img src="${pet.petDetails?.image || DEFAULT_IMAGE}" alt="${pet.petDetails?.name || 'Unknown Pet'}" class="profile-image">
 </div>
     <div class="basic-info-content">
-      <div class="basic-fields">
-        <div class="field-item">
-          <span class="field-icon">🐶</span>
-          <span class="field-text">${pet.petDetails?.name || 'Unknown'}</span>
-     </div>
-        <div class="field-item">
-          <span class="field-icon">🏷️</span>
-          <span class="field-text">${pet.petDetails.breed || 'Mixed'}</span>
-        </div>
-        <div class="field-item">
-          <span class="field-icon">⚖️</span>
-          <span class="field-text">${pet.petDetails.weight || '?'} ${pet.petDetails.weight ? 'lbs' : ''}</span>
-        </div>
-        <div class="field-item">
-          <span class="field-icon">🎂</span>
-          <span class="field-text">${pet.petDetails.age || '?'} ${pet.petDetails.age ? 'years' : ''}</span>
-        </div>
-        <div class="field-item">
-          <span class="field-icon">♂️</span>
-          <span class="field-text">${pet.petDetails.gender || 'Unknown'}</span>
-        </div>
-      </div>
+<div class="basic-fields">
+  <div class="field-item">
+    <span class="field-icon">🐶</span>
+    <span class="field-text">${pet.petDetails?.name || 'Unknown'}</span>
+  </div>
+  <div class="field-item">
+    <span class="field-icon">🏷️</span>
+    <span class="field-text">${pet.petDetails?.breed || 'Mixed'}</span>
+  </div>
+  <div class="field-item">
+    <span class="field-icon">⚖️</span>
+    <span class="field-text">${pet.petDetails?.weight || '?'} ${pet.petDetails?.weight ? 'lbs' : ''}</span>
+  </div>
+  <div class="field-item">
+    <span class="field-icon">🎂</span>
+    <span class="field-text">${pet.petDetails?.age || '?'} ${pet.petDetails?.age ? 'years' : ''}</span>
+  </div>
+  <div class="field-item">
+    <span class="field-icon">♂️</span>
+    <span class="field-text">${pet.petDetails?.gender || 'Unknown'}</span>
+  </div>
+</div>
     </div>
   </div>
 </div>
