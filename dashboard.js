@@ -172,7 +172,7 @@ async function handleHealthAssessmentSubmit(e) {
         const validationErrors = validateHealthAssessmentForm();
         if (validationErrors.length > 0) {
             console.error('❌ Health form validation failed:', validationErrors);
-            AppHelper.showErrors(validationErrors);
+            showErrors(validationErrors);
             return;
         }
 
@@ -356,12 +356,12 @@ function collectHealthAssessmentData() {
 // ===============================================
 //4. PERFORM DYNAMIC UPDATES - CORE CONNECTIVITY
 // ===============================================
-function performDynamicUpdates(petData) {
+async function performDynamicUpdates(petData) {
     console.log('🔄 Performing dynamic updates for all components');
     
     try {
         // 1. Update saved profiles (pet cards)
-        loadSavedProfiles();
+       await loadSavedProfiles();
         console.log('✅ Pet cards updated');
         
         // 2. Update dashboard components if we're on the active pet
@@ -803,7 +803,7 @@ function loadMoodViewPreference(petIndex) {
 //=====================================================
 // UPDATE DASHBOARD FUNCTION
 // Also update your updateDashboard function to handle these components:
-function updateDashboard(petData) {
+async function updateDashboard(petData) {
     console.log('Updating dashboard for:', petData.petDetails.name);
     
     // Update calendar with exercise data
@@ -829,7 +829,7 @@ function updateDashboard(petData) {
     }
     
     // Refresh profile list
-    loadSavedProfiles();
+  await loadSavedProfiles();
 }
 
 function updateMoodTracker(moodLogs) {
@@ -868,12 +868,12 @@ function updateMoodTracker(moodLogs) {
 }
 
 // Load active petdata. verify if it is needed still
-function loadActivePetData() {
+async function loadActivePetData() {
     const savedIndex = sessionStorage.getItem('activePetIndex');
     if (savedIndex !== null) {
       activePetIndex = parseInt(savedIndex);
-      const petData = getPets()[activePetIndex];
-      if (petData) updateDashboard(petData);
+      const petData = await getPets()[activePetIndex];
+      if (petData) await updateDashboard(petData);
     }
 }
 
@@ -1200,8 +1200,8 @@ async function selectPetProfile(index) {
   sessionStorage.setItem('activePetIndex', activePetIndex);
     
   const pets = await getPets(); // ← This gets the actual pets array
-  updateDashboard(pets[activePetIndex]); // ← Use the pets array we just fetched
-  loadSavedProfiles(); // Refresh to show selected state
+   await updateDashboard(pets[activePetIndex]); // ← Use the pets array we just fetched
+  await loadSavedProfiles(); // Refresh to show selected state
 }
 
 //===========================================
@@ -1255,7 +1255,7 @@ async function editPetProfile(index) {
         
     } catch (error) {
         console.error('❌ Error in editPetProfile:', error);
-        AppHelper.showError(`Failed to load pet profile: ${error.message}`);
+        showError(`Failed to load pet profile: ${error.message}`);
         // Return to dashboard on error
         document.getElementById('savedProfiles').style.display = 'block';
         document.getElementById('profileContainer').style.display = 'none';
@@ -1548,7 +1548,7 @@ function clearTemporaryData() {
 // ===============================================
 // 7.FORCE RETURN TO DASHBOARD (ERROR FALLBACK)
 // ===============================================
-function forceReturnToDashboard() {
+async function forceReturnToDashboard() {
     console.warn('🚨 Force returning to dashboard due to error');
     
     // Emergency fallback - ensure we always return to a usable state
@@ -1558,7 +1558,7 @@ function forceReturnToDashboard() {
     
     // Reload profiles to reset state
     setTimeout(() => {
-        loadSavedProfiles();
+      await loadSavedProfiles();
     }, 100);
     
     showError('Returned to dashboard due to an error');
@@ -1716,7 +1716,7 @@ async function handleDailyLogSubmit(e) { // ← ADD ASYNC
         const validationErrors = validateDailyLogForm();
         if (validationErrors.length > 0) {
             console.error('❌ Daily log validation failed:', validationErrors);
-            AppHelper.showErrors(validationErrors);
+            showErrors(validationErrors);
             return;
         }
         
@@ -1725,7 +1725,7 @@ async function handleDailyLogSubmit(e) { // ← ADD ASYNC
         console.log('📋 Daily log data collected:', formData);
         
         // Update pet data
-        const pets = getPets();
+        const pets = await getPets();
         const pet = { ...pets[activePetIndex] };
         
         // Add exercise entry
@@ -1770,7 +1770,7 @@ if (window.petDataService) {
         
         // Return to dashboard and refresh
         returnToDashboard();
-        loadSavedProfiles(); // This will now show the updated calendar/charts/mood
+       await loadSavedProfiles(); // This will now show the updated calendar/charts/mood
         
         console.log('✅ Daily log completed successfully');
      
@@ -1848,7 +1848,7 @@ async function deletePetProfile(index) { // ADD ASYNC
      document.getElementById('petFormContainer').innerHTML = document.getElementById('profileFormTemplate').innerHTML;
     }
     
-    loadSavedProfiles();
+   await loadSavedProfiles();
     showSuccess('Profile deleted successfully'); // verify
   }
 }
@@ -1875,7 +1875,7 @@ function sharePetProfile(index) {
     const profileText = `Pet: ${pet.petDetails.name}\nType: ${pet.petDetails.type}\nBreed: ${pet.petDetails.breed}\nAge: ${pet.petDetails.age}`;
     navigator.clipboard.writeText(profileText)
       .then(() => {
-        AppHelper.showError('Profile details copied to clipboard!');
+        showError('Profile details copied to clipboard!');
       })
       .catch(err => {
         console.error('Failed to copy: ', err);
@@ -1959,7 +1959,7 @@ function handleImageUpload(e) {
 }
 
 // ===============================================
-// SUGGESTED EXERCISES LOGIC
+// SUGGESTED EXERCISES LOGIC CORRECT ONE
 // ===============================================
 
 // Generate smart exercise suggestions based on health assessment
@@ -2161,7 +2161,7 @@ async function logSuggestedExercise(petIndex, exerciseId) { // ADD ASYNC
     }
         
     // Refresh displays
-    loadSavedProfiles();
+   await loadSavedProfiles();
     updateGoalsOnExerciseLogged(petIndex);
     refreshTimelineIfOpen();
     
