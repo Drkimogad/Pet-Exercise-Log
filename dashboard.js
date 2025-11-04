@@ -251,7 +251,7 @@ if (activePetIndex !== null) {
 }
 
         console.log('✅ Health assessment details updated');
-
+console.log('🔍 DEBUG: Before Firestore save check');
        // Save to storage
 if (activePetIndex === null) {
     pets.push(petData);
@@ -259,8 +259,7 @@ if (activePetIndex === null) {
 } else {
     pets[activePetIndex] = petData;
 }
-console.log('🔍 DEBUG: Before Firestore save');
-            
+           console.log('🔍 DEBUG: After Firestore save check'); 
 // REPLACED: Save using PetDataService THAT SAVES TO FIRESTORE COLLECTION IN UTILS.JS
 if (window.petDataService) {
     await window.petDataService.savePet(petData);
