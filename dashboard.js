@@ -164,8 +164,9 @@ function getCurrentWeekStart() {
 // HANDLE HEALTH ASSESSMENT FORM SUBMIT
 // ===============================================
 async function handleHealthAssessmentSubmit(e) {
-    e.preventDefault();
     console.log('🔄 HEALTH ASSESSMENT FORM SUBMIT INITIATED');
+    e.preventDefault();
+    console.log('🛑 FORM SUBMIT - preventDefault called');
 
     try {
         // Validate form first
