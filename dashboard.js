@@ -213,7 +213,8 @@ console.log('💾 Preserving existing data:', {
   moodLogs: petData.moodLogs?.length || 0
 });
 
-        // Update pet details with HEALTH ASSESSMENT data - PRESERVE EXERCISE DATA
+            console.log('🔍 DEBUG: Before petDetails assignment');
+// Update pet details with HEALTH ASSESSMENT data - PRESERVE EXERCISE DATA
 petData.petDetails = {
     // Basic Information
     type: formData.petType,
@@ -232,7 +233,8 @@ petData.petDetails = {
     feedingRecommendation: formData.feedingRecommendation,
     healthNotes: formData.healthNotes.trim()
 };
-
+console.log('🔍 DEBUG: After petDetails assignment');
+            
 // EXERCISE ENTRIES AND MOOD LOGS ARE AUTOMATICALLY PRESERVED 
 // because we used spread operator: petData = { ...pets[activePetIndex] }
 console.log('✅ Health assessment updated, exercise data preserved:', {
