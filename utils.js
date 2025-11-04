@@ -725,7 +725,7 @@ function generateGoalsHTML(goalsProgress) {
 
 
 // ===============================================
-// PET DATA SERVICE new firestore implementation
+// PET DATA SERVICE - FIXED Firestore implementation
 // ===============================================
 class PetDataService {
     constructor() {
@@ -742,15 +742,29 @@ class PetDataService {
         try {
             if (!petData.id) petData.id = 'pet_' + Date.now();
             
-            // Convert pet to map structure { petId: petData }
-            const petMap = {
-                [petData.id]: petData
-            };
-            
+            // Get existing pets array first
+            const doc = await this.db.collection('petProfiles')
+                .doc(this.userId)
+                .get();
+                
+            let petsArray = [];
+            if (doc.exists && doc.data().pets) {
+                petsArray = doc.data().pets; // Keep existing array
+            }
+
+            // Update or add the pet in the array
+            const existingIndex = petsArray.findIndex(p => p.id === petData.id);
+            if (existingIndex >= 0) {
+                petsArray[existingIndex] = petData; // Update existing
+            } else {
+                petsArray.push(petData); // Add new
+            }
+
+            // Save back as array
             await this.db.collection('petProfiles')
                 .doc(this.userId)
                 .set({
-                    pets: petMap,
+                    pets: petsArray,  // CORRECT: Saving as array
                     updatedAt: new Date().toISOString()
                 }, { merge: true });
             
@@ -772,8 +786,8 @@ class PetDataService {
             
             if (doc.exists) {
                 const data = doc.data();
-                // Convert map back to array
-                const pets = data.pets ? Object.values(data.pets) : [];
+                // Return the array directly - no conversion needed
+                const pets = data.pets || [];
                 localStorage.setItem('pets', JSON.stringify(pets));
                 return pets;
             }
@@ -801,3 +815,4 @@ class PetDataService {
 }
 
 window.petDataService = new PetDataService();
+
