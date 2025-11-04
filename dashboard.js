@@ -801,7 +801,7 @@ function loadMoodViewPreference(petIndex) {
 //=====================================================
 // UPDATE DASHBOARD FUNCTION
 // Also update your updateDashboard function to handle these components:
-function updateDashboard(petData) {
+async function updateDashboard(petData) {
     console.log('Updating dashboard for:', petData.petDetails.name);
     
     // Update calendar with exercise data
@@ -827,7 +827,7 @@ function updateDashboard(petData) {
     }
     
     // Refresh profile list
-    loadSavedProfiles();
+   await loadSavedProfiles();
 }
 
 function updateMoodTracker(moodLogs) {
@@ -866,12 +866,14 @@ function updateMoodTracker(moodLogs) {
 }
 
 // Load active petdata. verify if it is needed still
-function loadActivePetData() {
+async function loadActivePetData() {
     const savedIndex = sessionStorage.getItem('activePetIndex');
     if (savedIndex !== null) {
       activePetIndex = parseInt(savedIndex);
+        
+    const pets = await getPets(); // ← ADD AWAIT
       const petData = getPets()[activePetIndex];
-      if (petData) updateDashboard(petData);
+        if (petData) await updateDashboard(petData); // ← ADD AWAIT
     }
 }
 
@@ -1248,8 +1250,8 @@ async function selectPetProfile(index) {
   sessionStorage.setItem('activePetIndex', activePetIndex);
     
   const pets = await getPets(); // ← This gets the actual pets array
-  updateDashboard(pets[activePetIndex]); // ← Use the pets array we just fetched
-  loadSavedProfiles(); // Refresh to show selected state
+  await updateDashboard(pets[activePetIndex]); // ← Use the pets array we just fetched
+  await loadSavedProfiles(); // Refresh to show selected state
 }
 
 //===========================================
@@ -1259,15 +1261,14 @@ async function selectPetProfile(index) {
 // ===============================================
 async function editPetProfile(index) {  
     console.log('🔄 editPetProfile called for index:', index);
-    const pets = await getPets(); // ← This is fine (local scope)
     
     try {
         // Validate input
         if (index === undefined || index === null) {
             throw new Error('Invalid pet index provided');
         }
-
-        const pets = getPets();
+        
+        const pets = await getPets(); // ← This is fine (local scope)
         if (!pets[index]) {
             throw new Error(`Pet not found at index: ${index}`);
         }
@@ -1539,7 +1540,7 @@ function hasHealthFormDataChanged(originalPet, currentFormData) {
 // ===============================================
 // 5.PERFORM CANCELLATION - CLEAN RETURN TO DASHBOARD
 // ===============================================
-function performCancellation() {
+async function performCancellation() {
     console.log('🔄 Performing cancellation...');
     
     try {
@@ -1558,7 +1559,7 @@ function performCancellation() {
         document.getElementById('profileContainer').innerHTML = '';
         
         // Refresh the profiles to ensure current data is shown
-        loadSavedProfiles();
+        await loadSavedProfiles();
         
         console.log('✅ Cancellation completed successfully');
         showSuccess('Edit cancelled'); // Optional: show confirmation message
@@ -1596,7 +1597,7 @@ function clearTemporaryData() {
 // ===============================================
 // 7.FORCE RETURN TO DASHBOARD (ERROR FALLBACK)
 // ===============================================
-function forceReturnToDashboard() {
+async function forceReturnToDashboard() {
     console.warn('🚨 Force returning to dashboard due to error');
     
     // Emergency fallback - ensure we always return to a usable state
@@ -1606,7 +1607,7 @@ function forceReturnToDashboard() {
     
     // Reload profiles to reset state
     setTimeout(() => {
-        loadSavedProfiles();
+      await loadSavedProfiles();
     }, 100);
     
     showError('Returned to dashboard due to an error');
@@ -1661,7 +1662,7 @@ async function showDailyLogForm(index) {
         
         // Set up cancel button
         document.getElementById('cancelDailyLogButton').addEventListener('click', function() {
-            returnToDashboard();
+        await returnToDashboard();
         });
         
         console.log('✅ Daily log form initialized successfully');
@@ -1669,7 +1670,7 @@ async function showDailyLogForm(index) {
     } catch (error) {
         console.error('❌ Error in showDailyLogForm:', error);
         showError(`Failed to load daily log: ${error.message}`);
-        returnToDashboard();
+        await returnToDashboard();
     }
 }
 
@@ -1764,7 +1765,7 @@ async function handleDailyLogSubmit(e) { // ← ADD ASYNC
         const validationErrors = validateDailyLogForm();
         if (validationErrors.length > 0) {
             console.error('❌ Daily log validation failed:', validationErrors);
-            AppHelper.showErrors(validationErrors);
+            showErrors(validationErrors);
             return;
         }
         
@@ -1773,7 +1774,7 @@ async function handleDailyLogSubmit(e) { // ← ADD ASYNC
         console.log('📋 Daily log data collected:', formData);
         
         // Update pet data
-        const pets = getPets();
+        const pets = await getPets();
         const pet = { ...pets[activePetIndex] };
         
         // Add exercise entry
@@ -1817,8 +1818,8 @@ if (window.petDataService) {
         showSuccess('Exercise logged successfully!');
         
         // Return to dashboard and refresh
-        returnToDashboard();
-        loadSavedProfiles(); // This will now show the updated calendar/charts/mood
+      await returnToDashboard();
+      await loadSavedProfiles(); // This will now show the updated calendar/charts/mood
         
         console.log('✅ Daily log completed successfully');
      
@@ -1896,7 +1897,7 @@ async function deletePetProfile(index) { // ADD ASYNC
      document.getElementById('petFormContainer').innerHTML = document.getElementById('profileFormTemplate').innerHTML;
     }
     
-    loadSavedProfiles();
+    await loadSavedProfiles();
     showSuccess('Profile deleted successfully'); // verify
   }
 }
@@ -1904,8 +1905,8 @@ async function deletePetProfile(index) { // ADD ASYNC
 //=========================================
   // SHARE PROFILE FUNCTION
 //========================================
-function sharePetProfile(index) {
-  const pet = getPets()[index];
+async function sharePetProfile(index) {
+  const pet = await getPets()[index];
   if (!pet) return;
   
   const shareData = {
@@ -1923,7 +1924,7 @@ function sharePetProfile(index) {
     const profileText = `Pet: ${pet.petDetails.name}\nType: ${pet.petDetails.type}\nBreed: ${pet.petDetails.breed}\nAge: ${pet.petDetails.age}`;
     navigator.clipboard.writeText(profileText)
       .then(() => {
-        AppHelper.showError('Profile details copied to clipboard!');
+        showError('Profile details copied to clipboard!');
       })
       .catch(err => {
         console.error('Failed to copy: ', err);
@@ -2013,6 +2014,7 @@ function handleImageUpload(e) {
 // Generate smart exercise suggestions based on health assessment
 async function generateSuggestedExercises(pet) {
     const pets = await getPets();
+    
     //const petIndex = pets.findIndex(p => p.petDetails.name === pet.petDetails.name); //defined petdetails
     const petIndex = pets.findIndex(p => p.petDetails?.name === pet.petDetails?.name);
     
@@ -2167,7 +2169,7 @@ async function generateSuggestedExercises(pet) {
 
 // Log a suggested exercise (convert to actual exercise entry) updated
 async function logSuggestedExercise(petIndex, exerciseId) { // ADD ASYNC
-    const pets = getPets();
+    const pets = await getPets();
     const pet = pets[petIndex];
     const suggestions = generateSuggestedExercises(pet);
     const exercise = suggestions.find(s => s.id === exerciseId);
@@ -2209,7 +2211,7 @@ async function logSuggestedExercise(petIndex, exerciseId) { // ADD ASYNC
     }
         
     // Refresh displays
-    loadSavedProfiles();
+    await loadSavedProfiles();
     updateGoalsOnExerciseLogged(petIndex);
     refreshTimelineIfOpen();
     
@@ -2319,8 +2321,8 @@ function initializeNewProfileMoodTracker(moodContainer) {
 // ===============================================
 // EXISTING PROFILE: Load from pets data
 // ===============================================
-function initializeExistingProfileMoodTracker(moodContainer) {
-    const pets = getPets();
+async function initializeExistingProfileMoodTracker(moodContainer) {
+    const pets =await getPets();
     const activePet = pets[activePetIndex];
     const moodLogs = activePet.moodLogs || [];
     const today = new Date().toISOString().split('T')[0];
@@ -2657,8 +2659,8 @@ function initializeNewProfileCalendar(container) {
 // ===============================================
 // EXISTING PROFILE: Load from pets data
 // ===============================================
-function initializeExistingProfileCalendar(container) {
-    const pets = getPets();
+async function initializeExistingProfileCalendar(container) {
+    const pets = await getPets();
     const activePet = pets[activePetIndex];
     const exerciseEntries = activePet.exerciseEntries || [];
     
@@ -2791,7 +2793,7 @@ function showDayModal(date, entries) {
 // ===============================================
 // Add exercise handler (different for new vs existing profiles)
 // ===============================================
-function handleAddExercise(date) {
+async function handleAddExercise(date) {
     if (activePetIndex === null) {
         // NEW PROFILE: Add to temporary storage
         if (!window.tempExerciseEntries) window.tempExerciseEntries = [];
@@ -2806,7 +2808,7 @@ function handleAddExercise(date) {
         console.log('Exercise added to temporary storage:', window.tempExerciseEntries);
     } else {
         // EXISTING PROFILE: Add to localStorage
-        const pets = getPets();
+        const pets =await getPets();
         const pet = pets[activePetIndex];
         pet.exerciseEntries = pet.exerciseEntries || [];
         pet.exerciseEntries.push({
@@ -3003,8 +3005,8 @@ function initializeNewProfileCharts() {
 // ===============================================
 // EXISTING PROFILE: Load from pets data
 // ===============================================
-function initializeExistingProfileCharts() {
-    const pets = getPets();
+async function initializeExistingProfileCharts() {
+    const pets =await getPets();
     const activePet = pets[activePetIndex];
     const exerciseEntries = activePet.exerciseEntries || [];
     
@@ -3069,7 +3071,7 @@ function refreshChartsWithData(data) {
 // ===============================================
 // Update charts when new exercise data is available
 // ===============================================
-function updateCharts() {
+async function updateCharts() {
     if (activePetIndex === null) {
         // NEW PROFILE: Use temporary data
         if (window.tempExerciseEntries && window.tempExerciseEntries.length > 0) {
@@ -3077,7 +3079,7 @@ function updateCharts() {
         }
     } else {
         // EXISTING PROFILE: Use data from localStorage
-        const pets = getPets();
+        const pets =await getPets();
         const activePet = pets[activePetIndex];
         const exerciseEntries = activePet.exerciseEntries || [];
         
@@ -3465,8 +3467,6 @@ const ReportArchiveService = {
         // yearlyreport2025/months/01_January/
         console.log(`📊 Updating metadata for ${year}-${month}`);
         
-        // Placeholder implementation
-        /*
         const monthKey = `${month.toString().padStart(2, '0')}_${getMonthName(month)}`;
         await db.collection(`yearlyreport${year}`)
                 .doc('months')
@@ -3476,7 +3476,7 @@ const ReportArchiveService = {
                     totalReports: firebase.firestore.FieldValue.increment(1),
                     lastUpdated: new Date().toISOString()
                 }, { merge: true });
-        */
+        
     }
 };
 // STEP 2B: AUTO-ARCHIVE TRIGGER SYSTEM
@@ -3542,7 +3542,7 @@ async function archiveAllPetsForMonth(year, month) {
     
     let archivedCount = 0;
     
-    for (const pet of pets) {
+    for (const pet of pets) {  //looping it
         try {
             // 1. Generate enhanced report data
             const reportData = generateEnhancedReportData(pet, year, month);
