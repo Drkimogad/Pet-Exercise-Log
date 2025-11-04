@@ -163,6 +163,9 @@ function getCurrentWeekStart() {
 // ===============================================
 // HANDLE HEALTH ASSESSMENT FORM SUBMIT
 // ===============================================
+// ===============================================
+// HANDLE HEALTH ASSESSMENT FORM SUBMIT
+// ===============================================
 async function handleHealthAssessmentSubmit(e) {
     console.log('🔄 HEALTH ASSESSMENT FORM SUBMIT INITIATED');
     e.preventDefault();
@@ -188,102 +191,80 @@ async function handleHealthAssessmentSubmit(e) {
         if (activePetIndex === null) {
             // CREATE NEW PROFILE
             console.log('🆕 Creating new profile with health assessment');
-            console.log('🔍 DEBUG: After creating new profile check');
-            
             if (pets.length >= MAX_PETS) {
-                AppHelper.showError(`Maximum of ${MAX_PETS} profiles reached`);
+                showError(`Maximum of ${MAX_PETS} profiles reached`);
                 return;
             }
-            
-console.log('🔍 DEBUG: Before initializeNewPet');
- petData = initializeNewPet();
-console.log('🔍 DEBUG: After initializeNewPet', petData);
-            console.log('🔍 DEBUG: Testing if code reaches here');
-
-        
+            petData = initializeNewPet();
         } else {
+            // UPDATE EXISTING PROFILE - PRESERVE EXISTING DATA
+            console.log('📝 Updating existing profile at index:', activePetIndex);
+            petData = { ...pets[activePetIndex] };
             
-           // UPDATE EXISTING PROFILE - PRESERVE EXISTING DATA
-console.log('📝 Updating existing profile at index:', activePetIndex);
-petData = { ...pets[activePetIndex] };
-console.log('🔍 DEBUG: After petData initialization');
-            
-// PRESERVE EXISTING EXERCISE ENTRIES AND MOOD LOGS
-console.log('💾 Preserving existing data:', {
-  exerciseEntries: petData.exerciseEntries?.length || 0,
-  moodLogs: petData.moodLogs?.length || 0
-});
+            // PRESERVE EXISTING EXERCISE ENTRIES AND MOOD LOGS
+            console.log('💾 Preserving existing data:', {
+                exerciseEntries: petData.exerciseEntries?.length || 0,
+                moodLogs: petData.moodLogs?.length || 0
+            });
+        }
 
-            console.log('🔍 DEBUG: Before petDetails assignment');
-// Update pet details with HEALTH ASSESSMENT data - PRESERVE EXERCISE DATA
-petData.petDetails = {
-    // Basic Information
-    type: formData.petType,
-    name: formData.petName.trim(),
-    image: formData.petImage,
-    age: formData.petAge,
-    weight: formData.petWeight,
-    breed: formData.petBreed.trim(),
-    gender: formData.petGender,
-    
-    // Health Assessment Fields
-    bcs: formData.petBCS,
-    energyLevel: formData.petEnergyLevel,
-    targetWeight: formData.petTargetWeight,
-    medicalConditions: formData.medicalConditions,
-    feedingRecommendation: formData.feedingRecommendation,
-    healthNotes: formData.healthNotes.trim()
-};
-console.log('🔍 DEBUG: After petDetails assignment');
+        // UPDATE PET DETAILS FOR BOTH NEW AND EXISTING PROFILES
+        console.log('🔍 DEBUG: Before petDetails assignment');
+        petData.petDetails = {
+            // Basic Information
+            type: formData.petType,
+            name: formData.petName.trim(),
+            image: formData.petImage,
+            age: formData.petAge,
+            weight: formData.petWeight,
+            breed: formData.petBreed.trim(),
+            gender: formData.petGender,
             
-// EXERCISE ENTRIES AND MOOD LOGS ARE AUTOMATICALLY PRESERVED 
-// because we used spread operator: petData = { ...pets[activePetIndex] }
-console.log('✅ Health assessment updated, exercise data preserved:', {
-    exerciseEntries: petData.exerciseEntries?.length || 0,
-    moodLogs: petData.moodLogs?.length || 0
-});
-     
-// PRESERVE THE ACTION BAR SETTINGS
-if (activePetIndex !== null) {
-    // Keep existing settings when editing
-    petData.reminderSettings = pets[activePetIndex].reminderSettings;
-    petData.goalSettings = pets[activePetIndex].goalSettings;
-} else {
-    // For new pets, use default settings from initializeNewPet
-    const newPet = initializeNewPet();
-    petData.reminderSettings = newPet.reminderSettings;
-    petData.goalSettings = newPet.goalSettings;
-}
+            // Health Assessment Fields
+            bcs: formData.petBCS,
+            energyLevel: formData.petEnergyLevel,
+            targetWeight: formData.petTargetWeight,
+            medicalConditions: formData.medicalConditions,
+            feedingRecommendation: formData.feedingRecommendation,
+            healthNotes: formData.healthNotes.trim()
+        };
+        console.log('🔍 DEBUG: After petDetails assignment');
+
+        // PRESERVE THE ACTION BAR SETTINGS
+        if (activePetIndex !== null) {
+            // Keep existing settings when editing
+            petData.reminderSettings = pets[activePetIndex].reminderSettings;
+            petData.goalSettings = pets[activePetIndex].goalSettings;
+        }
+        // For new pets, settings are already set by initializeNewPet()
 
         console.log('✅ Health assessment details updated');
-console.log('🔍 DEBUG: Before Firestore save check');
-       // Save to storage
-if (activePetIndex === null) {
-    pets.push(petData);
-    activePetIndex = pets.length - 1;
-} else {
-    pets[activePetIndex] = petData;
-}
-           console.log('🔍 DEBUG: After Firestore save check'); 
-// REPLACED: Save using PetDataService THAT SAVES TO FIRESTORE COLLECTION IN UTILS.JS
-if (window.petDataService) {
-    await window.petDataService.savePet(petData);
-} else {
-    localStorage.setItem('pets', JSON.stringify(pets));
-}
-sessionStorage.setItem('activePetIndex', activePetIndex);
+
+        // Save to storage
+        if (activePetIndex === null) {
+            pets.push(petData);
+            activePetIndex = pets.length - 1;
+        } else {
+            pets[activePetIndex] = petData;
+        }
+
+        // REPLACED: Save using PetDataService THAT SAVES TO FIRESTORE COLLECTION IN UTILS.JS
+        if (window.petDataService) {
+            await window.petDataService.savePet(petData);
+        } else {
+            localStorage.setItem('pets', JSON.stringify(pets));
+        }
+        sessionStorage.setItem('activePetIndex', activePetIndex);
         console.log('💾 Health assessment saved to storage');
-    console.log('🔍 DEBUG: After save completed');
 
         // DYNAMIC UPDATES - Refresh all components
         performDynamicUpdates(petData);
 
         // Show success and return to dashboard
         showSuccess(activePetIndex === null ? 'Profile created successfully!' : 'Health assessment updated successfully!');
-        returnToDashboard();
+        await returnToDashboard(); // ADD AWAIT HERE
 
         console.log('✅ HEALTH ASSESSMENT FORM SUBMIT COMPLETED SUCCESSFULLY');
-    } // ← ADD THIS CLOSING BRACE FOR THE TRY BLOCK
 
     } catch (error) {
         console.error('❌ CRITICAL ERROR in handleHealthAssessmentSubmit:', error);
