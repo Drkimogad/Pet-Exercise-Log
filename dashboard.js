@@ -1,3 +1,9 @@
+/* 
+to fix the firestore schema for collections to expect arrays and restore all my dashboard.js to 
+work with that once again.WHAT A PAIN IN THE NECK
+*/
+
+
 "use strict";
 
 // Global variables
