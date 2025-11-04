@@ -509,8 +509,8 @@ async function loadSavedProfiles() {
   <!-- BOTTOM ROW: Image + Fields -->
   <div class="basic-info-bottom-row">
     <div class="profile-image-container">
-      <img src="${pet.petDetails.image}" alt="${pet.petDetails.name}" class="profile-image">
-    </div>
+<img src="${pet.petDetails?.image || DEFAULT_IMAGE}" alt="${pet.petDetails?.name || 'Unknown Pet'}" class="profile-image">
+</div>
     <div class="basic-info-content">
       <div class="basic-fields">
         <div class="field-item">
