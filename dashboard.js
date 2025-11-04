@@ -2271,8 +2271,8 @@ function initializeNewProfileMoodTracker(moodContainer) {
 // ===============================================
 // EXISTING PROFILE: Load from pets data
 // ===============================================
-function initializeExistingProfileMoodTracker(moodContainer) {
-    const pets = getPets();
+async function initializeExistingProfileMoodTracker(moodContainer) {
+    const pets =await getPets();
     const activePet = pets[activePetIndex];
     const moodLogs = activePet.moodLogs || [];
     const today = new Date().toISOString().split('T')[0];
@@ -2798,9 +2798,10 @@ function saveTemporaryExerciseData(petData) {
 
 
 
-
-// Charts functionality
-// add helper function 
+//==========================================================
+        //  CHARTS LOGIC
+//==================================================================
+// Generate helper function 
 function generateMiniCharts(exerciseEntries) {
     if (!exerciseEntries || exerciseEntries.length === 0) {
         return '<p class="no-charts-data">No exercise data yet</p>';
@@ -2831,7 +2832,7 @@ function generateMiniCharts(exerciseEntries) {
 // ===============================================
 // CHARTS - Unified Initialization Function
 // ===============================================
-function initializeCharts() {
+async function initializeCharts() {
     console.log('Initializing charts...');
     
     // Check if chart containers exist
@@ -2852,7 +2853,7 @@ function initializeCharts() {
     } else {
         // EDITING EXISTING PROFILE: Load existing exercise data
         console.log('Editing profile - loading existing exercise data for charts');
-        initializeExistingProfileCharts();
+       await initializeExistingProfileCharts();
     }
 }
 
@@ -2955,8 +2956,8 @@ function initializeNewProfileCharts() {
 // ===============================================
 // EXISTING PROFILE: Load from pets data
 // ===============================================
-function initializeExistingProfileCharts() {
-    const pets = getPets();
+async function initializeExistingProfileCharts() {
+    const pets = await getPets();
     const activePet = pets[activePetIndex];
     const exerciseEntries = activePet.exerciseEntries || [];
     
@@ -3021,7 +3022,7 @@ function refreshChartsWithData(data) {
 // ===============================================
 // Update charts when new exercise data is available
 // ===============================================
-function updateCharts() {
+async function updateCharts() {
     if (activePetIndex === null) {
         // NEW PROFILE: Use temporary data
         if (window.tempExerciseEntries && window.tempExerciseEntries.length > 0) {
@@ -3029,7 +3030,7 @@ function updateCharts() {
         }
     } else {
         // EXISTING PROFILE: Use data from localStorage
-        const pets = getPets();
+        const pets = await getPets();
         const activePet = pets[activePetIndex];
         const exerciseEntries = activePet.exerciseEntries || [];
         
@@ -3417,8 +3418,7 @@ const ReportArchiveService = {
         // yearlyreport2025/months/01_January/
         console.log(`📊 Updating metadata for ${year}-${month}`);
         
-        // Placeholder implementation
-        /*
+    
         const monthKey = `${month.toString().padStart(2, '0')}_${getMonthName(month)}`;
         await db.collection(`yearlyreport${year}`)
                 .doc('months')
@@ -3428,7 +3428,6 @@ const ReportArchiveService = {
                     totalReports: firebase.firestore.FieldValue.increment(1),
                     lastUpdated: new Date().toISOString()
                 }, { merge: true });
-        */
     }
 };
 // STEP 2B: AUTO-ARCHIVE TRIGGER SYSTEM
@@ -3546,11 +3545,12 @@ function setupArchivePeriodicCheck() {
 /**
  * Gets current user ID (placeholder - needs your auth implementation)
  */
-function getCurrentUserId() {
+// ON TOP OF DASHBOARD.JSXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+//function getCurrentUserId() {
     // This depends on your authentication system
     // Return user ID from your auth system
-    return sessionStorage.getItem('userId') || 'demo_user'; // Placeholder
-}
+//    return sessionStorage.getItem('userId') || 'demo_user'; // Placeholder
+//}
 //STEP 2C: MANUAL ARCHIVE TRIGGERS if user wante to archive at a certain point
 // ===============================================
 // MANUAL ARCHIVE TRIGGERS
@@ -3559,13 +3559,13 @@ function getCurrentUserId() {
 /**
  * Manual trigger to archive current month immediately
  */
-function archiveCurrentMonthManual() {
+function archiveCurrentMonthManual() {   //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxto verify
     const today = new Date();
     const currentMonth = today.getMonth() + 1;
     const currentYear = today.getFullYear();
     
     if (confirm(`Archive ${currentYear}-${currentMonth} reports for all pets now?`)) {
-        archiveAllPetsForMonth(currentYear, currentMonth);
+         archiveAllPetsForMonth(currentYear, currentMonth);
     }
 }
 
@@ -3577,15 +3577,15 @@ async function archiveSpecificMonthManual(year, month) {
   await saveReportToFirestore(userId, reportData);
     
     if (confirm(`Archive ${year}-${month} reports for all pets?`)) {
-        archiveAllPetsForMonth(year, month);
+       await archiveAllPetsForMonth(year, month);
     }
 }
 
 /**
  * Manual trigger for single pet archive
  */
-function archiveSinglePetManual(petIndex, year, month) {
-    const pets = getPets();
+async function archiveSinglePetManual(petIndex, year, month) {
+    const pets = await getPets();
     const pet = pets[petIndex];
     
     if (!pet) {
@@ -3594,7 +3594,7 @@ function archiveSinglePetManual(petIndex, year, month) {
     }
     
     if (confirm(`Archive ${year}-${month} report for ${pet.petDetails.name}?`)) {
-        archiveSinglePetForMonth(petIndex, year, month);
+       await archiveSinglePetForMonth(petIndex, year, month);
     }
 }
 
@@ -4050,7 +4050,7 @@ async function loadArchivedReport(year, month) {
     console.log(`📄 Loading archived report: ${year}-${month}`);
     
     const userId = getCurrentUserId();
-    const pets = getPets();
+    const pets = await getPets();
     // For now, use first pet - we'll enhance this later
     const petId = pets[0]?.id || 'unknown';
     
@@ -4098,7 +4098,7 @@ async function loadArchiveFromFirestore(userId, petId, year, month) {
     // Placeholder - will be implemented with your Firebase config
     console.log(`🔍 Loading from Firestore: ${year}-${month}`);
     
-    /*
+    
     const reportId = `${userId}_${petId}_${year}${month.toString().padStart(2, '0')}`;
     const doc = await db.collection(`yearlyreport${year}`)
                        .doc('reports')
@@ -4109,7 +4109,7 @@ async function loadArchiveFromFirestore(userId, petId, year, month) {
     if (doc.exists) {
         return doc.data();
     }
-    */
+    
     
     return null;
 }
@@ -4651,8 +4651,8 @@ function formatMedicalCondition(condition) {
 }
 
 // GENERATE SUGGESTED EXERCISES R
-function generateSuggestedExercisesReportHTML(pet) {
-    const pets = getPets();
+async function generateSuggestedExercisesReportHTML(pet) {
+    const pets = await getPets();
     const petIndex = pets.findIndex(p => p.petDetails.name === pet.petDetails.name);
     const logged = JSON.parse(localStorage.getItem(LOGGED_SUGGESTIONS_KEY) || '{}')[petIndex] || [];
     
@@ -5004,10 +5004,55 @@ function generateExerciseSummaryHTML(exerciseEntries) {
 // ===============================================
 // 🗂️ FIRESTORE SCHEMA SETUP
 // ===============================================
+// Ensures the yearly report collection exists
+//🗂️ USER DOCUMENT SCHEMA
+//Document Path: petProfiles/{your-real-user-uid}
+//Fields:
+//text
+//userId: "{your-real-user-uid}" (string)
+//email: "your-email@example.com" (string) 
+//createdAt: [current timestamp] (timestamp)
+//updatedAt: [current timestamp] (timestamp)
+//pets: array [
+  //{
+  //  id: "pet1",
+  //  petDetails: {
+  //    name: "Pet Name",
+  //    type: "dog",
+  //    breed: "Breed",
+  //    age: "2",
+  //    weight: "25",
+  //    gender: "male",
+  //    bcs: "3", 
+  //    energyLevel: "medium",
+  //    targetWeight: "24",
+  //    medicalConditions: [],
+  //    feedingRecommendation: "maintain",
+  //    healthNotes: "",
+  //    image: "https://drkimogad.github.io/Pet-Exercise-Log/images/default-pet.png"
+  //  },
+//    exerciseEntries: [],
+ //   moodLogs: [],
+   // reminderSettings: {
+//      enabled: true,
+  //    threshold: 3,
+ //     lastChecked: "2024-01-01"
+//    },
+//    goalSettings: {
+//      enabled: false,
+//      weeklyTarget: 5,
+    //  currentWeekStart: "2024-01-01",
+  //    exercisesThisWeek: 0,
+//      streak: 0
+//    },
+ //   suggestionSettings: {
+ //     dismissed: [],
+ //     logged: []
+//    }
+//  }
+//]
 
-/**
- * Ensures the yearly report collection exists
- */
+ 
 async function setupYearlySchema(year) {
     try {
         console.log(`🗂️ Setting up schema for year ${year}`);
