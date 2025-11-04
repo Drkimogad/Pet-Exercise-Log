@@ -458,7 +458,9 @@ function returnToDashboard() {
 //  Load saved profiles - REFACTORED STRUCTURE
 //==========================================
 async function loadSavedProfiles() {
+    console.log('🔍 loadSavedProfiles called - checking pets data');
     pets = await getPets(); // ← Update global pets
+    console.log('🔍 Pets found:', pets.length, pets);
     
     if (pets.length === 0) { 
         document.getElementById('profileContainer').innerHTML = `
