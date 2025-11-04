@@ -437,7 +437,7 @@ function generateMoodSectionHTML(moodLogs) {
 // ===============================================
 //8. RETURN TO DASHBOARD
 // ===============================================
-function returnToDashboard() {
+async function returnToDashboard() {
     console.log('🏠 Returning to dashboard');
     
     document.getElementById('savedProfiles').style.display = 'block';
@@ -865,9 +865,10 @@ function updateMoodTracker(moodLogs) {
 async function loadActivePetData() {
     const savedIndex = sessionStorage.getItem('activePetIndex');
     if (savedIndex !== null) {
-      activePetIndex = parseInt(savedIndex);
-      const petData = await getPets()[activePetIndex];
-      if (petData) await updateDashboard(petData);
+        activePetIndex = parseInt(savedIndex);
+        const pets = await getPets(); // ← AWAIT FIRST, THEN ACCESS ARRAY
+        const petData = pets[activePetIndex];
+        if (petData) await updateDashboard(petData);
     }
 }
 
@@ -1105,7 +1106,7 @@ function showHealthAssessmentEditForm(index) {
         
         // Set up cancel button
         document.getElementById('cancelHealthAssessmentButton').addEventListener('click', function() {
-            returnToDashboard();
+            await returnToDashboard();
         });
         
         // Set up image upload handler
@@ -1119,7 +1120,7 @@ function showHealthAssessmentEditForm(index) {
     } catch (error) {
         console.error('❌ Error in showHealthAssessmentEditForm:', error);
         showError(`Failed to load health assessment: ${error.message}`);
-        returnToDashboard();
+       await returnToDashboard();
     }
 }
 
@@ -1341,7 +1342,7 @@ function setupEditModeForm() {
 
 // 1.CANCEL EDIT -
 // ===============================================
-function cancelEdit() {
+ function cancelEdit() {
     console.log('🔄 cancelEdit called');
     
     try {
@@ -1363,7 +1364,7 @@ function cancelEdit() {
     } catch (error) {
         console.error('❌ Error in cancelEdit:', error);
         // Fallback: force return to dashboard even on error
-        forceReturnToDashboard();
+         forceReturnToDashboard();
     }
 }
 
@@ -1485,7 +1486,7 @@ function hasHealthFormDataChanged(originalPet, currentFormData) {
 // ===============================================
 // 5.PERFORM CANCELLATION - CLEAN RETURN TO DASHBOARD
 // ===============================================
-function performCancellation() {
+async function performCancellation() {
     console.log('🔄 Performing cancellation...');
     
     try {
@@ -1504,7 +1505,7 @@ function performCancellation() {
         document.getElementById('profileContainer').innerHTML = '';
         
         // Refresh the profiles to ensure current data is shown
-        loadSavedProfiles();
+       await loadSavedProfiles();
         
         console.log('✅ Cancellation completed successfully');
         showSuccess('Edit cancelled'); // Optional: show confirmation message
@@ -1607,7 +1608,7 @@ async function showDailyLogForm(index) {
         
         // Set up cancel button
         document.getElementById('cancelDailyLogButton').addEventListener('click', function() {
-            returnToDashboard();
+          await returnToDashboard();
         });
         
         console.log('✅ Daily log form initialized successfully');
@@ -1615,7 +1616,7 @@ async function showDailyLogForm(index) {
     } catch (error) {
         console.error('❌ Error in showDailyLogForm:', error);
         showError(`Failed to load daily log: ${error.message}`);
-        returnToDashboard();
+        await returnToDashboard();
     }
 }
 
@@ -1763,7 +1764,7 @@ if (window.petDataService) {
         showSuccess('Exercise logged successfully!');
         
         // Return to dashboard and refresh
-        returnToDashboard();
+       await  returnToDashboard();
        await loadSavedProfiles(); // This will now show the updated calendar/charts/mood
         
         console.log('✅ Daily log completed successfully');
@@ -2113,7 +2114,7 @@ async function generateSuggestedExercises(pet) {
 
 // Log a suggested exercise (convert to actual exercise entry) updated
 async function logSuggestedExercise(petIndex, exerciseId) { // ADD ASYNC
-    const pets = getPets();
+    const pets = await getPets();
     const pet = pets[petIndex];
     const suggestions = generateSuggestedExercises(pet);
     const exercise = suggestions.find(s => s.id === exerciseId);
