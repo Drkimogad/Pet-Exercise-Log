@@ -910,56 +910,6 @@ function showHealthAssessmentForm() {
     setupFeedingCalculation();
 }
 
-// Handle health assessment form submission
-async function handleHealthAssessmentSubmit(e) { // ← ADD ASYNC
-    e.preventDefault();
-    console.log('🔄 Health assessment form submission');
-    
-    try {
-        // Validate form
-        const validationErrors = validateHealthAssessmentForm();
-        if (validationErrors.length > 0) {
-            console.error('❌ Health form validation failed:', validationErrors);
-            showErrors(validationErrors);
-            return;
-        }
-        
-        // Collect form data
-        const formData = collectHealthAssessmentData();
-        console.log('📋 Health assessment data collected:', formData);
-        
-        // Create new pet profile
-        const pets = await getPets();
-        if (pets.length >= MAX_PETS) {
-            AppHelper.showError(`Maximum of ${MAX_PETS} profiles reached`);
-            return;
-        }
-        
-        const petData = initializeNewPetWithHealth(formData);
-        
-        // Save to storage
-        pets.push(petData);
-        activePetIndex = pets.length - 1;
-        localStorage.setItem('pets', JSON.stringify(pets));
-        sessionStorage.setItem('activePetIndex', activePetIndex);
-        
-        console.log('💾 Health assessment saved');
-        
-        // Show success and return to dashboard
-        showSuccess('Pet profile created successfully!');
-        await loadSavedProfiles(); // Refresh to show new profile
-        
-        // Return to dashboard
-        document.getElementById('savedProfiles').style.display = 'block';
-        document.getElementById('profileContainer').style.display = 'none';
-        document.getElementById('profileContainer').innerHTML = '';
-        
-    } catch (error) {
-        console.error('❌ Error in health assessment submission:', error);
-        showError('Failed to save health assessment: ' + error.message);
-    }
-}
-
 // Initialize new pet with health assessment data
 function initializeNewPetWithHealth(formData) {
     return {
