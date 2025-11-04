@@ -187,6 +187,8 @@ async function handleHealthAssessmentSubmit(e) {
         if (activePetIndex === null) {
             // CREATE NEW PROFILE
             console.log('🆕 Creating new profile with health assessment');
+            console.log('🔍 DEBUG: After creating new profile check');
+            
             if (pets.length >= MAX_PETS) {
                 AppHelper.showError(`Maximum of ${MAX_PETS} profiles reached`);
                 return;
@@ -197,7 +199,8 @@ async function handleHealthAssessmentSubmit(e) {
            // UPDATE EXISTING PROFILE - PRESERVE EXISTING DATA
 console.log('📝 Updating existing profile at index:', activePetIndex);
 petData = { ...pets[activePetIndex] };
-
+console.log('🔍 DEBUG: After petData initialization');
+            
 // PRESERVE EXISTING EXERCISE ENTRIES AND MOOD LOGS
 console.log('💾 Preserving existing data:', {
   exerciseEntries: petData.exerciseEntries?.length || 0,
@@ -252,7 +255,8 @@ if (activePetIndex === null) {
 } else {
     pets[activePetIndex] = petData;
 }
-
+console.log('🔍 DEBUG: Before Firestore save');
+            
 // REPLACED: Save using PetDataService THAT SAVES TO FIRESTORE COLLECTION IN UTILS.JS
 if (window.petDataService) {
     await window.petDataService.savePet(petData);
@@ -261,6 +265,7 @@ if (window.petDataService) {
 }
 sessionStorage.setItem('activePetIndex', activePetIndex);
         console.log('💾 Health assessment saved to storage');
+    console.log('🔍 DEBUG: After save completed');
 
         // DYNAMIC UPDATES - Refresh all components
         performDynamicUpdates(petData);
