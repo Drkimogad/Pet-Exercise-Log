@@ -515,8 +515,8 @@ async function loadSavedProfiles() {
       <div class="basic-fields">
         <div class="field-item">
           <span class="field-icon">🐶</span>
-          <span class="field-text">${pet.petDetails.name || 'Unknown'}</span>
-        </div>
+          <span class="field-text">${pet.petDetails?.name || 'Unknown'}</span>
+     </div>
         <div class="field-item">
           <span class="field-icon">🏷️</span>
           <span class="field-text">${pet.petDetails.breed || 'Mixed'}</span>
