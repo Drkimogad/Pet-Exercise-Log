@@ -1606,9 +1606,9 @@ async function showDailyLogForm(index) {
         document.getElementById('dailyLogForm').addEventListener('submit', handleDailyLogSubmit);
         
         // Set up cancel button
-        document.getElementById('cancelDailyLogButton').addEventListener('click', function() {
-          await returnToDashboard();
-        });
+document.getElementById('cancelHealthAssessmentButton').addEventListener('click', async function() {
+    await returnToDashboard();
+});
         
         console.log('✅ Daily log form initialized successfully');
         
