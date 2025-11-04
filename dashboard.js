@@ -877,7 +877,7 @@ async function loadActivePetData() {
 // ===============================================
 
 // Show health assessment form (for new profiles)
-function showHealthAssessmentForm() {
+ function showHealthAssessmentForm() {
     console.log('🔄 Showing health assessment form');
     
     // Hide saved profiles, show form container
@@ -1066,7 +1066,7 @@ function handleHealthImageUpload(e) {
 // ===============================================
 // IT USES CANCEL EDIT FUNCTION FOR EXERCISE LOGGING FORM AS WELL
 // Show health assessment form for editing existing profile
-function showHealthAssessmentEditForm(index) {  
+async function showHealthAssessmentEditForm(index) {  
     console.log('🔄 showHealthAssessmentEditForm called for index:', index);
     
     try {
@@ -1074,7 +1074,7 @@ function showHealthAssessmentEditForm(index) {
             throw new Error('Invalid pet index provided');
         }
 
-        const pets = getPets();
+        const pets = await getPets();
         if (!pets[index]) {
             throw new Error(`Pet not found at index: ${index}`);
         }
