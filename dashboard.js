@@ -193,7 +193,11 @@ async function handleHealthAssessmentSubmit(e) {
                 AppHelper.showError(`Maximum of ${MAX_PETS} profiles reached`);
                 return;
             }
-            petData = initializeNewPet();
+            
+console.log('🔍 DEBUG: Before initializeNewPet');
+ petData = initializeNewPet();
+console.log('🔍 DEBUG: After initializeNewPet', petData);
+        
         } else {
             
            // UPDATE EXISTING PROFILE - PRESERVE EXISTING DATA
