@@ -945,7 +945,7 @@ async function handleHealthAssessmentSubmit(e) { // ← ADD ASYNC
         
         // Show success and return to dashboard
         showSuccess('Pet profile created successfully!');
-        loadSavedProfiles(); // Refresh to show new profile
+        await loadSavedProfiles(); // Refresh to show new profile
         
         // Return to dashboard
         document.getElementById('savedProfiles').style.display = 'block';
