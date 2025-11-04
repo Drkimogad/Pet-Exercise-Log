@@ -1548,7 +1548,7 @@ function clearTemporaryData() {
 // ===============================================
 // 7.FORCE RETURN TO DASHBOARD (ERROR FALLBACK)
 // ===============================================
-async function forceReturnToDashboard() {
+ function forceReturnToDashboard() {
     console.warn('🚨 Force returning to dashboard due to error');
     
     // Emergency fallback - ensure we always return to a usable state
@@ -1558,7 +1558,7 @@ async function forceReturnToDashboard() {
     
     // Reload profiles to reset state
     setTimeout(() => {
-      await loadSavedProfiles();
+     loadSavedProfiles(); // No await needed here as set time out
     }, 100);
     
     showError('Returned to dashboard due to an error');
