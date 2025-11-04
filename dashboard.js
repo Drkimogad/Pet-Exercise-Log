@@ -7102,6 +7102,7 @@ document.querySelectorAll('.mood-toggle-btn').forEach(btn => {
  // ==================== PET ENTRY FUNCTIONS ====================
 async function showExerciseLog() {
     toggleAuthHeader(false);
+    console.log('🔍 showExerciseLog started');
     document.getElementById('auth-container').style.display = 'none';
     document.getElementById('main-banner').style.display = 'none';
     
