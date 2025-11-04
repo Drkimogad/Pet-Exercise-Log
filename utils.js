@@ -748,9 +748,11 @@ class PetDataService {
                 .get();
                 
             let petsArray = [];
-            if (doc.exists && doc.data().pets) {
-                petsArray = doc.data().pets; // Keep existing array
-            }
+              if (doc.exists && doc.data().pets) {
+             // ENSURE it's always an array
+              petsArray = Array.isArray(doc.data().pets) ? doc.data().pets : [];
+              }
+
 
             // Update or add the pet in the array
             const existingIndex = petsArray.findIndex(p => p.id === petData.id);
