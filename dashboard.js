@@ -197,6 +197,8 @@ async function handleHealthAssessmentSubmit(e) {
 console.log('🔍 DEBUG: Before initializeNewPet');
  petData = initializeNewPet();
 console.log('🔍 DEBUG: After initializeNewPet', petData);
+            console.log('🔍 DEBUG: Testing if code reaches here');
+
         
         } else {
             
