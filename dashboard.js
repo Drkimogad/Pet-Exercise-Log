@@ -1104,10 +1104,9 @@ async function showHealthAssessmentEditForm(index) {
         // Set up form submission handler
         document.getElementById('completeHealthAssessmentForm').addEventListener('submit', handleHealthAssessmentSubmit);
         
-        // Set up cancel button
-        document.getElementById('cancelHealthAssessmentButton').addEventListener('click', function() {
-            await returnToDashboard();
-        });
+       document.getElementById('cancelHealthAssessmentButton').addEventListener('click', async function() {
+       await returnToDashboard();
+       });
         
         // Set up image upload handler
         document.getElementById('healthPetImage').addEventListener('change', handleHealthImageUpload);
