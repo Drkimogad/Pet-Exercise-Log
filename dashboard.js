@@ -163,9 +163,6 @@ function getCurrentWeekStart() {
 // ===============================================
 // HANDLE HEALTH ASSESSMENT FORM SUBMIT
 // ===============================================
-// ===============================================
-// HANDLE HEALTH ASSESSMENT FORM SUBMIT
-// ===============================================
 async function handleHealthAssessmentSubmit(e) {
     console.log('🔄 HEALTH ASSESSMENT FORM SUBMIT INITIATED');
     e.preventDefault();
@@ -231,7 +228,7 @@ async function handleHealthAssessmentSubmit(e) {
         console.log('🔍 DEBUG: After petDetails assignment');
 
         // PRESERVE THE ACTION BAR SETTINGS
-        if (activePetIndex !== null) {
+           if (activePetIndex !== null && pets[activePetIndex]) {
             // Keep existing settings when editing
             petData.reminderSettings = pets[activePetIndex].reminderSettings;
             petData.goalSettings = pets[activePetIndex].goalSettings;
