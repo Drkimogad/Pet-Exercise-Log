@@ -7029,16 +7029,6 @@ document.querySelectorAll('.edit-details-btn').forEach(btn => {
   });
 });
 
-  // Delete button updated
-// In setupProfileEventListeners() - find the delete suggestion button section:
-document.querySelectorAll('.delete-suggestion-btn').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const petIndex = parseInt(btn.dataset.index);
-        const exerciseId = btn.dataset.exercise;
-        deleteSuggestion(petIndex, exerciseId);
-    });
-});
 
   // Report button
 document.querySelectorAll('.report-btn').forEach(btn => {
@@ -7104,7 +7094,7 @@ document.querySelectorAll('.mood-toggle-btn').forEach(btn => {
 
 
  // ==================== PET ENTRY FUNCTIONS ====================
-function showExerciseLog() {
+async function showExerciseLog() {
     toggleAuthHeader(false);
     document.getElementById('auth-container').style.display = 'none';
     document.getElementById('main-banner').style.display = 'none';
@@ -7117,9 +7107,9 @@ function showExerciseLog() {
     
  //   document.getElementById('profileContainer').style.display = 'none';
     
-   loadSavedProfiles(); // This will handle empty state vs profiles
+   await loadSavedProfiles(); // This will handle empty state vs profiles
    setupEventListeners();
-   loadActivePetData();
+   await loadActivePetData();
     // FOR SUGGESTED EXERCISES FILTRATION
    initializeDismissedSuggestions(); // to be filtered on refreshing 
     initializeLoggedSuggestions();
