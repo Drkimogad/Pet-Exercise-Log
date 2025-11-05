@@ -6338,7 +6338,7 @@ async function updateGoalsOnExerciseLogged(petIndex) { // ADD ASYNC
     }     
         
         // Update UI
-        updateGoalsProgress();
+      await updateGoalsProgress();
     }
 }
 
@@ -6351,7 +6351,7 @@ function showGoalAchievedNotification(petName) {
 //=============================
 // WEEKLY GOALS SETTING MODAL
 //================================
-function showGoalsSettings() {
+async function showGoalsSettings() {
     console.log('⚙️ Showing goals settings');
     
     // Remove any existing settings modal
@@ -6364,7 +6364,7 @@ function showGoalsSettings() {
     document.body.insertAdjacentHTML('beforeend', createGoalsSettingsModal());
     
     // Load and display settings
-    loadGoalsSettingsContent();
+   await loadGoalsSettingsContent();
     
     // Setup settings modal event listeners
     setupGoalsSettingsEvents();
@@ -6387,11 +6387,11 @@ function createGoalsSettingsModal() {
         </div>
     `;
 }
-function loadGoalsSettingsContent() {
+async function loadGoalsSettingsContent() {
     const content = document.getElementById('goalsSettingsContent');
     if (!content) return;
     
-    const pets = getPets();
+    const pets = await getPets();
     
     if (pets.length === 0) {
         content.innerHTML = `
@@ -6546,7 +6546,7 @@ async function saveGoalsSettings() {
         }
         
         // Update action bar progress
-        updateGoalsProgress();
+      await updateGoalsProgress();
     } else {
         showSuccess('No changes made');
     }
@@ -6691,11 +6691,11 @@ function getIntensityColor(intensity) {
     return colors[intensity] || '#6c757d';
 }
 // STEP 4.3: Update the Timeline Content Loader
-function loadTimelineContent() {
+async function loadTimelineContent() {
     const content = document.getElementById('timelineContent');
     if (!content) return;
     
-    const timelineExercises = generateTimelineData();
+    const timelineExercises = await generateTimelineData();
     const groupedExercises = groupExercisesByDate(timelineExercises);
     
     if (timelineExercises.length === 0) {
@@ -6913,10 +6913,10 @@ function handleTimelineEntryClick(petIndex, exerciseDate) {
 }
 //STEP 4.6: Add Timeline Integration with Existing Data
 // Call this when new exercises are added to refresh any open timeline
-function refreshTimelineIfOpen() {
+async function refreshTimelineIfOpen() {
     const timelineModal = document.getElementById('timelineModal');
     if (timelineModal) {
-        loadTimelineContent(); // Refresh the content
+       await loadTimelineContent(); // Refresh the content
     }
 }
 
