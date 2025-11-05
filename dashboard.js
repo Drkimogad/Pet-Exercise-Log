@@ -6923,29 +6923,32 @@ async function refreshTimelineIfOpen() {
 //=======================================
    //  SETUP Event Listeners FOR 3 MODALS
 //=========================================
-function setupActionBarEventListeners() {
+async function setupActionBarEventListeners() {
     console.log('🔄 Setting up action bar event listeners');
     
     // Reminders button
     const remindersBtn = document.getElementById('remindersBtn');
     if (remindersBtn) {
-        remindersBtn.addEventListener('click', showRemindersModal);
-        console.log('✅ Reminders button listener added');
-    }
+        remindersBtn.addEventListener('click', async () => {
+    await showRemindersModal();
+});
+
     
     // Goals button  
     const goalsBtn = document.getElementById('goalsBtn');
     if (goalsBtn) {
-        goalsBtn.addEventListener('click', showGoalsModal);
-        console.log('✅ Goals button listener added');
-    }
-    
+       goalsBtn.addEventListener('click', async () => {
+    await showGoalsModal();
+});
+   
+
     // Timeline button
     const timelineBtn = document.getElementById('timelineBtn');
     if (timelineBtn) {
-        timelineBtn.addEventListener('click', showTimelineModal);
-        console.log('✅ Timeline button listener added');
-    }
+        timelineBtn.addEventListener('click', async () => {
+    await showTimelineModal();
+});
+        
     //     console.log('✅ Action bar event listeners setup');
     // Close modal handlers will be added when modals are created
 }
@@ -6962,8 +6965,8 @@ async function initializeActionBar() {
     console.log('🔄 Initializing action bar');
     
     // Action bar HTML is already in index.html - just setup events
-    setupActionBarEventListeners();
-   await updateActionBarData();
+    await setupActionBarEventListeners();
+    await updateActionBarData();
     console.log('✅ Action bar initialized');
 }
 
@@ -6971,14 +6974,14 @@ async function initializeActionBar() {
 //=================================
 // SETUP PROFILE EVENT LISTENERS for petcards
 //=============================================
-function setupProfileEventListeners() {
+ function setupProfileEventListeners() {
    // BCS Reassessment button listener 
  // calls the modal 
 document.querySelectorAll('.bcs-reassess-btn').forEach(btn => {
-    btn.addEventListener('click', (e) => {
+    btn.addEventListener('click', async (e) => {
         e.stopPropagation();
         const index = parseInt(btn.dataset.index);
-        showBCSReassessmentModal(index);
+        await showBCSReassessmentModal(index);
     });
  }); 
  
@@ -6993,36 +6996,37 @@ document.querySelectorAll('.select-btn').forEach(btn => {
     
    // Edit button → Now becomes Daily Log button
   document.querySelectorAll('.daily-log-btn').forEach(btn => {
-    btn.addEventListener('click', (e) => {
+    btn.addEventListener('click', async (e) => {
       e.stopPropagation();
       const index = parseInt(btn.dataset.index);
-      showDailyLogForm(index); // Changed from editPetProfile
+      await showDailyLogForm(index); // Changed from editPetProfile
     });
   });
 
   // Edit Details button (for health assessment form)
 document.querySelectorAll('.edit-details-btn').forEach(btn => {
-  btn.addEventListener('click', (e) => {
+  btn.addEventListener('click', async (e) => {
     e.stopPropagation();
     const index = parseInt(btn.dataset.index);
-    showHealthAssessmentEditForm(index); // Now uses health assessment edit
+    await showHealthAssessmentEditForm(index); // Now uses health assessment edit
   });
 });
 
 
   // Report button
 document.querySelectorAll('.report-btn').forEach(btn => {
-    btn.addEventListener('click', (e) => {
+    btn.addEventListener('click', async (e) => {
         e.stopPropagation();
         const index = parseInt(btn.dataset.index);
-        const pet = getPets()[index];
+        const pets = await getPets();
+        const pet = pets[index];
         if (pet) {
-            generateReport(pet); // ← This should call your report function
+            await generateReport(pet);
         }
     });
 });
 
-  // Share button
+  // Share button           SYNC
   document.querySelectorAll('.share-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
@@ -7043,15 +7047,15 @@ document.querySelectorAll('.profile-card').forEach(card => {
  
  // Suggested exercise buttons
 document.querySelectorAll('.log-exercise-btn').forEach(btn => {
-    btn.addEventListener('click', (e) => {
+    btn.addEventListener('click', async (e) => {
         e.stopPropagation();
         const index = parseInt(btn.dataset.index);
         const exerciseId = btn.dataset.exercise;
-        logSuggestedExercise(index, exerciseId);
+       await logSuggestedExercise(index, exerciseId);
     });
 });
 
-document.querySelectorAll('.delete-suggestion-btn').forEach(btn => {
+document.querySelectorAll('.delete-suggestion-btn').forEach(btn => { //SYNC
     btn.addEventListener('click', (e) => {
         e.stopPropagation();
         const index = parseInt(btn.dataset.index);
@@ -7061,7 +7065,7 @@ document.querySelectorAll('.delete-suggestion-btn').forEach(btn => {
 });
  
  
- // Mood view toggle buttons
+ // Mood view toggle buttons SYNC
 document.querySelectorAll('.mood-toggle-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -7096,7 +7100,7 @@ async function showExerciseLog() {
     console.log('✅ Suggested exercises systems initialized');
 
 // NEW: Initialize action bar - BUT DELAY IT until dashboard is visible
-    setTimeout(() => {
+    setTimeout(async () => {
         initializeActionBar();
     }, 100);
     
