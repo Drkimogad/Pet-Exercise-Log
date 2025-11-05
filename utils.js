@@ -814,6 +814,48 @@ class PetDataService {
         
         localStorage.setItem('pets', JSON.stringify(pets));
     }
+    
+// Add to PetDataService class:
+async deletePet(petId) {
+    try {
+        // Get current pets array
+        const doc = await this.db.collection('petProfiles')
+            .doc(this.userId)
+            .get();
+            
+        if (doc.exists) {
+            let petsArray = doc.data().pets || [];
+            
+            // Remove the pet from the array
+            petsArray = petsArray.filter(p => p.id !== petId);
+            
+            // Save updated array back to Firestore
+            await this.db.collection('petProfiles')
+                .doc(this.userId)
+                .set({
+                    pets: petsArray,
+                    updatedAt: new Date().toISOString()
+                }, { merge: true });
+        }
+        
+        // Also remove from localStorage
+        this.removeFromLocalStorage(petId);
+        return true;
+        
+    } catch (error) {
+        console.error('Firestore delete failed:', error);
+        this.removeFromLocalStorage(petId);
+        return false;
+    }
+}
+
+// Add helper method for localStorage
+removeFromLocalStorage(petId) {
+    const pets = JSON.parse(localStorage.getItem('pets') || '[]');
+    const updatedPets = pets.filter(p => p.id !== petId);
+    localStorage.setItem('pets', JSON.stringify(updatedPets));
+}
+    
 }
 
 window.petDataService = new PetDataService();
