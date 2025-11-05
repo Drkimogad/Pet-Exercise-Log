@@ -2118,7 +2118,7 @@ async function generateSuggestedExercises(pet) {
 async function logSuggestedExercise(petIndex, exerciseId) { // ADD ASYNC
     const pets = await getPets();
     const pet = pets[petIndex];
-    const suggestions = generateSuggestedExercises(pet);
+    const suggestions = await generateSuggestedExercises(pet);
     const exercise = suggestions.find(s => s.id === exerciseId);
     
     if (!exercise) {
