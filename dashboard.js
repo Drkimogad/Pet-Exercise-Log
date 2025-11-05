@@ -1842,25 +1842,30 @@ function validateDailyLogForm() {
 //=========================================
      // DELETE FUNCTION 
 //====================================
-async function deletePetProfile(index) { // ADD ASYNC
-  if (confirm('Are you sure you want to delete this pet profile? This action cannot be undone.')) {
-    const pets = await getPets();
-    pets.splice(index, 1);
+async function deletePetProfile(index) {
+    if (confirm('Are you sure you want to delete this pet profile? This action cannot be undone.')) {
+        const pets = await getPets();
+        const petToDelete = pets[index]; // 🆕 GET PET TO DELETE
+        
+        pets.splice(index, 1);
 
-      
-        // REPLACED: We'll handle delete in PetDataService later
-        // For now, use localStorage
-    localStorage.setItem('pets', JSON.stringify(pets));
-    
-    if (activePetIndex === index) {
-      activePetIndex = null;
-      sessionStorage.removeItem('activePetIndex');
-     document.getElementById('petFormContainer').innerHTML = document.getElementById('profileFormTemplate').innerHTML;
+        // 🆕 DELETE FROM FIRESTORE TOO
+        if (window.petDataService && petToDelete) {
+            await window.petDataService.deletePet(petToDelete.id); // ← NEED THIS
+        }
+        
+        // Keep localStorage for fallback
+        localStorage.setItem('pets', JSON.stringify(pets));
+        
+        if (activePetIndex === index) {
+            activePetIndex = null;
+            sessionStorage.removeItem('activePetIndex');
+            document.getElementById('petFormContainer').innerHTML = document.getElementById('profileFormTemplate').innerHTML;
+        }
+        
+        await loadSavedProfiles();
+        showSuccess('Profile deleted successfully');
     }
-    
-   await loadSavedProfiles();
-    showSuccess('Profile deleted successfully'); // verify
-  }
 }
 
 //=========================================
