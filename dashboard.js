@@ -2125,10 +2125,9 @@ async function generateSuggestedExercises(pet) {
 }
 
 // Log a suggested exercise (convert to actual exercise entry) updated
-async function logSuggestedExercise(petIndex, exerciseId) { // ADD ASYNC
+async function logSuggestedExercise(petIndex, exerciseId) {
     const pets = await getPets();
     const pet = pets[petIndex];
-    
     const suggestions = await generateSuggestedExercises(pet);
     const exercise = suggestions.find(s => s.id === exerciseId);
     
@@ -2152,26 +2151,28 @@ async function logSuggestedExercise(petIndex, exerciseId) { // ADD ASYNC
     pet.exerciseEntries = pet.exerciseEntries || [];
     pet.exerciseEntries.push(exerciseEntry);
     
-// REPLACED: Save using PetDataService
+    // 🆕 UPDATE SUGGESTION SETTINGS IN FIRESTORE.  ❤️🐩🐩
+    pet.suggestionSettings = pet.suggestionSettings || { dismissed: [], logged: [] };
+    if (!pet.suggestionSettings.logged.includes(exerciseId)) {
+        pet.suggestionSettings.logged.push(exerciseId);
+    }
+    
+    // Save to storage (BOTH Firestore AND localStorage for backward compatibility)
     if (window.petDataService) {
         await window.petDataService.savePet(pet);
     } else {
         localStorage.setItem('pets', JSON.stringify(pets));
-    }  
+    }
     
-// Update the button to show "LOGGED" and disable it before updating UI in loadsavedprofiles()
-// ADD TO LOGGED SUGGESTIONS
+    // 🆕 KEEP LOCALSTORAGE FOR BACKWARD COMPATIBILITY
     const logged = JSON.parse(localStorage.getItem(LOGGED_SUGGESTIONS_KEY) || '{}');
     if (!logged[petIndex]) logged[petIndex] = [];
     if (!logged[petIndex].includes(exerciseId)) {
         logged[petIndex].push(exerciseId);
         localStorage.setItem(LOGGED_SUGGESTIONS_KEY, JSON.stringify(logged));
     }
-    /*
-        Key addition: The direct UI update that immediately changes the button text and disables it, 
-        before the full page refresh.
-    */
-// FIX: Direct UI update for the button                      ADDED TO TEST
+    
+    // FIX: Direct UI update for the button
     const logBtn = document.querySelector(`.log-exercise-btn[data-exercise="${exerciseId}"]`);
     if (logBtn) {
         logBtn.textContent = 'LOGGED ✅';
@@ -2181,12 +2182,13 @@ async function logSuggestedExercise(petIndex, exerciseId) { // ADD ASYNC
     }
         
     // Refresh displays
-   await loadSavedProfiles();
+    await loadSavedProfiles();
     updateGoalsOnExerciseLogged(petIndex);
     refreshTimelineIfOpen();
     
     showSuccess(`Logged: ${exercise.name}`);
 }
+
 
 // Calculate calories based on exercise type and duration
 function calculateCaloriesFromExercise(exercise) {
@@ -2204,14 +2206,29 @@ function calculateCaloriesFromExercise(exercise) {
 }
 
 // Delete a suggested exercise (remove from display) updated
-function deleteSuggestion(petIndex, exerciseId) {
+async function deleteSuggestion(petIndex, exerciseId) { // 🆕 ADD ASYNC
     console.log(`🗑️ Deleting suggestion ${exerciseId} for pet ${petIndex}`);
     
-    // Get current dismissed suggestions
+    // 🆕 UPDATE FIRESTORE FIRST
+    const pets = await getPets();
+    if (pets[petIndex]) {
+        pets[petIndex].suggestionSettings = pets[petIndex].suggestionSettings || { dismissed: [], logged: [] };
+        if (!pets[petIndex].suggestionSettings.dismissed.includes(exerciseId)) {
+            pets[petIndex].suggestionSettings.dismissed.push(exerciseId);
+        }
+        
+        // Save to Firestore
+        if (window.petDataService) {
+            await window.petDataService.savePet(pets[petIndex]);
+        } else {
+            localStorage.setItem('pets', JSON.stringify(pets));
+        }
+    }
+    
+    // 🆕 KEEP LOCALSTORAGE FOR BACKWARD COMPATIBILITY
     const dismissed = JSON.parse(localStorage.getItem(DISMISSED_SUGGESTIONS_KEY) || '{}');
     if (!dismissed[petIndex]) dismissed[petIndex] = [];
     
-    // Add to dismissed list
     if (!dismissed[petIndex].includes(exerciseId)) {
         dismissed[petIndex].push(exerciseId);
         localStorage.setItem(DISMISSED_SUGGESTIONS_KEY, JSON.stringify(dismissed));
