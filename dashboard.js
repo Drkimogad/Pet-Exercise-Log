@@ -6936,6 +6936,7 @@ async function setupActionBarEventListeners() {
         remindersBtn.addEventListener('click', async () => {
     await showRemindersModal();
 });
+      } // ← Added this missing closing brace
 
     
     // Goals button  
@@ -6944,7 +6945,8 @@ async function setupActionBarEventListeners() {
        goalsBtn.addEventListener('click', async () => {
     await showGoalsModal();
 });
-   
+       } // ← Added this missing closing brace
+
 
     // Timeline button
     const timelineBtn = document.getElementById('timelineBtn');
