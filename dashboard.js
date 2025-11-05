@@ -1962,7 +1962,7 @@ function handleImageUpload(e) {
 // Generate smart exercise suggestions based on health assessment
 async function generateSuggestedExercises(pet) {
     const pets = await getPets();
-    const pet = pets[petIndex];
+   // const pet = pets[petIndex];
     
     const petIndex = pets.findIndex(p => p.petDetails?.name === pet.petDetails?.name);  
     
