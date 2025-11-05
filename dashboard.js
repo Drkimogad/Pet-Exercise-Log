@@ -4691,18 +4691,30 @@ function formatMedicalCondition(condition) {
     return conditionMap[condition] || condition;
 }
 
-// GENERATE SUGGESTED EXERCISES R
+// GENERATE SUGGESTED EXERCISES html updated 
 async function generateSuggestedExercisesReportHTML(pet) {
     const pets = await getPets();
     const petIndex = pets.findIndex(p => p.petDetails.name === pet.petDetails.name);
-    const logged = JSON.parse(localStorage.getItem(LOGGED_SUGGESTIONS_KEY) || '{}')[petIndex] || [];
     
-    if (logged.length === 0) {
+    // 🆕 READ FROM FIRESTORE FIRST, THEN LOCALSTORAGE FALLBACK
+    let loggedSuggestions = [];
+    
+    if (pets[petIndex]?.suggestionSettings?.logged) {
+        // Read from Firestore
+        loggedSuggestions = pets[petIndex].suggestionSettings.logged;
+    } else {
+        // Fallback to localStorage
+        const logged = JSON.parse(localStorage.getItem(LOGGED_SUGGESTIONS_KEY) || '{}')[petIndex] || [];
+        loggedSuggestions = logged;
+    }
+    
+    if (loggedSuggestions.length === 0) {
         return '<p>No suggested exercises logged yet.</p>';
     }
     
-    const suggestions = generateSuggestedExercises(pet);
-    const loggedSuggestions = suggestions.filter(s => logged.includes(s.id));
+    // 🆕 ADD AWAIT HERE
+    const suggestions = await generateSuggestedExercises(pet);
+    const loggedSuggestionsList = suggestions.filter(s => loggedSuggestions.includes(s.id));
     
     return `
         <div style="margin-top: 30px;">
@@ -4714,7 +4726,7 @@ async function generateSuggestedExercisesReportHTML(pet) {
                     <th style="border: 1px solid #ddd; padding: 8px; text-align: center;">Intensity</th>
                     <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Reason</th>
                 </tr>
-                ${loggedSuggestions.map(suggestion => `
+                ${loggedSuggestionsList.map(suggestion => `
                     <tr>
                         <td style="border: 1px solid #ddd; padding: 8px;">${suggestion.name}</td>
                         <td style="border: 1px solid #ddd; padding: 8px; text-align: center;">${suggestion.duration} min</td>
@@ -4723,10 +4735,12 @@ async function generateSuggestedExercisesReportHTML(pet) {
                     </tr>
                 `).join('')}
             </table>
-            <p><small>Total suggested exercises used: ${loggedSuggestions.length}</small></p>
+            <p><small>Total suggested exercises used: ${loggedSuggestionsList.length}</small></p>
         </div>
     `;
 }
+
+
 
 function generateExerciseCalendarHTML(pet) {
     const now = new Date();
