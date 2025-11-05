@@ -5667,22 +5667,20 @@ async function calculateReminders() {
 
 function getDaysSinceLastExercise(pet) {
     if (!pet.exerciseEntries || pet.exerciseEntries.length === 0) {
-        return 999; // Never exercised
+        return 999;
     }
     
-    // Get today's date at midnight for accurate day calculation
+    // Get today's date at midnight in local timezone
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     
-    // Find the most recent exercise date (could be today or in the past)
     const sortedExercises = [...pet.exerciseEntries].sort((a, b) => 
         new Date(b.date) - new Date(a.date)
     );
     
-    const lastExerciseDate = new Date(sortedExercises[0].date);
-    lastExerciseDate.setHours(0, 0, 0, 0);
+    // Parse the exercise date in local timezone
+    const lastExerciseDate = new Date(sortedExercises[0].date + 'T00:00:00');
     
-    // Calculate full days difference
     const timeDiff = today - lastExerciseDate;
     const daysDiff = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
     
@@ -5690,6 +5688,7 @@ function getDaysSinceLastExercise(pet) {
     
     return Math.max(0, daysDiff);
 }
+
 
 function getLastExerciseDate(pet) {
     if (!pet.exerciseEntries || pet.exerciseEntries.length === 0) {
