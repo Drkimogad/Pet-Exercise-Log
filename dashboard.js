@@ -5712,12 +5712,12 @@ function formatDisplayDate(dateString) {
     }
 }
 
-function loadRemindersContent() {
+async function loadRemindersContent() {
     const content = document.getElementById('remindersContent');
     if (!content) return;
     
     // FORCE RECALCULATION with current settings
-    const reminders = calculateReminders();
+    const reminders = await calculateReminders();
     
     if (reminders.length === 0) {
         content.innerHTML = `
@@ -5773,7 +5773,7 @@ function setupRemindersActionListeners() {
     });
 }
 
-function handleNotedReminder(petIndex) {
+async function handleNotedReminder(petIndex) {
     console.log(`✅ Marking reminder as noted for pet ${petIndex}`);
     
     // Update last checked date
@@ -5790,13 +5790,13 @@ function handleNotedReminder(petIndex) {
             // If no reminders left, show empty state
             const remindersList = document.querySelector('.reminders-list');
             if (!remindersList || remindersList.children.length === 0) {
-                loadRemindersContent(); // This will show empty state
+               await loadRemindersContent(); // This will show empty state
             }
         }, 300);
     }
     
     // Update the badge count
-    updateRemindersBadge();
+    await updateRemindersBadge();
 }
 async function updateRemindersBadge() {                     //UPDATED
     const badge = document.getElementById('remindersBadge');
@@ -5865,11 +5865,11 @@ function createRemindersSettingsModal() {
     `;
 }
 //STEP 4: LOAD REMINDERS SETTINGS CONTENT
-function loadRemindersSettingsContent() {
+async function loadRemindersSettingsContent() {
     const content = document.getElementById('remindersSettingsContent');
     if (!content) return;
     
-    const pets = getPets();
+    const pets = await getPets();
     
     if (pets.length === 0) {
         content.innerHTML = `
@@ -6033,7 +6033,7 @@ function showGoalsModal() {
     document.body.insertAdjacentHTML('beforeend', createGoalsModal());
     
     // Load and display goals
-    loadGoalsContent();
+    await loadGoalsContent();
     
     // Setup modal event listeners
     setupGoalsModalEvents();
@@ -6070,8 +6070,8 @@ function setupGoalsModalEvents() {
 // WEEKLY GOALS DATA STRUCTURE
 // ===============================================
 
-function initializeGoalsData() {
-    const pets = getPets();
+async function initializeGoalsData() {
+    const pets = await getPets();
     let needsUpdate = false;
     
     pets.forEach((pet, index) => {
@@ -6107,8 +6107,8 @@ function getCurrentWeekStart() {
     return weekStart.toISOString().split('T')[0];
 }
 
-function getGoalSettings(petIndex) {
-    const pets = getPets();
+async function getGoalSettings(petIndex) {
+    const pets = await getPets();
     const pet = pets[petIndex];
     return pet?.goalSettings || { 
         enabled: false, 
@@ -6119,8 +6119,8 @@ function getGoalSettings(petIndex) {
     };
 }
 
-function updateGoalSettings(petIndex, settings) {
-    const pets = getPets();
+async function updateGoalSettings(petIndex, settings) {
+    const pets = await getPets();
     if (pets[petIndex]) {
         pets[petIndex].goalSettings = { ...pets[petIndex].goalSettings, ...settings };
         localStorage.setItem('pets', JSON.stringify(pets));
@@ -6279,7 +6279,7 @@ async function showGoalsSetupGuide() {
     const pets = await getPets();
     if (pets.length > 0) {
         updateGoalSettings(0, { enabled: true, weeklyTarget: 5 });
-        loadGoalsContent(); // Refresh the display
+        await loadGoalsContent(); // Refresh the display
         await updateGoalsProgress(); // Update the action bar
     }
 }
@@ -6317,7 +6317,7 @@ async function updateGoalsProgress() {
 async function updateGoalsOnExerciseLogged(petIndex) { // ADD ASYNC
     console.log(`🎯 Updating goals for pet ${petIndex} after exercise logged`);
     
-    const pets = getPets();
+    const pets = await getPets();
     if (!pets[petIndex] || !pets[petIndex].goalSettings) return;
     
     // Increment exercise count for current week
@@ -6503,10 +6503,10 @@ function setupGoalsSettingsEvents() {
     });
 }
 
-function saveGoalsSettings() {
+async function saveGoalsSettings() {
     console.log('💾 Saving goals settings');
     
-    const pets = getPets();
+    const pets = await getPets();
     let settingsChanged = false;
     
     // Update each pet's goal settings
@@ -6542,7 +6542,7 @@ function saveGoalsSettings() {
         // Refresh goals display
         const goalsModal = document.getElementById('goalsModal');
         if (goalsModal) {
-            loadGoalsContent();
+           await  loadGoalsContent();
         }
         
         // Update action bar progress
@@ -6627,9 +6627,9 @@ function setupTimelineModalEvents() {
 // TIMELINE DATA PROCESSING
 // ===============================================
 
-function generateTimelineData() {
+async function generateTimelineData() {
     console.log('🔄 Generating exercise timeline data');
-    const pets = getPets();
+    const pets = await getPets();
     const allExercises = [];
     
     // Collect all exercises from all pets
