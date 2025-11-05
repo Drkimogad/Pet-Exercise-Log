@@ -6024,7 +6024,7 @@ function createGoalsModal() {
 }
 
 //Replace the placeholder showGoalsModal() function:
-function showGoalsModal() {
+async function showGoalsModal() {
     console.log('🎯 Showing weekly goals modal');
     
     // Remove any existing modal first
