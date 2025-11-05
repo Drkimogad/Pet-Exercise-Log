@@ -2150,13 +2150,25 @@ async function logSuggestedExercise(petIndex, exerciseId) { // ADD ASYNC
         localStorage.setItem('pets', JSON.stringify(pets));
     }  
     
-    // Update the button to show "LOGGED" and disable it
-   // ADD TO LOGGED SUGGESTIONS
+// Update the button to show "LOGGED" and disable it before updating UI in loadsavedprofiles()
+// ADD TO LOGGED SUGGESTIONS
     const logged = JSON.parse(localStorage.getItem(LOGGED_SUGGESTIONS_KEY) || '{}');
     if (!logged[petIndex]) logged[petIndex] = [];
     if (!logged[petIndex].includes(exerciseId)) {
         logged[petIndex].push(exerciseId);
         localStorage.setItem(LOGGED_SUGGESTIONS_KEY, JSON.stringify(logged));
+    }
+    /*
+        Key addition: The direct UI update that immediately changes the button text and disables it, 
+        before the full page refresh.
+    */
+// FIX: Direct UI update for the button                      ADDED TO TEST
+    const logBtn = document.querySelector(`.log-exercise-btn[data-exercise="${exerciseId}"]`);
+    if (logBtn) {
+        logBtn.textContent = 'LOGGED ✅';
+        logBtn.disabled = true;
+        logBtn.style.opacity = '0.7';
+        logBtn.style.cursor = 'not-allowed';
     }
         
     // Refresh displays
