@@ -451,6 +451,9 @@ async function returnToDashboard() {
 async function loadSavedProfiles() {
     console.log('🔍 loadSavedProfiles called - checking pets data');
     pets = await getPets(); // ← Update global pets
+    // add validation 
+    Add: if (!pets || !Array.isArray(pets)) pets = [];
+
     console.log('🔍 Pets found:', pets.length, pets);
     
     if (pets.length === 0) { 
@@ -1202,7 +1205,6 @@ async function selectPetProfile(index) {
 // ===============================================
 async function editPetProfile(index) {  
     console.log('🔄 editPetProfile called for index:', index);
-    const pets = await getPets(); // ← This is fine (local scope)
     
     try {
         // Validate input
@@ -1210,7 +1212,7 @@ async function editPetProfile(index) {
             throw new Error('Invalid pet index provided');
         }
 
-        const pets = getPets();
+       const pets = await getPets(); // ← This is fine (local scope)
         if (!pets[index]) {
             throw new Error(`Pet not found at index: ${index}`);
         }
@@ -1367,7 +1369,7 @@ function setupEditModeForm() {
 // ===============================================
 // 2.CHECK FOR UNSAVED CHANGES
 // ===============================================
-function hasUnsavedChanges() {
+async function hasUnsavedChanges() {
     console.log('🔍 Checking for unsaved changes...');
     
     try {
@@ -1383,7 +1385,7 @@ function hasUnsavedChanges() {
                 return !!(petName || petType);
             }
             
-            const pets = getPets();
+            const pets = await getPets();
             const originalPet = pets[activePetIndex];
             if (!originalPet) return false;
 
@@ -2205,7 +2207,7 @@ function deleteSuggestion(petIndex, exerciseId) {
 // ===============================================
 // MOOD TRACKER - Unified Initialization Function
 // ===============================================
-function initializeMoodTracker() {
+async function initializeMoodTracker() {
     console.log('Initializing mood tracker...');
     
     const moodContainer = document.getElementById('moodTracker');
@@ -2222,7 +2224,7 @@ function initializeMoodTracker() {
     } else {
         // EDITING EXISTING PROFILE: Load existing mood data
         console.log('Editing profile - loading existing mood data');
-        initializeExistingProfileMoodTracker(moodContainer);
+        await initializeExistingProfileMoodTracker(moodContainer);
     }
 }
 
@@ -2332,7 +2334,7 @@ function handleNewProfileMoodSelection(e) {
 // ===============================================
 // EXISTING PROFILE: Mood selection handler (permanent)
 // ===============================================
-function handleExistingProfileMoodSelection(e) {
+async function handleExistingProfileMoodSelection(e) {
     if (e.target.classList.contains('emoji-btn') || e.target.closest('.emoji-btn')) {
         e.preventDefault(); // Prevent form submission
         const btn = e.target.classList.contains('emoji-btn') ? 
@@ -2341,7 +2343,7 @@ function handleExistingProfileMoodSelection(e) {
         const moodValue = parseInt(btn.dataset.mood);
         const date = btn.dataset.date;
         
-        const pets = getPets();
+        const pets = await getPets();
         let pet = { ...pets[activePetIndex] };
         
         // Initialize or update moodLogs array
@@ -5275,15 +5277,15 @@ function closeBCSModal() {
 }
 
 // DEBUGGED: Show BCS Reassessment Modal
-function showBCSReassessmentModal(index) {
+async function showBCSReassessmentModal(index) {
     console.log('🟢 MODAL: showBCSReassessmentModal() called with index:', index);
     
     // Get pet data - FIXED: Use 'index' parameter instead of 'petIndex'
-    const pets = getPets();
+    const pets = await getPets();
     const pet = pets[index];
     if (!pet) {
         console.error('🔴 MODAL: Pet not found at index:', index);
-        AppHelper.showError('Pet not found');
+        showError('Pet not found');
         return;
     }
     
@@ -5488,7 +5490,7 @@ async function updatePetBCS(petIndex, selectedBCS) { // ADD ASYNC
     console.log('🟢 MODAL: Pets saved to localStorage');
     
     // Refresh UI
-    loadSavedProfiles();
+    await loadSavedProfiles();
     console.log('🟢 MODAL: Profiles reloaded');
     
     // Show success message
@@ -5951,10 +5953,10 @@ function setupRemindersSettingsEvents() {
     });
 }
 
-function saveRemindersSettings() {
+async function saveRemindersSettings() {
     console.log('💾 Saving reminder settings');
     
-    const pets = getPets();
+    const pets = await getPets();
     let settingsChanged = false;
     
     // Update each pet's threshold
@@ -5984,7 +5986,7 @@ function saveRemindersSettings() {
         }
         
         // Update action bar badge
-        updateRemindersBadge();
+        await updateRemindersBadge();
     } else {
         showSuccess('No changes made');
     }
