@@ -379,17 +379,21 @@ async function performDynamicUpdates(petData) {
 // ===============================================
 //5. REFRESH CALENDAR HIGHLIGHTS
 // ===============================================
-function refreshCalendarHighlights(exerciseEntries) {
+async function refreshCalendarHighlights(exerciseEntries) {
     console.log('📅 Refreshing calendar with', exerciseEntries.length, 'exercise entries');
     
     const openCalendar = document.querySelector('.mini-calendar');
+    
     if (openCalendar && exerciseEntries.length > 0) {
         const calendarContainer = openCalendar.closest('.calendar-section');
+        
         if (calendarContainer) {
             const petIndex = calendarContainer.closest('.profile-card')?.dataset.petIndex;
+            
             if (petIndex !== undefined) {
                 const pets = await getPets();
                 const pet = pets[petIndex];
+                
                 if (pet) {
                     calendarContainer.querySelector('.mini-calendar').innerHTML = 
                         generateMiniCalendar(pet.exerciseEntries || []);
