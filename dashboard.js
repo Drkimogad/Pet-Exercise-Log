@@ -388,7 +388,7 @@ function refreshCalendarHighlights(exerciseEntries) {
         if (calendarContainer) {
             const petIndex = calendarContainer.closest('.profile-card')?.dataset.petIndex;
             if (petIndex !== undefined) {
-                const pets = getPets();
+                const pets = await getPets();
                 const pet = pets[petIndex];
                 if (pet) {
                     calendarContainer.querySelector('.mini-calendar').innerHTML = 
