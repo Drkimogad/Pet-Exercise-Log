@@ -5456,7 +5456,7 @@ async function updatePetBCS(petIndex, selectedBCS) { // ADD ASYNC
     console.log('🟢 MODAL: Pet index:', petIndex);
     console.log('🟢 MODAL: New BCS:', selectedBCS);
     
-    const pets = getPets();
+    const pets = await getPets();
     const pet = pets[petIndex];
     
     if (!pet) {
