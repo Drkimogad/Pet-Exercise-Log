@@ -1845,22 +1845,26 @@ function validateDailyLogForm() {
 async function deletePetProfile(index) {
     if (confirm('Are you sure you want to delete this pet profile? This action cannot be undone.')) {
         const pets = await getPets();
-        const petToDelete = pets[index]; // 🆕 GET PET TO DELETE
+        const petToDelete = pets[index];
         
-        pets.splice(index, 1);
+        if (!petToDelete) {
+            showError('Pet not found');
+            return;
+        }
 
-        // 🆕 DELETE FROM FIRESTORE TOO
-        if (window.petDataService && petToDelete) {
-            await window.petDataService.deletePet(petToDelete.id); // ← NEED THIS
+        // Delete from Firestore via service
+        if (window.petDataService) {
+            await window.petDataService.deletePet(petToDelete.id);
         }
         
-        // Keep localStorage for fallback
+        // Also update localStorage fallback
+        pets.splice(index, 1);
         localStorage.setItem('pets', JSON.stringify(pets));
         
+        // Reset active pet if needed
         if (activePetIndex === index) {
             activePetIndex = null;
             sessionStorage.removeItem('activePetIndex');
-            document.getElementById('petFormContainer').innerHTML = document.getElementById('profileFormTemplate').innerHTML;
         }
         
         await loadSavedProfiles();
@@ -7094,12 +7098,13 @@ document.querySelectorAll('.report-btn').forEach(btn => {
         }
     });
 });
-     // In setupProfileEventListeners() function, add:
+     
+// Delete button
 document.querySelectorAll('.delete-btn').forEach(btn => {
-    btn.addEventListener('click', async (e) => { // ← ADD ASYNC
+    btn.addEventListener('click', async (e) => {
         e.stopPropagation();
         const index = parseInt(btn.dataset.index);
-        await deletePetProfile(index); // ← ADD AWAIT
+        await deletePetProfile(index);
     });
 });
 
