@@ -1732,7 +1732,11 @@ async function handleDailyLogSubmit(e) { // ← ADD ASYNC
         
         // Update pet data
         const pets = await getPets();
-        const pet = { ...pets[activePetIndex] };
+        const pet = { ...pets[activePetIndex] }; // ← This creates a shallow copy
+        
+        // 🆕 ADD SAFETY: Ensure suggestionSettings exists
+         pet.suggestionSettings = pet.suggestionSettings || { dismissed: [], logged: [] };
+
         
         // Add exercise entry
         pet.exerciseEntries = pet.exerciseEntries || [];
