@@ -6954,6 +6954,7 @@ async function setupActionBarEventListeners() {
         timelineBtn.addEventListener('click', async () => {
     await showTimelineModal();
 });
+} // ← Added this missing closing brace
         
     //     console.log('✅ Action bar event listeners setup');
     // Close modal handlers will be added when modals are created
