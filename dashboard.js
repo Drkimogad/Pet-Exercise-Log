@@ -1964,7 +1964,7 @@ async function generateSuggestedExercises(pet) {
     const pets = await getPets();
     const pet = pets[petIndex];
     
-    //const petIndex = pets.findIndex(p => p.petDetails?.name === pet.petDetails?.name);   REMOVE
+    const petIndex = pets.findIndex(p => p.petDetails?.name === pet.petDetails?.name);  
     
     const dismissed = JSON.parse(localStorage.getItem(DISMISSED_SUGGESTIONS_KEY) || '{}')[petIndex] || [];
     const logged = JSON.parse(localStorage.getItem(LOGGED_SUGGESTIONS_KEY) || '{}')[petIndex] || [];
@@ -2119,6 +2119,7 @@ async function generateSuggestedExercises(pet) {
 async function logSuggestedExercise(petIndex, exerciseId) { // ADD ASYNC
     const pets = await getPets();
     const pet = pets[petIndex];
+    
     const suggestions = await generateSuggestedExercises(pet);
     const exercise = suggestions.find(s => s.id === exerciseId);
     
