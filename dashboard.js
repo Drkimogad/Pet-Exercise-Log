@@ -5789,7 +5789,7 @@ async function handleNotedReminder(petIndex) {
     const reminderItem = document.querySelector(`.reminder-item[data-pet-index="${petIndex}"]`);
     if (reminderItem) {
         reminderItem.style.opacity = '0.5';
-        setTimeout(() => {
+        setTimeout(async () => {
             reminderItem.remove();
             // If no reminders left, show empty state
             const remindersList = document.querySelector('.reminders-list');
