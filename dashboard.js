@@ -7089,6 +7089,14 @@ document.querySelectorAll('.report-btn').forEach(btn => {
         }
     });
 });
+     // In setupProfileEventListeners() function, add:
+document.querySelectorAll('.delete-btn').forEach(btn => {
+    btn.addEventListener('click', async (e) => { // ← ADD ASYNC
+        e.stopPropagation();
+        const index = parseInt(btn.dataset.index);
+        await deletePetProfile(index); // ← ADD AWAIT
+    });
+});
 
   // Share button           SYNC
   document.querySelectorAll('.share-btn').forEach(btn => {
