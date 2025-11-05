@@ -143,6 +143,11 @@ function initializeNewPet() {
             currentWeekStart: getCurrentWeekStart(),
             exercisesThisWeek: 0,
             streak: 0
+        },
+        // 🆕 ADD THIS:
+        suggestionSettings: {
+            dismissed: [],    // Array of dismissed suggestion IDs
+            logged: []        // Array of logged suggestion IDs  
         }
     };
 }
@@ -198,10 +203,11 @@ async function handleHealthAssessmentSubmit(e) {
             console.log('📝 Updating existing profile at index:', activePetIndex);
             petData = { ...pets[activePetIndex] };
             
-            // PRESERVE EXISTING EXERCISE ENTRIES AND MOOD LOGS
+            // PRESERVE EXISTING EXERCISE ENTRIES, MOOD LOGS AND SUGGESTIONSETTINGS ARRAYS.
             console.log('💾 Preserving existing data:', {
                 exerciseEntries: petData.exerciseEntries?.length || 0,
-                moodLogs: petData.moodLogs?.length || 0
+                moodLogs: petData.moodLogs?.length || 0,
+                suggestionSettings: petData.suggestionSettings ? 'exists' : 'missing' // 🆕 ADD THIS
             });
         }
 
@@ -232,7 +238,10 @@ async function handleHealthAssessmentSubmit(e) {
             // Keep existing settings when editing
             petData.reminderSettings = pets[activePetIndex].reminderSettings;
             petData.goalSettings = pets[activePetIndex].goalSettings;
+            // 🆕 ADD THIS LINE to preserve suggestion settings:
+           petData.suggestionSettings = pets[activePetIndex].suggestionSettings || { dismissed: [], logged: [] };
         }
+        
         // For new pets, settings are already set by initializeNewPet()
 
         console.log('✅ Health assessment details updated');
