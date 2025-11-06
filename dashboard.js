@@ -4466,16 +4466,14 @@ function setupArchiveMessageListener() {
 //old code
 // Report generation functionality  ENHANCED WITH THE ARCHIVE AND EXPORT BUTTONS 
 //===================================================
-async function generateReport(pet) {  // 🆕 MAKE ASYNC
+async function generateReport(pet) {
     const reportWindow = window.open('', '_blank');
-    const reportId = `report_${Date.now()}`;
     
     // 🆕 STORE WINDOW REFERENCE
     openReportWindows.set(pet.id, reportWindow);
     
-    // 🆕 USE NEW CONTENT GENERATOR
-const trackingData = await trackLoggedDismissedExercises(petIndex);
-const loggedExercises = trackingData.loggedExercises;
+    // 🆕 USE NEW CONTENT GENERATOR (ORIGINAL VERSION)
+    const reportContent = await generateReportContent(pet);
     
     reportWindow.document.write(`
         <html>
@@ -4862,25 +4860,15 @@ async function generateSuggestedExercisesReportHTML(pet) {
     console.log('🔍 REPORT DEBUG: Pet at that index:', pets[petIndex]?.petDetails?.name);
     console.log('🔍 REPORT DEBUG: suggestionSettings:', pets[petIndex]?.suggestionSettings);
     
+    // 🎯 GET DATA DIRECTLY FROM PET OBJECT
     let loggedSuggestions = [];
-    
-    if (pets[petIndex]?.suggestionSettings?.logged) {
-        // Read from Firestore
-        loggedSuggestions = pets[petIndex].suggestionSettings.logged;
-        console.log('🔍 REPORT DEBUG: Found in Firestore:', loggedSuggestions);
-    } else {
-        // Fallback to localStorage
-        const logged = JSON.parse(localStorage.getItem(LOGGED_SUGGESTIONS_KEY) || '{}')[petIndex] || [];
-        loggedSuggestions = logged;
-        console.log('🔍 REPORT DEBUG: Found in localStorage:', loggedSuggestions);
-    }
-    
     if (loggedSuggestions.length === 0) {
-        return '<p>No suggested exercises logged yet.</p>';
+    return '<p>No suggested exercises logged yet.</p>';
     }
-    
-    const loggedSuggestionsList = await getLoggedSuggestedExercises(pet);
-    
+    if (pets[petIndex]?.suggestionSettings?.logged) {
+        loggedSuggestions = pets[petIndex].suggestionSettings.logged;
+    }
+            
     return `
         <div style="margin-top: 30px;">
             <h2>Suggested Exercises Used</h2>
