@@ -4374,9 +4374,15 @@ function setupArchiveMessageListener() {
 //old code
 // Report generation functionality  ENHANCED WITH THE ARCHIVE AND EXPORT BUTTONS 
 //===================================================
-function generateReport(pet) {
+async function generateReport(pet) {  // 🆕 MAKE ASYNC
     const reportWindow = window.open('', '_blank');
     const reportId = `report_${Date.now()}`;
+    
+    // 🆕 STORE WINDOW REFERENCE
+    openReportWindows.set(pet.id, reportWindow);
+    
+    // 🆕 USE NEW CONTENT GENERATOR
+    const reportContent = await generateReportContent(pet);
     
     reportWindow.document.write(`
         <html>
@@ -4538,62 +4544,9 @@ function generateReport(pet) {
 </style>
 
             </head>
-            <body>
-                <h1>Monthly Pet Report: ${pet.petDetails.name}</h1>
-                ${generatePetDetailsHTML(pet)}
-                ${generateHealthSummaryHTML(pet)}
-                ${generateExerciseSummaryHTML(pet.exerciseEntries)}
-                ${generateSuggestedExercisesReportHTML(pet)}
-                ${generateExerciseCalendarHTML(pet)}
-                ${pet.moodLogs && pet.moodLogs.length > 0 ? generateMoodCalendarHTML(pet) : ''}
-                ${pet.exerciseEntries && pet.exerciseEntries.length > 0 ? generateExerciseChartsHTML(pet.exerciseEntries) : ''}
-                
-                <div class="button-container">
-                    <button class="action-btn" onclick="window.print()">
-                        🖨️ Print Report
-                    </button>
-                    <button class="action-btn export-btn" onclick="exportCurrentReport()">
-                        📤 Export as CSV
-                    </button>
-                    <button class="action-btn archive-btn" onclick="showArchivedReports()">
-                        📚 Archived Reports
-                    </button>
-                    <button class="action-btn" onclick="window.close()">
-                        ❌ Close
-                    </button>
-                </div>
-
-                <script>
-                    function showArchivedReports() {
-                        // Send message to main app to open archives modal
-                        if (window.opener && !window.opener.closed) {
-                            window.opener.postMessage({
-                                action: 'showArchivedReports',
-                                petName: '${pet.petDetails.name}',
-                                petId: '${pet.id || 'unknown'}'
-                            }, '*');
-                            window.close();
-                        } else {
-                            alert('Please keep the main app window open to view archived reports');
-                        }
-                    }
-
-                    function exportCurrentReport() {
-                        // This will use the enhanced report data we created
-                        alert('CSV export will be available in the next update - currently using enhanced archive system');
-                        // Future implementation: generateEnhancedReportData() + CSV export
-                    }
-
-                    // Add keyboard shortcut support
-                    document.addEventListener('keydown', function(e) {
-                        if (e.key === 'Escape') window.close();
-                        if (e.ctrlKey && e.key === 'p') {
-                            e.preventDefault();
-                            window.print();
-                        }
-                    });
-                </script>
-            </body>
+           <body>
+           ${reportContent}
+           </body>
         </html>
     `);
     reportWindow.document.close();
@@ -4648,7 +4601,8 @@ function generatePetDetailsHTML(pet) {
 }
 
 
-// for updating report with fresh data when opens 
+// =================================================================
+//for updating report with fresh data when opens 
 //🐢  Create Report Refresh Function
 // 🆕 REFRESH OPEN REPORTS FOR A PET
 async function refreshOpenReports(petId) {
@@ -4679,6 +4633,7 @@ async function refreshOpenReports(petId) {
 async function generateReportContent(pet) {
     // Move your report body content generation here
     return `
+        <h1>Monthly Pet Report: ${pet.petDetails.name}</h1>
         ${generatePetDetailsHTML(pet)}
         ${generateHealthSummaryHTML(pet)}
         ${generateExerciseSummaryHTML(pet.exerciseEntries)}
@@ -4686,7 +4641,52 @@ async function generateReportContent(pet) {
         ${generateExerciseCalendarHTML(pet)}
         ${pet.moodLogs && pet.moodLogs.length > 0 ? generateMoodCalendarHTML(pet) : ''}
         ${pet.exerciseEntries && pet.exerciseEntries.length > 0 ? generateExerciseChartsHTML(pet.exerciseEntries) : ''}
-        <div class="button-container">...</div>
+        
+        <div class="button-container">
+            <button class="action-btn" onclick="window.print()">
+                🖨️ Print Report
+            </button>
+            <button class="action-btn export-btn" onclick="exportCurrentReport()">
+                📤 Export as CSV
+            </button>
+            <button class="action-btn archive-btn" onclick="showArchivedReports()">
+                📚 Archived Reports
+            </button>
+            <button class="action-btn" onclick="window.close()">
+                ❌ Close
+            </button>
+        </div>
+
+        <script>
+            function showArchivedReports() {
+                // Send message to main app to open archives modal
+                if (window.opener && !window.opener.closed) {
+                    window.opener.postMessage({
+                        action: 'showArchivedReports',
+                        petName: '${pet.petDetails.name}',
+                        petId: '${pet.id || 'unknown'}'
+                    }, '*');
+                    window.close();
+                } else {
+                    alert('Please keep the main app window open to view archived reports');
+                }
+            }
+
+            function exportCurrentReport() {
+                // This will use the enhanced report data we created
+                alert('CSV export will be available in the next update - currently using enhanced archive system');
+                // Future implementation: generateEnhancedReportData() + CSV export
+            }
+
+            // Add keyboard shortcut support
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') window.close();
+                if (e.ctrlKey && e.key === 'p') {
+                    e.preventDefault();
+                    window.print();
+                }
+            });
+        </script>
     `;
 }
 //===========================================
