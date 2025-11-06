@@ -2189,7 +2189,9 @@ async function generateSuggestedExercises(pet) {
       return suggestions.slice(0, 3);
 }
 
-// Log a suggested exercise (convert to actual exercise entry) updated
+//=======================================================
+  //2. Log a suggested exercise
+//===============================================
 async function logSuggestedExercise(petIndex, exerciseId) {
     const pets = await getPets();
     const pet = pets[petIndex];
@@ -2215,143 +2217,147 @@ async function logSuggestedExercise(petIndex, exerciseId) {
     // Add to pet's exercise entries
     pet.exerciseEntries = pet.exerciseEntries || [];
     pet.exerciseEntries.push(exerciseEntry);
-    
-    // 🆕 UPDATE SUGGESTION SETTINGS IN FIRESTORE.  ❤️🐩🐩
-    pet.suggestionSettings = pet.suggestionSettings || { dismissed: [], logged: [] };
-    if (!pet.suggestionSettings.logged.includes(exerciseId)) {
-        pet.suggestionSettings.logged.push(exerciseId);
-    }
-    
-    // Save to storage (BOTH Firestore AND localStorage for backward compatibility)
-    if (window.petDataService) {
+
+// 🆕 ONLY SAVE THE EXERCISE ENTRY, NOT SUGGESTION SETTINGS
+      if (window.petDataService) {
         await window.petDataService.savePet(pet);
-    } else {
-        localStorage.setItem('pets', JSON.stringify(pets));
-    }
+       } else {
+      localStorage.setItem('pets', JSON.stringify(pets));
+      }
     
-    // 🆕 KEEP LOCALSTORAGE FOR BACKWARD COMPATIBILITY
-    const logged = JSON.parse(localStorage.getItem(LOGGED_SUGGESTIONS_KEY) || '{}');
-    if (!logged[petIndex]) logged[petIndex] = [];
-    if (!logged[petIndex].includes(exerciseId)) {
-        logged[petIndex].push(exerciseId);
-        localStorage.setItem(LOGGED_SUGGESTIONS_KEY, JSON.stringify(logged));
-    }
-    
-    // FIX: Direct UI update for the button
-    const logBtn = document.querySelector(`.log-exercise-btn[data-exercise="${exerciseId}"]`);
-    if (logBtn) {
-        logBtn.textContent = 'LOGGED ✅';
-        logBtn.disabled = true;
-        logBtn.style.opacity = '0.7';
-        logBtn.style.cursor = 'not-allowed';
-    }
-        
-    // Refresh displays
+  // Refresh displays
     await loadSavedProfiles();
     updateGoalsOnExerciseLogged(petIndex);
     refreshTimelineIfOpen();
 
-    // 🆕 ADD REPORT REFRESH call at the end and after UI updated
+    // 🆕 ADD REPORT REFRESH
     if (pet) {
         await refreshOpenReports(pet.id);
     }
-    // After report refresh
-   await trackLoggedDismissedExercises(petIndex);
+    
+    // 🆕 CENTRALIZED TRACKING WITH 'log' ACTION
+    await trackLoggedDismissedExercises(petIndex, 'log', exerciseId);
+    
     showSuccess(`Logged: ${exercise.name}`);
 }
 
-// Delete a suggested exercise (remove from display) updated
-async function deleteSuggestion(petIndex, exerciseId) { // 🆕 ADD ASYNC
+//========================================================================
+// 3. Delete a suggested exercise (remove from display) updated
+//==================================================================
+/* 🎯 Now It's Just 3 Simple Steps:
+Call tracking with 'delete' action
+Refresh report
+Log success */
+async function deleteSuggestion(petIndex, exerciseId) {
     console.log(`🗑️ Deleting suggestion ${exerciseId} for pet ${petIndex}`);
     
-    // 🆕 UPDATE FIRESTORE FIRST
+    // 🆕 ONLY THIS LINE NEEDED - CENTRALIZED TRACKING HANDLES EVERYTHING
+    await trackLoggedDismissedExercises(petIndex, 'delete', exerciseId);
+    
+    // 🆕 ADD REPORT REFRESH
     const pets = await getPets();
-    if (pets[petIndex]) {
-        pets[petIndex].suggestionSettings = pets[petIndex].suggestionSettings || { dismissed: [], logged: [] };
-        if (!pets[petIndex].suggestionSettings.dismissed.includes(exerciseId)) {
-            pets[petIndex].suggestionSettings.dismissed.push(exerciseId);
-        }
-        
-        // Save to Firestore
-        if (window.petDataService) {
-            await window.petDataService.savePet(pets[petIndex]);
-        } else {
-            localStorage.setItem('pets', JSON.stringify(pets));
-        }
-    }
-    
-    // 🆕 KEEP LOCALSTORAGE FOR BACKWARD COMPATIBILITY
-    const dismissed = JSON.parse(localStorage.getItem(DISMISSED_SUGGESTIONS_KEY) || '{}');
-    if (!dismissed[petIndex]) dismissed[petIndex] = [];
-    
-    if (!dismissed[petIndex].includes(exerciseId)) {
-        dismissed[petIndex].push(exerciseId);
-        localStorage.setItem(DISMISSED_SUGGESTIONS_KEY, JSON.stringify(dismissed));
-    }
-    
-    // 🆕 ADD REPORT REFRESH HERE TOO!
     const pet = pets[petIndex];
     if (pet) {
         await refreshOpenReports(pet.id);
     }
-    // After report refresh  
-     await trackLoggedDismissedExercises(petIndex); // it will handle hidden and visibility of remove button
     
     console.log(`✅ Suggestion ${exerciseId} dismissed for pet ${petIndex}`);
 }
 
+//=========================================================================
+// 4. 🆕 CENTRALIZED TRACKING FOR LOGGED AND DISMISSED SUGGESTIONS
+//====================================================================
 /*
-Tracks which suggestions are logged/dismissed
-Updates UI button states (LOG vs LOGGED ✅)
-Hides dismissed suggestions from UI
-Feeds correct data to report
+logSuggestedExercise() → trackLoggedDismissedExercises(exerciseId, 'log') ✅✅✅✅✅
+deleteSuggestion() → trackLoggedDismissedExercises(exerciseId, 'delete') 
 */
-// 🆕 TRACKS LOGGED AND DISMISSED SUGGESTIONS    FOR UI CONTROL 
-async function trackLoggedDismissedExercises(petIndex) {
+async function trackLoggedDismissedExercises(petIndex, action = 'track', exerciseId = null) {
     const pets = await getPets();
     const pet = pets[petIndex];
-    if (!pet) return;
+    if (!pet) return null;
     
-    // Get logged and dismissed arrays from Firestore
-    const logged = pet.suggestionSettings?.logged || [];
-    const dismissed = pet.suggestionSettings?.dismissed || [];
+    // Initialize suggestionSettings if missing
+    pet.suggestionSettings = pet.suggestionSettings || { dismissed: [], logged: [] };
     
-    console.log('🔍 TRACKING: Logged:', logged, 'Dismissed:', dismissed);
+    // 🆕 HANDLE ACTIONS (log, delete, or just track)
+    if (action === 'log' && exerciseId) {
+        // Add to logged array if not already there
+        if (!pet.suggestionSettings.logged.includes(exerciseId)) {
+            pet.suggestionSettings.logged.push(exerciseId);
+            console.log('✅ Added to logged:', exerciseId);
+        }
+    } 
+    else if (action === 'delete' && exerciseId) {
+        // Add to dismissed array if not already there
+        if (!pet.suggestionSettings.dismissed.includes(exerciseId)) {
+            pet.suggestionSettings.dismissed.push(exerciseId);
+            console.log('✅ Added to dismissed:', exerciseId);
+        }
+    }
     
-    // Update UI for each suggestion
-    const petCard = document.querySelector(`[data-pet-index="${petIndex}"]`);
-    if (!petCard) return;
-    
-    const suggestionItems = petCard.querySelectorAll('.suggested-exercise-item');
-    
-    suggestionItems.forEach(item => {
-        const logBtn = item.querySelector('.log-exercise-btn');
-        const deleteBtn = item.querySelector('.delete-suggestion-btn');
-        const exerciseId = logBtn?.dataset.exercise || deleteBtn?.dataset.exercise;
+    // 🆕 SAVE UPDATES TO FIRESTORE
+    if (action === 'log' || action === 'delete') {
+        if (window.petDataService) {
+            await window.petDataService.savePet(pet);
+        } else {
+            localStorage.setItem('pets', JSON.stringify(pets));
+        }
         
-        if (!exerciseId) return;
-        
-        if (logged.includes(exerciseId)) {
-            // Mark as logged
-            if (logBtn) {
-                logBtn.textContent = 'LOGGED ✅';
-                logBtn.disabled = true;
-                logBtn.style.opacity = '0.7';
+        // 🆕 UPDATE LOCALSTORAGE FOR BACKWARD COMPATIBILITY
+        if (action === 'log') {
+            const logged = JSON.parse(localStorage.getItem(LOGGED_SUGGESTIONS_KEY) || '{}');
+            if (!logged[petIndex]) logged[petIndex] = [];
+            if (!logged[petIndex].includes(exerciseId)) {
+                logged[petIndex].push(exerciseId);
+                localStorage.setItem(LOGGED_SUGGESTIONS_KEY, JSON.stringify(logged));
             }
         }
-        
-        if (dismissed.includes(exerciseId)) {
-            // Hide dismissed suggestions
-            item.style.display = 'none'; // it will hide dismissed
+        else if (action === 'delete') {
+            const dismissed = JSON.parse(localStorage.getItem(DISMISSED_SUGGESTIONS_KEY) || '{}');
+            if (!dismissed[petIndex]) dismissed[petIndex] = [];
+            if (!dismissed[petIndex].includes(exerciseId)) {
+                dismissed[petIndex].push(exerciseId);
+                localStorage.setItem(DISMISSED_SUGGESTIONS_KEY, JSON.stringify(dismissed));
+            }
         }
-    });
-        // 🆕 RETURN DATA FOR REPORTS:
+    }
+    
+    // UPDATE UI
+    const petCard = document.querySelector(`[data-pet-index="${petIndex}"]`);
+    if (petCard) {
+        const suggestionItems = petCard.querySelectorAll('.suggested-exercise-item');
+        
+        suggestionItems.forEach(item => {
+            const logBtn = item.querySelector('.log-exercise-btn');
+            const deleteBtn = item.querySelector('.delete-suggestion-btn');
+            const itemExerciseId = logBtn?.dataset.exercise || deleteBtn?.dataset.exercise;
+            
+            if (!itemExerciseId) return;
+            
+            // Update logged state
+            if (pet.suggestionSettings.logged.includes(itemExerciseId)) {
+                if (logBtn) {
+                    logBtn.textContent = 'LOGGED ✅';
+                    logBtn.disabled = true;
+                    logBtn.style.opacity = '0.7';
+                }
+            }
+            
+            // Update dismissed state
+            if (pet.suggestionSettings.dismissed.includes(itemExerciseId)) {
+                item.style.display = 'none';
+            }
+        });
+    }
+    
+    // 🆕 RETURN DATA FOR REPORTS
     return {
-        logged: logged,           // Array of logged suggestion IDs
-        dismissed: dismissed,     // Array of dismissed suggestion IDs  
-        loggedExercises: []       // 🆕 Array of full logged exercise objects
+        logged: pet.suggestionSettings.logged,
+        dismissed: pet.suggestionSettings.dismissed,
+        loggedExercises: []  // Will be populated by report function
     };
 }
+
 
 //===============================================
    //     Mood Logs functionality
