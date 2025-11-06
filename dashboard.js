@@ -4456,7 +4456,8 @@ async function generateReport(pet) {  // 🆕 MAKE ASYNC
     openReportWindows.set(pet.id, reportWindow);
     
     // 🆕 USE NEW CONTENT GENERATOR
-    const reportContent = await generateReportContent(pet);
+const trackingData = await trackLoggedDismissedExercises(petIndex);
+const loggedExercises = trackingData.loggedExercises;
     
     reportWindow.document.write(`
         <html>
@@ -7313,10 +7314,14 @@ async function showExerciseLog() {
    await loadSavedProfiles(); // This will handle empty state vs profiles
    setupEventListeners();
    await loadActivePetData();
-    // FOR SUGGESTED EXERCISES FILTRATION
+    // FOR SUGGESTED EXERCISES: ensure localstorage data exists aklso as a fallback if firestore fails
    initializeDismissedSuggestions(); // to be filtered on refreshing 
     initializeLoggedSuggestions();
     console.log('✅ Suggested exercises systems initialized');
+
+    // 🆕 TRACK SUGGESTIONS FOR ALL PETS
+        await trackLoggedDismissedExercises(index);
+    
 
 // NEW: Initialize action bar - BUT DELAY IT until dashboard is visible
     setTimeout(async () => {
