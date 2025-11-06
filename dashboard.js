@@ -41,6 +41,8 @@ function initializeDismissedSuggestions() {
     }
 }
 
+// 🆕 ADD THIS: Track open report windows
+let openReportWindows = new Map(); // petId -> window reference
  
 const MOOD_EMOJIS = ['😀', '😊', '😐', '😞', '😠', '🤢', '😤', '😔', '😴', '😰'];
 
