@@ -4590,6 +4590,11 @@ function generateReport(pet) {
         </html>
     `);
     reportWindow.document.close();
+
+    // 🆕 ADD WINDOW CLOSE DETECTION
+    reportWindow.addEventListener('beforeunload', () => {
+        openReportWindows.delete(pet.id);
+    });
 }
 
 
@@ -4634,6 +4639,50 @@ function generatePetDetailsHTML(pet) {
         </div>
     `;
 }
+
+
+// for updating report with fresh data when opens 
+//🐢  Create Report Refresh Function
+// 🆕 REFRESH OPEN REPORTS FOR A PET
+async function refreshOpenReports(petId) {
+    const reportWindow = openReportWindows.get(petId);
+    if (!reportWindow || reportWindow.closed) {
+        openReportWindows.delete(petId); // Clean up
+        return;
+    }
+    
+    try {
+        const pets = await getPets();
+        const pet = pets.find(p => p.id === petId);
+        if (!pet) return;
+        
+        // Regenerate report content
+        const newReportHTML = await generateReportContent(pet);
+        
+        // Safely update the open window
+        if (!reportWindow.closed) {
+            reportWindow.document.body.innerHTML = newReportHTML;
+        }
+    } catch (error) {
+        console.error('Failed to refresh report:', error);
+    }
+}
+
+// 🆕 EXTRACT REPORT CONTENT GENERATION
+async function generateReportContent(pet) {
+    // Move your report body content generation here
+    return `
+        ${generatePetDetailsHTML(pet)}
+        ${generateHealthSummaryHTML(pet)}
+        ${generateExerciseSummaryHTML(pet.exerciseEntries)}
+        ${await generateSuggestedExercisesReportHTML(pet)}  // ← FIXED: Now with await!
+        ${generateExerciseCalendarHTML(pet)}
+        ${pet.moodLogs && pet.moodLogs.length > 0 ? generateMoodCalendarHTML(pet) : ''}
+        ${pet.exerciseEntries && pet.exerciseEntries.length > 0 ? generateExerciseChartsHTML(pet.exerciseEntries) : ''}
+        <div class="button-container">...</div>
+    `;
+}
+//===========================================
 
 // Helper function for BCS description
 function getBCSDescription(bcs) {
