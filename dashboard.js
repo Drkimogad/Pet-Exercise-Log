@@ -4760,11 +4760,12 @@ function formatMedicalCondition(condition) {
 async function generateSuggestedExercisesReportHTML(pet) {
     const pets = await getPets();
     const petIndex = pets.findIndex(p => p.petDetails.name === pet.petDetails.name);
-    
-    // 🎯 ADD DEBUGGING HERE:
-    console.log('🔍 REPORT DEBUG: Looking for logged suggestions for pet:', pet.petDetails.name);
-    console.log('🔍 REPORT DEBUG: Pet index found:', petIndex);
-    console.log('🔍 REPORT DEBUG: All pets:', pets);
+    // 🎯 ADD THESE DEBUG LOGS:
+    console.log('🔍 REPORT DEBUG: Pet from parameter:', pet.petDetails.name);
+    console.log('🔍 REPORT DEBUG: All pets in array:', pets.map(p => p.petDetails.name));
+    console.log('🔍 REPORT DEBUG: Found pet index:', petIndex);
+    console.log('🔍 REPORT DEBUG: Pet at that index:', pets[petIndex]?.petDetails?.name);
+    console.log('🔍 REPORT DEBUG: suggestionSettings:', pets[petIndex]?.suggestionSettings);
     
     let loggedSuggestions = [];
     
