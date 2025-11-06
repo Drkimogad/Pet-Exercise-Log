@@ -1840,6 +1840,20 @@ function validateDailyLogForm() {
     return errors;
 }
 
+// Calculate calories based on exercise type and duration
+function calculateCaloriesFromExercise(exercise) {
+    const baseCalories = {
+        'walking': 5,    // calories per minute
+        'running': 8,
+        'swimming': 6,
+        'playing': 4,
+        'fetch': 5,
+        'agility': 7
+    };
+    
+    const baseRate = baseCalories[exercise.type] || 5;
+    return Math.round(baseRate * exercise.duration);
+}
 
 //=========================================
      // DELETE FUNCTION 
@@ -1979,19 +1993,24 @@ function handleImageUpload(e) {
     reader.readAsDataURL(file);
 }
 
-// ===============================================
-// SUGGESTED EXERCISES LOGIC CORRECT ONE
-// ===============================================
 
+// =================================================================
+// COMPLETE IMPLEMENTATION OF SUGGESTED EXERCISES IN PETCARD
+// ============================================================
 // Generate smart exercise suggestions based on health assessment
 async function generateSuggestedExercises(pet) {
     const pets = await getPets();
    // const pet = pets[petIndex];
     
     const petIndex = pets.findIndex(p => p.petDetails?.name === pet.petDetails?.name);  
-    
+        // 🎯 ADD DEBUG LOGS HERE:
+    console.log('🔍 SUGGESTIONS DEBUG: Generating suggestions for pet:', pet.petDetails.name);
+    console.log('🔍 SUGGESTIONS DEBUG: Pet index:', petIndex);
+
     const dismissed = JSON.parse(localStorage.getItem(DISMISSED_SUGGESTIONS_KEY) || '{}')[petIndex] || [];
     const logged = JSON.parse(localStorage.getItem(LOGGED_SUGGESTIONS_KEY) || '{}')[petIndex] || [];
+    console.log('🔍 SUGGESTIONS DEBUG: Dismissed from localStorage:', dismissed);
+    console.log('🔍 SUGGESTIONS DEBUG: Logged from localStorage:', logged);
     
     // Use pet.petDetails instead of undefined 'details'
     const details = pet.petDetails;
@@ -2132,6 +2151,8 @@ async function generateSuggestedExercises(pet) {
             type: 'walking'
         });
     }
+    console.log('🔍 SUGGESTIONS DEBUG: Generated suggestions:', suggestions.map(s => s.id));
+
     
 // SINGLE RETURN STATEMENT - filter dismissed and limit to 3
     return suggestions.filter(suggestion => 
@@ -2207,22 +2228,6 @@ async function logSuggestedExercise(petIndex, exerciseId) {
     }
     
     showSuccess(`Logged: ${exercise.name}`);
-}
-
-
-// Calculate calories based on exercise type and duration
-function calculateCaloriesFromExercise(exercise) {
-    const baseCalories = {
-        'walking': 5,    // calories per minute
-        'running': 8,
-        'swimming': 6,
-        'playing': 4,
-        'fetch': 5,
-        'agility': 7
-    };
-    
-    const baseRate = baseCalories[exercise.type] || 5;
-    return Math.round(baseRate * exercise.duration);
 }
 
 // Delete a suggested exercise (remove from display) updated
