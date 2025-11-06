@@ -1996,6 +1996,19 @@ function handleImageUpload(e) {
 
 // =================================================================
 // COMPLETE IMPLEMENTATION OF SUGGESTED EXERCISES IN PETCARD
+/*
+generate suggested exercise
+    ↓
+logSuggestedExercise() or dismiss them 
+    ↓
+Updates exerciseEntries ✅
+Updates suggestionSettings.logged ✅  
+Updates UI (button to "LOGGED ✅") ✅
+    ↓
+CALL NEW FUNCTION: getLoggedSuggestedExercises() 🆕
+    ↓
+refreshOpenReports() ✅
+*/
 // ============================================================
 // Generate smart exercise suggestions based on health assessment
 async function generateSuggestedExercises(pet) {
@@ -2154,10 +2167,8 @@ async function generateSuggestedExercises(pet) {
     console.log('🔍 SUGGESTIONS DEBUG: Generated suggestions:', suggestions.map(s => s.id));
 
     
-// SINGLE RETURN STATEMENT - filter dismissed and limit to 3
-    return suggestions.filter(suggestion => 
-        !dismissed.includes(suggestion.id) && !logged.includes(suggestion.id) // filter by logged and dismissed suggesions 
-    ).slice(0, 3);
+     // SINGLE RETURN STATEMENT - return ALL suggestions, limit to 3 for display NO FILTERING ANYMORE
+      return suggestions.slice(0, 3);
 }
 
 // Log a suggested exercise (convert to actual exercise entry) updated
@@ -2230,6 +2241,30 @@ async function logSuggestedExercise(petIndex, exerciseId) {
     showSuccess(`Logged: ${exercise.name}`);
 }
 
+// 🆕 CREATE THIS FUNCTION IT GETS ALL LOGGED SUGGESTIONS AND FEED REPORT
+async function getLoggedSuggestedExercises(pet) {
+    const pets = await getPets();
+    const petIndex = pets.findIndex(p => p.petDetails?.name === pet.petDetails?.name);
+    
+    // Get logged suggestion IDs from Firestore
+    let loggedSuggestionIds = [];
+    if (pets[petIndex]?.suggestionSettings?.logged) {
+        loggedSuggestionIds = pets[petIndex].suggestionSettings.logged;
+    }
+    
+    if (loggedSuggestionIds.length === 0) {
+        return [];
+    }
+    
+    // Get ALL suggestions
+    const allSuggestions = await generateSuggestedExercises(pet);
+    
+    // Filter to only return logged ones
+    return allSuggestions.filter(suggestion => 
+        loggedSuggestionIds.includes(suggestion.id)
+    );
+}
+
 // Delete a suggested exercise (remove from display) updated
 async function deleteSuggestion(petIndex, exerciseId) { // 🆕 ADD ASYNC
     console.log(`🗑️ Deleting suggestion ${exerciseId} for pet ${petIndex}`);
@@ -2269,6 +2304,9 @@ async function deleteSuggestion(petIndex, exerciseId) { // 🆕 ADD ASYNC
     
     console.log(`✅ Suggestion ${exerciseId} dismissed for pet ${petIndex}`);
 }
+
+
+
 
 //===============================================
    //     Mood Logs functionality
