@@ -2294,6 +2294,12 @@ async function deleteSuggestion(petIndex, exerciseId) { // 🆕 ADD ASYNC
         localStorage.setItem(DISMISSED_SUGGESTIONS_KEY, JSON.stringify(dismissed));
     }
     
+    // 🆕 ADD REPORT REFRESH HERE TOO!
+    const pet = pets[petIndex];
+    if (pet) {
+        await refreshOpenReports(pet.id);
+    }
+    
     // Remove from display
     const deleteBtn = document.querySelector(`.delete-suggestion-btn[data-exercise="${exerciseId}"]`);
     const suggestionElement = deleteBtn?.closest('.suggested-exercise-item');
