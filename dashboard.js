@@ -4761,16 +4761,22 @@ async function generateSuggestedExercisesReportHTML(pet) {
     const pets = await getPets();
     const petIndex = pets.findIndex(p => p.petDetails.name === pet.petDetails.name);
     
-    // 🆕 READ FROM FIRESTORE FIRST, THEN LOCALSTORAGE FALLBACK
+    // 🎯 ADD DEBUGGING HERE:
+    console.log('🔍 REPORT DEBUG: Looking for logged suggestions for pet:', pet.petDetails.name);
+    console.log('🔍 REPORT DEBUG: Pet index found:', petIndex);
+    console.log('🔍 REPORT DEBUG: All pets:', pets);
+    
     let loggedSuggestions = [];
     
     if (pets[petIndex]?.suggestionSettings?.logged) {
         // Read from Firestore
         loggedSuggestions = pets[petIndex].suggestionSettings.logged;
+        console.log('🔍 REPORT DEBUG: Found in Firestore:', loggedSuggestions);
     } else {
         // Fallback to localStorage
         const logged = JSON.parse(localStorage.getItem(LOGGED_SUGGESTIONS_KEY) || '{}')[petIndex] || [];
         loggedSuggestions = logged;
+        console.log('🔍 REPORT DEBUG: Found in localStorage:', loggedSuggestions);
     }
     
     if (loggedSuggestions.length === 0) {
