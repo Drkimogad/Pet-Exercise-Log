@@ -2200,6 +2200,13 @@ async function logSuggestedExercise(petIndex, exerciseId) {
     await loadSavedProfiles();
     updateGoalsOnExerciseLogged(petIndex);
     refreshTimelineIfOpen();
+
+    // 🆕 ADD REPORT REFRESH call at the end and after UI updated
+    const pets = await getPets();
+    const pet = pets[petIndex];
+    if (pet) {
+        await refreshOpenReports(pet.id);
+    }
     
     showSuccess(`Logged: ${exercise.name}`);
 }
