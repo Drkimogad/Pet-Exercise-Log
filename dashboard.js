@@ -4861,7 +4861,7 @@ async function generateSuggestedExercisesReportHTML(pet) {
     console.log('🔍 REPORT DEBUG: suggestionSettings:', pets[petIndex]?.suggestionSettings);
     
     // 🎯 GET DATA DIRECTLY FROM PET OBJECT
-    let loggedSuggestions = [];
+    let loggedSuggestions = [];   // VARRIABLE NAME
    // poppulate loggedsuggestions first 
     if (pets[petIndex]?.suggestionSettings?.logged) {
         loggedSuggestions = pets[petIndex].suggestionSettings.logged;
@@ -4881,7 +4881,7 @@ async function generateSuggestedExercisesReportHTML(pet) {
                     <th style="border: 1px solid #ddd; padding: 8px; text-align: center;">Intensity</th>
                     <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Reason</th>
                 </tr>
-                ${loggedSuggestionsList.map(suggestion => `
+               ${loggedSuggestions.map(suggestion => ` 
                     <tr>
                         <td style="border: 1px solid #ddd; padding: 8px;">${suggestion.name}</td>
                         <td style="border: 1px solid #ddd; padding: 8px; text-align: center;">${suggestion.duration} min</td>
