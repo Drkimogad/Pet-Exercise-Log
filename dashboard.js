@@ -730,7 +730,19 @@ ${suggestedExercises.map((exercise, i) => {
 
  document.getElementById('savedProfiles').innerHTML = profilesHTML.join(''); // ← .join() HERE
   setupProfileEventListeners();
-}
+    
+// 🆕 ADD TRACKING HERE - AFTER PROFILES ARE LOADED AND DISPLAYED
+/* Essential for All Scenarios:
+New profile creation → Tracking runs
+Editing profiles → Tracking runs
+App startup → Tracking runs
+Any data change → Tracking runs
+*/
+    pets.forEach((pet, index) => {
+        trackLoggedDismissedExercises(index);
+    });
+    
+}  // ← Add it right before this closing brace}
 
 
 
