@@ -4827,9 +4827,7 @@ async function generateSuggestedExercisesReportHTML(pet) {
         return '<p>No suggested exercises logged yet.</p>';
     }
     
-    // 🆕 ADD AWAIT HERE
-    const suggestions = await generateSuggestedExercises(pet);
-    const loggedSuggestionsList = suggestions.filter(s => loggedSuggestions.includes(s.id));
+    const loggedSuggestionsList = await getLoggedSuggestedExercises(pet);
     
     return `
         <div style="margin-top: 30px;">
