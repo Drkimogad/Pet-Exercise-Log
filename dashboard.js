@@ -7325,10 +7325,12 @@ async function showExerciseLog() {
     initializeLoggedSuggestions();
     console.log('✅ Suggested exercises systems initialized');
 
-    // 🆕 TRACK SUGGESTIONS FOR ALL PETS
-        await trackLoggedDismissedExercises(index);
+    // 🆕 TRACK SUGGESTIONS, GET PETS FIRST, THEN TRACK EACH ONE
+       const pets = await getPets();
+      pets.forEach(async (pet, index) => {
+      await trackLoggedDismissedExercises(index);
+    });
     
-
 // NEW: Initialize action bar - BUT DELAY IT until dashboard is visible
     setTimeout(async () => {
         initializeActionBar();
