@@ -2008,6 +2008,12 @@ Updates UI (button to "LOGGED ✅") ✅
 CALL NEW FUNCTION: getLoggedSuggestedExercises() 🆕
     ↓
 refreshOpenReports() ✅
+
+
+logSuggestedExercise() → filterLoggedDismissedExercises() → update report
+deleteSuggestion() → filterLoggedDismissedExercises() → update report  
+page refresh → filterLoggedDismissedExercises() → update UI
+
 */
 // ============================================================
 // Generate smart exercise suggestions based on health assessment
@@ -2237,32 +2243,9 @@ async function logSuggestedExercise(petIndex, exerciseId) {
     if (pet) {
         await refreshOpenReports(pet.id);
     }
-    
+    // After report refresh
+   await trackLoggedDismissedExercises(petIndex);
     showSuccess(`Logged: ${exercise.name}`);
-}
-
-// 🆕 CREATE THIS FUNCTION IT GETS ALL LOGGED SUGGESTIONS AND FEED REPORT
-async function getLoggedSuggestedExercises(pet) {
-    const pets = await getPets();
-    const petIndex = pets.findIndex(p => p.petDetails?.name === pet.petDetails?.name);
-    
-    // Get logged suggestion IDs from Firestore
-    let loggedSuggestionIds = [];
-    if (pets[petIndex]?.suggestionSettings?.logged) {
-        loggedSuggestionIds = pets[petIndex].suggestionSettings.logged;
-    }
-    
-    if (loggedSuggestionIds.length === 0) {
-        return [];
-    }
-    
-    // Get ALL suggestions
-    const allSuggestions = await generateSuggestedExercises(pet);
-    
-    // Filter to only return logged ones
-    return allSuggestions.filter(suggestion => 
-        loggedSuggestionIds.includes(suggestion.id)
-    );
 }
 
 // Delete a suggested exercise (remove from display) updated
@@ -2299,20 +2282,64 @@ async function deleteSuggestion(petIndex, exerciseId) { // 🆕 ADD ASYNC
     if (pet) {
         await refreshOpenReports(pet.id);
     }
-    
-    // Remove from display
-    const deleteBtn = document.querySelector(`.delete-suggestion-btn[data-exercise="${exerciseId}"]`);
-    const suggestionElement = deleteBtn?.closest('.suggested-exercise-item');
-    
-    if (suggestionElement) {
-        suggestionElement.remove();
-    }
+    // After report refresh  
+     await trackLoggedDismissedExercises(petIndex); // it will handle hidden and visibility of remove button
     
     console.log(`✅ Suggestion ${exerciseId} dismissed for pet ${petIndex}`);
 }
 
-
-
+/*
+Tracks which suggestions are logged/dismissed
+Updates UI button states (LOG vs LOGGED ✅)
+Hides dismissed suggestions from UI
+Feeds correct data to report
+*/
+// 🆕 TRACKS LOGGED AND DISMISSED SUGGESTIONS    FOR UI CONTROL 
+async function trackLoggedDismissedExercises(petIndex) {
+    const pets = await getPets();
+    const pet = pets[petIndex];
+    if (!pet) return;
+    
+    // Get logged and dismissed arrays from Firestore
+    const logged = pet.suggestionSettings?.logged || [];
+    const dismissed = pet.suggestionSettings?.dismissed || [];
+    
+    console.log('🔍 TRACKING: Logged:', logged, 'Dismissed:', dismissed);
+    
+    // Update UI for each suggestion
+    const petCard = document.querySelector(`[data-pet-index="${petIndex}"]`);
+    if (!petCard) return;
+    
+    const suggestionItems = petCard.querySelectorAll('.suggested-exercise-item');
+    
+    suggestionItems.forEach(item => {
+        const logBtn = item.querySelector('.log-exercise-btn');
+        const deleteBtn = item.querySelector('.delete-suggestion-btn');
+        const exerciseId = logBtn?.dataset.exercise || deleteBtn?.dataset.exercise;
+        
+        if (!exerciseId) return;
+        
+        if (logged.includes(exerciseId)) {
+            // Mark as logged
+            if (logBtn) {
+                logBtn.textContent = 'LOGGED ✅';
+                logBtn.disabled = true;
+                logBtn.style.opacity = '0.7';
+            }
+        }
+        
+        if (dismissed.includes(exerciseId)) {
+            // Hide dismissed suggestions
+            item.style.display = 'none'; // it will hide dismissed
+        }
+    });
+        // 🆕 RETURN DATA FOR REPORTS:
+    return {
+        logged: logged,           // Array of logged suggestion IDs
+        dismissed: dismissed,     // Array of dismissed suggestion IDs  
+        loggedExercises: []       // 🆕 Array of full logged exercise objects
+    };
+}
 
 //===============================================
    //     Mood Logs functionality
