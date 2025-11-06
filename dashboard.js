@@ -4862,13 +4862,15 @@ async function generateSuggestedExercisesReportHTML(pet) {
     
     // 🎯 GET DATA DIRECTLY FROM PET OBJECT
     let loggedSuggestions = [];
-    if (loggedSuggestions.length === 0) {
-    return '<p>No suggested exercises logged yet.</p>';
-    }
+   // poppulate loggedsuggestions first 
     if (pets[petIndex]?.suggestionSettings?.logged) {
         loggedSuggestions = pets[petIndex].suggestionSettings.logged;
     }
-            
+    // then check if they exist
+    if (loggedSuggestions.length === 0) {
+    return '<p>No suggested exercises logged yet.</p>';
+    }
+    
     return `
         <div style="margin-top: 30px;">
             <h2>Suggested Exercises Used</h2>
