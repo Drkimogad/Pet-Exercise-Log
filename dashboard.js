@@ -2202,7 +2202,6 @@ async function logSuggestedExercise(petIndex, exerciseId) {
     refreshTimelineIfOpen();
 
     // 🆕 ADD REPORT REFRESH call at the end and after UI updated
-    const pet = pets[petIndex];
     if (pet) {
         await refreshOpenReports(pet.id);
     }
