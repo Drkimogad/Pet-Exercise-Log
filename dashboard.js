@@ -4678,7 +4678,7 @@ async function generateReportContent(pet) {
         ${generatePetDetailsHTML(pet)}
         ${generateHealthSummaryHTML(pet)}
         ${generateExerciseSummaryHTML(pet.exerciseEntries)}
-        ${await generateSuggestedExercisesReportHTML(pet)}  // ← FIXED: Now with await!
+        ${await generateSuggestedExercisesReportHTML(pet)} 
         ${generateExerciseCalendarHTML(pet)}
         ${pet.moodLogs && pet.moodLogs.length > 0 ? generateMoodCalendarHTML(pet) : ''}
         ${pet.exerciseEntries && pet.exerciseEntries.length > 0 ? generateExerciseChartsHTML(pet.exerciseEntries) : ''}
