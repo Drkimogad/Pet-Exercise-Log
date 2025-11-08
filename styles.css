@@ -4239,6 +4239,243 @@ input:checked + .toggle-slider:before {
 }
 
 
+/*===============
+   ODAL FOR REMINDERS, WEEKLYGOALS AND TIMELINE
+==================================*/
+/* ===============================================
+   MODAL SYSTEM CSS - PRODUCTION READY
+   =============================================== */
+
+/* Modal overlay - covers entire screen */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 20px;
+    overflow-y: auto;
+    z-index: 1000;
+}
+
+/* Base modal styling */
+.action-modal {
+    background: var(--white, #ffffff);
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    width: 90%;
+    max-width: 600px;
+    max-height: 80vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    animation: modalSlideIn 0.3s ease-out;
+}
+
+/* Wide modal variant for timeline */
+.action-modal.wide-modal {
+    max-width: 800px;
+}
+
+/* Extra wide for reports */
+.action-modal.extra-wide-modal {
+    max-width: 95%;
+    max-height: 90vh;
+}
+
+/* Modal header */
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--input-border, #e5e7eb);
+    background: var(--off-white, #f9fafb);
+}
+
+.modal-header h3 {
+    margin: 0;
+    color: var(--dark-charcoal, #374151);
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.modal-header-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+/* Modal content area */
+.modal-content {
+    padding: 24px;
+    overflow-y: auto;
+    flex: 1;
+}
+
+/* Modal footer */
+.modal-footer {
+    padding: 20px 24px;
+    border-top: 1px solid var(--input-border, #e5e7eb);
+    background: var(--off-white, #f9fafb);
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+}
+
+/* Close button */
+.close-modal-btn {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 4px;
+    color: var(--light-charcoal, #6b7280);
+    transition: all 0.2s ease;
+}
+
+.close-modal-btn:hover {
+    background: var(--input-border, #e5e7eb);
+    color: var(--dark-charcoal, #374151);
+}
+
+/* Action buttons */
+.action-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+    background: var(--dark-purple, #6b46c1);
+    color: white;
+}
+
+.action-btn:hover {
+    background: var(--light-purple, #7c3aed);
+    transform: translateY(-1px);
+}
+
+.action-btn:disabled {
+    background: var(--input-border, #e5e7eb);
+    color: var(--light-charcoal, #6b7280);
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Settings button */
+.settings-btn {
+    background: var(--primary-yellow, #d97706);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+}
+
+.settings-btn:hover {
+    background: var(--primary-mustard, #b45309);
+}
+
+/* Loading states */
+.modal-loading {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--light-charcoal, #6b7280);
+}
+
+.modal-loading p {
+    margin: 0;
+    font-size: 1rem;
+}
+
+/* Error states */
+.modal-error {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--light-charcoal, #6b7280);
+}
+
+.modal-error p {
+    margin: 0 0 8px 0;
+    font-size: 1rem;
+    color: #dc2626;
+}
+
+.modal-error small {
+    display: block;
+    margin-bottom: 16px;
+}
+
+/* Animation */
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .modal-overlay {
+        padding: 10px;
+    }
+    
+    .action-modal {
+        width: 95%;
+        max-height: 90vh;
+    }
+    
+    .modal-header {
+        padding: 16px 20px;
+    }
+    
+    .modal-content {
+        padding: 20px;
+    }
+    
+    .modal-footer {
+        padding: 16px 20px;
+        flex-direction: column;
+    }
+    
+    .action-btn {
+        width: 100%;
+    }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .action-modal {
+        background: var(--dark-charcoal, #374151);
+        color: var(--white, #ffffff);
+    }
+    
+    .modal-header {
+        background: var(--light-charcoal, #4b5563);
+        border-bottom-color: var(--light-charcoal, #4b5563);
+    }
+    
+    .modal-footer {
+        background: var(--light-charcoal, #4b5563);
+        border-top-color: var(--light-charcoal, #4b5563);
+    }
+}
+
+
+
 /* ===============================================
    ARCHIVE MODAL STYLES
    =============================================== */
