@@ -821,25 +821,30 @@ function loadMoodViewPreference(petIndex) {
     return preferences[petIndex] || 'recent'; // Default to recent view
 }
 
-//=====================================================
+//===============================
 // UPDATE DASHBOARD FUNCTION
-// Also update your updateDashboard function to handle these components:
+//===============================
 async function updateDashboard(petData) {
     console.log('Updating dashboard for:', petData.petDetails.name);
     
-    // Update calendar with exercise data
-    if (petData.exerciseEntries && petData.exerciseEntries.length > 0) {
-        refreshCalendar(petData.exerciseEntries);
-    } else {
-    initializeNewProfileCalendar(); // ✅ This is your actual function
+    // ✅ CHECK IF CALENDAR EXISTS BEFORE INITIALIZING
+    const calendarContainer = document.querySelector('.calendar');
+    if (calendarContainer) {
+        if (petData.exerciseEntries && petData.exerciseEntries.length > 0) {
+            refreshCalendar(petData.exerciseEntries);
+        } else {
+            initializeNewProfileCalendar();
+        }
     }
     
-    // Update mood tracker
-    if (petData.moodLogs && petData.moodLogs.length > 0) {
-        updateMoodTracker(petData.moodLogs);
-    } else {
-       // initializeEmptyMoodTracker();
-         initializeMoodTracker(); // ← CALL YOUR EXISTING FUNCTION
+    // ✅ CHECK IF MOOD TRACKER EXISTS BEFORE INITIALIZING
+    const moodContainer = document.querySelector('.mood-tracker-container');
+    if (moodContainer) {
+        if (petData.moodLogs && petData.moodLogs.length > 0) {
+            updateMoodTracker(petData.moodLogs);
+        } else {
+            initializeMoodTracker();
+        }
     }
     
     // Update charts with exercise data
@@ -850,7 +855,7 @@ async function updateDashboard(petData) {
     }
     
     // Refresh profile list
-  await loadSavedProfiles();
+    await loadSavedProfiles();
 }
 
 function updateMoodTracker(moodLogs) {
