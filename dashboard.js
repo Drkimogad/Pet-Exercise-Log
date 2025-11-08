@@ -7756,20 +7756,16 @@ function formatExerciseTime(timestamp) {
 
 
     function exportTimelineData() {
-    console.log('📤 Exporting timeline data');
-        
+    console.log('📤 Exporting timeline data');        
     const timelineExercises = generateTimelineData();
-
     // FIX: Add await since generateTimelineData is async
     generateTimelineData().then(timelineExercises => {
         if (timelineExercises.length === 0) {
             alert('No exercise data to export');
             return;
-        }
- 
+        } 
     // Create CSV content
-    let csvContent = 'Date,Pet Name,Exercise Type,Duration (min),Calories,Intensity,Notes\n';
-    
+    let csvContent = 'Date,Pet Name,Exercise Type,Duration (min),Calories,Intensity,Notes\n';    
     timelineExercises.forEach(exercise => {
         const row = [
             exercise.date,
@@ -7795,8 +7791,8 @@ function formatExerciseTime(timestamp) {
     window.URL.revokeObjectURL(url);
     
     console.log('✅ Timeline data exported');
+ }
 }
-
 function showExerciseLogFromTimeline() {
     console.log('📝 Opening exercise log from timeline');
     
