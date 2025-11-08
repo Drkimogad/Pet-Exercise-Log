@@ -7414,80 +7414,136 @@ function showGoalAchievedNotification(petName) {
     // For now, we'll just log it
 }
 
-
-
-
-
-
-
-
-
-
 //===============================================
 // TIME LINE COMPLETE IMPLEMENTATION
 //============================================
-// CREATE MODAL
-function createTimelineModal() {
+function showTimelineModal() {
+    console.log('📅 [TIMELINE] Opening exercise history timeline');
+    
+    try {
+        // Use modal system to ensure proper stacking
+        if (!showModal('timeline', { closeOthers: false })) {
+            throw new Error('Modal system failed to open timeline modal');
+        }
+
+        const overlay = document.getElementById('timelineOverlay');
+        if (!overlay) {
+            throw new Error('Timeline modal overlay not found');
+        }
+
+        // Create modal structure USING THE MODAL SYSTEM CONTAINER
+        overlay.innerHTML = createTimelineModalHTML();
+        console.log('✅ [TIMELINE] Modal structure created');
+
+        // Load and display timeline
+        loadTimelineContent();
+        
+        // Setup modal event listeners
+        setupTimelineModalEvents();
+        
+        console.log('✅ [TIMELINE] Modal fully initialized');
+        
+    } catch (error) {
+        console.error('❌ [TIMELINE] Failed to open timeline modal:', error);
+        // Fallback to old implementation
+        showTimelineModalFallback();
+    }
+}
+
+/**
+ * Create timeline modal HTML structure for modal system
+ */
+function createTimelineModalHTML() {
     return `
-        <div class="action-modal-overlay" id="timelineModal">
-            <div class="action-modal wide-modal">
-                <div class="modal-header">
-                    <h3>📅 Exercise History Timeline</h3>
-                    <button class="close-modal-btn">&times;</button>
-                </div>
-                <div class="modal-content" id="timelineContent">
-                    <div class="timeline-loading">
-                        <p>Loading exercise history...</p>
-                    </div>
+        <div class="action-modal wide-modal">
+            <div class="modal-header">
+                <h3>📅 Exercise History Timeline</h3>
+                <button class="close-modal-btn">&times;</button>
+            </div>
+            <div class="modal-content" id="timelineContent">
+                <div class="timeline-loading">
+                    <p>Loading exercise history...</p>
                 </div>
             </div>
         </div>
     `;
 }
 
-function showTimelineModal() {
-    console.log('📅 Showing exercise history timeline');
+/**
+ * Setup timeline modal event handlers for modal system
+ */
+function setupTimelineModalEvents() {
+    console.log('🔄 [TIMELINE] Setting up event handlers');
     
-    // Remove any existing modal first
+    const overlay = document.getElementById('timelineOverlay');
+    if (!overlay) return;
+
+    // Event delegation for timeline actions
+    overlay.addEventListener('click', handleTimelineAction);
+
+    // Close button
+    const closeBtn = safeQuery('.close-modal-btn', overlay);
+    if (closeBtn) {
+        closeBtn.addEventListener('click', () => closeModal('timeline'));
+        registerModalHandler('timeline', closeBtn, 'click', () => closeModal('timeline'));
+    }
+
+    console.log('✅ [TIMELINE] Event handlers setup complete');
+}
+
+/**
+ * Centralized event handler for timeline actions
+ */
+function handleTimelineAction(event) {
+    const target = event.target;
+    
+    // Handle export button
+    if (target.id === 'exportTimelineBtn' || target.closest('#exportTimelineBtn')) {
+        event.preventDefault();
+        exportTimelineData();
+        return;
+    }
+    
+    // Handle log exercise button
+    if (target.id === 'logNewExerciseBtn' || target.closest('#logNewExerciseBtn')) {
+        event.preventDefault();
+        showExerciseLogFromTimeline();
+        return;
+    }
+    
+    // Handle timeline entry clicks
+    if (target.classList.contains('timeline-entry') || target.closest('.timeline-entry')) {
+        event.preventDefault();
+        const timelineEntry = target.classList.contains('timeline-entry') ? target : target.closest('.timeline-entry');
+        const petIndex = parseInt(timelineEntry.dataset.petIndex);
+        const exerciseDate = timelineEntry.dataset.exerciseDate;
+        handleTimelineEntryClick(petIndex, exerciseDate);
+        return;
+    }
+}
+
+/**
+ * Fallback implementation if modal system fails
+ */
+function showTimelineModalFallback() {
+    console.warn('🔄 [TIMELINE] Using fallback implementation');
+    
+    // Your original implementation
     const existingModal = document.getElementById('timelineModal');
     if (existingModal) {
         existingModal.remove();
-   }
+    }
     
-    // Create and insert the modal
     document.body.insertAdjacentHTML('beforeend', createTimelineModal());
-    
-    // Load and display timeline
-   loadTimelineContent();
-    
-     //Setup modal event listeners
+    loadTimelineContent();
     setupTimelineModalEvents();
 }
 
-function setupTimelineModalEvents() {
-    const modal = document.getElementById('timelineModal');
-    if (!modal) return;
-    
-    // Close button
-    modal.querySelector('.close-modal-btn').addEventListener('click', () => {
-        modal.remove();
-    });
-    
-    // Close when clicking overlay
-    modal.addEventListener('click', (e) => {
-        if (e.target === modal) {
-            modal.remove();
-        }
-    });
-    
-    // Escape key to close
-    document.addEventListener('keydown', function escapeHandler(e) {
-        if (e.key === 'Escape' && modal) {
-            modal.remove();
-            document.removeEventListener('keydown', escapeHandler);
-        }
-    });
+// Update your existing close function to use modal system
+function closeTimelineModal() {
+    closeModal('timeline');
 }
+
 // ===============================================
 // TIMELINE DATA PROCESSING
 // ===============================================
@@ -7696,23 +7752,6 @@ function formatExerciseTime(timestamp) {
     } catch (e) {
         return '';
     }
-}
-// STEP 4.5: Add Timeline Action Handlers
-function setupTimelineActionListeners() {
-    // Export Timeline button
-    document.getElementById('exportTimelineBtn')?.addEventListener('click', exportTimelineData);
-    
-    // Log New Exercise button
-    document.getElementById('logNewExerciseBtn')?.addEventListener('click', showExerciseLogFromTimeline);
-    
-    // Timeline entry clicks (for potential future enhancements)
-    document.querySelectorAll('.timeline-entry').forEach(entry => {
-        entry.addEventListener('click', (e) => {
-            const petIndex = parseInt(entry.dataset.petIndex);
-            const exerciseDate = entry.dataset.exerciseDate;
-            handleTimelineEntryClick(petIndex, exerciseDate);
-        });
-    });
 }
 
 function exportTimelineData() {
