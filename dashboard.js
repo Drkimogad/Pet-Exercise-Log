@@ -7823,41 +7823,116 @@ async function refreshTimelineIfOpen() {
        await loadTimelineContent(); // Refresh the content
     }
 }
+// ADD THESE MISSING FUNCTIONS for timeline modal:
+
+/**
+ * Old timeline modal HTML creator (for fallback)
+ */
+function createTimelineModal() {
+    return `
+        <div class="action-modal-overlay" id="timelineModal">
+            <div class="action-modal wide-modal">
+                <div class="modal-header">
+                    <h3>📅 Exercise History Timeline</h3>
+                    <button class="close-modal-btn">&times;</button>
+                </div>
+                <div class="modal-content" id="timelineContent">
+                    <div class="timeline-loading">
+                        <p>Loading exercise history...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+/**
+ * Old timeline event setup (for fallback)
+ */
+function setupTimelineModalEvents() {
+    const modal = document.getElementById('timelineModal');
+    if (!modal) return;
+    
+    // Close button
+    modal.querySelector('.close-modal-btn').addEventListener('click', () => {
+        modal.remove();
+    });
+    
+    // Close when clicking overlay
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            modal.remove();
+        }
+    });
+    
+    // Escape key to close
+    document.addEventListener('keydown', function escapeHandler(e) {
+        if (e.key === 'Escape' && modal) {
+            modal.remove();
+            document.removeEventListener('keydown', escapeHandler);
+        }
+    });
+    
+    // Setup action listeners
+    setupTimelineActionListeners();
+}
+
+/**
+ * Setup timeline action listeners (for fallback)
+ */
+function setupTimelineActionListeners() {
+    // Export Timeline button
+    document.getElementById('exportTimelineBtn')?.addEventListener('click', exportTimelineData);
+    
+    // Log New Exercise button
+    document.getElementById('logNewExerciseBtn')?.addEventListener('click', showExerciseLogFromTimeline);
+    
+    // Timeline entry clicks
+    document.querySelectorAll('.timeline-entry').forEach(entry => {
+        entry.addEventListener('click', (e) => {
+            const petIndex = parseInt(entry.dataset.petIndex);
+            const exerciseDate = entry.dataset.exerciseDate;
+            handleTimelineEntryClick(petIndex, exerciseDate);
+        });
+    });
+}
 
 //=======================================
    //  SETUP Event Listeners FOR 3 MODALS
 //=========================================
+// In your action bar setup - REPLACE this:
 async function setupActionBarEventListeners() {
     console.log('🔄 Setting up action bar event listeners');
     
-    // Reminders button
+    // Remove any existing listeners first
     const remindersBtn = document.getElementById('remindersBtn');
-    if (remindersBtn) {
-        remindersBtn.addEventListener('click', async () => {
-    await showRemindersModal();
-});
-      } // ← Added this missing closing brace
-
-    
-    // Goals button  
     const goalsBtn = document.getElementById('goalsBtn');
-    if (goalsBtn) {
-       goalsBtn.addEventListener('click', async () => {
-    await showGoalsModal();
-});
-       } // ← Added this missing closing brace
-
-
-    // Timeline button
     const timelineBtn = document.getElementById('timelineBtn');
-    if (timelineBtn) {
-        timelineBtn.addEventListener('click', async () => {
-    await showTimelineModal();
-});
-} // ← Added this missing closing brace
-        
-    //     console.log('✅ Action bar event listeners setup');
-    // Close modal handlers will be added when modals are created
+    
+    // Clone buttons to remove old listeners
+    if (remindersBtn) remindersBtn.replaceWith(remindersBtn.cloneNode(true));
+    if (goalsBtn) goalsBtn.replaceWith(goalsBtn.cloneNode(true));
+    if (timelineBtn) timelineBtn.replaceWith(timelineBtn.cloneNode(true));
+    
+    // Get fresh references
+    const freshRemindersBtn = document.getElementById('remindersBtn');
+    const freshGoalsBtn = document.getElementById('goalsBtn');
+    const freshTimelineBtn = document.getElementById('timelineBtn');
+    
+    // Add fresh listeners
+    if (freshRemindersBtn) {
+        freshRemindersBtn.addEventListener('click', showRemindersModal);
+    }
+    
+    if (freshGoalsBtn) {
+        freshGoalsBtn.addEventListener('click', showGoalsModal);
+    }
+    
+    if (freshTimelineBtn) {
+        freshTimelineBtn.addEventListener('click', showTimelineModal);
+    }
+    
+    console.log('✅ Action bar event listeners setup complete');
 }
 
 async function updateActionBarData() {
