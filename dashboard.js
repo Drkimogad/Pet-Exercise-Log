@@ -1772,7 +1772,7 @@ async function handleDailyLogSubmit(e) {
         });
      
         // NEW: Update goals tracking
-        updateGoalsOnExerciseLogged(activePetIndex);   // ADDED FOR TRACKING
+         await updateGoalsOnExerciseLogged(activePetIndex);   // ADDED FOR TRACKING
         
         // Add mood entry
         if (formData.mood !== null) {
@@ -1799,16 +1799,15 @@ async function handleDailyLogSubmit(e) {
         // Show success
         showSuccess('Exercise logged successfully!');
         
-        // FIX: PROPERLY REFRESH THE DISPLAY
-        await loadSavedProfiles(); // ← RELOAD PROFILES FIRST to update the cards
+        // FIX: Only call returnToDashboard() - it will handle the refresh
+       // await loadSavedProfiles(); // ← RELOAD PROFILES FIRST to update the cards
         
-        // Then return to dashboard
         await returnToDashboard();
         
         console.log('✅ Daily log completed successfully');
      
         // NEW: Refresh timeline if open
-        refreshTimelineIfOpen();
+      //  refreshTimelineIfOpen();
 
     } catch (error) {
         console.error('❌ Error in daily log submission:', error);
