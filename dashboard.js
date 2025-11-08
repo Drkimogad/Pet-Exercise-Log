@@ -4890,7 +4890,7 @@ async function generateSuggestedExercisesReportHTML(pet) {
                     </tr>
                 `).join('')}
             </table>
-            <p><small>Total suggested exercises used: ${loggedSuggestionsList.length}</small></p>
+            <p><small>Total suggested exercises used: ${loggedSuggestions.length}</small></p>
         </div>
     `;
 }
