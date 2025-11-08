@@ -6607,21 +6607,24 @@ function getDaysSinceLastExercise(pet) {
         return 999;
     }
     
-    // Get today's date at midnight in local timezone
+    // Get today's date in local timezone
     const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    const todayStr = today.toISOString().split('T')[0];
     
     const sortedExercises = [...pet.exerciseEntries].sort((a, b) => 
         new Date(b.date) - new Date(a.date)
     );
     
-    // Parse the exercise date in local timezone
-    const lastExerciseDate = new Date(sortedExercises[0].date + 'T00:00:00');
+    const lastExerciseDate = sortedExercises[0].date;
     
-    const timeDiff = today - lastExerciseDate;
+    // Simple date difference calculation
+    const lastDate = new Date(lastExerciseDate);
+    const todayDate = new Date(todayStr);
+    
+    const timeDiff = todayDate - lastDate;
     const daysDiff = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
     
-    console.log(`Last exercise: ${sortedExercises[0].date}, Today: ${today.toISOString().split('T')[0]}, Days since: ${daysDiff}`);
+    console.log(`Last exercise: ${lastExerciseDate}, Today: ${todayStr}, Days since: ${daysDiff}`);
     
     return Math.max(0, daysDiff);
 }
