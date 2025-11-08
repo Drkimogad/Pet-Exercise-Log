@@ -7157,36 +7157,36 @@ async function saveGoalsSettings() {
     console.log('💾 [GOALS-SETTINGS] Saving goals settings');
     
     try {
-        const pets = await getPets();
+        const pets = await getPets(); // ← MAKE SURE THIS IS AWAITED
         let settingsChanged = false;
 
         // Update each pet's goal settings
         const goalItems = safeQueryAll('.pet-goal-item');
-        goalItems.forEach(item => {
+        
+        for (const item of goalItems) { // ← USE for...of NOT forEach
             const petIndex = parseInt(item.dataset.petIndex);
             const toggle = item.querySelector('.goal-toggle');
             const targetSelect = item.querySelector('.target-select');
             
+            if (!pets[petIndex]) continue;
+            
             const enabled = toggle.checked;
             const weeklyTarget = parseInt(targetSelect.value);
             
-            if (pets[petIndex]) {
-                if (pets[petIndex].goalSettings.enabled !== enabled || 
-                    pets[petIndex].goalSettings.weeklyTarget !== weeklyTarget) {
-                    
-                    pets[petIndex].goalSettings.enabled = enabled;
-                    pets[petIndex].goalSettings.weeklyTarget = weeklyTarget;
-                    settingsChanged = true;
-                    
-                    console.log(`📊 [GOALS-SETTINGS] Updated ${pets[petIndex].petDetails.name} goals: ${enabled ? 'enabled' : 'disabled'}, target: ${weeklyTarget}`);
-                }
+            if (pets[petIndex].goalSettings.enabled !== enabled || 
+                pets[petIndex].goalSettings.weeklyTarget !== weeklyTarget) {
+                
+                pets[petIndex].goalSettings.enabled = enabled;
+                pets[petIndex].goalSettings.weeklyTarget = weeklyTarget;
+                settingsChanged = true;
+                
+                console.log(`📊 [GOALS-SETTINGS] Updated ${pets[petIndex].petDetails.name} goals: ${enabled ? 'enabled' : 'disabled'}, target: ${weeklyTarget}`);
             }
-        });
+        }
 
         if (settingsChanged) {
-            // Save to storage (using your existing approach)
+            // SAVE TO STORAGE
             if (window.petDataService) {
-                // Save each pet individually if using Firestore
                 for (const pet of pets) {
                     await window.petDataService.savePet(pet);
                 }
@@ -7197,21 +7197,21 @@ async function saveGoalsSettings() {
             showSuccess('Goals settings saved!');
             console.log('✅ [GOALS-SETTINGS] Settings saved successfully');
             
+            // FORCE REFRESH GOALS DATA
+            await updateAllExerciseCounts(); // ← ADD THIS
+            await updateGoalsProgress(); // ← ADD THIS
+            
             // Close settings modal and reopen main goals modal
             closeModal('goalsSettings');
             setTimeout(showGoalsModal, 100);
             
-            // Update progress display
-            await updateGoalsProgress();
-            
         } else {
             showSuccess('No changes made');
-            console.log('ℹ️ [GOALS-SETTINGS] No changes to save');
         }
 
     } catch (error) {
         console.error('❌ [GOALS-SETTINGS] Failed to save settings:', error);
-        throw new Error('Save failed: ' + error.message);
+        throw error;
     }
 }
 
