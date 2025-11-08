@@ -5819,10 +5819,11 @@ function showModal(modalId, options = {}) {
     try {
         console.log(`🔄 [MODAL SYSTEM] Opening modal: ${modalId}`);
         
-        // Prevent duplicates
+        // Check if modal is already open
         if (isModalOpen(modalId)) {
-            console.warn(`⚠️ [MODAL SYSTEM] Modal ${modalId} is already open`);
-            return false;
+            console.log(`ℹ️ [MODAL SYSTEM] Modal ${modalId} is already open, bringing to front`);
+            updateModalStack(); // Just bring to front
+            return true;
         }
 
         // Close conflicting modals if specified
