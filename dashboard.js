@@ -456,10 +456,15 @@ async function returnToDashboard() {
     document.getElementById('profileContainer').style.display = 'none';
     document.getElementById('profileContainer').innerHTML = '';
 
-        // FIX: Ensure profiles are loaded after returning
-    await loadSavedProfiles();
-    
     clearTemporaryData();
+
+    // Force refresh with latest data on return
+    await loadSavedProfiles();
+    console.log('✅ Dashboard returned and profiles refreshed');
+
+    // Refresh timeline if open
+      refreshTimelineIfOpen();    
+    console.log('✅ refreshTimeLineIfOpen () is called on retuenToDashboard');
 }
 
 
