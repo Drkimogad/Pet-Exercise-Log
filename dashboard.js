@@ -6553,6 +6553,7 @@ async function updateGoalsProgress() {
     console.log(`✅ Goals progress updated: ${totalExercises}/${totalTarget} (${overallProgress}%)`);
 }
 
+
 // STEP 3.7: Add Auto-Goal Tracking to Exercise Logging
 // Call this function whenever a new exercise is logged
 async function updateGoalsOnExerciseLogged(petIndex) { // ADD ASYNC
