@@ -455,6 +455,9 @@ async function returnToDashboard() {
     document.getElementById('savedProfiles').style.display = 'block';
     document.getElementById('profileContainer').style.display = 'none';
     document.getElementById('profileContainer').innerHTML = '';
+
+        // FIX: Ensure profiles are loaded after returning
+    await loadSavedProfiles();
     
     clearTemporaryData();
 }
