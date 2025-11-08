@@ -461,10 +461,6 @@ async function returnToDashboard() {
     // Force refresh with latest data on return
     await loadSavedProfiles();
     console.log('✅ Dashboard returned and profiles refreshed');
-
-    // Refresh timeline if open
-      refreshTimelineIfOpen();    
-    console.log('✅ refreshTimeLineIfOpen () is called on retuenToDashboard');
 }
 
 
