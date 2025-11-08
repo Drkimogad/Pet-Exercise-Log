@@ -4858,7 +4858,7 @@ function formatMedicalCondition(condition) {
 async function generateSuggestedExercisesReportHTML(pet) {
     const pets = await getPets();
     const petIndex = pets.findIndex(p => p.petDetails.name === pet.petDetails.name);
-    // 🎯 ADD THESE DEBUG LOGS:
+    
     console.log('🔍 REPORT DEBUG: Pet from parameter:', pet.petDetails.name);
     console.log('🔍 REPORT DEBUG: All pets in array:', pets.map(p => p.petDetails.name));
     console.log('🔍 REPORT DEBUG: Found pet index:', petIndex);
@@ -4866,14 +4866,25 @@ async function generateSuggestedExercisesReportHTML(pet) {
     console.log('🔍 REPORT DEBUG: suggestionSettings:', pets[petIndex]?.suggestionSettings);
     
     // 🎯 GET DATA DIRECTLY FROM PET OBJECT
-    let loggedSuggestions = [];   // VARRIABLE NAME
-   // poppulate loggedsuggestions first 
+    let loggedSuggestionIds = [];
     if (pets[petIndex]?.suggestionSettings?.logged) {
-        loggedSuggestions = pets[petIndex].suggestionSettings.logged;
+        loggedSuggestionIds = pets[petIndex].suggestionSettings.logged;
     }
-    // then check if they exist
+    
+    if (loggedSuggestionIds.length === 0) {
+        return '<p>No suggested exercises logged yet.</p>';
+    }
+    
+    // Generate the actual suggested exercises to get full details
+    const allSuggestions = await generateSuggestedExercises(pet);
+    
+    // Filter to only include logged suggestions
+    const loggedSuggestions = allSuggestions.filter(suggestion => 
+        loggedSuggestionIds.includes(suggestion.id)
+    );
+    
     if (loggedSuggestions.length === 0) {
-    return '<p>No suggested exercises logged yet.</p>';
+        return '<p>No suggested exercises logged yet.</p>';
     }
     
     return `
@@ -4886,7 +4897,7 @@ async function generateSuggestedExercisesReportHTML(pet) {
                     <th style="border: 1px solid #ddd; padding: 8px; text-align: center;">Intensity</th>
                     <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Reason</th>
                 </tr>
-               ${loggedSuggestions.map(suggestion => ` 
+                ${loggedSuggestions.map(suggestion => ` 
                     <tr>
                         <td style="border: 1px solid #ddd; padding: 8px;">${suggestion.name}</td>
                         <td style="border: 1px solid #ddd; padding: 8px; text-align: center;">${suggestion.duration} min</td>
