@@ -5855,7 +5855,8 @@ function showModal(modalId, options = {}) {
  */
 function closeModal(modalId) {
     try {
-        console.log(`🔄 [MODAL SYSTEM] Closing modal: ${modalId}`);
+        // ADD DEBUG LINE HERE:
+        console.log(`🔄 [MODAL SYSTEM] Closing modal: ${modalId}`, new Error().stack);
         
         const overlay = document.getElementById(`${modalId}Overlay`);
         if (overlay) {
@@ -5897,6 +5898,13 @@ function closeAllModals() {
     console.log(`✅ [MODAL SYSTEM] Closed ${closedCount} modals`);
     return closedCount;
 }
+
+// ADD THIS DEBUG FUNCTION AT THE BOTTOM OF YOUR MODAL SYSTEM:
+document.addEventListener('click', function(e) {
+    if (e.target.classList.contains('modal-overlay')) {
+        console.log('🔍 [DEBUG] Backdrop clicked:', e.target.id, 'at:', new Date().getTime());
+    }
+});
 
 /**
  * Check if a modal is currently open
