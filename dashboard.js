@@ -1732,7 +1732,7 @@ function handleDailyLogMoodSelection(e) {
 }
 
 // 12.Handle daily log form submission
-async function handleDailyLogSubmit(e) { // ← ADD ASYNC  
+async function handleDailyLogSubmit(e) { 
     e.preventDefault();
     console.log('🔄 Daily log form submission');
     
@@ -1754,9 +1754,8 @@ async function handleDailyLogSubmit(e) { // ← ADD ASYNC
         const pet = { ...pets[activePetIndex] }; // ← This creates a shallow copy
         
         // 🆕 ADD SAFETY: Ensure suggestionSettings exists
-         pet.suggestionSettings = pet.suggestionSettings || { dismissed: [], logged: [] };
+        pet.suggestionSettings = pet.suggestionSettings || { dismissed: [], logged: [] };
 
-        
         // Add exercise entry
         pet.exerciseEntries = pet.exerciseEntries || [];
         pet.exerciseEntries.push({
@@ -1769,7 +1768,7 @@ async function handleDailyLogSubmit(e) { // ← ADD ASYNC
             timestamp: new Date().toISOString()
         });
      
-     // NEW: Update goals tracking
+        // NEW: Update goals tracking
         updateGoalsOnExerciseLogged(activePetIndex);   // ADDED FOR TRACKING
         
         // Add mood entry
@@ -1784,22 +1783,24 @@ async function handleDailyLogSubmit(e) { // ← ADD ASYNC
         }
         
         // Save to storage
-pets[activePetIndex] = pet;
+        pets[activePetIndex] = pet;
 
-// REPLACED: Save using PetDataService
-if (window.petDataService) {
-    await window.petDataService.savePet(pet);
-} else {
-    localStorage.setItem('pets', JSON.stringify(pets));
-}
+        // REPLACED: Save using PetDataService
+        if (window.petDataService) {
+            await window.petDataService.savePet(pet);
+        } else {
+            localStorage.setItem('pets', JSON.stringify(pets));
+        }
         console.log('💾 Daily log saved');
         
-        // Show success and return to dashboard
+        // Show success
         showSuccess('Exercise logged successfully!');
         
-        // Return to dashboard and refresh
-       await  returnToDashboard();
-       await loadSavedProfiles(); // This will now show the updated calendar/charts/mood
+        // FIX: PROPERLY REFRESH THE DISPLAY
+        await loadSavedProfiles(); // ← RELOAD PROFILES FIRST to update the cards
+        
+        // Then return to dashboard
+        await returnToDashboard();
         
         console.log('✅ Daily log completed successfully');
      
