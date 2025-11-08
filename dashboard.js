@@ -858,7 +858,8 @@ async function updateDashboard(petData) {
     }
     
     // Refresh profile list
-    await loadSavedProfiles();
+  //  await loadSavedProfiles();
+ console.log('✅ Dashboard updated without reloading profiles');
 }
 
 function updateMoodTracker(moodLogs) {
