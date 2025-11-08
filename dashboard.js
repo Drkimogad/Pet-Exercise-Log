@@ -1805,11 +1805,11 @@ async function handleDailyLogSubmit(e) {
        // await loadSavedProfiles(); // ← RELOAD PROFILES FIRST to update the cards
         
         await returnToDashboard();
-        
         console.log('✅ Daily log completed successfully');
      
-        // NEW: Refresh timeline if open
-      //  refreshTimelineIfOpen();
+    // Refresh timeline if open
+      refreshTimelineIfOpen();    
+      console.log('✅ refreshTimeLineIfOpen () is called in handledailylogsubmit');
 
     } catch (error) {
         console.error('❌ Error in daily log submission:', error);
