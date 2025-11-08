@@ -7481,34 +7481,15 @@ function createTimelineModalHTML() {
 /**
  * Setup timeline modal event handlers for modal system
  */
-function setupTimelineModalEvents() {
-    console.log('🔄 [TIMELINE] Setting up event handlers');
-    
-    const overlay = document.getElementById('timelineOverlay');
-    if (!overlay) return;
-
-    // Event delegation for timeline actions
-    overlay.addEventListener('click', handleTimelineAction);
-
-    // Close button
-    const closeBtn = safeQuery('.close-modal-btn', overlay);
-    if (closeBtn) {
-        closeBtn.addEventListener('click', () => closeModal('timeline'));
-        registerModalHandler('timeline', closeBtn, 'click', () => closeModal('timeline'));
-    }
-
-    console.log('✅ [TIMELINE] Event handlers setup complete');
-}
-
-/**
- * Centralized event handler for timeline actions
- */
 function handleTimelineAction(event) {
     const target = event.target;
+    console.log('🔍 [TIMELINE] Click detected on:', target);
     
     // Handle export button
     if (target.id === 'exportTimelineBtn' || target.closest('#exportTimelineBtn')) {
         event.preventDefault();
+        event.stopPropagation();
+        console.log('👆 [TIMELINE] Export button clicked');
         exportTimelineData();
         return;
     }
@@ -7516,6 +7497,8 @@ function handleTimelineAction(event) {
     // Handle log exercise button
     if (target.id === 'logNewExerciseBtn' || target.closest('#logNewExerciseBtn')) {
         event.preventDefault();
+        event.stopPropagation();
+        console.log('👆 [TIMELINE] Log exercise button clicked');
         showExerciseLogFromTimeline();
         return;
     }
@@ -7523,9 +7506,11 @@ function handleTimelineAction(event) {
     // Handle timeline entry clicks
     if (target.classList.contains('timeline-entry') || target.closest('.timeline-entry')) {
         event.preventDefault();
+        event.stopPropagation();
         const timelineEntry = target.classList.contains('timeline-entry') ? target : target.closest('.timeline-entry');
         const petIndex = parseInt(timelineEntry.dataset.petIndex);
         const exerciseDate = timelineEntry.dataset.exerciseDate;
+        console.log('👆 [TIMELINE] Timeline entry clicked:', { petIndex, exerciseDate });
         handleTimelineEntryClick(petIndex, exerciseDate);
         return;
     }
