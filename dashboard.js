@@ -7121,6 +7121,9 @@ function setupGoalsSettingsHandlers() {
  * Centralized event handler for goals settings actions
  */
 async function handleGoalsSettingsAction(event) {
+console.log('🔍 [GOALS-SETTINGS DEBUG] Event triggered on:', event.target);
+ console.log('🔍 [GOALS-SETTINGS DEBUG] Event type:', event.type);
+  
     const target = event.target;
     if (!target.classList.contains('action-btn')) return;
 
@@ -7751,16 +7754,19 @@ function formatExerciseTime(timestamp) {
     }
 }
 
-function exportTimelineData() {
+
+    function exportTimelineData() {
     console.log('📤 Exporting timeline data');
-    
+        
     const timelineExercises = generateTimelineData();
-    
-    if (timelineExercises.length === 0) {
-        alert('No exercise data to export');
-        return;
-    }
-    
+
+    // FIX: Add await since generateTimelineData is async
+    generateTimelineData().then(timelineExercises => {
+        if (timelineExercises.length === 0) {
+            alert('No exercise data to export');
+            return;
+        }
+ 
     // Create CSV content
     let csvContent = 'Date,Pet Name,Exercise Type,Duration (min),Calories,Intensity,Notes\n';
     
@@ -7808,10 +7814,13 @@ function showExerciseLogFromTimeline() {
 
 function handleTimelineEntryClick(petIndex, exerciseDate) {
     console.log(`📅 Timeline entry clicked: Pet ${petIndex}, Date ${exerciseDate}`);
+    console.log('🔍 [TIMELINE DEBUG] Event triggered on:', event.target);
+    console.log('🔍 [TIMELINE DEBUG] Event type:', event.type);
     
     // For future enhancement: Could show detailed view or edit options
     // For now, just log the click
 }
+        
 //STEP 4.6: Add Timeline Integration with Existing Data
 // Call this when new exercises are added to refresh any open timeline
 async function refreshTimelineIfOpen() {
