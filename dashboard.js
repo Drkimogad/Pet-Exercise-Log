@@ -7488,6 +7488,9 @@ function createTimelineModalHTML() {
  * Setup timeline modal event handlers for modal system
  */
 function handleTimelineAction(event) {
+      console.log('🔍 [TIMELINE DEBUG] Event triggered on:', event.target);
+    console.log('🔍 [TIMELINE DEBUG] Event type:', event.type);
+    
     const target = event.target;
     console.log('🔍 [TIMELINE] Click detected on:', target);
     
