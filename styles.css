@@ -5079,23 +5079,35 @@ input:checked + .toggle-slider:before {
 ============================================================ */
 
 /* Large Desktop (1200px and above) */
+/* Large Desktop (1200px and above) */
 @media (min-width: 1200px) {
     .auth-forms-side {
-        padding: 1rem 2rem; /* Reduced from 2rem */
+        padding: 1rem 2rem;
     }
     
     .auth-forms-container {
-        max-width: 400px; /* Reduced from 450px */
-        gap: 1.5rem; /* Reduced from 2rem */
+        max-width: 400px;
+        gap: 1.5rem;
     }
     
     .auth-form-section {
-        padding: 2rem; /* Reduced from 3rem */
+        padding: 2rem;
     }
     
     .auth-legal-links {
-        margin-top: 1rem; /* Reduced from 2rem */
-        padding-top: 1rem; /* Reduced from 1.5rem */
+        margin-top: 1rem;
+        padding-top: 1rem;
+    }
+    
+    /* Reduce input sizes slightly */
+    .form-group input {
+        padding: 0.6rem 0.9rem; /* Reduced from 0.75rem 1rem */
+        font-size: 0.95rem; /* Slightly smaller text */
+    }
+    
+    .auth-btn {
+        padding: 0.65rem 2rem; /* Reduced from 0.75rem 2rem */
+        font-size: 0.95rem;
     }
 }
 
