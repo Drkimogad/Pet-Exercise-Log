@@ -255,12 +255,8 @@ function logout() {
         toggleAuthHeader(true);
         
         // Hide dashboard, show auth forms
-       // document.querySelector('.dashboard-container').style.display = 'none';
-       // document.getElementById('auth-container').style.display = 'block'; // renamed now 
-       // document.getElementById('main-banner').style.display = 'block';
-        // Hide dashboard, show auth forms
-       document.querySelector('.dashboard-container').style.display = 'none';
-       document.querySelector('.split-auth-container').style.display = 'flex'; // Changed to flex
+        document.querySelector('.dashboard-container').style.display = 'none';
+        document.querySelector('.split-auth-container').style.display = 'flex'; // ✅ CHANGED
         
         // Show sign-in form specifically
         document.getElementById('signinForm').style.display = 'block';
