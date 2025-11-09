@@ -8039,16 +8039,11 @@ document.querySelectorAll('.mood-toggle-btn').forEach(btn => {
  // ==================== PET ENTRY FUNCTIONS ====================
 async function showExerciseLog() {
     toggleAuthHeader(false);
-    document.getElementById('auth-container').style.display = 'none';
-    document.getElementById('main-banner').style.display = 'none';
+    // ✅ NEW - Hide the split auth container instead:
+    document.querySelector('.split-auth-container').style.display = 'none';
     
     // Show dashboard with GRID display
     document.querySelector('.dashboard-container').style.display = 'block';
-
-    // Show saved profiles with FLEX display (since it's flex in your CSS)
-//    document.getElementById('savedProfiles').style.display = 'block'; // ← Change from 'block' to 'flex'
-    
- //   document.getElementById('profileContainer').style.display = 'none';
     
    await loadSavedProfiles(); // This will handle empty state vs profiles
    setupEventListeners();
