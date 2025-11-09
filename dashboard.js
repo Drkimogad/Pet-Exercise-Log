@@ -7290,7 +7290,7 @@ async function calculateWeeklyGoals() {
    await updateAllExerciseCounts();
     
     pets.forEach((pet, index) => {
-        const goals = getGoalSettings(index);
+        const goals = await getGoalSettings(index); //it is async it shouuld return actual settings not a promise
         if (!goals.enabled) return;
         
         const progress = calculatePetGoalProgress(pet, index);
@@ -7532,14 +7532,18 @@ function showTimelineModalFallback() {
     console.warn('🔄 [TIMELINE] Using fallback implementation');
     
     // Your original implementation
-    const existingModal = document.getElementById('timelineModal');
+    const existingModal = document.getElementById('timelineOverlay'); // ← FIXED ID
     if (existingModal) {
         existingModal.remove();
     }
     
-    document.body.insertAdjacentHTML('beforeend', createTimelineModal());
-    loadTimelineContent();
-    setupTimelineModalEvents();
+document.body.insertAdjacentHTML('beforeend', `
+    <div class="modal-overlay" id="timelineOverlay">
+        ${createTimelineModalHTML()}
+    </div>
+`);
+    
+loadTimelineContent();
 }
 
 // Update your existing close function to use modal system
@@ -7712,8 +7716,8 @@ async function loadTimelineContent() {
     `;
     
     // Add event listeners for timeline actions
-    setupTimelineActionListeners();
 }
+
 // STEP 4.4: Add Timeline Helper Functions
 // Helper functions for timeline
 function getUniquePetsCount(exercises) {
@@ -7800,18 +7804,19 @@ function exportTimelineData() {
     });
 }
    
-function showExerciseLogFromTimeline() {
+async function showExerciseLogFromTimeline() {
     console.log('📝 Opening exercise log from timeline');
     
-    // Close the timeline modal
-    const modal = document.getElementById('timelineModal');
-    if (modal) {
-        modal.remove();
-    }
+    // Close the timeline modal using modal system
+    closeModal('timeline');
     
-    // Open daily log form
-    if (getPets().length > 0) {
+    // Open daily log form with proper async handling
+    const pets = await getPets();
+    if (pets && pets.length > 0) {
         showDailyLogForm(0); // Open for first pet
+    } else {
+        console.error('❌ No pets found for exercise logging');
+        showError('No pet profiles found. Please create a pet profile first.');
     }
 }
 
@@ -7831,28 +7836,6 @@ async function refreshTimelineIfOpen() {
     if (timelineModal) {
        await loadTimelineContent(); // Refresh the content
     }
-}
-// ADD THESE MISSING FUNCTIONS for timeline modal:
-
-/**
- * Old timeline modal HTML creator (for fallback)
- */
-function createTimelineModal() {
-    return `
-        <div class="action-modal-overlay" id="timelineModal">
-            <div class="action-modal wide-modal">
-                <div class="modal-header">
-                    <h3>📅 Exercise History Timeline</h3>
-                    <button class="close-modal-btn">&times;</button>
-                </div>
-                <div class="modal-content" id="timelineContent">
-                    <div class="timeline-loading">
-                        <p>Loading exercise history...</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    `;
 }
 
 /**
