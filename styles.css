@@ -4926,7 +4926,7 @@ input:checked + .toggle-slider:before {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 2rem;
+    padding: 2rem;  /* ensure equal space*/
 }
 
 .auth-forms-container {
@@ -4935,6 +4935,7 @@ input:checked + .toggle-slider:before {
     display: flex;
     flex-direction: column;
     gap: 2rem;
+    margin: 0 auto; /* Ensure centering */
 }
 
 /* Form Sections */
