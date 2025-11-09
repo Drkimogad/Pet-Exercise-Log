@@ -7287,15 +7287,18 @@ async function calculateWeeklyGoals() {
     const goalsProgress = [];
     
     // First, update exercise counts for all pets
-   await updateAllExerciseCounts();
+    await updateAllExerciseCounts();
     
-    pets.forEach((pet, index) => {
-        const goals = await getGoalSettings(index); //it is async it shouuld return actual settings not a promise
-        if (!goals.enabled) return;
+    // Use for...of instead of forEach to allow await
+    for (let index = 0; index < pets.length; index++) {
+        const pet = pets[index];
+        const goals = await getGoalSettings(index); // ✅ NOW CAN AWAIT
+        
+        if (!goals.enabled) continue;
         
         const progress = calculatePetGoalProgress(pet, index);
         goalsProgress.push(progress);
-    });
+    }
     
     console.log(`✅ Processed ${goalsProgress.length} active goals`);
     return goalsProgress;
