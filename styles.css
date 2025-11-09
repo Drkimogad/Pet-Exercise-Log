@@ -4926,7 +4926,7 @@ input:checked + .toggle-slider:before {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 2rem;  /* ensure equal space*/
+    padding: 2rem;
 }
 
 .auth-forms-container {
@@ -4935,18 +4935,12 @@ input:checked + .toggle-slider:before {
     display: flex;
     flex-direction: column;
     gap: 2rem;
-    margin: 0 auto; /* Ensure centering */
-}
-/* for even distribution of space*/
-.split-auth-container {
-    justify-content: space-between; /* Distribute space evenly */
+    margin: 0 auto;
 }
 
-.auth-forms-side {
-    display: flex;
-    justify-content: center; /* Center the forms container */
-    align-items: center;
-    padding: 2rem;
+/* For even distribution of space */
+.split-auth-container {
+    justify-content: space-between;
 }
 
 /* Form Sections */
