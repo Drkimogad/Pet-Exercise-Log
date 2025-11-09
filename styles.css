@@ -5088,6 +5088,22 @@ input:checked + .toggle-slider:before {
         padding: 3rem;
     }
 }
+/* for viewport scaling*/
+/* Large Desktop (1200px and above) */
+@media (min-width: 1200px) {
+    .split-auth-container {
+        transform: scale(0.9);
+        transform-origin: center center;
+    }
+    
+    .auth-forms-container {
+        max-width: 450px;
+    }
+    
+    .auth-form-section {
+        padding: 3rem;
+    }
+}
 
 /* Tablet (768px to 1199px) */
 @media (max-width: 1199px) and (min-width: 769px) {
