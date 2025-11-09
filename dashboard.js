@@ -4775,9 +4775,9 @@ async function generateReportContent(pet) {
             }
             //    🦄🦄🦄🦄🦄🦄🦄🦄 🦄🦄🦄🦄🦄🦄🦄🦄🦄
                   function exportCurrentReport() {
-    const pets = getPets();
-    const pet = pets[activePetIndex];
-    if (!pet) return;
+  //  const pets = getPets();
+  //  const pet = pets[activePetIndex];
+   // if (!pet) return;
 
     let csvContent = generateComprehensiveCSV(pet);
     
