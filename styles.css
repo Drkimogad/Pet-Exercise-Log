@@ -4935,12 +4935,7 @@ input:checked + .toggle-slider:before {
     display: flex;
     flex-direction: column;
     gap: 2rem;
-    margin: 0 auto;
-}
-
-/* For even distribution of space */
-.split-auth-container {
-    justify-content: space-between;
+  /*  margin: 0 auto;*/
 }
 
 /* Form Sections */
@@ -4951,6 +4946,14 @@ input:checked + .toggle-slider:before {
     padding: 2.5rem;
     box-shadow: var(--shadow-md);
     transition: all 0.3s ease;
+    align-items: center; /* This centers the content horizontally */
+}
+
+.auth-form-section form {
+    width: 100%; /* Ensure form takes full width of container */
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center form contents */
 }
 
 .auth-form-section h2 {
@@ -4963,10 +4966,10 @@ input:checked + .toggle-slider:before {
 
 /* Form Elements (using your existing styles) */
 .form-group {
+    width: 100%; /* Make form groups full width but centered */
     display: flex;
     flex-direction: column;
-    text-align: left;
-    margin-bottom: 1.2rem;
+    align-items: center; /* Center the label and input */
 }
 
 .form-group label {
@@ -4983,7 +4986,8 @@ input:checked + .toggle-slider:before {
     background: var(--input-bg);
     font-size: 1rem;
     transition: all 0.3s ease;
-    width: 100%;
+    width: 100%; /* Inputs take full width of their container */
+    text-align: center; /* Center the text inside inputs */
 }
 
 .form-group input:focus {
