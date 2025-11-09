@@ -395,6 +395,425 @@
     color: var(--primary-mustard);
 }
 
+/* NEW AUTH CSS*/
+/* ============================================================
+    LAYOUT 1: SPLIT SCREEN AUTH
+============================================================ */
+
+/* Main Split Container */
+.split-auth-container {
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 10;
+}
+
+/* Banner Side (Left) */
+.auth-banner-side {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+    background: var(--dark-purple);
+}
+
+.auth-banner-side .banner-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.auth-banner-side .banner-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(107, 70, 193, 0.3); /* dark-purple overlay */
+    z-index: 2;
+}
+
+/* Logo in Banner */
+.auth-banner-side .auth-header {
+    position: absolute;
+    top: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 3;
+    text-align: center;
+}
+
+.auth-banner-side .auth-logo {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(12px);
+    padding: 1.2rem 2.5rem;
+    border-radius: 16px;
+    border: 2px solid rgba(255, 209, 102, 0.3);
+}
+
+.auth-banner-side .auth-logo h1 {
+    color: var(--primary-yellow);
+    font-size: 2.2rem;
+    font-weight: 700;
+    margin: 0;
+    white-space: nowrap;
+}
+
+/* Forms Side (Right) */
+.auth-forms-side {
+    flex: 1;
+    background: var(--off-white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+}
+
+.auth-forms-container {
+    width: 100%;
+    max-width: 400px;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+/* Form Sections */
+.auth-form-section {
+    background: var(--white);
+    border: 2px solid var(--container-border);
+    border-radius: 16px;
+    padding: 2.5rem;
+    box-shadow: var(--shadow-md);
+    transition: all 0.3s ease;
+}
+
+.auth-form-section h2 {
+    color: var(--dark-mustard);
+    margin-bottom: 1.5rem;
+    font-size: 1.8rem;
+    font-weight: 700;
+    text-align: center;
+}
+
+/* Form Elements (using your existing styles) */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    margin-bottom: 1.2rem;
+}
+
+.form-group label {
+    color: var(--dark-purple);
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.form-group input {
+    padding: 0.75rem 1rem;
+    border: 2px solid var(--input-border);
+    border-radius: 8px;
+    background: var(--input-bg);
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    width: 100%;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: var(--border-focus);
+    box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.2);
+}
+
+.auth-btn {
+    background: var(--dark-purple);
+    color: var(--primary-yellow);
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    padding: 0.75rem 2rem;
+    width: 100%;
+    margin-top: 0.5rem;
+}
+
+.auth-btn:hover {
+    background: var(--light-purple);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+/* Auth Links */
+.auth-links {
+    text-align: center;
+    margin-top: 1.5rem;
+}
+
+#forgotPassword {
+    color: var(--light-purple);
+    font-size: 0.9rem;
+    text-decoration: none;
+    font-weight: 600;
+    display: block;
+    margin-bottom: 1rem;
+}
+
+#forgotPassword:hover {
+    color: var(--dark-purple);
+    text-decoration: underline;
+}
+
+.auth-switch {
+    color: var(--light-charcoal);
+    font-size: 0.9rem;
+}
+
+.auth-switch a {
+    color: var(--dark-purple);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.auth-switch a:hover {
+    color: var(--light-purple);
+}
+
+/* Legal Links */
+.auth-legal-links {
+    text-align: center;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--container-border);
+}
+
+.auth-legal-links a {
+    color: var(--light-charcoal);
+    font-size: 0.85rem;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.auth-legal-links a:hover {
+    color: var(--dark-purple);
+}
+
+.auth-legal-links span {
+    color: var(--light-charcoal);
+    margin: 0 0.5rem;
+}
+
+/* Reset Instructions */
+.reset-instructions {
+    color: var(--light-charcoal);
+    text-align: center;
+    margin-bottom: 1.5rem;
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+/* ============================================================
+    RESPONSIVE DESIGN
+============================================================ */
+
+/* Large Desktop (1200px and above) */
+@media (min-width: 1200px) {
+    .auth-forms-container {
+        max-width: 450px;
+    }
+    
+    .auth-form-section {
+        padding: 3rem;
+    }
+}
+
+/* Tablet (768px to 1199px) */
+@media (max-width: 1199px) and (min-width: 769px) {
+    .split-auth-container {
+        flex-direction: row; /* Keep side-by-side */
+    }
+    
+    .auth-forms-container {
+        max-width: 380px;
+    }
+    
+    .auth-banner-side .auth-logo h1 {
+        font-size: 2rem;
+    }
+}
+
+/* Mobile (768px and below) - Switch to stacked layout */
+@media (max-width: 768px) {
+    .split-auth-container {
+        flex-direction: column;
+        height: auto;
+        min-height: 100vh;
+        position: relative;
+    }
+    
+    .auth-banner-side {
+        flex: 0 0 40vh; /* Fixed height for banner */
+        min-height: 40vh;
+    }
+    
+    .auth-forms-side {
+        flex: 1;
+        padding: 2rem 1.5rem;
+        min-height: 60vh;
+    }
+    
+    .auth-forms-container {
+        max-width: 100%;
+        gap: 1.5rem;
+    }
+    
+    .auth-form-section {
+        padding: 2rem 1.5rem;
+    }
+    
+    .auth-banner-side .auth-header {
+        top: 1.5rem;
+    }
+    
+    .auth-banner-side .auth-logo {
+        padding: 1rem 2rem;
+    }
+    
+    .auth-banner-side .auth-logo h1 {
+        font-size: 1.8rem;
+    }
+}
+
+/* Small Mobile (480px and below) */
+@media (max-width: 480px) {
+    .auth-banner-side {
+        flex: 0 0 35vh; /* Smaller banner on very small screens */
+    }
+    
+    .auth-forms-side {
+        padding: 1.5rem 1rem;
+    }
+    
+    .auth-form-section {
+        padding: 1.5rem 1rem;
+    }
+    
+    .auth-form-section h2 {
+        font-size: 1.5rem;
+    }
+    
+    .auth-banner-side .auth-logo h1 {
+        font-size: 1.5rem;
+    }
+    
+    .auth-banner-side .auth-logo {
+        padding: 0.8rem 1.5rem;
+    }
+}
+
+/* ============================================================
+    DARK MODE SUPPORT
+============================================================ */
+
+.dark-mode .auth-forms-side {
+    background: var(--dark-charcoal);
+}
+
+.dark-mode .auth-form-section {
+    background: rgba(55, 65, 81, 0.95);
+    border-color: var(--primary-mustard);
+}
+
+.dark-mode .auth-form-section h2 {
+    color: var(--primary-yellow);
+}
+
+.dark-mode .form-group label {
+    color: var(--primary-yellow);
+}
+
+.dark-mode .form-group input {
+    background: var(--light-charcoal);
+    color: var(--off-white);
+    border-color: var(--primary-mustard);
+}
+
+.dark-mode .form-group input:focus {
+    border-color: var(--primary-yellow);
+    box-shadow: 0 0 0 3px rgba(255, 209, 102, 0.2);
+}
+
+.dark-mode .auth-switch {
+    color: var(--off-white);
+}
+
+.dark-mode .auth-switch a {
+    color: var(--primary-yellow);
+}
+
+.dark-mode .auth-switch a:hover {
+    color: var(--primary-mustard);
+}
+
+.dark-mode #forgotPassword,
+.dark-mode #backToSignin {
+    color: var(--primary-yellow);
+}
+
+.dark-mode #forgotPassword:hover,
+.dark-mode #backToSignin:hover {
+    color: var(--primary-mustard);
+}
+
+.dark-mode .auth-legal-links {
+    border-top-color: var(--primary-mustard);
+}
+
+.dark-mode .auth-legal-links a {
+    color: var(--primary-yellow);
+}
+
+.dark-mode .auth-legal-links a:hover {
+    color: var(--primary-mustard);
+}
+
+.dark-mode .reset-instructions {
+    color: var(--off-white);
+}
+
+/* ============================================================
+    ANIMATIONS & TRANSITIONS
+============================================================ */
+
+.auth-form-section {
+    animation: slideInUp 0.5s ease-out;
+}
+
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Smooth form switching */
+.auth-form-section[style*="display: none"] {
+    display: none !important;
+}
+
+.auth-form-section:not([style*="display: none"]) {
+    display: block !important;
+}
+
+
 
 
 /* ============================
