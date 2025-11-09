@@ -7190,30 +7190,30 @@ async function saveGoalsSettings() {
             }
         }
 
-        if (settingsChanged) {
-            // SAVE TO STORAGE
-            if (window.petDataService) {
-                for (const pet of pets) {
-                    await window.petDataService.savePet(pet);
-                }
-            } else {
-                localStorage.setItem('pets', JSON.stringify(pets));
-            }
-            
-            showSuccess('Goals settings saved!');
-            console.log('✅ [GOALS-SETTINGS] Settings saved successfully');
-            
-            // FORCE REFRESH GOALS DATA
-            await updateAllExerciseCounts(); // ← ADD THIS
-            await updateGoalsProgress(); // ← ADD THIS
-            
-            // Close settings modal and reopen main goals modal
-            closeModal('goalsSettings');
-            setTimeout(showGoalsModal, 100);
-            
-        } else {
-            showSuccess('No changes made');
+if (settingsChanged) {
+    // SAVE TO STORAGE
+    if (window.petDataService) {
+        for (const pet of pets) {
+            await window.petDataService.savePet(pet);
         }
+    } else {
+        localStorage.setItem('pets', JSON.stringify(pets));
+    }
+    
+    showSuccess('Goals settings saved!');
+    console.log('✅ [GOALS-SETTINGS] Settings saved successfully');
+    
+    // FORCE REFRESH GOALS DATA
+    await updateAllExerciseCounts();
+    await updateGoalsProgress();
+    
+    // Close settings modal and reopen main goals modal WITH REFRESHED DATA
+    closeModal('goalsSettings');
+    setTimeout(showGoalsModal, 100); // This will load fresh data
+    
+} else {
+    showSuccess('No changes made');
+}
 
     } catch (error) {
         console.error('❌ [GOALS-SETTINGS] Failed to save settings:', error);
@@ -7856,55 +7856,27 @@ function createTimelineModal() {
 }
 
 /**
- * Old timeline event setup (for fallback)
+ * UPDATED timeline event setup (for fallback)
  */
 function setupTimelineModalEvents() {
-    const modal = document.getElementById('timelineModal');
-    if (!modal) return;
+    console.log('🔄 [TIMELINE] Setting up event handlers');
     
-    // Close button
-    modal.querySelector('.close-modal-btn').addEventListener('click', () => {
-        modal.remove();
-    });
-    
-    // Close when clicking overlay
-    modal.addEventListener('click', (e) => {
-        if (e.target === modal) {
-            modal.remove();
-        }
-    });
-    
-    // Escape key to close
-    document.addEventListener('keydown', function escapeHandler(e) {
-        if (e.key === 'Escape' && modal) {
-            modal.remove();
-            document.removeEventListener('keydown', escapeHandler);
-        }
-    });
-    
-    // Setup action listeners
-    setupTimelineActionListeners();
+    const overlay = document.getElementById('timelineOverlay');
+    if (!overlay) return;
+
+    // Use event delegation instead of individual listeners
+    overlay.addEventListener('click', handleTimelineAction);
+
+    // Close button using modal system
+    const closeBtn = safeQuery('.close-modal-btn', overlay);
+    if (closeBtn) {
+        closeBtn.addEventListener('click', () => closeModal('timeline'));
+        registerModalHandler('timeline', closeBtn, 'click', () => closeModal('timeline'));
+    }
+
+    console.log('✅ [TIMELINE] Event handlers setup complete');
 }
 
-/**
- * Setup timeline action listeners (for fallback)
- */
-function setupTimelineActionListeners() {
-    // Export Timeline button
-    document.getElementById('exportTimelineBtn')?.addEventListener('click', exportTimelineData);
-    
-    // Log New Exercise button
-    document.getElementById('logNewExerciseBtn')?.addEventListener('click', showExerciseLogFromTimeline);
-    
-    // Timeline entry clicks
-    document.querySelectorAll('.timeline-entry').forEach(entry => {
-        entry.addEventListener('click', (e) => {
-            const petIndex = parseInt(entry.dataset.petIndex);
-            const exerciseDate = entry.dataset.exerciseDate;
-            handleTimelineEntryClick(petIndex, exerciseDate);
-        });
-    });
-}
 
 //=======================================
    //  SETUP Event Listeners FOR 3 MODALS
