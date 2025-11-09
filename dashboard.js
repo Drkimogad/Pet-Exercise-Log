@@ -7757,45 +7757,49 @@ function formatExerciseTime(timestamp) {
     }
 }
 
-
-    function exportTimelineData() {
-    console.log('📤 Exporting timeline data');        
-    const timelineExercises = generateTimelineData();
+function exportTimelineData() {
+    console.log('📤 Exporting timeline data');
+    
     // FIX: Add await since generateTimelineData is async
     generateTimelineData().then(timelineExercises => {
         if (timelineExercises.length === 0) {
             alert('No exercise data to export');
             return;
-        } 
-    // Create CSV content
-    let csvContent = 'Date,Pet Name,Exercise Type,Duration (min),Calories,Intensity,Notes\n';    
-    timelineExercises.forEach(exercise => {
-        const row = [
-            exercise.date,
-            `"${exercise.petName}"`,
-            exercise.exerciseType,
-            exercise.duration,
-            exercise.caloriesBurned,
-            exercise.intensity,
-            `"${exercise.notes || ''}"`
-        ].join(',');
-        csvContent += row + '\n';
+        }
+        
+        // Create CSV content
+        let csvContent = 'Date,Pet Name,Exercise Type,Duration (min),Calories,Intensity,Notes\n';
+        
+        timelineExercises.forEach(exercise => {
+            const row = [
+                exercise.date,
+                `"${exercise.petName}"`,
+                exercise.exerciseType,
+                exercise.duration,
+                exercise.caloriesBurned,
+                exercise.intensity,
+                `"${exercise.notes || ''}"`
+            ].join(',');
+            csvContent += row + '\n';
+        });
+        
+        // Create download link
+        const blob = new Blob([csvContent], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `pet-exercise-timeline-${new Date().toISOString().split('T')[0]}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+        
+        console.log('✅ Timeline data exported');
+    }).catch(error => {
+        console.error('❌ Export failed:', error);
     });
-    
-    // Create download link
-    const blob = new Blob([csvContent], { type: 'text/csv' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `pet-exercise-timeline-${new Date().toISOString().split('T')[0]}.csv`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    window.URL.revokeObjectURL(url);
-    
-    console.log('✅ Timeline data exported');
- }
 }
+   
 function showExerciseLogFromTimeline() {
     console.log('📝 Opening exercise log from timeline');
     
