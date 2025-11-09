@@ -5080,28 +5080,22 @@ input:checked + .toggle-slider:before {
 
 /* Large Desktop (1200px and above) */
 @media (min-width: 1200px) {
-    .auth-forms-container {
-        max-width: 450px;
-    }
-    
-    .auth-form-section {
-        padding: 3rem;
-    }
-}
-/* for viewport scaling*/
-/* Large Desktop (1200px and above) */
-@media (min-width: 1200px) {
-    .split-auth-container {
-        transform: scale(0.9);
-        transform-origin: center center;
+    .auth-forms-side {
+        padding: 1rem 2rem; /* Reduced from 2rem */
     }
     
     .auth-forms-container {
-        max-width: 450px;
+        max-width: 400px; /* Reduced from 450px */
+        gap: 1.5rem; /* Reduced from 2rem */
     }
     
     .auth-form-section {
-        padding: 3rem;
+        padding: 2rem; /* Reduced from 3rem */
+    }
+    
+    .auth-legal-links {
+        margin-top: 1rem; /* Reduced from 2rem */
+        padding-top: 1rem; /* Reduced from 1.5rem */
     }
 }
 
