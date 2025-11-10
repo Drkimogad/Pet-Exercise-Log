@@ -300,6 +300,7 @@ firebase.auth().onAuthStateChanged(async (user) => {  // ADD ASYNC HERE
         setTimeout(() => {
             if (typeof showExerciseLog === 'function') {
                 showExerciseLog();
+                
             } else {
                 // If still not available after delay, use manual fallback
                 console.log('Manual dashboard activation');
