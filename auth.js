@@ -9,38 +9,52 @@ let offlineChecked = false;
 class OfflineManager {
     static async checkConnection() {
         try {
-            console.log('🔍 Checking internet connection...');
-            // ✅ FIX: Test against a reliable, existing URL
-        const response = await fetch('/Pet-Exercise-Log/index.html', {
+            console.log('🔍 [OFFLINE DEBUG] Starting connection test...');
+            console.log('🔍 [OFFLINE DEBUG] navigator.onLine:', navigator.onLine);
+            console.log('🔍 [OFFLINE DEBUG] Testing URL:', '/Pet-Exercise-Log/index.html');
+            
+            const response = await fetch('/Pet-Exercise-Log/index.html', {
                 method: 'HEAD',
-                cache: 'no-store',
-                timeout: 3000
+                cache: 'no-store'
             });
+            
+            console.log('✅ [OFFLINE DEBUG] Connection test SUCCESS - Status:', response.status);
             return response.ok;
         } catch (error) {
-            console.log('❌ Connection check failed:', error.message);
+            console.log('❌ [OFFLINE DEBUG] Connection test FAILED:', error.message);
+            console.log('❌ [OFFLINE DEBUG] Error details:', error);
             return false;
         }
     }
 
     static async handleOffline() {
-        if (isOffline) return;
+        console.log('📶 [OFFLINE DEBUG] handleOffline() called');
+        console.log('📶 [OFFLINE DEBUG] Current isOffline:', isOffline);
+        console.log('📶 [OFFLINE DEBUG] Current location:', window.location.href);
         
-        console.log('📶 Going offline - redirecting to offline page');
+        if (isOffline) {
+            console.log('🔄 [OFFLINE DEBUG] Already offline - skipping');
+            return;
+        }
+        
+        console.log('📶 [OFFLINE DEBUG] Setting isOffline = true');
         isOffline = true;
         
         // Only redirect if we're not already on offline page
         if (!window.location.pathname.includes('offline.html')) {
+            console.log('🔄 [OFFLINE DEBUG] Redirecting to offline.html');
             window.location.href = 'offline.html';
+        } else {
+            console.log('✅ [OFFLINE DEBUG] Already on offline page - no redirect needed');
         }
     }
 
     static handleOnline() {
-        console.log('✅ Back online');
+        console.log('🌐 [OFFLINE DEBUG] handleOnline() called');
+        console.log('🌐 [OFFLINE DEBUG] Setting isOffline = false');
         isOffline = false;
     }
 }
-// END OF OFFLINE MANAGEMENT ADDITION
 
 
 // Handle Sign Up with Firebase
@@ -310,6 +324,32 @@ function handlePasswordResetFromEmail() {
 
 // Logout function with Firebase
 function logout() {
+
+    // 🆕 OFFLINE CHECK - ADD THIS AT START OF initAuth
+(async () => {
+    console.log('🚀 [OFFLINE DEBUG] Starting initAuth offline check');
+    console.log('🚀 [OFFLINE DEBUG] offlineChecked:', offlineChecked);
+    console.log('🚀 [OFFLINE DEBUG] navigator.onLine:', navigator.onLine);
+    
+    if (!offlineChecked) {
+        console.log('🔍 [OFFLINE DEBUG] Running initial connection check...');
+        const isOnline = await OfflineManager.checkConnection();
+        offlineChecked = true;
+        console.log('🔍 [OFFLINE DEBUG] Connection check result:', isOnline);
+        
+        if (!isOnline) {
+            console.log('❌ [OFFLINE DEBUG] No connection - calling handleOffline()');
+            await OfflineManager.handleOffline();
+            return; // Stop auth initialization
+        } else {
+            console.log('✅ [OFFLINE DEBUG] Connection OK - continuing auth initialization');
+        }
+    } else {
+        console.log('✅ [OFFLINE DEBUG] Already checked - skipping connection test');
+    }
+})();
+
+    
         // 🆕 OFFLINE CHECK - ADD THIS AT START OF LOGOUT
     if (isOffline) {
         console.log('❌ Blocking logout - offline');
