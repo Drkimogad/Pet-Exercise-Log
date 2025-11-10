@@ -4760,6 +4760,9 @@ async function generateReportContent(pet) {
         </div>
 
         <script>
+        //add this on top of script
+            const pet = ${JSON.stringify(pet)};
+
             function showArchivedReports() {
                 // Send message to main app to open archives modal
                 if (window.opener && !window.opener.closed) {
@@ -4775,9 +4778,6 @@ async function generateReportContent(pet) {
             }
             //    🦄🦄🦄🦄🦄🦄🦄🦄 🦄🦄🦄🦄🦄🦄🦄🦄🦄
                   function exportCurrentReport() {
-  //  const pets = getPets();
-  //  const pet = pets[activePetIndex];
-   // if (!pet) return;
 
     let csvContent = generateComprehensiveCSV(pet);
     
