@@ -129,9 +129,10 @@ setTimeout(() => {
         // If still not available after delay, use manual fallback
         console.log('Manual dashboard activation');
         toggleAuthHeader(false);
-        document.getElementById('auth-container').style.display = 'none';
-        document.getElementById('main-banner').style.display = 'none';
-        document.querySelector('.dashboard-container').style.display = 'block';
+        
+        document.getElementById('.split-auth-container').style.display = 'none';
+        document.querySelector('.dashboard-container').style.display = 'flex';
+        
     }
 }, 500);
         
