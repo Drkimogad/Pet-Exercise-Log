@@ -19,17 +19,31 @@
     <link rel="icon" href="https://drkimogad.github.io/Pet-Exercise-Log/favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="styles.css">
     
-    <!-- Lottie Player -->
-    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
     <!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 
-<!-- Your Firebase Init -->
-<script src="firebase-init.js"></script>
+
+<!-- Your Firebase Config - INLINE (Recommended) -->
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyBAi8vwwz1hsKmYxTrGUL7EGrjuOMpQ23M",
+  authDomain: "pet-exercise-log.firebaseapp.com",
+  projectId: "pet-exercise-log",
+  storageBucket: "pet-exercise-log.firebasestorage.app",
+  messagingSenderId: "416160815211",
+  appId: "1:416160815211:web:77bbfe7e8781567e31b92e",
+};
+  
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+  console.log('🔥 Firebase initialized successfully');
+</script>
+
 </head>
 <body>
    
