@@ -4029,8 +4029,6 @@ function createArchivedReportsModal(petName, petId) {
  */
 async function loadArchivedReportsContent(petId) {
     const content = document.getElementById('archivedReportsContent');
-    // In loadArchivedReports()
-   const reports = await loadUserReportsFromFirestore(userId, year, petId);
     if (!content) return;
     
     try {
@@ -4038,7 +4036,9 @@ async function loadArchivedReportsContent(petId) {
         const currentYear = new Date().getFullYear();
         
         // Get archived reports for current and previous year
-        const archives = await loadArchivedReports(userId, petId, currentYear);
+        // Use the main function that was intended
+        const archives = await loadUserReportsFromFirestore(userId, currentYear, petId);
+       //const archives = await loadArchivedReports(userId, petId, currentYear);
         const previousArchives = await loadArchivedReports(userId, petId, currentYear - 1);
         
         content.innerHTML = createYearlyCalendarView(currentYear, archives, previousArchives);
