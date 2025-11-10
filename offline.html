@@ -433,25 +433,21 @@
                        localStorage.getItem('user');
             }
 
-            async checkConnection() {
-                this.isChecking = true;
-                
-                try {
-                    // Try to fetch a small resource from the server
-                    const response = await fetch('/?connection-test=1', {
-                        method: 'HEAD',
-                        cache: 'no-cache',
-                        timeout: 5000
-                    });
-                    
-                    return response.ok;
-                } catch (error) {
-                    console.log('Connection test failed:', error);
-                    return false;
-                } finally {
-                    this.isChecking = false;
-                }
-            }
+static async checkConnection() {
+    try {
+        console.log('🔍 Checking internet connection...');
+        // ✅ FIXED - Test against a reliable external service
+        const response = await fetch('https://www.google.com/favicon.ico', {
+            method: 'HEAD',
+            cache: 'no-store',
+            mode: 'no-cors' // Important for cross-origin requests
+        });
+        return true; // If we get here, we have connection (no-cors doesn't throw)
+    } catch (error) {
+        console.log('❌ Connection check failed:', error.message);
+        return false;
+    }
+}
 
             async manualRetry() {
                 if (this.isChecking) return;
