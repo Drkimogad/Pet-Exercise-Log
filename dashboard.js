@@ -4748,9 +4748,6 @@ async function generateReportContent(pet) {
             <button class="action-btn" onclick="window.print()">
                 🖨️ Print Report
             </button>
-            <button class="action-btn export-btn" onclick="exportCurrentReport()">
-                📤 Export as CSV
-            </button>
             <button class="action-btn archive-btn" onclick="showArchivedReports()">
                 📚 Archived Reports
             </button>
@@ -4760,8 +4757,6 @@ async function generateReportContent(pet) {
         </div>
 
         <script>
-        const pet = ` + JSON.stringify(pet) + `;
-
             function showArchivedReports() {
                 // Send message to main app to open archives modal
                 if (window.opener && !window.opener.closed) {
@@ -4774,92 +4769,7 @@ async function generateReportContent(pet) {
                 } else {
                     alert('Please keep the main app window open to view archived reports');
                 }
-            }
-            //    🦄🦄🦄🦄🦄🦄🦄🦄 🦄🦄🦄🦄🦄🦄🦄🦄🦄
-                  function exportCurrentReport() {
-
-    let csvContent = generateComprehensiveCSV(pet);
-    
-    // Download the CSV file
-    const blob = new Blob([csvContent], { type: 'text/csv' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `pet-exercise-report-${pet.petDetails.name}-${new Date().toISOString().split('T')[0]}.csv`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    window.URL.revokeObjectURL(url);
-}
-
-function generateComprehensiveCSV(pet) {
-    let csv = '';
-    
-    // PET_DETAILS Section
-    csv += 'PET_DETAILS\n';
-    csv += 'Name,Type,Age,Weight,Target Weight,Breed,Gender,BCS,Energy Level,Feeding Recommendation\n';
-    csv += `"${pet.petDetails.name || ''}","${pet.petDetails.type || ''}","${pet.petDetails.age || ''}","${pet.petDetails.weight || ''}","${pet.petDetails.targetWeight || ''}","${pet.petDetails.breed || ''}","${pet.petDetails.gender || ''}","${pet.petDetails.bcs || ''}","${pet.petDetails.energyLevel || ''}","${pet.petDetails.feedingRecommendation || ''}"\n\n`;
-    
-    // HEALTH_CONDITIONS Section
-    csv += 'HEALTH_CONDITIONS\n';
-    csv += 'Condition\n';
-    if (pet.petDetails.medicalConditions && pet.petDetails.medicalConditions.length > 0) {
-        pet.petDetails.medicalConditions.forEach(condition => {
-            csv += `"${condition}"\n`;
-        });
-    } else {
-        csv += 'None\n';
-    }
-    csv += '\n';
-    
-    // EXERCISE_ENTRIES Section
-    csv += 'EXERCISE_ENTRIES\n';
-    csv += 'Date,Exercise Type,Duration,Calories,Intensity,Notes\n';
-    if (pet.exerciseEntries && pet.exerciseEntries.length > 0) {
-        pet.exerciseEntries.forEach(entry => {
-            csv += `"${entry.date || ''}","${entry.exerciseType || ''}","${entry.duration || ''}","${entry.caloriesBurned || ''}","${entry.intensity || ''}","${entry.notes || ''}"\n`;
-        });
-    } else {
-        csv += 'No exercise entries\n';
-    }
-    csv += '\n';
-    
-    // MOOD_LOGS Section
-    csv += 'MOOD_LOGS\n';
-    csv += 'Date,Mood,Mood Label\n';
-    if (pet.moodLogs && pet.moodLogs.length > 0) {
-        pet.moodLogs.forEach(log => {
-            const moodOption = MOOD_OPTIONS.find(m => m.value === log.mood) || { label: 'Unknown' };
-            csv += `"${log.date || ''}","${log.mood || ''}","${moodOption.label}"\n`;
-        });
-    } else {
-        csv += 'No mood entries\n';
-    }
-    csv += '\n';
-    
-    // SUGGESTED_EXERCISES_USED Section
-    csv += 'SUGGESTED_EXERCISES_USED\n';
-    csv += 'Exercise Name,Duration,Intensity,Reason\n';
-    // This would need to be populated from your suggestion tracking system
-    csv += 'Data available in next update\n\n';
-    
-    // MONTHLY_SUMMARY Section
-    csv += 'MONTHLY_SUMMARY\n';
-    csv += 'Total Sessions,Total Duration,Total Calories,Avg Duration,Active Days\n';
-    if (pet.exerciseEntries && pet.exerciseEntries.length > 0) {
-        const totalSessions = pet.exerciseEntries.length;
-        const totalDuration = pet.exerciseEntries.reduce((sum, entry) => sum + (entry.duration || 0), 0);
-        const totalCalories = pet.exerciseEntries.reduce((sum, entry) => sum + (entry.caloriesBurned || 0), 0);
-        const avgDuration = totalSessions > 0 ? (totalDuration / totalSessions).toFixed(1) : 0;
-        const activeDays = new Set(pet.exerciseEntries.map(entry => entry.date)).size;
-        
-        csv += `"${totalSessions}","${totalDuration}","${totalCalories}","${avgDuration}","${activeDays}"\n`;
-    } else {
-        csv += '0,0,0,0,0\n';
-    }
-    
-    return csv;
-}
+            } 
 
             // Add keyboard shortcut support
             document.addEventListener('keydown', function(e) {
