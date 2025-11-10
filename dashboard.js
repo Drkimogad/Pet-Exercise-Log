@@ -4344,6 +4344,9 @@ function displayArchivedReport(report) {
     // Close the archives browser modal
     closeArchivedReportsModal();
     
+    // ✅ Store the report data for export
+    window.currentArchivedReport = report;
+    
     // Create and show the archived report modal
     document.body.insertAdjacentHTML('beforeend', createArchivedReportModal(report));
     
