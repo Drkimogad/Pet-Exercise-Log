@@ -4230,6 +4230,11 @@ async function loadArchivedReport(year, month) {
         
         // Try to load the report
         const report = await loadSpecificArchive(userId, petId, year, month);
+        // Add null check:
+        if (!archives) {
+           console.log(`📭 No archives found for ${year}`);
+       return [];
+         }
         
         if (report) {
             // Display the archived report
@@ -4250,6 +4255,12 @@ async function loadArchivedReport(year, month) {
  * Loads a specific archived report
  */
 async function loadSpecificArchive(userId, petId, year, month) {
+        // Add validation at the start
+    if (!userId || !petId || !year || !month) {
+        console.error('❌ Missing parameters in loadSpecificArchive:', { userId, petId, year, month });
+        return null;
+    }
+    
     // Try Firestore first
     try {
         const report = await loadArchiveFromFirestore(userId, petId, year, month);
@@ -4266,21 +4277,23 @@ async function loadSpecificArchive(userId, petId, year, month) {
  * Loads specific archive from Firestore
  */
 async function loadArchiveFromFirestore(userId, petId, year, month) {
-    // Placeholder - will be implemented with your Firebase config
     console.log(`🔍 Loading from Firestore: ${year}-${month}`);
+        
+// Wrap the Firestore call in try-catch
+try {
+    const snapshot = await db.collection(`yearlyreport${year}`)
+                            .doc('reports')
+                            .collection('reports')
+                            .where('userId', '==', userId)
+                            .where('petId', '==', petId)
+                            .get();
     
-    
-    const reportId = `${userId}_${petId}_${year}${month.toString().padStart(2, '0')}`;
-    const doc = await db.collection(`yearlyreport${year}`)
-                       .doc('reports')
-                       .collection('reports')
-                       .doc(reportId)
-                       .get();
-    
-    if (doc.exists) {
-        return doc.data();
-    }
-    
+    return snapshot.docs.map(doc => doc.data());
+} catch (error) {
+    console.error(`❌ Firestore load failed for ${year}:`, error);
+    return [];
+ }
+}    
     
     return null;
 }
@@ -4414,7 +4427,7 @@ function printArchivedReport() {
 /**
  * Exports archived report as CSV
  */
-function exportArchivedReport() {
+/*function exportArchivedReport() {
     const modal = document.getElementById('archivedReportModal');
     const report = window.currentArchivedReport; // We'd need to store this
     
@@ -4432,7 +4445,7 @@ function exportArchivedReport() {
     } else {
         alert('CSV export not available for this report');
     }
-}
+}  */
 
 /**
  * Closes archived reports browser modal
@@ -5390,6 +5403,12 @@ async function loadUserReportsFromFirestore(userId, year, petId = null) {
  * Loads a specific archived report
  */
 async function loadSpecificReportFromFirestore(userId, petId, year, month) {
+    // Add at the start of the function:
+if (!month || !userId || !petId) {
+    console.error('❌ Missing parameters for report load:', { month, userId, petId });
+    return null;
+}
+    
     try {
         const reportId = `${userId}_${petId}_${year}${month.toString().padStart(2, '0')}`;
         
