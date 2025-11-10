@@ -3,12 +3,12 @@
 // Service Worker
 function registerServiceWorker() {
     if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/Pet-Exercise-Log/service-worker.js', {
-            scope: '/Pet-Exercise-Log/'
-        }).then(reg => {
-            console.log('Service Worker registered with scope:', reg.scope);
-        }).catch(error => {
-            console.error('Service Worker registration failed:', error);
+        navigator.serviceWorker.register('/Pet-Exercise-Log/service-worker.js')
+        .then(reg => {
+            console.log('✅ Service Worker registered with scope:', reg.scope);
+        })
+        .catch(error => {
+            console.error('❌ Service Worker registration failed:', error);
         });
     }
 }
