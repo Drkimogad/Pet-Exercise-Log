@@ -447,7 +447,7 @@
                 const controller = new AbortController();
                 const timeoutId = setTimeout(() => controller.abort(), 5000);
                 
-                const response = await fetch('/Pet-Exercise-Log/favicon.ico', {
+              const response = await fetch('/Pet-Exercise-Log/index.html', {
                     method: 'HEAD',
                     cache: 'no-store',
                     signal: controller.signal
