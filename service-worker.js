@@ -1,4 +1,4 @@
-const CACHE_NAME = 'Pet-Exercise-Log-cache-v9';
+const CACHE_NAME = 'Pet-Exercise-Log-cache-v10';
 const OFFLINE_PAGE = '/offline.html';
 
 // Environment configuration - CHANGE THIS WHEN DEPLOYING
@@ -37,8 +37,8 @@ function getUrlsToCache() {
         // HTML Pages - USE EXACT PATHS
         CURRENT_ENV.root + 'index.html',
         CURRENT_ENV.root + 'offline.html',
-        CURRENT_ENV.root + 'terms.html', 
-        CURRENT_ENV.root + 'privacy.html',
+       // CURRENT_ENV.root + 'terms.html', 
+      //  CURRENT_ENV.root + 'privacy.html',
         
         // Core JavaScript Files
         CURRENT_ENV.root + 'auth.js',
@@ -51,10 +51,10 @@ function getUrlsToCache() {
        // CURRENT_ENV.root + 'favicon.ico',
         
         // Images and Icons - USE RELATIVE PATHS
-        'images/default-pet.png',
-        'banner/treadmillingpets.png', 
-        'icons/icon-192x192.png',
-        'icons/icon-512x512.png',
+       // 'images/default-pet.png',
+       // 'banner/treadmillingpets.png', 
+       // 'icons/icon-192x192.png',
+       // 'icons/icon-512x512.png',
         
         // External Dependencies
         'https://cdn.jsdelivr.net/npm/chart.js'
