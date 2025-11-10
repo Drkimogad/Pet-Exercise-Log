@@ -427,6 +427,16 @@ function calculateGoalsProgress(pet, year, month) {
         progressPercent: Math.min(100, (exercisesCompleted / monthlyTarget) * 100)
     };
 }
+
+function showLoading(message = 'Loading...') {
+    // Simple loading indicator - you can enhance this later
+    console.log('🔄 ' + message);
+}
+
+function hideLoading() {
+    // Simple loading hide - you can enhance this later  
+    console.log('✅ Loading complete');
+}
 // ===============================================
 // EXPORT CONTENT GENERATION (HTML + CSV)
 // ===============================================
