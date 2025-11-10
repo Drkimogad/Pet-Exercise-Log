@@ -4760,8 +4760,7 @@ async function generateReportContent(pet) {
         </div>
 
         <script>
-        //add this on top of script
-            const pet = ${JSON.stringify(pet)};
+        const pet = ` + JSON.stringify(pet) + `;
 
             function showArchivedReports() {
                 // Send message to main app to open archives modal
