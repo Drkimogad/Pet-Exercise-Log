@@ -3989,10 +3989,30 @@ function showArchivedReportsModal(petName = '', petId = '') {
     // Create and insert the modal
     document.body.insertAdjacentHTML('beforeend', createArchivedReportsModal(petName, petId));
     
+    // ✅ FIX: Add event listener for close button
+    const modal = document.getElementById('archivedReportsModal');
+    if (modal) {
+        const closeBtn = modal.querySelector('.close-modal-btn');
+        if (closeBtn) {
+            closeBtn.addEventListener('click', closeArchivedReportsModal);
+        }
+    }
+    
     // Load archived reports data
     loadArchivedReportsContent(petId);
 }
 
+/**
+ * Closes archived reports browser modal (the calendar view)
+ */
+function closeArchivedReportsModal() { // ✅ PLURALfor the 12-month calendar browser
+    console.log('🔴 Closing archived reports modal');
+    const modal = document.getElementById('archivedReportsModal'); // ✅ PLURAL ID
+    if (modal) {
+        modal.remove();
+        console.log('✅ Archived reports modal closed');
+    }
+}
 /**
  * Creates the archived reports modal HTML
  */
@@ -4004,7 +4024,7 @@ function createArchivedReportsModal(petName, petId) {
             <div class="action-modal wide-modal">
                 <div class="modal-header">
                     <h3>📚 Archived Reports ${petName ? `- ${petName}` : ''}</h3>
-                    <button class="close-modal-btn">&times;</button>
+                    <button class="close-modal-btn">&times;</button> <!-- ✅ This is the X button -->
                 </div>
                 <div class="modal-content" id="archivedReportsContent">
                     <div class="archived-loading">
@@ -4015,7 +4035,7 @@ function createArchivedReportsModal(petName, petId) {
                     <button class="action-btn" onclick="manualArchiveCurrentMonth()">
                         📦 Archive Current Month
                     </button>
-                  <button class="action-btn" onclick="closeArchivedReportsModal()">
+                    <button class="action-btn" onclick="closeArchivedReportsModal()">
                         🔙 Back to Current Report
                     </button>
                 </div>
