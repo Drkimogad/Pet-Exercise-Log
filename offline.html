@@ -375,92 +375,116 @@
         </div>
     </div>
 
-    <script>
-        class OfflineManager {
-            constructor() {
-                this.retryCount = 0;
-                this.maxRetries = 5;
-                this.retryInterval = 3000; // 3 seconds
-                this.redirectDelay = 3000; // 3 seconds delay before redirect
-                this.isChecking = false;
-                this.wasAuthenticated = this.checkPreviousAuth();
-                
-                this.initializeElements();
-                this.setupEventListeners();
-                this.startConnectionMonitoring();
+<script>
+    class OfflineManager {
+        constructor() {
+            this.retryCount = 0;
+            this.maxRetries = 5;
+            this.retryInterval = 3000;
+            this.redirectDelay = 3000;
+            this.isChecking = false;
+            this.wasAuthenticated = this.checkPreviousAuth();
+            this.connectionChecked = false;
+            
+            this.initializeElements();
+            this.setupEventListeners();
+            this.startReliableConnectionMonitoring();
+        }
+
+        initializeElements() {
+            this.retryBtn = document.getElementById('retryBtn');
+            this.refreshBtn = document.getElementById('refreshBtn');
+            this.connectionStatus = document.getElementById('connectionStatus');
+            this.onlineStatus = document.getElementById('onlineStatus');
+            this.attemptCount = document.getElementById('attemptCount');
+            this.statusIndicator = document.getElementById('statusIndicator');
+            this.offlineContainer = document.getElementById('offlineContainer');
+            this.btnText = this.retryBtn?.querySelector('.btn-text');
+        }
+
+        setupEventListeners() {
+            this.retryBtn?.addEventListener('click', () => this.manualRetry());
+            this.refreshBtn?.addEventListener('click', () => location.reload());
+            
+            // Use CAPTURING phase to ensure we handle these events first
+            window.addEventListener('online', () => this.handleOnline(), true);
+            window.addEventListener('offline', () => this.handleOffline(), true);
+        }
+
+        async startReliableConnectionMonitoring() {
+            console.log('🔍 Starting reliable connection monitoring...');
+            
+            // Initial check with REAL connection test
+            const isOnline = await this.reliableConnectionCheck();
+            if (isOnline) {
+                this.handleOnline();
+            } else {
+                this.handleOffline();
             }
 
-            initializeElements() {
-                this.retryBtn = document.getElementById('retryBtn');
-                this.refreshBtn = document.getElementById('refreshBtn');
-                this.connectionStatus = document.getElementById('connectionStatus');
-                this.onlineStatus = document.getElementById('onlineStatus');
-                this.attemptCount = document.getElementById('attemptCount');
-                this.statusIndicator = document.getElementById('statusIndicator');
-                this.offlineContainer = document.getElementById('offlineContainer');
-                this.btnText = this.retryBtn.querySelector('.btn-text');
-            }
-
-            setupEventListeners() {
-                this.retryBtn.addEventListener('click', () => this.manualRetry());
-                this.refreshBtn.addEventListener('click', () => location.reload());
-                
-                // Online/offline event listeners
-                window.addEventListener('online', () => this.handleOnline());
-                window.addEventListener('offline', () => this.handleOffline());
-            }
-
-            startConnectionMonitoring() {
-                // Initial check
-                if (navigator.onLine) {
-                    this.handleOnline();
-                } else {
-                    this.handleOffline();
-                }
-
-                // Periodic check every 5 seconds
-                setInterval(() => {
-                    if (navigator.onLine && !this.isChecking) {
+            // Periodic REAL checks (not just navigator.onLine)
+            setInterval(async () => {
+                if (!this.isChecking) {
+                    const online = await this.reliableConnectionCheck();
+                    if (online) {
                         this.handleOnline();
                     }
-                }, 5000);
+                }
+            }, 10000); // Check every 10 seconds
+        }
+
+        // ✅ RELIABLE Connection Check - Same method used everywhere
+        async reliableConnectionCheck() {
+            // Quick browser-level check first
+            if (!navigator.onLine) {
+                console.log('❌ Browser reports offline');
+                return false;
             }
 
-            checkPreviousAuth() {
-                // Check if user was previously authenticated
-                return localStorage.getItem('firebaseAuthToken') || 
-                       sessionStorage.getItem('user') || 
-                       localStorage.getItem('user');
-            }
-
-static async checkConnection() {
-    try {
-        console.log('🔍 Checking internet connection...');
-        // ✅ FIXED - Test against a reliable external service
-        const response = await fetch('/Pet-Exercise-Log/index.html', {
-            method: 'HEAD',
-            cache: 'no-store',
-            mode: 'no-cors' // Important for cross-origin requests
-        });
-        return true; // If we get here, we have connection (no-cors doesn't throw)
-    } catch (error) {
-        console.log('❌ Connection check failed:', error.message);
-        return false;
-    }
-}
-
-            async manualRetry() {
-                if (this.isChecking) return;
+            try {
+                console.log('🔍 Testing real connection...');
+                // Test against a reliable, fast endpoint
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 5000);
                 
-                this.retryCount++;
+                const response = await fetch('/Pet-Exercise-Log/favicon.ico', {
+                    method: 'HEAD',
+                    cache: 'no-store',
+                    signal: controller.signal
+                });
+                
+                clearTimeout(timeoutId);
+                console.log('✅ Real connection confirmed');
+                return response.ok;
+            } catch (error) {
+                console.log('❌ Real connection failed:', error.message);
+                return false;
+            }
+        }
+
+        checkPreviousAuth() {
+            return localStorage.getItem('firebaseAuthToken') || 
+                   sessionStorage.getItem('user') || 
+                   localStorage.getItem('user');
+        }
+
+        async manualRetry() {
+            if (this.isChecking) return;
+            
+            this.retryCount++;
+            if (this.attemptCount) {
                 this.attemptCount.textContent = this.retryCount;
-                
-                // Update button state
+            }
+            
+            // Update button state
+            if (this.retryBtn && this.btnText) {
                 this.retryBtn.disabled = true;
                 this.btnText.innerHTML = 'Checking<span class="loading-dots"><span></span><span></span><span></span></span>';
-                
-                const isOnline = await this.checkConnection();
-                
+            }
+            
+            const isOnline = await this.reliableConnectionCheck();
+            
+            if (this.retryBtn && this.btnText) {
                 if (isOnline) {
                     this.handleOnline();
                 } else {
@@ -473,79 +497,89 @@ static async checkConnection() {
                     }
                 }
             }
+        }
 
-            handleOnline() {
-                console.log('✅ Internet connection restored');
-                
-                // Update UI
+        handleOnline() {
+            // Prevent multiple triggers
+            if (this.connectionChecked) return;
+            this.connectionChecked = true;
+            
+            console.log('✅ RELIABLE: Internet connection restored');
+            
+            // Update UI
+            if (this.offlineContainer) {
                 this.offlineContainer.classList.add('online');
-                this.connectionStatus.style.display = 'none';
-                this.onlineStatus.style.display = 'block';
-                this.statusIndicator.textContent = '✅';
-                
-                // Wait 3 seconds then redirect
-                setTimeout(() => {
-                    this.redirectToAppropriatePage();
-                }, this.redirectDelay);
             }
+            if (this.connectionStatus) {
+                this.connectionStatus.style.display = 'none';
+            }
+            if (this.onlineStatus) {
+                this.onlineStatus.style.display = 'block';
+            }
+            if (this.statusIndicator) {
+                this.statusIndicator.textContent = '✅';
+            }
+            
+            // Wait 3 seconds then redirect
+            setTimeout(() => {
+                this.redirectToAppropriatePage();
+            }, this.redirectDelay);
+        }
 
-            handleOffline() {
-                console.log('❌ Internet connection lost');
-                
-                // Update UI
+        handleOffline() {
+            console.log('❌ RELIABLE: Internet connection lost');
+            this.connectionChecked = false;
+            
+            // Update UI
+            if (this.offlineContainer) {
                 this.offlineContainer.classList.remove('online');
+            }
+            if (this.connectionStatus) {
                 this.connectionStatus.style.display = 'block';
+            }
+            if (this.onlineStatus) {
                 this.onlineStatus.style.display = 'none';
+            }
+            if (this.statusIndicator) {
                 this.statusIndicator.textContent = '📵';
             }
+        }
 
-            redirectToAppropriatePage() {
-                const wasInDashboard = localStorage.getItem('lastActivePage') === 'dashboard';
-                const hasValidAuth = this.checkCurrentAuth();
-                
-                if (hasValidAuth && wasInDashboard) {
-                    // Redirect to dashboard
-                    window.location.href = 'index.html?page=dashboard';
-                } else if (hasValidAuth) {
-                    // Redirect to dashboard (default for authenticated users)
-                    window.location.href = 'index.html?page=dashboard';
-                } else {
-                    // Redirect to auth page
-                    window.location.href = 'index.html';
-                }
-            }
-
-            checkCurrentAuth() {
-                // Check for valid authentication tokens
-                const firebaseToken = localStorage.getItem('firebaseAuthToken');
-                const sessionUser = sessionStorage.getItem('user');
-                const localUser = localStorage.getItem('user');
-                
-                if (firebaseToken) {
-                    // Check if token is expired (basic check)
-                    try {
-                        const tokenData = JSON.parse(atob(firebaseToken.split('.')[1]));
-                        return tokenData.exp > Date.now() / 1000;
-                    } catch {
-                        return false;
-                    }
-                }
-                
-                return !!(sessionUser || localUser);
+        redirectToAppropriatePage() {
+            const wasInDashboard = localStorage.getItem('lastActivePage') === 'dashboard';
+            const hasValidAuth = this.checkCurrentAuth();
+            
+            if (hasValidAuth && wasInDashboard) {
+                window.location.href = 'index.html?page=dashboard';
+            } else if (hasValidAuth) {
+                window.location.href = 'index.html?page=dashboard';
+            } else {
+                window.location.href = 'index.html';
             }
         }
 
-        // Initialize offline manager when page loads
-        document.addEventListener('DOMContentLoaded', () => {
-            new OfflineManager();
-        });
-
-        // Fallback for older browsers
-        if (!window.addEventListener) {
-            document.getElementById('retryBtn').onclick = function() {
-                location.reload();
-            };
+        checkCurrentAuth() {
+            const firebaseToken = localStorage.getItem('firebaseAuthToken');
+            const sessionUser = sessionStorage.getItem('user');
+            const localUser = localStorage.getItem('user');
+            
+            if (firebaseToken) {
+                try {
+                    const tokenData = JSON.parse(atob(firebaseToken.split('.')[1]));
+                    return tokenData.exp > Date.now() / 1000;
+                } catch {
+                    return false;
+                }
+            }
+            
+            return !!(sessionUser || localUser);
         }
-    </script>
+    }
+
+    // Initialize offline manager when page loads
+    document.addEventListener('DOMContentLoaded', () => {
+        new OfflineManager();
+    });
+</script>
 </body>
 </html>
