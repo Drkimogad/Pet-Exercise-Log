@@ -52,10 +52,10 @@ async function handleSignUp(e) {
       } else {
         // If still not available after delay, use manual fallback
         console.log('Manual dashboard activation');
-        toggleAuthHeader(false);
+        
         document.getElementById('auth-container').style.display = 'none';
         document.getElementById('main-banner').style.display = 'none';
-        document.querySelector('.dashboard-container').style.display = 'block';
+        document.querySelector('.dashboard-container').style.display = 'flex';
       }
    }, 500);
         
@@ -73,11 +73,6 @@ async function handleSignUp(e) {
     }
 }
 
-// Show/hide auth header (logo + legal links)
-function toggleAuthHeader(show) {
-    const authHeader = document.querySelector('.auth-header');
-    if (authHeader) authHeader.style.display = show ? 'block' : 'none';
-}
 
 // Handle Sign In with Firebase
 async function handleSignIn(e) {
@@ -128,7 +123,6 @@ setTimeout(() => {
     } else {
         // If still not available after delay, use manual fallback
         console.log('Manual dashboard activation');
-        toggleAuthHeader(false);
         
         document.getElementById('.split-auth-container').style.display = 'none';
         document.querySelector('.dashboard-container').style.display = 'flex';
@@ -157,13 +151,13 @@ function setupAuthSwitchers() {
     document.getElementById('switchAuth').addEventListener('click', function(e) {
         e.preventDefault();
         document.getElementById('signinForm').style.display = 'none';
-        document.getElementById('signupForm').style.display = 'block';
+        document.getElementById('signupForm').style.display = 'flex';
     });
     
     document.getElementById('switchToSignin').addEventListener('click', function(e) {
         e.preventDefault();
         document.getElementById('signupForm').style.display = 'none';
-        document.getElementById('signinForm').style.display = 'block';
+        document.getElementById('signinForm').style.display = 'flex';
     });
 }
 
@@ -189,12 +183,12 @@ function setupPasswordReset() {
 function showForgotPasswordForm() {
     document.getElementById('signinForm').style.display = 'none';
     document.getElementById('signupForm').style.display = 'none';
-    document.getElementById('forgotPasswordForm').style.display = 'block';
+    document.getElementById('forgotPasswordForm').style.display = 'flex';
 }
 
 // Show Sign In Form
 function showSignInForm() {
-    document.getElementById('signinForm').style.display = 'block';
+    document.getElementById('signinForm').style.display = 'flex';
     document.getElementById('signupForm').style.display = 'none';
     document.getElementById('forgotPasswordForm').style.display = 'none';
 }
@@ -251,16 +245,13 @@ function logout() {
     firebase.auth().signOut().then(() => {
         // Clear user session
         currentUser = null;
-
-        // Show auth logo and forms
-        toggleAuthHeader(true);
         
         // Hide dashboard, show auth forms
         document.querySelector('.dashboard-container').style.display = 'none';
         document.querySelector('.split-auth-container').style.display = 'flex'; // ✅ CHANGED
         
         // Show sign-in form specifically
-        document.getElementById('signinForm').style.display = 'block';
+        document.getElementById('signinForm').style.display = 'flex';
         document.getElementById('signupForm').style.display = 'none';
         
         // Clear any form values
@@ -274,8 +265,6 @@ function logout() {
 
 // Finally, update initAuth to handle Firebase auth state:
 function initAuth() {  // await petDataService 
-    // Show auth logo initially
-    toggleAuthHeader(true);
     
      // Set up form handlers first
     document.getElementById('authForm').addEventListener('submit', handleSignIn);
@@ -315,10 +304,10 @@ firebase.auth().onAuthStateChanged(async (user) => {  // ADD ASYNC HERE
             } else {
                 // If still not available after delay, use manual fallback
                 console.log('Manual dashboard activation');
-                toggleAuthHeader(false);
-                document.getElementById('auth-container').style.display = 'none';
-                document.getElementById('main-banner').style.display = 'none';
-                document.querySelector('.dashboard-container').style.display = 'block';
+                
+        document.getElementById('.split-auth-container').style.display = 'none';
+        document.querySelector('.dashboard-container').style.display = 'flex';
+                
             }
         }, 500);
     } else {
