@@ -4015,7 +4015,7 @@ function createArchivedReportsModal(petName, petId) {
                     <button class="action-btn" onclick="manualArchiveCurrentMonth()">
                         📦 Archive Current Month
                     </button>
-                    <button class="action-btn" onclick="closeArchivedReportsModal()">
+                  <button class="action-btn" onclick="closeArchivedReportsModal()">
                         🔙 Back to Current Report
                     </button>
                 </div>
@@ -4169,7 +4169,7 @@ async function loadArchivedReports(userId, petId, year) {
 /**
  * Loads archives from Firestore
  */
-async function loadArchivesFromFirestore(userId, petId, year,month) {
+async function loadArchivesFromFirestore(userId, petId, year,month) { // it returns the ARRAY OF ACRCHIVED REPORTS for a year!
         return await loadSpecificReportFromFirestore(userId, petId, year, month);
     // Placeholder - will be implemented with your Firebase config
     
@@ -4222,19 +4222,13 @@ async function loadArchivedReport(year, month) {
     
     const userId = getCurrentUserId();
     const pets = await getPets();
-    // For now, use first pet - we'll enhance this later
     const petId = pets[0]?.id || 'unknown';
     
     try {
         showLoading('Loading archived report...');
         
-        // Try to load the report
+        // ✅ FIXED: Try to load the specific report directly
         const report = await loadSpecificArchive(userId, petId, year, month);
-        // Add null check:
-        if (!archives) {
-           console.log(`📭 No archives found for ${year}`);
-       return [];
-         }
         
         if (report) {
             // Display the archived report
@@ -4263,7 +4257,9 @@ async function loadSpecificArchive(userId, petId, year, month) {
     
     // Try Firestore first
     try {
-        const report = await loadArchivesFromFirestore(userId, petId, year); //plural;
+        const report = await loadSpecificReportFromFirestore(userId, petId, year, month); 
+         // ✅ Use singular function loadSpecificReportFromFirestore → returns ONE specific monthly report
+
         if (report) return report;
     } catch (error) {
         console.warn('Firestore load failed:', error);
@@ -4384,7 +4380,11 @@ function setupArchivedReportEvents() {
     if (!modal) return;
     
     // Close button
-    modal.querySelector('.close-modal-btn').addEventListener('click', closeArchivedReportModal);
+    // ✅ FIX: Ensure close button works
+    const closeBtn = modal.querySelector('.close-modal-btn');
+    if (closeBtn) {
+        closeBtn.addEventListener('click', closeArchivedReportModal);
+    }
     
     // Close on overlay click
     modal.addEventListener('click', (e) => {
@@ -4428,7 +4428,7 @@ function printArchivedReport() {
 /**
  * Exports archived report as CSV
  */
-/*function exportArchivedReport() {
+function exportArchivedReport() {
     const modal = document.getElementById('archivedReportModal');
     const report = window.currentArchivedReport; // We'd need to store this
     
@@ -4446,7 +4446,7 @@ function printArchivedReport() {
     } else {
         alert('CSV export not available for this report');
     }
-}  */
+}  
 
 /**
  * Closes archived reports browser modal
