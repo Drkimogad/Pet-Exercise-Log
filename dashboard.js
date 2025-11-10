@@ -4276,24 +4276,27 @@ async function loadSpecificArchive(userId, petId, year, month) {
 /**
  * Loads specific archive from Firestore
  */
-async function loadArchiveFromFirestore(userId, petId, year, month) {
-    console.log(`🔍 Loading from Firestore: ${year}-${month}`);
-        
-// Wrap the Firestore call in try-catch
-try {
-    const snapshot = await db.collection(`yearlyreport${year}`)
-                            .doc('reports')
-                            .collection('reports')
-                            .where('userId', '==', userId)
-                            .where('petId', '==', petId)
-                            .get();
+async function loadArchivesFromFirestore(userId, petId, year) {
+    console.log(`📂 Loading archives for ${year}, pet: ${petId}`);
     
-    return snapshot.docs.map(doc => doc.data());
-} catch (error) {
-    console.error(`❌ Firestore load failed for ${year}:`, error);
-    return [];
- }
-}    
+    try {
+        // ✅ CORRECT: Query for ALL reports for this year/pet
+        const snapshot = await db.collection(`yearlyreport${year}`)
+                                .doc('reports')
+                                .collection('reports')
+                                .where('userId', '==', userId)
+                                .where('petId', '==', petId)
+                                .get();
+        
+        const archives = snapshot.docs.map(doc => doc.data());
+        console.log(`✅ Found ${archives.length} Firestore archives for ${year}`);
+        return archives;
+        
+    } catch (error) {
+        console.error(`❌ Firestore load failed for ${year}:`, error);
+        return [];
+    }
+}
     
 
 /**
