@@ -4263,7 +4263,7 @@ async function loadSpecificArchive(userId, petId, year, month) {
     
     // Try Firestore first
     try {
-        const report = await loadArchiveFromFirestore(userId, petId, year, month);
+        const report = await loadArchivesFromFirestore(userId, petId, year); //plural;
         if (report) return report;
     } catch (error) {
         console.warn('Firestore load failed:', error);
@@ -4276,7 +4276,7 @@ async function loadSpecificArchive(userId, petId, year, month) {
 /**
  * Loads specific archive from Firestore
  */
-async function loadArchivesFromFirestore(userId, petId, year) {
+async function loadArchivesFromFirestore(userId, petId, year) {  //plural
     console.log(`📂 Loading archives for ${year}, pet: ${petId}`);
     
     try {
@@ -4302,7 +4302,7 @@ async function loadArchivesFromFirestore(userId, petId, year) {
 /**
  * Loads specific archive from local storage
  */
-function loadArchiveFromLocalStorage(userId, petId, year, month) {
+function loadArchiveFromLocalStorage(userId, petId, year, month) {   //called singular ARCHIVE !!!
     const key = `archived_report_${userId}_${petId}_${year}_${month}`;
     const data = localStorage.getItem(key);
     
@@ -5434,7 +5434,19 @@ if (!month || !userId || !petId) {
 }
 
 
+/*yearlyreport2025/
+├── metadata/           # Schema info
+├── months/            # Monthly summaries (for auto-archive triggers)
+└── reports/           # Individual archived reports
+The months collection is for:
+Tracking which months have been archived
+Auto-archive system to know what needs processing
+Monthly summary statistics
 
+The reports collection contains:
+Your actual archived pet reports
+One document per pet per month
+*/
 
 //==================================================
 // BCS Reassessment Modal - Complete Implementation
