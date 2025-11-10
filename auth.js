@@ -41,22 +41,6 @@ class OfflineManager {
 }
 // END OF OFFLINE MANAGEMENT ADDITION
 
-// 🆕 ADD THIS TO auth.js - Connection state monitoring
-function startConnectionMonitoring() {
-    // Initial state check
-    if (!navigator.onLine) {
-        console.log('❌ Starting offline - no connection detected');
-        OfflineManager.handleOffline();
-    }
-
-    // Continuous monitoring
-    setInterval(async () => {
-        if (!navigator.onLine && !isOffline) {
-            console.log('📵 Interval check - going offline');
-            await OfflineManager.handleOffline();
-        }
-    }, 10000); // Check every 10 seconds
-}
 
 // Handle Sign Up with Firebase
 async function handleSignUp(e) {
@@ -446,8 +430,7 @@ firebase.auth().onAuthStateChanged(async (user) => {  // ADD ASYNC HERE
         OfflineManager.handleOffline();
     });
     // END OF EVENT LISTENERS
-    // 🆕 ADD THIS LINE - RIGHT HERE AT THE VERY END
-    startConnectionMonitoring();
+
 } // ← initAuth closing brace
 
 
