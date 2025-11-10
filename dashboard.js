@@ -4295,8 +4295,6 @@ try {
  }
 }    
     
-    return null;
-}
 
 /**
  * Loads specific archive from local storage
