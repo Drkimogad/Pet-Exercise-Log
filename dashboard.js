@@ -4425,8 +4425,18 @@ function setupArchivedReportEvents() {
 /**
  * Closes archived report modal
  */
-function closeArchivedReportModal() {
+function closeArchivedReportModal() {  // for the singular modal 
     const modal = document.getElementById('archivedReportModal');
+    if (modal) {
+        modal.remove();
+    }
+}
+
+/**
+ * Closes archived reports browser modal
+ */
+function closeArchivedReportsModal() { //the one that displays 12 months calendar
+    const modal = document.getElementById('archivedReportsModal');
     if (modal) {
         modal.remove();
     }
@@ -4445,12 +4455,16 @@ function printArchivedReport() {
     }
 }
 
-/**
- * Exports archived report as CSV
+/*
+complete implementation
+  Exports archived report as CSV
  */
 function exportArchivedReport() {
     const modal = document.getElementById('archivedReportModal');
-    const report = window.currentArchivedReport; // We'd need to store this
+    if (!modal) return;
+    
+    // Get the report data from the modal (you might need to store this globally)
+    const report = window.currentArchivedReport; 
     
     if (report && report.exportContent?.csv) {
         // Create download link for CSV
@@ -4463,20 +4477,57 @@ function exportArchivedReport() {
         a.click();
         document.body.removeChild(a);
         window.URL.revokeObjectURL(url);
+        console.log('✅ Archived report exported as CSV');
     } else {
-        alert('CSV export not available for this report');
-    }
-}  
-
-/**
- * Closes archived reports browser modal
- */
-function closeArchivedReportsModal() {
-    const modal = document.getElementById('archivedReportsModal');
-    if (modal) {
-        modal.remove();
+        // Fallback: Try to generate CSV from the displayed content
+        generateCSVFromArchivedReport();
     }
 }
+
+/**
+ * Fallback CSV generation from archived report content
+ */
+function generateCSVFromArchivedReport() {
+    const modal = document.getElementById('archivedReportModal');
+    if (!modal) return;
+    
+    // Extract data from the displayed report
+    const petName = modal.querySelector('h3')?.textContent?.split(' - ')[0] || 'Unknown_Pet';
+    const reportPeriod = modal.querySelector('.archived-report-meta small:last-child')?.textContent?.replace('Report period: ', '') || 'Unknown_Date';
+    
+    // Create basic CSV content from visible data
+    let csvContent = 'Pet Exercise Report\n';
+    csvContent += `Pet: ${petName}\n`;
+    csvContent += `Period: ${reportPeriod}\n\n`;
+    
+    // Add summary data if available
+    const summaryStats = modal.querySelectorAll('.stat-box');
+    if (summaryStats.length > 0) {
+        csvContent += 'Summary\n';
+        summaryStats.forEach(stat => {
+            const value = stat.querySelector('h3')?.textContent || '';
+            const label = stat.querySelector('p')?.textContent || '';
+            csvContent += `${label},${value}\n`;
+        });
+        csvContent += '\n';
+    }
+    
+    // Create download
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `pet_report_${petName.replace(/\s+/g, '_')}_${reportPeriod}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+    
+    console.log('✅ Generated CSV from archived report display');
+    showSuccess('Report exported as CSV');
+}
+
+
 // STEP 3F: INTEGRATION WITH EXISTING SYSTEM
 // ===============================================
 // SYSTEM INTEGRATION
