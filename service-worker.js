@@ -1,4 +1,4 @@
-const CACHE_NAME = 'Pet-Exercise-Log-cache-v8';
+const CACHE_NAME = 'Pet-Exercise-Log-cache-v9';
 const OFFLINE_PAGE = '/offline.html';
 
 // Environment configuration - CHANGE THIS WHEN DEPLOYING
@@ -34,11 +34,10 @@ function getUrlsToCache() {
     const p = CURRENT_ENV.paths;
     
     return [
-        // HTML Pages
-        CURRENT_ENV.root,
+        // HTML Pages - USE EXACT PATHS
         CURRENT_ENV.root + 'index.html',
         CURRENT_ENV.root + 'offline.html',
-        CURRENT_ENV.root + 'terms.html',
+        CURRENT_ENV.root + 'terms.html', 
         CURRENT_ENV.root + 'privacy.html',
         
         // Core JavaScript Files
@@ -51,15 +50,15 @@ function getUrlsToCache() {
         CURRENT_ENV.root + 'manifest.json',
         CURRENT_ENV.root + 'favicon.ico',
         
-        // Images and Icons
-        p.images + 'default-pet.png',
-        p.banner + 'treadmillingpets.png',
-        p.icons + 'icon-192x192.png',
-        p.icons + 'icon-512x512.png',
+        // Images and Icons - USE RELATIVE PATHS
+        'images/default-pet.png',
+        'banner/treadmillingpets.png', 
+        'icons/icon-192x192.png',
+        'icons/icon-512x512.png',
         
         // External Dependencies
-        'https://cdn.jsdelivr.net/npm/chart.js', //used in generate exercise charts html
-    ];
+        'https://cdn.jsdelivr.net/npm/chart.js'
+    ].map(url => url.startsWith('http') ? url : CURRENT_ENV.root + url);
 }
 
 const urlsToCache = getUrlsToCache();
