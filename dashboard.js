@@ -8120,10 +8120,8 @@ document.querySelectorAll('.mood-toggle-btn').forEach(btn => {
 
  // ==================== PET ENTRY FUNCTIONS ====================
 async function showExerciseLog() {
-    toggleAuthHeader(false);
     // ✅ NEW - Hide the split auth container instead:
-    document.querySelector('.split-auth-container').style.display = 'none';
-    
+    document.querySelector('.split-auth-container').style.display = 'none';  
     // Show dashboard with GRID display
     document.querySelector('.dashboard-container').style.display = 'block';
     
