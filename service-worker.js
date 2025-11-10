@@ -48,7 +48,7 @@ function getUrlsToCache() {
         // Styles and Manifest
         CURRENT_ENV.root + 'styles.css',
         CURRENT_ENV.root + 'manifest.json',
-        CURRENT_ENV.root + 'favicon.ico',
+       // CURRENT_ENV.root + 'favicon.ico',
         
         // Images and Icons - USE RELATIVE PATHS
         'images/default-pet.png',
