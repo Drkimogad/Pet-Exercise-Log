@@ -54,7 +54,7 @@ async function handleSignUp(e) {
         console.log('Manual dashboard activation');
         
         document.getElementById('split-auth-container').style.display = 'none';
-        document.querySelector('dashboard-container').style.display = 'flex';
+        document.querySelector('.dashboard-container').style.display = 'flex';
       }
    }, 500);
         
@@ -124,7 +124,7 @@ setTimeout(() => {
         console.log('Manual dashboard activation');
         
         document.getElementById('split-auth-container').style.display = 'none';
-        document.querySelector('dashboard-container').style.display = 'flex';
+        document.querySelector('.dashboard-container').style.display = 'flex';
         
     }
 }, 500);
@@ -246,8 +246,8 @@ function logout() {
         currentUser = null;
         
         // Hide dashboard, show auth forms
-        document.querySelector('dashboard-container').style.display = 'none';
-        document.querySelector('split-auth-container').style.display = 'flex'; // ✅ CHANGED
+        document.querySelector('.dashboard-container').style.display = 'none';
+        document.querySelector('.split-auth-container').style.display = 'flex'; // ✅ CHANGED
         
         // Show sign-in form specifically
         document.getElementById('signinForm').style.display = 'flex';
@@ -305,7 +305,7 @@ firebase.auth().onAuthStateChanged(async (user) => {  // ADD ASYNC HERE
                 console.log('Manual dashboard activation');
                 
         document.getElementById('split-auth-container').style.display = 'none';
-        document.querySelector('dashboard-container').style.display = 'flex';
+        document.querySelector('.dashboard-container').style.display = 'flex';
                 
             }
         }, 500);
