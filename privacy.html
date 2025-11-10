@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Policy - Pet Exercise Log</title>
+    <style>
+        :root {
+            --primary-yellow: #D97706;
+            --primary-mustard: #B45309;
+            --dark-purple: #6B46C1;
+            --light-purple: #7C3AED;
+            --light-charcoal: #4B5563;
+            --dark-charcoal: #374151;
+            --white: #FFFFFF;
+            --black: #000000;
+            --off-white: #F9FAFB;
+            --border-focus: #059669;
+            --input-bg: var(--white);
+            --input-border: #D1D5DB;
+            --container-bg: var(--off-white);
+            --container-border: #E5E7EB;
+            --shadow-sm: 0 2px 4px rgba(0,0,0,0.1);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.15);
+            --dark-mustard: #92400E;
+            --header-text: var(--primary-yellow);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+
+        body {
+            background: var(--off-white);
+            color: var(--dark-charcoal);
+            line-height: 1.6;
+        }
+
+        body.dark-mode {
+            background: var(--dark-charcoal);
+            color: var(--white);
+        }
+
+        .privacy-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+            background: var(--white);
+            border-radius: 12px;
+            box-shadow: var(--shadow-sm);
+            margin-top: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .dark-mode .privacy-container {
+            background: #1F2937;
+            color: var(--white);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 3px solid var(--primary-yellow);
+        }
+
+        .header h1 {
+            color: var(--dark-purple);
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .dark-mode .header h1 {
+            color: var(--light-purple);
+        }
+
+        .last-updated {
+            background: var(--off-white);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            border-left: 4px solid var(--primary-yellow);
+            font-style: italic;
+        }
+
+        .dark-mode .last-updated {
+            background: #374151;
+        }
+
+        .important-note {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-left: 4px solid var(--primary-yellow);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 8px;
+        }
+
+        .dark-mode .important-note {
+            background: #92400E;
+            border-color: var(--primary-mustard);
+            color: var(--white);
+        }
+
+        .section {
+            margin-bottom: 2.5rem;
+        }
+
+        .section h2 {
+            color: var(--dark-purple);
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--container-border);
+        }
+
+        .dark-mode .section h2 {
+            color: var(--light-purple);
+            border-bottom-color: #4B5563;
+        }
+
+        .section h3 {
+            color: var(--light-charcoal);
+            margin: 1.5rem 0 1rem;
+            font-size: 1.2rem;
+        }
+
+        .dark-mode .section h3 {
+            color: #D1D5DB;
+        }
+
+        .section p {
+            margin-bottom: 1rem;
+            color: var(--light-charcoal);
+        }
+
+        .dark-mode .section p {
+            color: #D1D5DB;
+        }
+
+        .data-list {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .data-list li {
+            margin-bottom: 0.75rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .data-list li:before {
+            content: "🐾";
+            position: absolute;
+            left: 0;
+        }
+
+        .highlight-box {
+            background: var(--off-white);
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 1px solid var(--input-border);
+            margin: 1.5rem 0;
+        }
+
+        .dark-mode .highlight-box {
+            background: #374151;
+            border-color: #4B5563;
+        }
+
+        .contact-info {
+            background: var(--off-white);
+            padding: 1.5rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--dark-purple);
+            margin-top: 2rem;
+        }
+
+        .dark-mode .contact-info {
+            background: #374151;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 2px solid var(--container-border);
+        }
+
+        .dark-mode .action-buttons {
+            border-top-color: #4B5563;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: var(--dark-purple);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            background: var(--light-purple);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: var(--light-charcoal);
+            color: var(--white);
+        }
+
+        .btn-secondary:hover {
+            background: var(--dark-charcoal);
+            transform: translateY(-2px);
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--container-border);
+            color: var(--light-charcoal);
+        }
+
+        .dark-mode .footer {
+            border-top-color: #4B5563;
+            color: #D1D5DB;
+        }
+
+        @media (max-width: 768px) {
+            .privacy-container {
+                margin: 1rem;
+                padding: 1.5rem;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="privacy-container">
+        <div class="header">
+            <h1>🛡️ Privacy Policy</h1>
+            <p>Pet Exercise Log - Last updated: November 2025</p>
+        </div>
+
+        <div class="last-updated">
+            <strong>Service Provider:</strong> Pet Exercise Log is operated by Dr. Karim Gad (Veterinarian, Sole Proprietorship) based in Johannesburg, South Africa.
+        </div>
+
+        <div class="important-note">
+            <strong>🔔 IMPORTANT:</strong> Please read this Privacy Policy carefully. By using our application, you acknowledge that you have read, understood, and agree to be bound by all terms contained herein. If you do not agree with any part of this policy, you must not access or use the Pet Exercise Log application.
+        </div>
+
+        <div class="section">
+            <h2>🔐 Information We Collect</h2>
+            <p><strong>Please do not submit sensitive personal information such as passwords, financial information, or other highly confidential data through our application.</strong></p>
+            
+            <h3>Authentication Information</h3>
+            <p>When you create an account using Firebase Authentication, we collect:</p>
+            <ul class="data-list">
+                <li>Your email address</li>
+                <li>Authentication tokens and session data</li>
+                <li>Account creation and last login timestamps</li>
+            </ul>
+
+            <h3>Pet Exercise Data</h3>
+            <p>We store the information you provide about your pets' exercise and health:</p>
+            <ul class="data-list">
+                <li>Pet profiles and health assessment data</li>
+                <li>Exercise entries, duration, and intensity</li>
+                <li>Calories burned and activity types</li>
+                <li>Mood logs and behavioral tracking</li>
+                <li>Body condition scores and health metrics</li>
+                <li>Monthly archived reports</li>
+            </ul>
+
+            <h3>Technical Information</h3>
+            <p>We do not collect technical information such as IP addresses, browser types, or usage analytics. Our application focuses solely on the pet exercise data you provide.</p>
+        </div>
+
+        <div class="section">
+            <h2>🗂️ How We Use Your Information</h2>
+            <p>We use the information we collect to:</p>
+            <ul class="data-list">
+                <li>Provide personalized exercise tracking and recommendations</li>
+                <li>Generate health reports and progress analytics</li>
+                <li>Send exercise reminders and goal notifications</li>
+                <li>Maintain your pet's health history</li>
+                <li>Ensure application security and functionality</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>🏢 Data Storage & Firebase Services</h2>
+            <p>Your data is securely stored using Google Firebase services:</p>
+            
+            <div class="highlight-box">
+                <strong>Firebase Services We Use:</strong>
+                <ul class="data-list">
+                    <li><strong>Firebase Authentication:</strong> Secure user authentication</li>
+                    <li><strong>Cloud Firestore:</strong> Real-time data storage for pet profiles and exercise data</li>
+                    <li><strong>Firebase Security Rules:</strong> Data access control and protection</li>
+                </ul>
+            </div>
+
+            <h3>Security Measures</h3>
+            <ul class="data-list">
+                <li>Data encryption in transit (SSL/TLS)</li>
+                <li>Secure authentication protocols</li>
+                <li>Regular security updates and monitoring</li>
+                <li>Access controls and permission systems</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>🌐 Data Sharing & Third Parties</h2>
+            <p>We do not sell, trade, or transfer your personal information to third parties. We only share data with:</p>
+            <ul class="data-list">
+                <li><strong>Google Firebase:</strong> Essential for application functionality</li>
+                <li><strong>Legal Authorities:</strong> When required by law</li>
+            </ul>
+            
+            <div class="important-note">
+                <strong>Note:</strong> If you are not comfortable with Firebase data processing, please do not use our application.
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>⚖️ Your Rights & Control</h2>
+            <p>You have full control over your data:</p>
+            <ul class="data-list">
+                <li>Access all your stored pet data</li>
+                <li>Export your data in CSV format</li>
+                <li>Delete your account and all associated data</li>
+                <li>Correct inaccurate information</li>
+                <li>Object to data processing</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>📊 Data Retention</h2>
+            <p>We retain your data for as long as your account is active. You can delete your account at any time, which permanently removes all your pet data and exercise history from our systems.</p>
+        </div>
+
+        <div class="section">
+            <h2>🔒 Children's Privacy</h2>
+            <p>Our application is not intended for use by children under the age of 13. We do not knowingly collect personal information from children under 13.</p>
+        </div>
+
+        <div class="section">
+            <h2>🔄 Policy Updates</h2>
+            <p>We may update this Privacy Policy to reflect changes in our practices. We will notify you of significant changes and update the "Last Updated" date.</p>
+            <p>Your continued use of the application constitutes acceptance of any changes.</p>
+        </div>
+
+        <div class="contact-info">
+            <h3>📧 Contact Us</h3>
+            <p>If you have any questions about this Privacy Policy or wish to exercise your rights, please contact us at:</p>
+            <p><strong>Email:</strong> Petkit2023@gmail.com</p>
+            <p>We will respond to your inquiry as soon as possible.</p>
+        </div>
+
+        <div class="action-buttons">
+            <a href="index.html" class="btn btn-primary">🏠 Back to App</a>
+            <a href="terms.html" class="btn btn-secondary">📝 Terms of Service</a>
+        </div>
+
+        <div class="footer">
+            <p>© 2025 Pet Exercise Log™. All Rights Reserved.</p>
+            <p>Built with ❤️ for pet lovers everywhere</p>
+        </div>
+    </div>
+
+    <script>
+        // Check for dark mode preference
+        if (localStorage.getItem('darkMode') === 'true' || 
+            (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.body.classList.add('dark-mode');
+        }
+
+        // Simple dark mode toggle for this page
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+        }
+    </script>
+</body>
+</html>
