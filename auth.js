@@ -10,7 +10,8 @@ class OfflineManager {
     static async checkConnection() {
         try {
             console.log('🔍 Checking internet connection...');
-            const response = await fetch('/?connection-test=' + Date.now(), {
+            // ✅ FIX: Test against a reliable, existing URL
+        const response = await fetch('/Pet-Exercise-Log/index.html', {
                 method: 'HEAD',
                 cache: 'no-store',
                 timeout: 3000
