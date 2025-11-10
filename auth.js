@@ -2,9 +2,58 @@
 
 let currentUser = null;
 
+// 🆕 OFFLINE MANAGEMENT - ADD THIS BLOCK
+let isOffline = false;
+let offlineChecked = false;
+
+class OfflineManager {
+    static async checkConnection() {
+        try {
+            console.log('🔍 Checking internet connection...');
+            const response = await fetch('/?connection-test=' + Date.now(), {
+                method: 'HEAD',
+                cache: 'no-store',
+                timeout: 3000
+            });
+            return response.ok;
+        } catch (error) {
+            console.log('❌ Connection check failed:', error.message);
+            return false;
+        }
+    }
+
+    static async handleOffline() {
+        if (isOffline) return;
+        
+        console.log('📶 Going offline - redirecting to offline page');
+        isOffline = true;
+        
+        // Only redirect if we're not already on offline page
+        if (!window.location.pathname.includes('offline.html')) {
+            window.location.href = 'offline.html';
+        }
+    }
+
+    static handleOnline() {
+        console.log('✅ Back online');
+        isOffline = false;
+    }
+}
+// END OF OFFLINE MANAGEMENT ADDITION
+
+
 // Handle Sign Up with Firebase
 async function handleSignUp(e) {
-    e.preventDefault();
+        e.preventDefault();
+       // 🆕 OFFLINE CHECK - ADD THIS AT START
+    const isOnline = await OfflineManager.checkConnection();
+    if (!isOnline) {
+        console.log('❌ Blocking signup - offline');
+        showError('Cannot sign up while offline. Please check your internet connection.');
+        return;
+    }
+    // END OF OFFLINE CHECK
+    
     const formData = {
         username: document.getElementById('username').value,
         email: document.getElementById('signupEmail').value,
@@ -77,6 +126,16 @@ async function handleSignUp(e) {
 async function handleSignIn(e) {
     e.preventDefault();
     console.log('Login form submitted'); // ADD THIS
+
+         // 🆕 OFFLINE CHECK - ADD THIS AT START  
+    const isOnline = await OfflineManager.checkConnection();
+    if (!isOnline) {
+        console.log('❌ Blocking signin - offline');
+        showError('Cannot sign in while offline. Please check your internet connection.');
+        return;
+    }
+    // END OF OFFLINE CHECK
+
     
     const formData = {
         email: document.getElementById('email').value,
@@ -195,6 +254,16 @@ function showSignInForm() {
 // Handle Forgot Password
 async function handleForgotPassword(e) {
     e.preventDefault();
+
+        // 🆕 OFFLINE CHECK - ADD THIS AT START
+    const isOnline = await OfflineManager.checkConnection();
+    if (!isOnline) {
+        console.log('❌ Blocking password reset - offline');
+        showError('Cannot reset password while offline. Please check your internet connection.');
+        return;
+    }
+    // END OF OFFLINE CHECK
+
     
     const email = document.getElementById('resetEmail').value;
     
@@ -240,6 +309,14 @@ function handlePasswordResetFromEmail() {
 
 // Logout function with Firebase
 function logout() {
+        // 🆕 OFFLINE CHECK - ADD THIS AT START OF LOGOUT
+    if (isOffline) {
+        console.log('❌ Blocking logout - offline');
+        showError('Cannot logout while offline. Some data may not sync properly.');
+        return;
+    }
+    // END OF OFFLINE CHECK
+
     // Firebase Auth - Sign out
     firebase.auth().signOut().then(() => {
         // Clear user session
@@ -264,6 +341,21 @@ function logout() {
 
 // Finally, update initAuth to handle Firebase auth state:
 function initAuth() {  // await petDataService 
+      // 🆕 OFFLINE CHECK - ADD THIS AT START OF initAuth
+    (async () => {
+        if (!offlineChecked) {
+            console.log('🔍 Initial connection check...');
+            const isOnline = await OfflineManager.checkConnection();
+            offlineChecked = true;
+            
+            if (!isOnline) {
+                console.log('❌ No connection on startup - showing offline page');
+                await OfflineManager.handleOffline();
+                return; // Stop auth initialization
+            }
+        }
+    })();
+    // END OF OFFLINE CHECK
     
      // Set up form handlers first
     document.getElementById('authForm').addEventListener('submit', handleSignIn);
@@ -315,6 +407,29 @@ firebase.auth().onAuthStateChanged(async (user) => {  // ADD ASYNC HERE
         currentUser = null;
     }
 });
+    // 🆕 ONLINE/OFFLINE EVENT LISTENERS - ADD THIS AT END BEFORE CLOSING BRACE
+    window.addEventListener('online', async () => {
+        console.log('🌐 Online event detected');
+        OfflineManager.handleOnline();
+        
+        // If we're on offline page and come back online, redirect appropriately
+        if (window.location.pathname.includes('offline.html')) {
+            console.log('🔄 Redirecting from offline page');
+            setTimeout(() => {
+                if (currentUser) {
+                    window.location.href = 'index.html?page=dashboard';
+                } else {
+                    window.location.href = 'index.html';
+                }
+            }, 2000);
+        }
+    });
+
+    window.addEventListener('offline', () => {
+        console.log('📵 Offline event detected');
+        OfflineManager.handleOffline();
+    });
+    // END OF EVENT LISTENERS
 }
 
 // Initialize when DOM is loaded
