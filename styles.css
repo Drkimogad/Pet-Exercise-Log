@@ -2,25 +2,52 @@
     CSS VARIABLES: PALETTE DEFINITION - SCHEME 3 (BACKUP)interesting
 ============================================================ */
 :root {
-  --primary-yellow: #D97706;    /* 🟠 Amber gold - Accent color */
-  --primary-mustard: #B45309;   /* 🟠 Darker amber - For better contrast */
-  --dark-purple: #6B46C1;       /* 🟣 Royal purple - Primary brand */
-  --light-purple: #7C3AED;      /* 🟣 Bright purple - Secondary */
-  --light-charcoal: #4B5563;    /* ⚫ Slate gray - Better text contrast */
-  --dark-charcoal: #374151;     /* ⚫ Charcoal gray */
+  /* CURRENT PALETTE - COMMENTED OUT
+  --primary-yellow: #D97706;
+  --primary-mustard: #B45309;
+  --dark-purple: #6B46C1;
+  --light-purple: #7C3AED;
+  --light-charcoal: #4B5563;
+  --dark-charcoal: #374151;
   --white: #FFFFFF;
   --black: #000000;
   --off-white: #F9FAFB;
-  --border-focus: #059669;      /* 🟢 Emerald green - Focus states */
+  --border-focus: #059669;
   --input-bg: var(--white);
-  --input-border: #D1D5DB;      /* ⚫ Light gray border - Better form readability */
+  --input-border: #D1D5DB;
   --container-bg: var(--off-white);
-  --container-border: #E5E7EB;  /* ⚫ Soft border */
+  --container-border: #E5E7EB;
   --shadow-sm: 0 2px 4px rgba(0,0,0,0.1);
   --shadow-md: 0 4px 6px rgba(0,0,0,0.15);
-  --dark-mustard: #92400E;      /* 🟠 Dark amber */
+  --dark-mustard: #92400E;
   --header-text: var(--primary-yellow);
+  */
+
+    
+  /* NEW COLORS WITH ORIGINAL VARIABLE NAMES */
+  --primary-yellow: #FFDB58;    /* Was #D97706 - now your mustard */
+  --primary-mustard: #CB4154;   /* Was #B45309 - now your crimson */
+  --dark-purple: #36454F;       /* Was #6B46C1 - now your charcoal */
+  --light-purple: #C0C0C0;      /* Was #7C3AED - now your silver */
+  --light-charcoal: #F5F5DC;    /* Was #4B5563 - now your cream */
+  --dark-charcoal: #2C3840;     /* Was #374151 - darker charcoal */
+  
+  /* Keep the rest as is but updated */
+  --white: #FFFFFF;
+  --black: #000000;
+  --off-white: #F5F5DC;         /* Your cream */
+  --border-focus: #CB4154;      /* Your crimson */
+  --input-bg: var(--white);
+  --input-border: #C0C0C0;      /* Your silver */
+  --container-bg: #F5F5DC;      /* Your cream */
+  --container-border: #36454F;  /* Your charcoal */
+  --shadow-sm: 0 2px 4px rgba(54, 69, 79, 0.1);
+  --shadow-md: 0 4px 6px rgba(54, 69, 79, 0.15);
+  --dark-mustard: #A83246;      /* Darker crimson */
+  --header-text: var(--dark-purple); /* Your charcoal */
 }
+    
+
 
 /* ============================================================
     CLEAN AUTH PAGE CSS - FIXED POSITIONING
