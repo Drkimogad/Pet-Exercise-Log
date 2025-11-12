@@ -538,7 +538,7 @@ async function loadSavedProfiles() {
         </div>
         <div class="field-item">
           <span class="field-icon">⚖️</span>
-          <span class="field-text">${pet.petDetails.weight || '?'} ${pet.petDetails.weight ? 'lbs' : ''}</span>
+          <span class="field-text">${pet.petDetails.weight || '?'} ${pet.petDetails.weight ? 'kg' : ''}</span>
         </div>
         <div class="field-item">
           <span class="field-icon">🎂</span>
