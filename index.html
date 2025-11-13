@@ -4,7 +4,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#ffffff">
-    <meta name="description" content="Track your pet's exercise routine and health metrics">
+    
+    <title>Pet Exercise Log - Track Your Pet's Fitness</title>
+    
+    <!-- Primary Meta Tags -->
+    <meta name="description" content="Track your pet's exercise routine, health metrics, and fitness progress with our comprehensive pet exercise log">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Pet Exercise Log - Track Your Pet's Fitness">
+    <meta property="og:description" content="Track your pet's exercise routine, health metrics, and fitness progress with our comprehensive pet exercise log">
+    <meta property="og:image" content="https://drkimogad.github.io/Pet-Exercise-Log/banner/Image.png">
+    
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Pet Exercise Log - Track Your Pet's Fitness">
+    <meta name="twitter:description" content="Track your pet's exercise routine, health metrics, and fitness progress with our comprehensive pet exercise log">
+    <meta name="twitter:image" content="https://drkimogad.github.io/Pet-Exercise-Log/banner/Image.png">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://drkimogad.github.io/Pet-Exercise-Log/">
     
     <!-- PWA Manifest -->
     <link rel="manifest" href="https://drkimogad.github.io/Pet-Exercise-Log/manifest.json">
@@ -15,36 +34,34 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="https://drkimogad.github.io/Pet-Exercise-Log/icon-192x192.png">
 
-    <title>Pet Exercise Log</title>
-    <link rel="icon" href="https://drkimogad.github.io/Pet-Exercise-Log/favicon.ico" type="image/x-icon">
+    <!-- Styles & Resources -->
     <link rel="stylesheet" href="styles.css">
+    <link rel="icon" href="https://drkimogad.github.io/Pet-Exercise-Log/favicon.ico" type="image/x-icon">
     
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <!-- Firebase SDK -->
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 
-
-<!-- Your Firebase Config - INLINE (Recommended) -->
-<script>
-const firebaseConfig = {
-  apiKey: "AIzaSyBAi8vwwz1hsKmYxTrGUL7EGrjuOMpQ23M",
-  authDomain: "pet-exercise-log.firebaseapp.com",
-  projectId: "pet-exercise-log",
-  storageBucket: "pet-exercise-log.firebasestorage.app",
-  messagingSenderId: "416160815211",
-  appId: "1:416160815211:web:77bbfe7e8781567e31b92e",
-};
-  
-  // Initialize Firebase
-  firebase.initializeApp(firebaseConfig);
-  console.log('🔥 Firebase initialized successfully');
-</script>
-
+    <!-- Firebase Config -->
+    <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBAi8vwwz1hsKmYxTrGUL7EGrjuOMpQ23M",
+      authDomain: "pet-exercise-log.firebaseapp.com",
+      projectId: "pet-exercise-log",
+      storageBucket: "pet-exercise-log.firebasestorage.app",
+      messagingSenderId: "416160815211",
+      appId: "1:416160815211:web:77bbfe7e8781567e31b92e",
+    };
+    
+    firebase.initializeApp(firebaseConfig);
+    console.log('🔥 Firebase initialized successfully');
+    </script>
 </head>
+    
 <body>
    
    <!-- LAYOUT 1: SPLIT SCREEN -->
