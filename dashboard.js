@@ -3533,29 +3533,33 @@ const ReportArchiveService = {
      * Saves report to Firestore using approved structure
      */
     async saveToFirestore(userId, reportData) {
+    return await saveReportToFirestore(userId, reportData);
+    },
+    
+  //  async saveToFirestore(userId, reportData) {
         // Implementation depends on your Firebase setup
         // This is the structure you approved:
         // yearlyreport2025/reports/user1_petA_202501/
-            return await saveReportToFirestore(userId, reportData);
+  //          return await saveReportToFirestore(userId, reportData);
 
-        const year = reportData.year;
-        const month = reportData.month.toString().padStart(2, '0');
-        const reportId = `${userId}_${reportData.petId}_${year}${month}`;
+   //     const year = reportData.year;
+   //     const month = reportData.month.toString().padStart(2, '0');
+    //    const reportId = `${userId}_${reportData.petId}_${year}${month}`;
         
         // We'll need your Firebase configuration here
         // For now, this is a placeholder
-        console.log(`📍 Would save to: yearlyreport${year}/reports/${reportId}`);
+ //       console.log(`📍 Would save to: yearlyreport${year}/reports/${reportId}`);
         
         // Example implementation (commented out until Firebase setup):
-        await db.collection(`yearlyreport${year}`)
-                .doc('reports')
-                .collection('reports')
-                .doc(reportId)
-                .set(archiveDoc);
+ //       await db.collection(`yearlyreport${year}`)
+    //            .doc('reports')
+    //            .collection('reports')
+    //            .doc(reportId)
+    //            .set(archiveDoc);
         
         
-        return true; // Simulate success for now
-    },
+    //    return true; // Simulate success for now
+  //  },
     
     /**
      * Caches report locally as fallback
