@@ -5379,3 +5379,14 @@ input:checked + .toggle-slider:before {
     }
 }
 
+/*  for auth legal readability */
+.auth-legal-links a {
+    color: var(--primary-yellow); /* Your new terra cotta #E2725B */
+}
+
+@media (max-width: 768px) {
+    .auth-legal-links a {
+        color: var(--primary-yellow);
+        font-weight: 500; /* Slightly bolder on tablets */
+    }
+}
