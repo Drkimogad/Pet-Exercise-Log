@@ -91,4 +91,85 @@ Or manually add to home screen
 This project is proprietary software. All rights reserved.
 Keep your pets healthy and happy with Pet Exercise Log! 🐕🐈🐇
 
+Report
+/*
+==================================================
+REPORT SYSTEM COMPLETE FLOW MAP
+==================================================
+
+[UI: Generate Report Button]
+     ↓
+generateReport(pet) 
+     ├── window.open() 
+     ├── generateReportContent(pet) ← MAIN CONTENT GENERATOR
+     │   ├── generatePetDetailsHTML(pet)
+     │   │   ├── getBCSDescription()
+     │   │   └── getFeedingDescription()
+     │   ├── generateHealthSummaryHTML(pet)
+     │   │   └── formatMedicalCondition()
+     │   ├── generateExerciseSummaryHTML(pet.exerciseEntries)
+     │   ├── generateSuggestedExercisesReportHTML(pet)
+     │   │   └── generateSuggestedExercises() ← FROM AI SYSTEM
+     │   ├── generateExerciseCalendarHTML(pet)
+     │   ├── generateMoodCalendarHTML(pet)
+     │   │   └── getMoodEmojiFromValue()
+     │   └── generateExerciseChartsHTML(pet.exerciseEntries)
+     │       └── processReportChartData()
+     ├── Stores window reference in openReportWindows Map
+     └── Adds beforeunload listener
+     ↓
+
+[UI: Report Modal Displayed]
+     ↓
+[User clicks "📚 Archived Reports" button]
+     ↓
+showArchivedReports() ← IN REPORT WINDOW
+     ├── window.opener.postMessage()
+     └── window.close()
+     ↓
+
+[Main App receives message]
+     ↓
+window.addEventListener('message') 
+     ↓
+showArchivedReportsModal(petName, petId)
+     ├── createArchivedReportsModal(petName, petId)
+     ├── loadArchivedReportsContent(petId) ← LOADS CALENDAR VIEW
+     │   ├── getCurrentUserId()
+     │   ├── loadUserReportsFromFirestore(userId, currentYear, petId) ← GETS ARRAY
+     │   ├── loadArchivedReports(userId, petId, currentYear-1) ← GETS ARRAY  
+     │   │   ├── loadArchivesFromFirestore(userId, petId, year) ← SHOULD RETURN ARRAY
+     │   │   └── loadArchivesFromLocalStorage() ← FALLBACK
+     │   └── createYearlyCalendarView() ← BUILDS UI
+     └── setupArchiveMonthListeners()
+     ↓
+
+[UI: Yearly Calendar Modal Displayed]
+     ↓
+[User clicks archived month button]
+     ↓
+loadArchivedReport(year, month)
+     ├── getCurrentUserId()
+     ├── getPets() ← GETS PETS ARRAY
+     ├── loadSpecificArchive(userId, petId, year, month) ← GETS SINGLE REPORT
+     │   ├── loadSpecificReportFromFirestore(userId, petId, year, month) ← FIRESTORE
+     │   └── loadArchiveFromLocalStorage() ← FALLBACK
+     └── displayArchivedReport(report)
+         ├── closeArchivedReportsModal() ← CLOSES CALENDAR
+         ├── createArchivedReportModal(report) ← CREATES REPORT MODAL
+         └── setupArchivedReportEvents() ← ADDS LISTENERS
+     ↓
+
+[UI: Archived Report Modal Displayed]
+     ↓
+[User can print/export/close]
+
+==================================================
+CRITICAL ISSUE SPOT:
+==================================================
+loadArchivesFromFirestore(userId, petId, year) ← SHOULD RETURN ARRAY
+BUT currently has early return that calls:
+loadSpecificReportFromFirestore() ← RETURNS SINGLE REPORT
+This breaks the calendar view!
+*/
 
