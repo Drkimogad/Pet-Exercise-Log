@@ -30,27 +30,28 @@ const CURRENT_ENV = ENV_CONFIG.GITHUB; // Change to FIREBASE for production
 // const CURRENT_ENV = ENV_CONFIG.FIREBASE;
 
 // Generate URLs to cache based on environment
+// Generate URLs to cache based on environment
 function getUrlsToCache() {
     const p = CURRENT_ENV.paths;
     
     return [
-        // HTML Pages - USE EXACT PATHS
-        CURRENT_ENV.root + 'index.html',
-        CURRENT_ENV.root + 'offline.html',
-        CURRENT_ENV.root + 'terms.html', 
-        CURRENT_ENV.root + 'privacy.html',
+        // HTML Pages - USE CONSISTENT PATHS
+        '/index.html',           // ✅ Use absolute paths
+        '/offline.html',
+        '/terms.html', 
+        '/privacy.html',
         
         // Core JavaScript Files
-        CURRENT_ENV.root + 'auth.js',
-        CURRENT_ENV.root + 'dashboard.js',
-        CURRENT_ENV.root + 'utils.js',
+        '/auth.js',
+        '/dashboard.js', 
+        '/utils.js',
         
         // Styles and Manifest
-        CURRENT_ENV.root + 'styles.css',
-        CURRENT_ENV.root + 'manifest.json',
-        CURRENT_ENV.root + 'favicon.ico',
+        '/styles.css',
+        '/manifest.json',
+        '/favicon.ico',
         
-        // Images and Icons - USE RELATIVE PATHS
+        // Images and Icons - USE RELATIVE PATHS (no leading slash)
         'images/default-pet.png',
         'banner/treadmillingpets.png', 
         'icons/icon-192x192.png',
@@ -58,15 +59,24 @@ function getUrlsToCache() {
         
         // External Dependencies
         'https://cdn.jsdelivr.net/npm/chart.js'
-    ].map(url => url.startsWith('http') ? url : CURRENT_ENV.root + url);
+    ];
 }
 
 const urlsToCache = getUrlsToCache();
 
 // Helper function to get correct path for current environment
 function getPath(url) {
+    // For external URLs, use as-is
     if (url.startsWith('http')) return url;
-    return CURRENT_ENV.root + url.replace(/^\//, '');
+    
+    // For internal URLs, handle both absolute and relative paths
+    if (url.startsWith('/')) {
+        // Absolute path: /index.html → /Pet-Exercise-Log/index.html
+        return CURRENT_ENV.root + url.slice(1);
+    } else {
+        // Relative path: index.html → /Pet-Exercise-Log/index.html  
+        return CURRENT_ENV.root + url;
+    }
 }
 
 // Install event: Cache essential assets
