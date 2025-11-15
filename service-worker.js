@@ -85,34 +85,21 @@ self.addEventListener('install', (event) => {
     self.skipWaiting();
 
     event.waitUntil(
-        caches.open(CACHE_NAME).then((cache) => {
-            console.log('📦 Caching assets...');
-            return cache.addAll(urlsToCache.map(getPath))
-                .then(() => {
-                    console.log('✅ All assets cached successfully!');
-                    // Log cached URLs for debugging
-                    return cache.keys().then(requests => {
-                        console.log('📋 Cached URLs:', requests.map(req => req.url));
-                    });
-                })
-                .catch((error) => {
-                    console.error('❌ Cache installation failed:', error);
-                    // Cache critical assets individually if batch fails
-                    const criticalAssets = [
-                        getPath('offline.html'),
-                        getPath('index.html'),
-                        getPath('styles.css'),
-                        getPath('auth.js')
-                    ];
-                    return Promise.all(
-                        criticalAssets.map(url => 
-                            cache.add(url).catch(e => 
-                                console.warn('⚠️ Failed to cache:', url, e)
-                            )
-                        )
-                    );
-                });
-        })
+        (async () => {
+            // 1️⃣ Cache local assets with error handling
+            const cache = await caches.open(CACHE_NAME);
+            
+            for (const url of urlsToCache.map(getPath)) {
+                try {
+                    await cache.add(new Request(url, { mode: 'same-origin' }));
+                    console.log('✅ Cached:', url);
+                } catch (err) {
+                    console.warn('⚠️ Failed to cache:', url, err);
+                }
+            }
+
+            console.log('✅ Installation completed');
+        })().catch(err => console.error('❌ Installation failed:', err))
     );
 });
 
