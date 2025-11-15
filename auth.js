@@ -280,51 +280,56 @@ function handlePasswordResetFromEmail() {
 
 
 // Logout function with Firebase
-// Logout function with Firebase
-function logout() {
-    // 🆕 OFFLINE CHECK - PROPERLY PLACED
-    (async () => {
-        const isOnline = await checkConnection();
-        if (!isOnline) {
-            console.log('❌ Blocking logout - offline');
-            showError('Cannot logout while offline. Some data may not sync properly.');
-            return;
-        }
-        
-        // Proceed with logout if online
-        performLogout();
-    })();
+// Simple function to show auth page and hide dashboard
+function showAuth() {
+    console.log('🔐 Showing auth page');
+    
+    // Hide dashboard
+    document.querySelector('.dashboard-container').style.display = 'none';
+    
+    // Show auth container
+    document.getElementById('split-auth-container').style.display = 'flex';
+    
+    // Show sign-in form by default
+    document.getElementById('signinForm').style.display = 'flex';
+    document.getElementById('signupForm').style.display = 'none';
+    document.getElementById('forgotPasswordForm').style.display = 'none';
 }
 
-// Separate the actual logout logic
-function performLogout() {
-    // Firebase Auth - Sign out
+// Reset UI state after logout
+function resetUI() {
+    console.log('🔄 Resetting UI state');
+    
+    // Clear any form values
+    document.getElementById('authForm').reset();
+    document.getElementById('signupFormElement').reset();
+    document.getElementById('forgotPasswordFormElement').reset();
+    
+    // Clear local storage
+    localStorage.removeItem('firebaseAuthToken');
+    localStorage.removeItem('lastActivePage');
+    sessionStorage.removeItem('user');
+}
+
+// Simplified logout - users can logout anytime, online or offline
+function logout() {
+    console.log('🚪 User logging out');
+    
+    // Firebase sign out
     firebase.auth().signOut().then(() => {
         // Clear user session
         currentUser = null;
         
-        // Clear local storage
-        localStorage.removeItem('firebaseAuthToken');
-        localStorage.removeItem('lastActivePage');
-        sessionStorage.removeItem('user');
+        // Reset UI
+        resetUI();
         
-        // Hide dashboard, show auth forms
-        document.querySelector('.dashboard-container').style.display = 'none';
-        document.getElementById('split-auth-container').style.display = 'flex';
+        // Show auth page
+        showAuth();
         
-        // Show sign-in form specifically
-        document.getElementById('signinForm').style.display = 'flex';
-        document.getElementById('signupForm').style.display = 'none';
-        document.getElementById('forgotPasswordForm').style.display = 'none';
-        
-        // Clear any form values
-        document.getElementById('authForm').reset();
-        document.getElementById('signupFormElement').reset();
-        
-        console.log('User logged out successfully');
+        console.log('✅ Logout successful');
         
     }).catch((error) => {
-        console.error('Firebase logout error:', error);
+        console.error('❌ Firebase logout error:', error);
         showError('Logout failed. Please try again.');
     });
 }
