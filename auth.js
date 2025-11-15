@@ -6,7 +6,7 @@ let currentUser = null;
 const checkConnection = async () => {
     if (!navigator.onLine) return false;
     try {
-        const response = await fetch('/Pet-Exercise-Log/index.html', {
+        const response = await fetch('./index.html', {
             method: 'HEAD',
             cache: 'no-store'
         });
@@ -337,7 +337,7 @@ function initAuth() {
     const checkConnection = async () => {
         if (!navigator.onLine) return false;
         try {
-        const response = await fetch('/Pet-Exercise-Log/index.html', {
+        const response = await fetch('./index.html', {
                 method: 'HEAD',
                 cache: 'no-store'
             });
@@ -408,9 +408,9 @@ function initAuth() {
         if (isOnline && window.location.pathname.includes('offline.html')) {
             setTimeout(() => {
                 if (currentUser) {
-                    window.location.href = 'index.html?page=dashboard';
+                    window.location.href = './index.html?page=dashboard';
                 } else {
-                    window.location.href = 'index.html';
+                    window.location.href = './index.html';
                 }
             }, 2000);
         }
@@ -418,7 +418,7 @@ function initAuth() {
 
     window.addEventListener('offline', () => {
         if (!window.location.pathname.includes('offline.html')) {
-            window.location.href = 'offline.html';
+            window.location.href = './offline.html';
         }
     });
 }
