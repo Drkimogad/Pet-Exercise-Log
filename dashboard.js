@@ -78,14 +78,16 @@ const MOOD_OPTIONS = [
     { value: 9, emoji: '😰', label: 'Anxious' }
 ];
 
-// Simple user ID - replace with your auth later
+
+// Use Firebase UID for consistent user identification
 function getCurrentUserId() {
-    let userId = sessionStorage.getItem('userId');
-    if (!userId) {
-        userId = 'user_' + Date.now();
-        sessionStorage.setItem('userId', userId);
+    // Use the actual Firebase user ID
+    if (firebase.auth().currentUser) {
+        return firebase.auth().currentUser.uid;
     }
-    return userId;
+    
+    // Fallback for demo/unauthenticated users
+    return 'demo_user_' + Date.now();
 }
 
 // ===============================================
