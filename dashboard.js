@@ -4584,24 +4584,27 @@ async function generateReport(pet) {
         color: var(--black);
     }
     :root {
-        --primary-yellow: #D97706;
-        --primary-mustard: #B45309;
-        --dark-purple: #6B46C1;
-        --light-purple: #7C3AED;
-        --light-charcoal: #4B5563;
-        --dark-charcoal: #374151;
-        --white: #FFFFFF;
-        --black: #000000;
-        --off-white: #F9FAFB;
-        --border-focus: #059669;
-        --input-bg: var(--white);
-        --input-border: #D1D5DB;
-        --container-bg: var(--off-white);
-        --container-border: #E5E7EB;
-        --shadow-sm: 0 2px 4px rgba(0,0,0,0.1);
-        --shadow-md: 0 4px 6px rgba(0,0,0,0.15);
-        --dark-mustard: #92400E;
-        --header-text: var(--primary-yellow);
+  --primary-yellow: #E2725B;    /* Terra cotta - replaces unreadable mustard */    
+  --primary-mustard: #CB4154;   /* Was #B45309 - now your crimson */
+  --dark-purple: #36454F;       /* Was #6B46C1 - now your charcoal */
+  --light-purple: #C0C0C0;      /* Was #7C3AED - now your silver */
+  --light-charcoal: #F5F5DC;    /* Was #4B5563 - now your cream */
+  --dark-charcoal: #2C3840;     /* Was #374151 - darker charcoal */
+  
+  /* Keep the rest as is but updated */
+  --white: #FFFFFF;
+  --black: #000000;
+  --off-white: #F5F5DC;         /* Your cream */
+  --border-focus: #CB4154;      /* Your crimson */
+  --input-bg: var(--white);
+  --input-border: #C0C0C0;      /* Your silver */
+  --container-bg: #F5F5DC;      /* Your cream */
+  --container-border: #36454F;  /* Your charcoal */
+  --shadow-sm: 0 2px 4px rgba(54, 69, 79, 0.1);
+  --shadow-md: 0 4px 6px rgba(54, 69, 79, 0.15);
+  --dark-mustard: #A83246;      /* Darker crimson */
+  --header-text: var(--dark-purple); /* Your charcoal */
+
     }
     h1, h2 { 
         text-align: center; 
