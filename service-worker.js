@@ -1,3 +1,12 @@
+/*
+Never use cache.addAll() - it fails if ANY file fails
+Use new Request() with same-origin mode
+Cache files individually with try/catch
+Be consistent with path patterns
+Handle failures gracefully - don't break the whole install
+This pattern works reliably for GitHub Pages' specific URL structure! 🚀
+*/
+
 const CACHE_NAME = 'Pet-Exercise-Log-cache-v11';
 const OFFLINE_PAGE = '/offline.html';
 
