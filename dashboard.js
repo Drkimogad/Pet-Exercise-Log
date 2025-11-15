@@ -3532,31 +3532,9 @@ const ReportArchiveService = {
     /**
      * Saves report to Firestore using approved structure
      */
-//    async saveToFirestore(userId, reportData) {
-  //  return await saveReportToFirestore(userId, reportData);  },
-    
     async saveToFirestore(userId, reportData) {
-        // Implementation depends on your Firebase setup
-        // This is the structure you approved:
-        // yearlyreport2025/reports/user1_petA_202501/
-          return await saveReportToFirestore(userId, reportData);
-
-       const year = reportData.year;
-        const month = reportData.month.toString().padStart(2, '0');
-    const reportId = `${userId}_${reportData.petId}_${year}${month}`;
-        
-        // We'll need your Firebase configuration here
-        // For now, this is a placeholder
-        console.log(`📍 Would save to: yearlyreport${year}/reports/${reportId}`);
-        
-        await db.collection(`yearlyreport${year}`)
-                .doc('reports')
-                .collection('reports')
-                .doc(reportId)
-                .set(archiveDoc);
-        
-        
-        return true; // Simulate success for now
+    // ✅ This calls your WORKING saveReportToFirestore function
+    return await saveReportToFirestore(userId, reportData);
     },
     
     /**
@@ -4194,9 +4172,9 @@ async function loadArchivedReports(userId, petId, year) {
 /**
  * Loads archives from Firestore
  */
-async function loadArchivesFromFirestore(userId, petId, year,month) { // it returns the ARRAY OF ACRCHIVED REPORTS for a year!
-        return await loadSpecificReportFromFirestore(userId, petId, year, month);
-    // Placeholder - will be implemented with your Firebase config
+async function loadArchivesFromFirestore(userId, petId, year) { // it returns the ARRAY OF ACRCHIVED REPORTS for a year!
+//   return await loadSpecificReportFromFirestore(userId, petId, year, month);
+    // ✅ This should return ARRAY of reports for the year
     
     console.log(`🔍 Checking Firestore for ${year} archives...`);
     
