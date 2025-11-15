@@ -1,5 +1,20 @@
 "use strict";
 
+
+// DEBUG: User ID tracking
+function debugUserTracking() {
+    console.log('🔍 USER ID DEBUG:');
+    console.log('  - getCurrentUserId():', getCurrentUserId());
+    console.log('  - sessionStorage userId:', sessionStorage.getItem('userId'));
+    console.log('  - Firebase current user:', firebase.auth().currentUser?.uid);
+    console.log('  - All sessionStorage:', { ...sessionStorage });
+}
+
+// Call this whenever user changes or app loads
+debugUserTracking();
+
+
+
 // Global variables
 let pets = [];
 let activePetIndex = null;
@@ -5441,9 +5456,13 @@ async function saveReportToFirestore(userId, reportData) {
  * Loads user's archived reports for a specific year
  */
 async function loadUserReportsFromFirestore(userId, year, petId = null) {
-    try {
-        console.log(`📥 Loading reports for user ${userId}, year ${year}`);
-        
+  console.log('🔍 DEBUG LOAD REPORTS:', { 
+        userId, 
+        year, 
+        petId,
+        currentFirebaseUser: firebase.auth().currentUser?.uid 
+    });
+    try {        
         let query = db.collection(`yearlyreport${year}`)
                      .doc('reports')
                      .collection('reports')
