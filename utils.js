@@ -3,7 +3,7 @@
 // Service Worker
 function registerServiceWorker() {
     if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/Pet-Exercise-Log/service-worker.js')
+        navigator.serviceWorker.register('service-worker.js')
         .then(reg => {
             console.log('✅ Service Worker registered with scope:', reg.scope);
         })
@@ -869,4 +869,8 @@ removeFromLocalStorage(petId) {
 }
 
 window.petDataService = new PetDataService();
+// Add global db instance for report functions
+const db = firebase.firestore();
+
+
 
