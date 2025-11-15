@@ -447,7 +447,7 @@
                 const controller = new AbortController();
                 const timeoutId = setTimeout(() => controller.abort(), 5000);
                 
-              const response = await fetch('/Pet-Exercise-Log/index.html', {
+              const response = await fetch('./index.html', {
                     method: 'HEAD',
                     cache: 'no-store',
                     signal: controller.signal
@@ -550,11 +550,11 @@
             const hasValidAuth = this.checkCurrentAuth();
             
             if (hasValidAuth && wasInDashboard) {
-                window.location.href = 'index.html?page=dashboard';
+                window.location.href = './index.html?page=dashboard';
             } else if (hasValidAuth) {
-                window.location.href = 'index.html?page=dashboard';
+                window.location.href = './index.html?page=dashboard';
             } else {
-                window.location.href = 'index.html';
+                window.location.href = './index.html';
             }
         }
 
