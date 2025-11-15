@@ -3665,6 +3665,12 @@ async function archiveAllPetsForMonth(year, month) {
         
         console.log(`🎉 Successfully archived ${archivedCount}/${pets.length} pets for ${year}-${month}`);
         showSuccess(`Monthly reports archived for ${archivedCount} pets`);
+                // ✅ ADD THIS: Refresh the modal if it's open
+        const modal = document.getElementById('archivedReportsModal');
+        if (modal) {
+            const petId = pets[0]?.id; // Get first pet's ID
+            loadArchivedReportsContent(petId); // Reload the calendar
+        }
     }
 }
 
