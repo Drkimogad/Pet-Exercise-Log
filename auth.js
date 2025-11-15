@@ -323,9 +323,6 @@ function performLogout() {
         
         console.log('User logged out successfully');
         
-        // Optional: Redirect to home page
-        window.location.href = 'index.html';
-        
     }).catch((error) => {
         console.error('Firebase logout error:', error);
         showError('Logout failed. Please try again.');
