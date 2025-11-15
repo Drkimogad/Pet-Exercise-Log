@@ -379,6 +379,9 @@ function initAuth() {
 
         // Firebase Auth State Listener
         firebase.auth().onAuthStateChanged(async (user) => {
+                console.log('🔄 Auth state changed:', user?.uid);
+                debugUserTracking(); // ADD THIS LINE
+            
             if (user) {
                 currentUser = {
                     uid: user.uid,
