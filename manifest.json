@@ -2,18 +2,18 @@
   "name": "Pet Exercise Log",
   "short_name": "Pet Exercise",
   "description": "Track your pet's daily exercise efficiently",
-  "start_url": "/Pet-Exercise-Log/index.html",
+  "start_url": "index.html",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#4CAF50",
   "icons": [
     {
-      "src": "/Pet-Exercise-Log/icons/icon-192x192.png",
+      "src": "icons/icon-192x192.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "/Pet-Exercise-Log/icons/icon-512x512.png",
+      "src": "icons/icon-512x512.png",
       "sizes": "512x512", 
       "type": "image/png"
     }
