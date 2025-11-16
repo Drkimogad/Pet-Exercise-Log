@@ -1,6 +1,11 @@
 "use strict";
 
 // Service Worker
+/*
+service worker registeration snippet path must use the same root used in service worker code
+Github root /Pet-Exercise-Log/
+other files can use relative path to root which is fine
+*/
 function registerServiceWorker() {
     if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/Pet-Exercise-Log/service-worker.js')
