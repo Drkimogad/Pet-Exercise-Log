@@ -19,9 +19,10 @@ debugUserTracking();
 let pets = [];
 let activePetIndex = null;
 const MAX_PETS = 10;
+
 //const DEFAULT_IMAGE = 'https://drkimogad.github.io/Pet-Exercise-Log/images/default-pet.png';
 // Use relative path that works in both environments
-const DEFAULT_IMAGE = './images/default-pet.png';
+const DEFAULT_IMAGE = 'images/default-pet.png';
 
 const FAVORITE_EXERCISES = ['walking', 'running', 'swimming', 'playing', 'fetch', 'agility'];
 const PET_TYPES = ['dog', 'cat', 'bird', 'rabbit', 'hamster', 'reptile', 'other'];
