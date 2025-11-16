@@ -278,14 +278,16 @@ function handlePasswordResetFromEmail() {
     }
 }
 
-
 // Logout function with Firebase
 // Simple function to show auth page and hide dashboard
 function showAuth() {
     console.log('🔐 Showing auth page');
     
-    // Hide dashboard
-    document.querySelector('.dashboard-container').style.display = 'none';
+    // Safely hide dashboard if it exists
+    const dashboardContainer = document.querySelector('.dashboard-container');
+    if (dashboardContainer) {
+        dashboardContainer.style.display = 'none';
+    }
     
     // Show auth container
     document.getElementById('split-auth-container').style.display = 'flex';
@@ -333,8 +335,6 @@ function logout() {
         showError('Logout failed. Please try again.');
     });
 }
-
-
 
 // Finally, update initAuth to handle Firebase auth state:
 function initAuth() {
