@@ -289,13 +289,25 @@ function showAuth() {
         dashboardContainer.style.display = 'none';
     }
     
-    // Show auth container
-    document.getElementById('split-auth-container').style.display = 'flex';
+    // Safely show auth container if it exists - CHANGED TO QUERYSELECTOR FOR CLASS
+    const authContainer = document.querySelector('.split-auth-container');
+    if (authContainer) {
+        authContainer.style.display = 'flex';
+    } else {
+        console.error('❌ split-auth-container not found in DOM');
+        return;
+    }
     
-    // Show sign-in form by default
-    document.getElementById('signinForm').style.display = 'flex';
-    document.getElementById('signupForm').style.display = 'none';
-    document.getElementById('forgotPasswordForm').style.display = 'none';
+    // Safely show/hide forms
+    const signinForm = document.getElementById('signinForm');
+    const signupForm = document.getElementById('signupForm');
+    const forgotPasswordForm = document.getElementById('forgotPasswordForm');
+    
+    if (signinForm) signinForm.style.display = 'flex';
+    if (signupForm) signupForm.style.display = 'none';
+    if (forgotPasswordForm) forgotPasswordForm.style.display = 'none';
+    
+    console.log('✅ Auth page shown successfully');
 }
 
 // Reset UI state after logout
