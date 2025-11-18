@@ -8031,7 +8031,7 @@ document.querySelectorAll('.bcs-reassess-btn').forEach(btn => {
     btn.addEventListener('click', async (e) => {
         e.stopPropagation();
         const index = parseInt(btn.dataset.index);
-        await showBCSReassessmentModal(index);
+        await bcs.showBCSReassessmentModal(index); // calls bcs.js now
     });
  }); 
  
