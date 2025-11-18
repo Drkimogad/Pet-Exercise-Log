@@ -8084,6 +8084,7 @@ document.querySelectorAll('.edit-details-btn').forEach(btn => {
 
 
   // Report button
+// Report button - UPDATED
 document.querySelectorAll('.report-btn').forEach(btn => {
     btn.addEventListener('click', async (e) => {
         e.stopPropagation();
@@ -8091,7 +8092,9 @@ document.querySelectorAll('.report-btn').forEach(btn => {
         const pets = await getPets();
         const pet = pets[index];
         if (pet) {
-            await generateReport(pet);
+            // OLD: await generateReport(pet);
+            // NEW: Call from reports.js
+            await reports.generateEnhancedReport(pet);
         }
     });
 });
@@ -8184,12 +8187,11 @@ async function showExerciseLog() {
     
  console.log('✅ Action bar integrated into dashboard');
   
-    // ADD THESE LINES TO YOUR EXISTING INITIALIZATION:
-    // Initialize archive system
-    initializeCompleteArchiveSystem();
-    
+ // ADD THESE LINES TO YOUR EXISTING INITIALIZATION:
+    // Initialize archive system from reports.js now
+reports.initializeCompleteArchiveSystem();     
     // Setup message listener for archive actions
-    setupArchiveMessageListener();
+reports.setupArchiveMessageListener();
 
     // migrateExistingPets(); // Ensure all pets have IDs FOR FUTURE PURPOSES IF NEEDED
     getCurrentUserId();    // Ensure user ID exists
