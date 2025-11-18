@@ -1039,44 +1039,7 @@ function generateCSVFromArchivedReport() {
 }
 
 
-// STEP 3F: INTEGRATION WITH EXISTING SYSTEM
-// ===============================================
-// SYSTEM INTEGRATION
-// ===============================================
 
-/**
- * Listen for messages from report windows
- */
-window.addEventListener('message', function(event) {
-    if (event.data.action === 'showArchivedReports') {
-        showArchivedReportsModal(event.data.petName, event.data.petId);
-    }
-});
-
-/**
- * Manual archive trigger for current month
- */
-function manualArchiveCurrentMonth() {
-    const today = new Date();
-    archiveCurrentMonthManual();
-}
-
-/**
- * Initialize archive system when app starts
- */
-// Add this to your existing initialization in showExerciseLog():
-function initializeCompleteArchiveSystem() {
-    initializeArchiveSystem(); // From Phase 2
-    setupArchiveMessageListener();
-}
-
-/**
- * Sets up the message listener for archive actions
- */
-function setupArchiveMessageListener() {
-    // Already implemented above
-    console.log('📨 Archive message listener ready');
-}
 
 //===============================================
 //old code
@@ -2037,3 +2000,41 @@ Your actual archived pet reports
 One document per pet per month
 */
 
+// STEP 3F: INTEGRATION WITH EXISTING SYSTEM
+// ===============================================
+// SYSTEM INTEGRATION
+// ===============================================
+
+/**
+ * Listen for messages from report windows
+ */
+window.addEventListener('message', function(event) {
+    if (event.data.action === 'showArchivedReports') {
+        showArchivedReportsModal(event.data.petName, event.data.petId);
+    }
+});
+
+/**
+ * Manual archive trigger for current month
+ */
+function manualArchiveCurrentMonth() {
+    const today = new Date();
+    archiveCurrentMonthManual();
+}
+
+/**
+ * Initialize archive system when app starts
+ */
+// Add this to your existing initialization in showExerciseLog():
+function initializeCompleteArchiveSystem() {
+    initializeArchiveSystem(); // From Phase 2
+    setupArchiveMessageListener();
+}
+
+/**
+ * Sets up the message listener for archive actions
+ */
+function setupArchiveMessageListener() {
+    // Already implemented above
+    console.log('📨 Archive message listener ready');
+}
