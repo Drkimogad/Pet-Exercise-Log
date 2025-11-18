@@ -8162,7 +8162,7 @@ async function showExerciseLog() {
     
 // NEW: Initialize action bar - BUT DELAY IT until dashboard is visible
     setTimeout(async () => {
-        initializeActionBar();
+        actionBar.initializeActionBar();
     }, 100);
     
  console.log('✅ Action bar integrated into dashboard');
