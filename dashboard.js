@@ -60,9 +60,6 @@ function initializeDismissedSuggestions() {
     }
 }
 
-// 🆕 ADD THIS: Track open report windows
-let openReportWindows = new Map(); // petId -> window reference
- 
 const MOOD_EMOJIS = ['😀', '😊', '😐', '😞', '😠', '🤢', '😤', '😔', '😴', '😰'];
 
 // Mood options
@@ -91,23 +88,6 @@ function getCurrentUserId() {
     return 'demo_user_' + Date.now();
 }
 
-// ===============================================
-// MESSAGE LISTENERS FOR REPORT SYSTEM
-// ===============================================
-// Listen for archive requests from report windows
-window.addEventListener('message', function(event) {
-    if (event.data.action === 'showArchivedReports') {
-        console.log('📨 Received archive request for:', event.data.petName);
-        showArchivedReportsModal(event.data.petName, event.data.petId);
-    }
-});
-
-// Listen for other potential report actions
-window.addEventListener('message', function(event) {
-    if (event.data.action === 'manualArchive') {
-        archiveCurrentMonthManual();
-    }
-});
 
 //===============================================
 // ONE TIME MIGRATION FUNCTION FOR FUTURE USE
@@ -138,7 +118,7 @@ function initializeNewPet() {
             // Basic Information
             type: '',
             name: '',
-            image: 'https://drkimogad.github.io/Pet-Exercise-Log/images/default-pet.png',
+            image: 'images/default-pet.png',
             age: '',
             weight: '',
             breed: '',
