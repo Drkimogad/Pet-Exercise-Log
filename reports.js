@@ -8,6 +8,12 @@
 // ===============================================
 // FIREBASE ARCHIVE SERVICE
 // ===============================================
+// ===============================================
+// REPORT SYSTEM GLOBALS
+// ===============================================
+
+// 🆕 Track open report windows - MOVED FROM dashboard.js
+let openReportWindows = new Map(); // petId -> window reference
 
 const ReportArchiveService = {
     /**
@@ -2004,6 +2010,20 @@ One document per pet per month
 // ===============================================
 // SYSTEM INTEGRATION
 // ===============================================
+// ===============================================
+// MESSAGE LISTENERS FOR REPORT SYSTEM
+// ===============================================
+// In reportsSystem.js - more efficient version:
+window.addEventListener('message', function(event) {
+    console.log('📨 Received message:', event.data);
+    
+    if (event.data.action === 'showArchivedReports') {
+        showArchivedReportsModal(event.data.petName, event.data.petId);
+    }
+    else if (event.data.action === 'manualArchive') {
+        archiveCurrentMonthManual();
+    }
+});
 
 /**
  * Listen for messages from report windows
