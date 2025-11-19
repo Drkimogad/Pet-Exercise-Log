@@ -1450,7 +1450,7 @@ async function generateSuggestedExercisesReportHTML(pet) {
     }
     
     // Generate the actual suggested exercises to get full details
-    const allSuggestions = await generateSuggestedExercises(pet);
+    const allSuggestions = await generateSuggestedExercises(pet, petIndex);
     
     // Filter to only include logged suggestions
     const loggedSuggestions = allSuggestions.filter(suggestion => 
