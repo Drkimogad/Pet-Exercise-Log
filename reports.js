@@ -11,7 +11,6 @@
 // ===============================================
 // REPORT SYSTEM GLOBALS
 // ===============================================
-
 // 🆕 Track open report windows - MOVED FROM dashboard.js
 let openReportWindows = new Map(); // petId -> window reference
 
