@@ -26,14 +26,39 @@ const DISMISSED_SUGGESTIONS_KEY = 'dismissedSuggestions';
 // Add to top with other global variables
 const LOGGED_SUGGESTIONS_KEY = 'loggedSuggestions';
 
+// In suggestedExercises.js - ADD THESE CONSTANTS AT TOP
+const SUGGESTION_SELECTORS = {
+    logBtn: '.log-exercise-btn',
+    deleteBtn: '.delete-suggestion-btn', 
+    suggestionItem: '.suggested-exercise-item'
+};
+
+// ADD FALLBACK FOR MISSING FUNCTIONS
+function safeCall(funcName, ...args) {
+    if (typeof window[funcName] === 'function') {
+        return window[funcName](...args);
+    }
+    console.warn(`Function ${funcName} not available`);
+    return null;
+}
+
 /* 
  Generate smart exercise suggestions based on health assessment
 */
-async function generateSuggestedExercises(pet) {
-    const pets = await getPets();
-   // const pet = pets[petIndex];
+function generateSuggestedExercises(pet, petIndex = null) {
+    // 🛡️ BACKWARD COMPATIBILITY: Find index if not provided
+    if (petIndex === null) {
+        const pets = getPets();
+        petIndex = pets.findIndex(p => p.id === pet.id);
+        console.log('🔍 Auto-resolved petIndex:', petIndex, 'for pet:', pet.petDetails?.name);
+    }
     
-    const petIndex = pets.findIndex(p => p.petDetails?.name === pet.petDetails?.name);  
+    // 🛡️ SAFETY CHECK
+    if (petIndex === -1) {
+        console.warn('Pet not found in pets array, using index 0');
+        petIndex = 0;
+    }
+
         // 🎯 ADD DEBUG LOGS HERE:
     console.log('🔍 SUGGESTIONS DEBUG: Generating suggestions for pet:', pet.petDetails.name);
     console.log('🔍 SUGGESTIONS DEBUG: Pet index:', petIndex);
@@ -226,20 +251,33 @@ async function logSuggestedExercise(petIndex, exerciseId) {
       }
     
   // Refresh displays
+// Refresh displays
+if (typeof loadSavedProfiles === 'function') {
     await loadSavedProfiles();
-    updateGoalsOnExerciseLogged(petIndex);
-    refreshTimelineIfOpen();
-
-    // 🆕 ADD REPORT REFRESH
-    if (pet) {
-        await refreshOpenReports(pet.id);
-    }
-    
-    // 🆕 CENTRALIZED TRACKING WITH 'log' ACTION
-    await trackLoggedDismissedExercises(petIndex, 'log', exerciseId);
-    
-    showSuccess(`Logged: ${exercise.name}`);
 }
+
+if (typeof updateGoalsOnExerciseLogged === 'function') {
+    updateGoalsOnExerciseLogged(petIndex);
+}
+
+if (typeof refreshTimelineIfOpen === 'function') {
+    refreshTimelineIfOpen();
+}
+
+// 🆕 ADD REPORT REFRESH
+if (pet && typeof refreshOpenReports === 'function') {
+    await refreshOpenReports(pet.id);
+}
+
+// 🆕 CENTRALIZED TRACKING WITH 'log' ACTION
+if (typeof trackLoggedDismissedExercises === 'function') {
+    await trackLoggedDismissedExercises(petIndex, 'log', exerciseId);
+}
+
+if (typeof showSuccess === 'function') {
+    showSuccess(`Logged: ${exercise.name}`);
+ }
+} // closes function????
 
 //========================================================================
 // 3. Delete a suggested exercise (remove from display) updated
@@ -275,6 +313,16 @@ async function trackLoggedDismissedExercises(petIndex, action = 'track', exercis
     const pets = await getPets();
     const pet = pets[petIndex];
     if (!pet) return null;
+        // 🛡️ ENSURE DATA STRUCTURE EXISTS
+    if (!pet.suggestionSettings) {
+        pet.suggestionSettings = { dismissed: [], logged: [] };
+    }
+    if (!Array.isArray(pet.suggestionSettings.dismissed)) {
+        pet.suggestionSettings.dismissed = [];
+    }
+    if (!Array.isArray(pet.suggestionSettings.logged)) {
+        pet.suggestionSettings.logged = [];
+    }
     
     // Initialize suggestionSettings if missing
     pet.suggestionSettings = pet.suggestionSettings || { dismissed: [], logged: [] };
@@ -323,9 +371,11 @@ async function trackLoggedDismissedExercises(petIndex, action = 'track', exercis
     }
     
     // UPDATE UI
-    const petCard = document.querySelector(`[data-pet-index="${petIndex}"]`);
-    if (petCard) {
-        const suggestionItems = petCard.querySelectorAll('.suggested-exercise-item');
+    // In trackLoggedDismissedExercises() - USE THE CONSTANTS
+const petCard = document.querySelector(`[data-pet-index="${petIndex}"]`);
+if (petCard) {
+    const suggestionItems = petCard.querySelectorAll(SUGGESTION_SELECTORS.suggestionItem);
+
         
         suggestionItems.forEach(item => {
             const logBtn = item.querySelector('.log-exercise-btn');
