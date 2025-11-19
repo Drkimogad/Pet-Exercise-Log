@@ -45,19 +45,11 @@ function safeCall(funcName, ...args) {
 /* 
  Generate smart exercise suggestions based on health assessment
 */
-async function generateSuggestedExercises(pet, petIndex = null) { // ← ADD ASYNC HERE
-    // 🛡️ BACKWARD COMPATIBILITY: Find index if not provided
-    if (petIndex === null) {
-        const pets = await getPets(); // ← ADD AWAIT HERE
-        petIndex = pets.findIndex(p => p.id === pet.id);
-        console.log('🔍 Auto-resolved petIndex:', petIndex, 'for pet:', pet.petDetails?.name);
-    }
+async function generateSuggestedExercises(pet) {
+    const pets = await getPets();
+   // const pet = pets[petIndex];
     
-    // 🛡️ SAFETY CHECK
-    if (petIndex === -1) {
-        console.warn('Pet not found in pets array, using index 0');
-        petIndex = 0;
-    }
+    const petIndex = pets.findIndex(p => p.petDetails?.name === pet.petDetails?.name);  
 
         // 🎯 ADD DEBUG LOGS HERE:
     console.log('🔍 SUGGESTIONS DEBUG: Generating suggestions for pet:', pet.petDetails.name);
