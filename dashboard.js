@@ -3158,9 +3158,7 @@ document.querySelectorAll('.report-btn').forEach(btn => {
         const pets = await getPets();
         const pet = pets[index];
         if (pet) {
-            // OLD: await generateReport(pet);
-            // NEW: Call from reports.js
-            await generateEnhancedReport(pet);
+            await generateReport(pet);
         }
     });
 });
