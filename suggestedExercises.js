@@ -45,10 +45,10 @@ function safeCall(funcName, ...args) {
 /* 
  Generate smart exercise suggestions based on health assessment
 */
-function generateSuggestedExercises(pet, petIndex = null) {
+async function generateSuggestedExercises(pet, petIndex = null) { // ← ADD ASYNC HERE
     // 🛡️ BACKWARD COMPATIBILITY: Find index if not provided
     if (petIndex === null) {
-        const pets = getPets();
+        const pets = await getPets(); // ← ADD AWAIT HERE
         petIndex = pets.findIndex(p => p.id === pet.id);
         console.log('🔍 Auto-resolved petIndex:', petIndex, 'for pet:', pet.petDetails?.name);
     }
