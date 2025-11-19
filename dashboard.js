@@ -474,7 +474,7 @@ async function loadSavedProfiles() {
         
         //const suggestedExercises = await generateSuggestedExercises(pet); // ← ADD AWAIT
         // In loadSavedProfiles() - works with both old and new:
-        const suggestedExercises = await generateSuggestedExercises(pet, index); // ← New way
+        const suggestedExercises = await generateSuggestedExercises(pet); // using old code again
         const logged = JSON.parse(localStorage.getItem(LOGGED_SUGGESTIONS_KEY) || '{}')[index] || []; 
         
         return `
