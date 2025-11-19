@@ -3487,7 +3487,7 @@ document.querySelectorAll('.bcs-reassess-btn').forEach(btn => {
     btn.addEventListener('click', async (e) => {
         e.stopPropagation();
         const index = parseInt(btn.dataset.index);
-        await bcs.showBCSReassessmentModal(index); // calls bcs.js now
+        await showBCSReassessmentModal(index); // calls bcs.js now
     });
  }); 
  
@@ -3530,7 +3530,7 @@ document.querySelectorAll('.report-btn').forEach(btn => {
         if (pet) {
             // OLD: await generateReport(pet);
             // NEW: Call from reports.js
-            await reports.generateEnhancedReport(pet);
+            await generateEnhancedReport(pet);
         }
     });
 });
@@ -3618,16 +3618,16 @@ async function showExerciseLog() {
     
 // NEW: Initialize action bar - BUT DELAY IT until dashboard is visible, in actionBar.js now
     setTimeout(async () => {
-        actionBar.initializeActionBar();
+        initializeActionBar();
     }, 100);
     
  console.log('✅ Action bar integrated into dashboard');
   
  // ADD THESE LINES TO YOUR EXISTING INITIALIZATION:
     // Initialize archive system from reports.js now
-reports.initializeCompleteArchiveSystem();     
+initializeCompleteArchiveSystem();     
     // Setup message listener for archive actions
-reports.setupArchiveMessageListener();
+setupArchiveMessageListener();
 
     // migrateExistingPets(); // Ensure all pets have IDs FOR FUTURE PURPOSES IF NEEDED
     getCurrentUserId();    // Ensure user ID exists
