@@ -1431,7 +1431,12 @@ function formatMedicalCondition(condition) {
 // GENERATE SUGGESTED EXERCISES html updated 
 async function generateSuggestedExercisesReportHTML(pet) {
     const pets = await getPets();
-    const petIndex = pets.findIndex(p => p.petDetails.name === pet.petDetails.name);
+    const petIndex = pets.findIndex(p => p.petDetails.name === pet.petDetails.name); // name is working 
+    /* 
+    if it causes issues we use petId instead and it is passed by function generateSuggestedExercises(pet, petIndex = null) {
+     it works for both backward compatability
+    */ 
+    //const petIndex = pets.findIndex(p => p.id === pet.id); // ← MORE RELIABLE THAN NAME
     
     console.log('🔍 REPORT DEBUG: Pet from parameter:', pet.petDetails.name);
     console.log('🔍 REPORT DEBUG: All pets in array:', pets.map(p => p.petDetails.name));
@@ -1450,7 +1455,7 @@ async function generateSuggestedExercisesReportHTML(pet) {
     }
     
     // Generate the actual suggested exercises to get full details
-    const allSuggestions = await generateSuggestedExercises(pet, petIndex);
+    const allSuggestions = await generateSuggestedExercises(pet, petIndex); // added index now 
     
     // Filter to only include logged suggestions
     const loggedSuggestions = allSuggestions.filter(suggestion => 
