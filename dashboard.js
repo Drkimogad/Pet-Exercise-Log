@@ -3235,16 +3235,28 @@ async function showExerciseLog() {
    await loadSavedProfiles(); // This will handle empty state vs profiles
    setupEventListeners();
    await loadActivePetData();
-    // FOR SUGGESTED EXERCISES: ensure localstorage data exists aklso as a fallback if firestore fails
-   initializeDismissedSuggestions(); // to be filtered on refreshing 
-    initializeLoggedSuggestions();
+    
+// FOR SUGGESTED EXERCISES: ensure localstorage data exists also as a fallback if firestore fails
+setTimeout(() => {
+    if (typeof initializeDismissedSuggestions === 'function') {
+        initializeDismissedSuggestions(); // to be filtered on refreshing 
+    }
+    
+    if (typeof initializeLoggedSuggestions === 'function') {
+        initializeLoggedSuggestions();
+    }
+    
     console.log('✅ Suggested exercises systems initialized');
+}, 100);
 
-    // 🆕 TRACK SUGGESTIONS, GET PETS FIRST, THEN TRACK EACH ONE
-       const pets = await getPets();
-      pets.forEach(async (pet, index) => {
-      await trackLoggedDismissedExercises(index);
+// 🆕 TRACK SUGGESTIONS, GET PETS FIRST, THEN TRACK EACH ONE - SEPARATE!
+const pets = await getPets();
+if (typeof trackLoggedDismissedExercises === 'function') {
+    pets.forEach(async (pet, index) => {
+        await trackLoggedDismissedExercises(index);
     });
+    console.log(`✅ Tracked suggestions for ${pets.length} pets`);
+}
     
 // NEW: Initialize action bar - BUT DELAY IT until dashboard is visible, in actionBar.js now
     setTimeout(async () => {
