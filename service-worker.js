@@ -7,7 +7,7 @@ Handle failures gracefully - don't break the whole install
 This pattern works reliably for GitHub Pages' specific URL structure! 🚀
 */
 
-const CACHE_NAME = 'Pet-Exercise-Log-cache-v11';
+const CACHE_NAME = 'Pet-Exercise-Log-cache-v2.1.1';
 const OFFLINE_PAGE = '/offline.html';
 
 // Environment configuration - CHANGE THIS WHEN DEPLOYING
@@ -54,6 +54,10 @@ function getUrlsToCache() {
         '/auth.js',
         '/dashboard.js', 
         '/utils.js',
+        '/actionBar.js',
+        '/bcs.js',
+        '/suggestedExercises.js',
+        '/reports.js',
         
         // Styles and Manifest
         '/styles.css',
