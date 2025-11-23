@@ -45,6 +45,9 @@
   --shadow-md: 0 4px 6px rgba(54, 69, 79, 0.15);
   --dark-mustard: #A83246;      /* Darker crimson */
   --header-text: var(--dark-purple); /* Your charcoal */
+      /* Add this for high-contrast text */
+  --high-contrast-text: #000000; /* Pure black for light backgrounds */
+  --high-contrast-light: #FFFFFF; /* Pure white for dark backgrounds */
 }
     
 
@@ -5389,4 +5392,210 @@ input:checked + .toggle-slider:before {
         color: var(--primary-yellow);
         font-weight: 500; /* Slightly bolder on tablets */
     }
+}
+
+/* READABILITY FIXES FOR SOME AREAS */
+/* ============================================================
+   READABILITY FIXES - DESKTOP (1025px and above)
+============================================================ */
+@media (min-width: 1025px) {
+  /* Action Bar Contrast Fix */
+  .action-bar {
+    background-color: var(--dark-purple);
+    color: var(--high-contrast-light);
+  }
+  
+  .action-bar-btn {
+    color: var(--high-contrast-light);
+    border-color: var(--high-contrast-light);
+  }
+  
+  .action-bar-btn:hover {
+    background-color: var(--high-contrast-light);
+    color: var(--dark-purple);
+  }
+
+  /* Button Text Contrast */
+  .auth-btn,
+  .primary-btn,
+  .select-btn,
+  .daily-log-btn {
+    color: var(--high-contrast-light);
+  }
+
+  /* Empty State Text Fix */
+  .empty-state,
+  .no-charts-data,
+  .no-moods,
+  .no-reminders,
+  .no-goals,
+  .no-timeline {
+    color: var(--high-contrast-text);
+  }
+
+  /* Form Text Readability */
+  .form-group label,
+  .field-text,
+  .bcs-label,
+  .goal-status,
+  .timeline-stat .stat-label {
+    color: var(--high-contrast-text);
+  }
+
+  /* Quick Stats Contrast */
+  .quick-stats-section {
+    background: var(--dark-charcoal);
+  }
+  
+  .quick-stat-value {
+    color: var(--high-contrast-light);
+  }
+
+  /* Border Visibility */
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    border-color: var(--dark-charcoal);
+  }
+
+  /* Modal Text Contrast */
+  .modal-content,
+  .reminder-item,
+  .goal-item,
+  .timeline-entry {
+    color: var(--high-contrast-text);
+  }
+}
+
+/* ============================================================
+   READABILITY FIXES - TABLET (769px to 1024px)
+============================================================ */
+@media (min-width: 769px) and (max-width: 1024px) {
+  /* Action Bar - More compact but readable */
+  .action-bar {
+    background-color: var(--dark-purple);
+    color: var(--high-contrast-light);
+    padding: 0.8rem 1rem;
+  }
+
+  .action-bar-btn {
+    color: var(--high-contrast-light);
+    font-size: 0.9rem;
+    padding: 0.6rem 1rem;
+  }
+
+  /* Button Contrast */
+  .auth-btn,
+  .primary-btn {
+    color: var(--high-contrast-light);
+    font-size: 1rem;
+  }
+
+  /* Text Elements */
+  .empty-state,
+  .no-charts-data,
+  .form-group label,
+  .field-text {
+    color: var(--high-contrast-text);
+  }
+
+  /* Form Borders */
+  .form-group input {
+    border-color: var(--dark-charcoal);
+    font-size: 16px; /* Prevent zoom on iOS */
+  }
+
+  /* Card Text Readability */
+  .profile-card,
+  .modal-content {
+    color: var(--high-contrast-text);
+  }
+}
+
+/* ============================================================
+   READABILITY FIXES - MOBILE (768px and below)
+============================================================ */
+@media (max-width: 768px) {
+  /* Action Bar - Stacked layout */
+  .action-bar {
+    background-color: var(--dark-purple);
+    color: var(--high-contrast-light);
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+
+  .action-bar-btn {
+    color: var(--high-contrast-light);
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* Touch-friendly buttons with good contrast */
+  .auth-btn,
+  .primary-btn,
+  .daily-log-btn,
+  .edit-details-btn {
+    color: var(--high-contrast-light);
+    min-height: 44px; /* Touch target size */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* All text elements */
+  .empty-state,
+  .no-charts-data,
+  .no-moods,
+  .form-group label,
+  .field-text,
+  .bcs-label,
+  .exercise-info,
+  .mood-label,
+  .timeline-content {
+    color: var(--high-contrast-text);
+  }
+
+  /* Form inputs with better borders */
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    border-color: var(--dark-charcoal);
+    font-size: 16px; /* Prevent zoom */
+    color: var(--high-contrast-text);
+    background: var(--high-contrast-light);
+  }
+
+  /* Modal and card content */
+  .modal-content,
+  .profile-card,
+  .reminder-item,
+  .goal-item {
+    color: var(--high-contrast-text);
+  }
+
+  /* Quick stats mobile optimization */
+  .quick-stats-section {
+    background: var(--dark-charcoal);
+    padding: 0.8rem;
+  }
+  
+  .quick-stat-value {
+    color: var(--high-contrast-light);
+    font-size: 0.8rem;
+  }
+
+  /* Ensure dark mode compatibility */
+  .dark-mode .empty-state,
+  .dark-mode .form-group label,
+  .dark-mode .field-text {
+    color: var(--high-contrast-light);
+  }
+
+  .dark-mode .form-group input,
+  .dark-mode .form-group select,
+  .dark-mode .form-group textarea {
+    color: var(--high-contrast-light);
+    background: var(--dark-charcoal);
+    border-color: var(--primary-yellow);
+  }
 }
