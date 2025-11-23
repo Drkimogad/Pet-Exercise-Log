@@ -6014,3 +6014,123 @@ then creates the two bordered columns on phones.
     }
 }
 
+
+
+/* ============================================================
+This surgically reduces padding, gaps, and spacing in forms only, 
+keeping all layouts intact.
+
+   FORM SPACE OPTIMIZATION - DESKTOP (1025px+)
+============================================================ */
+@media (min-width: 1025px) {
+  .profile-form {
+    padding: 20px;
+    margin: 15px auto;
+  }
+  
+  .form-section {
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+  
+  .form-grid {
+    gap: 15px;
+    margin-bottom: 15px;
+  }
+  
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    padding: 10px 12px;
+    height: 38px;
+  }
+  
+  .checkbox-group {
+    gap: 10px;
+  }
+  
+  .mood-container {
+    padding: 15px;
+  }
+}
+
+/* ============================================================
+   FORM SPACE OPTIMIZATION - TABLET (769px-1024px)
+============================================================ */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .profile-form {
+    padding: 15px;
+    margin: 10px;
+  }
+  
+  .form-section {
+    padding: 15px;
+    margin-bottom: 15px;
+  }
+  
+  .form-grid {
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    padding: 8px 10px;
+    height: 36px;
+  }
+  
+  .form-actions {
+    margin-top: 20px;
+    gap: 15px;
+  }
+}
+
+/* ============================================================
+   FORM SPACE OPTIMIZATION - MOBILE (768px-)
+============================================================ */
+@media (max-width: 768px) {
+  .profile-form {
+    padding: 12px;
+    margin: 8px;
+  }
+  
+  .form-section {
+    padding: 12px;
+    margin-bottom: 12px;
+  }
+  
+  .form-grid {
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    padding: 8px 10px;
+    height: 40px;
+    font-size: 16px;
+  }
+  
+  .form-actions {
+    margin-top: 15px;
+    gap: 10px;
+  }
+  
+  .primary-btn,
+  .secondary-btn {
+    padding: 12px 20px;
+    min-width: 140px;
+  }
+}
+
+/* =======================================
+to reduce the width of pet-card slightly on phone
+==================================================*/
+@media (max-width: 768px) {
+  .profile-card {
+    padding: 15px;
+    margin: 10px;    /* This adds equal margins but full width */
+  }
+}
