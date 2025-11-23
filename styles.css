@@ -5918,3 +5918,29 @@ while keeping all existing styling.
 }
 
 
+/* ============================================================
+This puts Select + Delete side-by-side and makes Generate Report full width on phones only.
+   ACTION BUTTONS - PHONE LAYOUT (768px-)
+============================================================ */
+@media (max-width: 768px) {
+  .action-buttons-section {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .action-buttons-top-row {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+  }
+  
+  .select-btn,
+  .delete-btn {
+    flex: 1;
+    min-width: 0;
+  }
+  
+  .report-btn {
+    width: 100%;
+  }
+}
