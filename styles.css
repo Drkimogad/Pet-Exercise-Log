@@ -5861,5 +5861,60 @@ This reduces all spacing and sizes while keeping
   }
 }
 
+/* ============================================================
+This converts the mood entries to grid layout with your specified columns (3 on phone, 5 on tablet/desktop) 
+while keeping all existing styling.
+
+   MOOD ENTRIES GRID LAYOUT - DESKTOP (1025px+)
+============================================================ */
+@media (min-width: 1025px) {
+  .mood-entries {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+  }
+  
+  .mood-entry {
+    min-width: auto;
+    justify-content: center;
+    padding: 8px 4px;
+  }
+}
+
+/* ============================================================
+   MOOD ENTRIES GRID LAYOUT - TABLET (769px-1024px)
+============================================================ */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .mood-entries {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 6px;
+  }
+  
+  .mood-entry {
+    min-width: auto;
+    justify-content: center;
+    padding: 6px 3px;
+    font-size: 0.9em;
+  }
+}
+
+/* ============================================================
+   MOOD ENTRIES GRID LAYOUT - MOBILE (768px-)
+============================================================ */
+@media (max-width: 768px) {
+  .mood-entries {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+  }
+  
+  .mood-entry {
+    min-width: auto;
+    justify-content: center;
+    padding: 6px 3px;
+    font-size: 0.85em;
+  }
+}
 
 
