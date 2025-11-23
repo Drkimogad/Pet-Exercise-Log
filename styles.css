@@ -6013,7 +6013,58 @@ then creates the two bordered columns on phones.
         justify-content: center;
     }
 }
+/* ============================================================
+   DASHBOARD HEADER BUTTONS - TABLET OPTIMIZATION (769px-1024px)
+============================================================ */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .action-bar {
+        padding: 0.8rem 1rem;
+        gap: 10px;
+    }
+    
+    .action-bar-left,
+    .action-bar-right {
+        gap: 8px;
+    }
+    
+    .action-bar-btn,
+    #addNewProfileButton,
+    #toggleModeButton,
+    #logoutButton {
+        padding: 0.6rem 1rem;
+        font-size: 0.9rem;
+        min-width: 120px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    .action-bar-right {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        padding: 8px;
+        border-radius: 8px;
+        border: 1px solid var(--primary-yellow);
+    }
+}
 
+/* ============================================================
+   DASHBOARD HEADER BUTTONS - DESKTOP OPTIMIZATION (1025px+)
+============================================================ */
+@media (min-width: 1025px) {
+    .action-bar {
+        padding: 1rem 1.5rem;
+    }
+    
+    .action-bar-btn,
+    #addNewProfileButton,
+    #toggleModeButton,
+    #logoutButton {
+        padding: 0.7rem 1.2rem;
+        font-size: 0.95rem;
+        min-width: 130px;
+    }
+}
 
 
 /* ============================================================
