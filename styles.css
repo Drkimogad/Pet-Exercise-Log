@@ -5779,3 +5779,87 @@ and optimizing the grid layout while keeping your image size consistent across a
   }
 }
 
+
+
+/* ============================================================
+This reduces all spacing and sizes while keeping 
+ all 4 stats in one horizontal line on every device.
+
+   EXERCISE STATS - COMPACT ONE-LINE LAYOUT - DESKTOP (1025px+)
+============================================================ */
+@media (min-width: 1025px) {
+  .exercise-stats-row {
+    gap: 12px;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+  }
+  
+  .exercise-stat {
+    padding: 10px 8px;
+    min-height: 60px;
+  }
+  
+  .exercise-number {
+    font-size: 1.4rem;
+    margin-bottom: 3px;
+  }
+  
+  .exercise-label {
+    font-size: 0.75rem;
+  }
+}
+
+/* ============================================================
+   EXERCISE STATS - COMPACT ONE-LINE LAYOUT - TABLET (769px-1024px)
+============================================================ */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .exercise-stats-row {
+    gap: 8px;
+    margin-bottom: 15px;
+    padding-bottom: 12px;
+  }
+  
+  .exercise-stat {
+    padding: 8px 6px;
+    min-height: 50px;
+  }
+  
+  .exercise-number {
+    font-size: 1.2rem;
+    margin-bottom: 2px;
+  }
+  
+  .exercise-label {
+    font-size: 0.7rem;
+    line-height: 1.1;
+  }
+}
+
+/* ============================================================
+   EXERCISE STATS - COMPACT ONE-LINE LAYOUT - MOBILE (768px-)
+============================================================ */
+@media (max-width: 768px) {
+  .exercise-stats-row {
+    gap: 6px;
+    margin-bottom: 12px;
+    padding-bottom: 10px;
+  }
+  
+  .exercise-stat {
+    padding: 6px 4px;
+    min-height: 45px;
+  }
+  
+  .exercise-number {
+    font-size: 1rem;
+    margin-bottom: 1px;
+  }
+  
+  .exercise-label {
+    font-size: 0.65rem;
+    line-height: 1;
+  }
+}
+
+
+
