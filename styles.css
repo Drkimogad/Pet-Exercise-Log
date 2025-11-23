@@ -5603,7 +5603,7 @@ input:checked + .toggle-slider:before {
 /* ============================================================
 This reduces wasted space by tightening gaps, adjusting padding, 
 and optimizing the grid layout while keeping your image size consistent across all devices.
-
+/* ============================================================
    BASIC INFO SECTION - COMPACT LAYOUT - DESKTOP (1025px+)
 ============================================================ */
 @media (min-width: 1025px) {
@@ -5640,7 +5640,7 @@ and optimizing the grid layout while keeping your image size consistent across a
   }
   
   .basic-fields {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(5, 1fr);
     gap: 8px;
   }
   
@@ -5696,7 +5696,7 @@ and optimizing the grid layout while keeping your image size consistent across a
   }
   
   .basic-fields {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(5, 1fr);
     gap: 6px;
   }
   
@@ -5758,7 +5758,7 @@ and optimizing the grid layout while keeping your image size consistent across a
   }
   
   .basic-fields {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(3, 1fr);
     gap: 4px;
   }
   
@@ -5781,6 +5781,7 @@ and optimizing the grid layout while keeping your image size consistent across a
 
 
 
+
 /* ============================================================
 This reduces all spacing and sizes while keeping 
  all 4 stats in one horizontal line on every device.
@@ -5789,23 +5790,23 @@ This reduces all spacing and sizes while keeping
 ============================================================ */
 @media (min-width: 1025px) {
   .exercise-stats-row {
-    gap: 12px;
-    margin-bottom: 20px;
-    padding-bottom: 15px;
+    gap: 12px !important;
+    margin-bottom: 20px !important;
+    padding-bottom: 15px !important;
   }
   
   .exercise-stat {
-    padding: 10px 8px;
-    min-height: 60px;
+    padding: 10px 8px !important;
+    min-height: 60px !important;
   }
   
   .exercise-number {
-    font-size: 1.4rem;
-    margin-bottom: 3px;
+    font-size: 1.4rem !important;
+    margin-bottom: 3px !important;
   }
   
   .exercise-label {
-    font-size: 0.75rem;
+    font-size: 0.75rem !important;
   }
 }
 
@@ -5814,24 +5815,24 @@ This reduces all spacing and sizes while keeping
 ============================================================ */
 @media (min-width: 769px) and (max-width: 1024px) {
   .exercise-stats-row {
-    gap: 8px;
-    margin-bottom: 15px;
-    padding-bottom: 12px;
+    gap: 8px !important;
+    margin-bottom: 15px !important;
+    padding-bottom: 12px !important;
   }
   
   .exercise-stat {
-    padding: 8px 6px;
-    min-height: 50px;
+    padding: 8px 6px !important;
+    min-height: 50px !important;
   }
   
   .exercise-number {
-    font-size: 1.2rem;
-    margin-bottom: 2px;
+    font-size: 1.2rem !important;
+    margin-bottom: 2px !important;
   }
   
   .exercise-label {
-    font-size: 0.7rem;
-    line-height: 1.1;
+    font-size: 0.7rem !important;
+    line-height: 1.1 !important;
   }
 }
 
@@ -5840,24 +5841,24 @@ This reduces all spacing and sizes while keeping
 ============================================================ */
 @media (max-width: 768px) {
   .exercise-stats-row {
-    gap: 6px;
-    margin-bottom: 12px;
-    padding-bottom: 10px;
+    gap: 6px !important;
+    margin-bottom: 12px !important;
+    padding-bottom: 10px !important;
   }
   
   .exercise-stat {
-    padding: 6px 4px;
-    min-height: 45px;
+    padding: 6px 4px !important;
+    min-height: 45px !important;
   }
   
   .exercise-number {
-    font-size: 1rem;
-    margin-bottom: 1px;
+    font-size: 1rem !important;
+    margin-bottom: 1px !important;
   }
   
   .exercise-label {
-    font-size: 0.65rem;
-    line-height: 1;
+    font-size: 0.65rem !important;
+    line-height: 1 !important;
   }
 }
 
@@ -5924,24 +5925,24 @@ This puts Select + Delete side-by-side and makes Generate Report full width on p
 ============================================================ */
 @media (max-width: 768px) {
   .action-buttons-section {
-    flex-direction: column;
-    gap: 10px;
+    flex-direction: column !important;
+    gap: 10px !important;
   }
   
   .action-buttons-top-row {
-    display: flex;
-    gap: 10px;
-    width: 100%;
+    display: flex !important;
+    gap: 10px !important;
+    width: 100% !important;
   }
   
   .select-btn,
   .delete-btn {
-    flex: 1;
-    min-width: 0;
+    flex: 1 !important;
+    min-width: 0 !important;
   }
   
   .report-btn {
-    width: 100%;
+    width: 100% !important;
   }
 }
 
@@ -5986,33 +5987,35 @@ then creates the two bordered columns on phones.
 ============================================================ */
 @media (max-width: 768px) {
     .action-bar {
-        flex-direction: column;
-        gap: 15px;
-        padding: 1rem;
+        flex-direction: column !important;
+        gap: 15px !important;
+        padding: 1rem !important;
     }
     
     .action-bar-left,
     .action-bar-right {
-        width: 100%;
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-        background: rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(10px);
-        padding: 12px;
-        border-radius: 8px;
-        border: 1px solid var(--primary-yellow);
+        width: 100% !important;
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 8px !important;
+        background: rgba(255, 255, 255, 0.1) !important;
+        backdrop-filter: blur(10px) !important;
+        padding: 12px !important;
+        border-radius: 8px !important;
+        border: 1px solid var(--primary-yellow) !important;
     }
     
     .action-bar-btn,
     #addNewProfileButton,
     #toggleModeButton,
     #logoutButton {
-        width: 100%;
-        min-width: auto;
-        justify-content: center;
+        width: 100% !important;
+        min-width: auto !important;
+        justify-content: center !important;
     }
 }
+
+
 /* ============================================================
 This creates two clean rows without squashing text, using the full tablet width efficiently.
 
