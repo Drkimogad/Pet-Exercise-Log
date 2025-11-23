@@ -29,7 +29,7 @@
   --primary-mustard: #CB4154;   /* Was #B45309 - now your crimson */
   --dark-purple: #36454F;       /* Was #6B46C1 - now your charcoal */
   --light-purple: #C0C0C0;      /* Was #7C3AED - now your silver */
-  --light-charcoal: #F5F5DC;    /* Was #4B5563 - now your cream */
+  --light-charcoal: #6B7280;     /* Change to actual light gray */
   --dark-charcoal: #2C3840;     /* Was #374151 - darker charcoal */
   
   /* Keep the rest as is but updated */
@@ -5599,3 +5599,183 @@ input:checked + .toggle-slider:before {
     border-color: var(--primary-yellow);
   }
 }
+
+/* ============================================================
+This reduces wasted space by tightening gaps, adjusting padding, 
+and optimizing the grid layout while keeping your image size consistent across all devices.
+
+   BASIC INFO SECTION - COMPACT LAYOUT - DESKTOP (1025px+)
+============================================================ */
+@media (min-width: 1025px) {
+  .basic-info-section {
+    gap: 15px;
+    margin-bottom: 20px;
+  }
+  
+  .basic-info-top-row {
+    gap: 15px;
+    align-items: stretch;
+  }
+  
+  .quick-stats-section {
+    padding: 10px 15px;
+    gap: 15px;
+    flex: 1;
+  }
+  
+  .quick-stat {
+    gap: 5px;
+    min-width: auto;
+  }
+  
+  .edit-details-btn {
+    padding: 10px 15px;
+    font-size: 0.85rem;
+    white-space: nowrap;
+  }
+  
+  .basic-info-bottom-row {
+    gap: 15px;
+    align-items: center;
+  }
+  
+  .basic-fields {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+  
+  .field-item {
+    padding: 6px 8px;
+    min-height: 36px;
+  }
+  
+  .field-icon {
+    font-size: 1rem;
+  }
+  
+  .field-text {
+    font-size: 0.85rem;
+  }
+}
+
+/* ============================================================
+   BASIC INFO SECTION - COMPACT LAYOUT - TABLET (769px-1024px)
+============================================================ */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .basic-info-section {
+    gap: 12px;
+    margin-bottom: 15px;
+  }
+  
+  .basic-info-top-row {
+    flex-direction: row;
+    gap: 12px;
+  }
+  
+  .quick-stats-section {
+    padding: 8px 12px;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: space-around;
+  }
+  
+  .quick-stat {
+    flex-direction: column;
+    gap: 3px;
+    text-align: center;
+    min-width: 60px;
+  }
+  
+  .edit-details-btn {
+    padding: 8px 12px;
+    font-size: 0.8rem;
+  }
+  
+  .basic-info-bottom-row {
+    gap: 12px;
+  }
+  
+  .basic-fields {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px;
+  }
+  
+  .field-item {
+    padding: 5px 6px;
+    min-height: 32px;
+  }
+  
+  .field-text {
+    font-size: 0.8rem;
+  }
+}
+
+/* ============================================================
+   BASIC INFO SECTION - COMPACT LAYOUT - MOBILE (768px-)
+============================================================ */
+@media (max-width: 768px) {
+  .basic-info-section {
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+  
+  .basic-info-top-row {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .quick-stats-section {
+    padding: 6px 10px;
+    gap: 10px;
+    justify-content: space-between;
+    flex-wrap: wrap;
+  }
+  
+  .quick-stat {
+    flex: 1;
+    min-width: 70px;
+    gap: 3px;
+    text-align: center;
+  }
+  
+  .quick-stat-icon {
+    font-size: 1rem;
+  }
+  
+  .quick-stat-value {
+    font-size: 0.75rem;
+  }
+  
+  .edit-details-btn {
+    padding: 8px 12px;
+    font-size: 0.8rem;
+    width: 100%;
+  }
+  
+  .basic-info-bottom-row {
+    grid-template-columns: 120px 1fr;
+    gap: 10px;
+  }
+  
+  .basic-fields {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+  
+  .field-item {
+    padding: 4px 6px;
+    min-height: 30px;
+    flex-direction: row;
+    align-items: center;
+  }
+  
+  .field-icon {
+    font-size: 0.9rem;
+    min-width: 20px;
+  }
+  
+  .field-text {
+    font-size: 0.8rem;
+  }
+}
+
