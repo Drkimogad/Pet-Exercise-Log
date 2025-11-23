@@ -5944,3 +5944,73 @@ This puts Select + Delete side-by-side and makes Generate Report full width on p
     width: 100%;
   }
 }
+
+
+
+/* ============================================================
+This first styles the 3 right buttons to match the left ones, 
+then creates the two bordered columns on phones.
+
+   DASHBOARD HEADER BUTTONS - STYLING UNIFICATION
+============================================================ */
+#addNewProfileButton,
+#toggleModeButton, 
+#logoutButton {
+    background: transparent;
+    color: var(--primary-yellow);
+    border: 2px solid var(--primary-yellow);
+    padding: 0.8rem 1.5rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 140px;
+    justify-content: center;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+#addNewProfileButton:hover,
+#toggleModeButton:hover,
+#logoutButton:hover {
+    background: var(--primary-yellow);
+    color: var(--dark-purple);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+/* ============================================================
+   DASHBOARD HEADER - PHONE LAYOUT (768px-)
+============================================================ */
+@media (max-width: 768px) {
+    .action-bar {
+        flex-direction: column;
+        gap: 15px;
+        padding: 1rem;
+    }
+    
+    .action-bar-left,
+    .action-bar-right {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        padding: 12px;
+        border-radius: 8px;
+        border: 1px solid var(--primary-yellow);
+    }
+    
+    .action-bar-btn,
+    #addNewProfileButton,
+    #toggleModeButton,
+    #logoutButton {
+        width: 100%;
+        min-width: auto;
+        justify-content: center;
+    }
+}
+
