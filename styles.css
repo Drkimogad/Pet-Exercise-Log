@@ -5779,7 +5779,18 @@ and optimizing the grid layout while keeping your image size consistent across a
   }
 }
 
-
+/* Force 3-column grid for basic fields on mobile */
+@media (max-width: 768px) {
+  .basic-info-content .basic-fields {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 8px;
+  }
+  
+  .basic-info-content .field-item {
+    min-height: 40px;
+    padding: 6px 4px;
+  }
+}
 
 
 /* ============================================================
@@ -5862,6 +5873,18 @@ This reduces all spacing and sizes while keeping
   }
 }
 
+/*
+For Exercise Stats (All Devices):
+Force 4-column horizontal layout for all devices
+*/
+@media (min-width: 320px) {
+  .exercise-stats-row {
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 8px;
+  }
+}
+
+
 /* ============================================================
 This converts the mood entries to grid layout with your specified columns (3 on phone, 5 on tablet/desktop) 
 while keeping all existing styling.
@@ -5923,8 +5946,10 @@ while keeping all existing styling.
 This puts Select + Delete side-by-side and makes Generate Report full width on phones only.
    ACTION BUTTONS - PHONE LAYOUT (768px-)
 ============================================================ */
+/* Create two-row layout for action buttons on mobile */
 @media (max-width: 768px) {
   .action-buttons-section {
+    display: flex !important;
     flex-direction: column !important;
     gap: 10px !important;
   }
@@ -5935,17 +5960,14 @@ This puts Select + Delete side-by-side and makes Generate Report full width on p
     width: 100% !important;
   }
   
-  .select-btn,
-  .delete-btn {
+  .select-btn, .delete-btn {
     flex: 1 !important;
-    min-width: 0 !important;
   }
   
   .report-btn {
     width: 100% !important;
   }
 }
-
 
 
 /* ============================================================
@@ -6178,11 +6200,38 @@ keeping all layouts intact.
 }
 
 /* =======================================
-to reduce the width of pet-card slightly on phone
+   PET CARD WIDTH FIX - PHONE & TABLET
+   Ensures cards fit within dashboard container
+   with visible borders and no horizontal scroll
 ==================================================*/
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .profile-card {
-    padding: 15px;
-    margin: 10px;    /* This adds equal margins but full width */
+    margin: 0 0 1rem 0; /* Only bottom margin, no horizontal margins */
+    width: 100%; /* Ensure full width of container */
+    box-sizing: border-box; /* Include padding in width calculation */
   }
 }
+
+@media (max-width: 768px) {
+  .profile-card {
+    padding: 12px; /* Slightly reduced padding on phones */
+    border: 2px solid transparent; /* Ensure border space is reserved */
+  }
+  
+  .profile-card.active {
+    border: 2px solid var(--dark-purple); /* Visible selection border */
+  }
+}
+
+/* Ensure dashboard container handles the spacing */
+@media (max-width: 768px) {
+  .dashboard-container {
+    padding: 0.5rem; /* Reduced container padding on phones */
+  }
+  
+  .saved-profiles {
+    padding: 0.5rem; /* Match container padding */
+    gap: 1rem;
+  }
+}
+
