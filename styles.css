@@ -5990,12 +5990,19 @@ This puts Select + Delete side-by-side and makes Generate Report full width on p
   .dashboard-header {
     position: fixed;
     top: 0;
-    left: 0;
+    left: 0; 
     right: 0;
-    width: 100%;
+    width: 100vw;
     margin: 0;
     border-radius: 0;
+    border-left: none;
+    border-right: none;
     z-index: 100;
+    box-sizing: border-box;
+  }
+
+  .action-bar {
+    margin-top: 120px; /* Push below fixed header */
   }
 }
 
