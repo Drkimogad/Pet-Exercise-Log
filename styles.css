@@ -5999,7 +5999,7 @@ This puts Select + Delete side-by-side and makes Generate Report full width on p
     border-right: none;
     z-index: 100;
     box-sizing: border-box;
-    padding: 1rem 1.5rem !important; /* Reduce from 1.5rem 2rem */
+    padding: 0.5rem 1rem !important; /* Reduce from 1.5rem 2rem */
   }
     
   .action-bar {
