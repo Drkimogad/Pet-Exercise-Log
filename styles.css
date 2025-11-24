@@ -6026,39 +6026,53 @@ then creates the two bordered columns on phones.
    DASHBOARD HEADER - PHONE LAYOUT WITH BOTTOM NAVIGATION
 ============================================================ */
 /* ============================================================
-   DASHBOARD HEADER - PHONE OPTIMIZED BOTTOM NAVIGATION
+   DASHBOARD - PHONE LAYOUT WITH FIXED HEADER
 ============================================================ */
 @media (max-width: 768px) {
-  /* Reposition the entire action bar to bottom with 2 rows */
-  .action-bar {
+  /* Fix the dashboard header at top */
+  .dashboard-header {
     position: fixed !important;
-    bottom: 0 !important;
+    top: 0 !important;
     left: 0 !important;
     right: 0 !important;
     background: var(--dark-purple) !important;
-    border-top: 2px solid var(--primary-yellow) !important;
-    z-index: 1000 !important;
+    z-index: 100 !important;
+    padding: 1rem !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
+    border-bottom: 2px solid var(--primary-yellow) !important;
+  }
+  
+  /* Style the action bar as 2x3 grid in its original position */
+  .action-bar {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    grid-template-rows: repeat(2, 1fr) !important;
+    gap: 8px !important;
     padding: 10px !important;
     margin: 0 !important;
-    flex-direction: column !important;
-    justify-content: center !important;
-    align-items: center !important;
-    height: 120px !important; /* Taller for 2 rows */
+    background: var(--dark-purple) !important;
+    border: 2px solid var(--primary-yellow) !important;
+    border-radius: 8px !important;
+    min-height: 120px !important;
     box-sizing: border-box !important;
-    gap: 8px !important;
   }
   
-  /* Create two rows for the buttons */
+  /* Remove the flexbox left/right sections */
   .action-bar-left,
   .action-bar-right {
-    display: flex !important;
-    gap: 8px !important;
-    width: 100% !important;
-    justify-content: space-around !important;
-    align-items: center !important;
+    display: contents !important;
   }
   
-  /* Style all buttons with better sizing */
+  /* Position each button in the grid */
+  .reminders-btn { grid-column: 1; grid-row: 1; }
+  .goals-btn { grid-column: 2; grid-row: 1; }
+  .timeline-btn { grid-column: 3; grid-row: 1; }
+  #addNewProfileButton { grid-column: 1; grid-row: 2; }
+  #toggleModeButton { grid-column: 2; grid-row: 2; }
+  #logoutButton { grid-column: 3; grid-row: 2; }
+  
+  /* Style all buttons to fill their grid cells equally */
   .action-bar-btn,
   #addNewProfileButton,
   #toggleModeButton,
@@ -6067,12 +6081,12 @@ then creates the two bordered columns on phones.
     flex-direction: column !important;
     align-items: center !important;
     justify-content: center !important;
-    flex: 1 !important;
-    min-height: 50px !important; /* Taller buttons */
-    max-width: 100px !important; /* Reasonable max width */
-    padding: 8px 4px !important; /* Better padding */
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 44px !important;
+    padding: 6px 4px !important;
     border: 2px solid var(--primary-yellow) !important;
-    border-radius: 10px !important; /* Slightly rounder */
+    border-radius: 6px !important;
     background: var(--dark-purple) !important;
     color: var(--primary-yellow) !important;
     font-size: 0.7rem !important;
@@ -6083,58 +6097,31 @@ then creates the two bordered columns on phones.
     box-sizing: border-box !important;
   }
   
-  /* Better hover states */
   .action-bar-btn:hover,
   #addNewProfileButton:hover,
   #toggleModeButton:hover,
   #logoutButton:hover {
     background: var(--primary-yellow) !important;
     color: var(--dark-purple) !important;
-    transform: translateY(-2px) !important;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important;
+    transform: translateY(-1px) !important;
   }
   
-  /* Adjust content area for taller bottom navigation */
-  .dashboard-main,
-  .saved-profiles,
-  .profile-container,
+  /* Add space for the fixed header */
   .dashboard-container {
-    padding-bottom: 130px !important; /* Increased for 2 rows */
+    padding-top: 140px !important; /* Space for header + action bar */
   }
   
-  /* Hide footer behind bottom navigation */
+  /* Ensure content scrolls normally */
+  .saved-profiles,
+  .profile-container {
+    position: static !important;
+    padding-bottom: 1rem !important;
+  }
+  
+  /* Keep footer visible at bottom */
   #dashboard-footer {
-    display: none !important;
-  }
-  
-  /* Ensure header doesn't have extra space */
-  .dashboard-header {
-    margin-bottom: 1rem !important;
-    padding-bottom: 0.5rem !important;
-  }
-  
-  /* Better icon sizing */
-  .action-bar-btn::before,
-  #addNewProfileButton::before,
-  #toggleModeButton::before,
-  #logoutButton::before {
-    font-size: 1.3rem !important; /* Larger icons */
-    margin-bottom: 4px !important;
     display: block !important;
-  }
-  
-  /* Ensure badges are visible */
-  .action-badge,
-  .goals-progress {
-    position: absolute !important;
-    top: -6px !important;
-    right: -6px !important;
-    font-size: 0.65rem !important;
-    min-width: 18px !important;
-    height: 18px !important;
-    background: var(--primary-yellow) !important;
-    color: var(--dark-purple) !important;
-    border: 1px solid var(--dark-purple) !important;
+    margin-top: 2rem !important;
   }
 }
   
@@ -6446,147 +6433,3 @@ keeping all layouts intact.
   }
 }
 
-/* ============================================================
-   DASHBOARD HEADER - PHONE BOTTOM NAVIGATION GRID
-============================================================ */
-@media (max-width: 768px) {
-  /* Reposition the entire action bar to bottom with 2x3 grid */
-  .action-bar {
-    position: fixed !important;
-    bottom: 0 !important;
-    left: 0 !important;
-    right: 0 !important;
-    background: var(--dark-purple) !important;
-    border-top: 2px solid var(--primary-yellow) !important;
-    z-index: 1000 !important;
-    padding: 10px !important;
-    margin: 0 !important;
-    display: grid !important;
-    grid-template-columns: repeat(3, 1fr) !important;
-    grid-template-rows: repeat(2, 1fr) !important;
-    gap: 8px !important;
-    height: 120px !important;
-    box-sizing: border-box !important;
-    align-items: center !important;
-    justify-items: center !important;
-  }
-  
-  /* Remove the flexbox left/right sections */
-  .action-bar-left,
-  .action-bar-right {
-    display: contents !important; /* Make children part of the grid */
-  }
-  
-  /* Position each button in the grid */
-  .reminders-btn {
-    grid-column: 1 !important;
-    grid-row: 1 !important;
-  }
-  
-  .goals-btn {
-    grid-column: 2 !important;
-    grid-row: 1 !important;
-  }
-  
-  .timeline-btn {
-    grid-column: 3 !important;
-    grid-row: 1 !important;
-  }
-  
-  #addNewProfileButton {
-    grid-column: 1 !important;
-    grid-row: 2 !important;
-  }
-  
-  #toggleModeButton {
-    grid-column: 2 !important;
-    grid-row: 2 !important;
-  }
-  
-  #logoutButton {
-    grid-column: 3 !important;
-    grid-row: 2 !important;
-  }
-  
-  /* Style all buttons to fill their grid cells */
-  .action-bar-btn,
-  #addNewProfileButton,
-  #toggleModeButton,
-  #logoutButton {
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-    justify-content: center !important;
-    width: 100% !important;
-    height: 100% !important;
-    min-height: 44px !important;
-    padding: 6px 4px !important;
-    border: 2px solid var(--primary-yellow) !important;
-    border-radius: 8px !important;
-    background: var(--dark-purple) !important;
-    color: var(--primary-yellow) !important;
-    font-size: 0.7rem !important;
-    font-weight: 600 !important;
-    text-align: center !important;
-    white-space: nowrap !important;
-    transition: all 0.3s ease !important;
-    box-sizing: border-box !important;
-  }
-  
-  .action-bar-btn:hover,
-  #addNewProfileButton:hover,
-  #toggleModeButton:hover,
-  #logoutButton:hover {
-    background: var(--primary-yellow) !important;
-    color: var(--dark-purple) !important;
-    transform: translateY(-1px) !important;
-  }
-  
-  /* Adjust content area for bottom navigation */
-  .dashboard-main,
-  .saved-profiles,
-  .profile-container,
-  .dashboard-container {
-    padding-bottom: 130px !important;
-  }
-  
-  /* Hide footer */
-  #dashboard-footer {
-    display: none !important;
-  }
-}
-/* ============================================================
-   PHONE BOTTOM NAVIGATION BUTTON DIMENSION FIX
-============================================================ */
-@media (max-width: 768px) {
-  /* Ensure all buttons have exact same dimensions */
-  .action-bar-btn,
-  #addNewProfileButton,
-  #toggleModeButton,
-  #logoutButton {
-    width: 95% !important;       /* Slight margin inside grid cell */
-    height: 90% !important;      /* Slight margin inside grid cell */
-    min-height: 44px !important;
-    max-height: 50px !important; /* Consistent max height */
-    margin: 0 !important;        /* Remove all margins */
-    padding: 4px 2px !important; /* Reduced padding for better fit */
-    font-size: 0.65rem !important; /* Slightly smaller text */
-  }
-  
-  /* Fix grid gaps to be tighter */
-  .action-bar {
-    gap: 4px !important;         /* Reduced gap between buttons */
-    padding: 8px 5px !important; /* Reduced container padding */
-  }
-  
-  /* Ensure text doesn't overflow */
-  .action-bar-btn span,
-  #addNewProfileButton,
-  #toggleModeButton,
-  #logoutButton {
-    white-space: nowrap !important;
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
-    line-height: 1.2 !important;
-  }
-}
