@@ -6022,15 +6022,14 @@ then creates the two bordered columns on phones.
 
 /* ============================================================
    DASHBOARD HEADER - PHONE LAYOUT (768px-)
-============================================================ */
-/* ============================================================
+
    DASHBOARD HEADER - PHONE LAYOUT WITH BOTTOM NAVIGATION
 ============================================================ */
 /* ============================================================
-   DASHBOARD HEADER - PHONE LAYOUT WITH BOTTOM NAVIGATION
+   DASHBOARD HEADER - PHONE OPTIMIZED BOTTOM NAVIGATION
 ============================================================ */
 @media (max-width: 768px) {
-  /* Reposition the entire action bar to bottom */
+  /* Reposition the entire action bar to bottom with 2 rows */
   .action-bar {
     position: fixed !important;
     bottom: 0 !important;
@@ -6039,25 +6038,27 @@ then creates the two bordered columns on phones.
     background: var(--dark-purple) !important;
     border-top: 2px solid var(--primary-yellow) !important;
     z-index: 1000 !important;
-    padding: 8px 10px !important;
+    padding: 10px !important;
     margin: 0 !important;
-    flex-direction: row !important;
-    justify-content: space-around !important;
+    flex-direction: column !important;
+    justify-content: center !important;
     align-items: center !important;
-    height: 60px !important;
+    height: 120px !important; /* Taller for 2 rows */
     box-sizing: border-box !important;
+    gap: 8px !important;
   }
   
-  /* Hide the original left/right sections */
+  /* Create two rows for the buttons */
   .action-bar-left,
   .action-bar-right {
     display: flex !important;
     gap: 8px !important;
-    flex: 1 !important;
+    width: 100% !important;
     justify-content: space-around !important;
+    align-items: center !important;
   }
   
-  /* Style all 6 buttons for bottom navigation */
+  /* Style all buttons with better sizing */
   .action-bar-btn,
   #addNewProfileButton,
   #toggleModeButton,
@@ -6067,14 +6068,14 @@ then creates the two bordered columns on phones.
     align-items: center !important;
     justify-content: center !important;
     flex: 1 !important;
-    min-height: 44px !important;
-    padding: 6px 4px !important;
-    margin: 0 2px !important;
+    min-height: 50px !important; /* Taller buttons */
+    max-width: 100px !important; /* Reasonable max width */
+    padding: 8px 4px !important; /* Better padding */
     border: 2px solid var(--primary-yellow) !important;
-    border-radius: 8px !important;
+    border-radius: 10px !important; /* Slightly rounder */
     background: var(--dark-purple) !important;
     color: var(--primary-yellow) !important;
-    font-size: 0.65rem !important;
+    font-size: 0.7rem !important;
     font-weight: 600 !important;
     text-align: center !important;
     white-space: nowrap !important;
@@ -6082,20 +6083,23 @@ then creates the two bordered columns on phones.
     box-sizing: border-box !important;
   }
   
+  /* Better hover states */
   .action-bar-btn:hover,
   #addNewProfileButton:hover,
   #toggleModeButton:hover,
   #logoutButton:hover {
     background: var(--primary-yellow) !important;
     color: var(--dark-purple) !important;
-    transform: translateY(-1px) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important;
   }
   
-  /* Adjust content area for bottom navigation */
+  /* Adjust content area for taller bottom navigation */
   .dashboard-main,
   .saved-profiles,
-  .profile-container {
-    padding-bottom: 70px !important;
+  .profile-container,
+  .dashboard-container {
+    padding-bottom: 130px !important; /* Increased for 2 rows */
   }
   
   /* Hide footer behind bottom navigation */
@@ -6106,12 +6110,34 @@ then creates the two bordered columns on phones.
   /* Ensure header doesn't have extra space */
   .dashboard-header {
     margin-bottom: 1rem !important;
+    padding-bottom: 0.5rem !important;
+  }
+  
+  /* Better icon sizing */
+  .action-bar-btn::before,
+  #addNewProfileButton::before,
+  #toggleModeButton::before,
+  #logoutButton::before {
+    font-size: 1.3rem !important; /* Larger icons */
+    margin-bottom: 4px !important;
+    display: block !important;
+  }
+  
+  /* Ensure badges are visible */
+  .action-badge,
+  .goals-progress {
+    position: absolute !important;
+    top: -6px !important;
+    right: -6px !important;
+    font-size: 0.65rem !important;
+    min-width: 18px !important;
+    height: 18px !important;
+    background: var(--primary-yellow) !important;
+    color: var(--dark-purple) !important;
+    border: 1px solid var(--dark-purple) !important;
   }
 }
   
-
-  
-
 
 
 /* ============================================================
