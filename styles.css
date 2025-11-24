@@ -6023,34 +6023,123 @@ then creates the two bordered columns on phones.
 /* ============================================================
    DASHBOARD HEADER - PHONE LAYOUT (768px-)
 ============================================================ */
+/* ============================================================
+   DASHBOARD HEADER - PHONE LAYOUT WITH BOTTOM NAVIGATION
+============================================================ */
 @media (max-width: 768px) {
-    .action-bar {
-        flex-direction: column !important;
-        gap: 15px !important;
-        padding: 1rem !important;
-    }
-    
-    .action-bar-left,
-    .action-bar-right {
-        width: 100% !important;
-        display: flex !important;
-        flex-direction: column !important;
-        gap: 8px !important;
-        background: rgba(255, 255, 255, 0.1) !important;
-        backdrop-filter: blur(10px) !important;
-        padding: 12px !important;
-        border-radius: 8px !important;
-        border: 1px solid var(--primary-yellow) !important;
-    }
-    
-    .action-bar-btn,
-    #addNewProfileButton,
-    #toggleModeButton,
-    #logoutButton {
-        width: 100% !important;
-        min-width: auto !important;
-        justify-content: center !important;
-    }
+  /* Hide the original action bar completely */
+  .action-bar {
+    display: none !important;
+  }
+  
+  /* HEADER: 3 Compact Utility Buttons */
+  .dashboard-header::after {
+    content: '';
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    width: 100% !important;
+    margin-top: 1rem !important;
+    padding: 0 10px !important;
+    box-sizing: border-box !important;
+  }
+  
+  /* Header button styling */
+  #addNewProfileButton,
+  #toggleModeButton, 
+  #logoutButton {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex: 1 !important;
+    min-height: 50px !important;
+    padding: 6px 4px !important;
+    margin: 0 4px !important;
+    border: 2px solid var(--primary-yellow) !important;
+    border-radius: 8px !important;
+    background: var(--primary-mustard) !important;
+    color: var(--white) !important;
+    font-size: 0.7rem !important;
+    font-weight: 600 !important;
+    text-align: center !important;
+    white-space: nowrap !important;
+    transition: all 0.3s ease !important;
+  }
+  
+  #addNewProfileButton:hover,
+  #toggleModeButton:hover,
+  #logoutButton:hover {
+    background: var(--dark-mustard) !important;
+    transform: translateY(-1px) !important;
+  }
+  
+  /* BOTTOM NAVIGATION: Fixed Bar with 3 Main Buttons */
+  .dashboard-container::before {
+    content: '🔔 Reminders 🎯 Goals 📅 Timeline' !important;
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    height: 60px !important;
+    background: var(--dark-purple) !important;
+    border-top: 2px solid var(--primary-yellow) !important;
+    display: flex !important;
+    justify-content: space-around !important;
+    align-items: center !important;
+    z-index: 1000 !important;
+    padding: 0 10px !important;
+    box-sizing: border-box !important;
+  }
+  
+  /* Bottom navigation buttons */
+  .reminders-btn,
+  .goals-btn,
+  .timeline-btn {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex: 1 !important;
+    min-height: 50px !important;
+    padding: 6px 4px !important;
+    margin: 0 4px !important;
+    border: 2px solid var(--primary-yellow) !important;
+    border-radius: 8px !important;
+    background: var(--dark-purple) !important;
+    color: var(--primary-yellow) !important;
+    font-size: 0.7rem !important;
+    font-weight: 600 !important;
+    text-align: center !important;
+    white-space: nowrap !important;
+    transition: all 0.3s ease !important;
+  }
+  
+  .reminders-btn:hover,
+  .goals-btn:hover,
+  .timeline-btn:hover {
+    background: var(--primary-yellow) !important;
+    color: var(--dark-purple) !important;
+    transform: translateY(-1px) !important;
+  }
+  
+  /* Adjust content area for bottom navigation */
+  .dashboard-main,
+  .saved-profiles,
+  .profile-container {
+    padding-bottom: 70px !important;
+  }
+  
+  /* Hide footer behind bottom navigation */
+  #dashboard-footer {
+    display: none !important;
+  }
+  
+  /* Ensure header buttons are visible and properly spaced */
+  .dashboard-header {
+    position: relative !important;
+    padding-bottom: 1rem !important;
+  }
 }
 
 
