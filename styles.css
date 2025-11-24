@@ -6002,7 +6002,7 @@ This puts Select + Delete side-by-side and makes Generate Report full width on p
   }
 
   .action-bar {
-    margin-top: 130px; /* Push below fixed header */
+    margin-top: 250px; /* Push below fixed header */
   }
 }
 
@@ -6022,7 +6022,7 @@ This puts Select + Delete side-by-side and makes Generate Report full width on p
     grid-template-rows: repeat(2, 1fr) !important;
     gap: 4px !important;
     padding: 8px !important;
-    margin-top: 130px !important;
+    margin-top: 250px !important;
     margin-right: 0 !important;
     margin-bottom: 0 !important; 
     margin-left: 0 !important;
