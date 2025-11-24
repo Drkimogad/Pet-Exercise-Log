@@ -5963,23 +5963,25 @@ This puts Select + Delete side-by-side and makes Generate Report full width on p
 @media (max-width: 768px) {
   .action-buttons-section {
     display: flex !important;
-    flex-direction: column !important;
+    flex-direction: row !important; /* Change to row */
+    flex-wrap: wrap !important; /* Allow wrapping */
     gap: 8px !important;
+    justify-content: space-between !important;
   }
   
-  /* Target the first two buttons specifically */
-  .select-btn, .delete-btn {
+  /* Target specific buttons by their classes */
+  .action-buttons-section .select-btn,
+  .action-buttons-section .delete-btn {
     display: inline-block !important;
-    width: 48% !important; /* Side by side */
-    margin-right: 2% !important;
+    width: calc(50% - 4px) !important; /* 50% minus half the gap */
+    margin: 0 !important; /* Remove all margins */
+    flex: 0 0 calc(50% - 4px) !important; /* Flex basis for consistency */
   }
   
-  .select-btn:last-of-type, .delete-btn:last-of-type {
-    margin-right: 0 !important;
-  }
-  
-  .report-btn {
-    width: 100% !important; /* Full width below */
+  .action-buttons-section .report-btn {
+    width: 100% !important;
+    flex: 0 0 100% !important; /* Force to new row */
+    margin-top: 4px !important;
   }
 }
 
