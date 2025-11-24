@@ -6555,3 +6555,38 @@ keeping all layouts intact.
     display: none !important;
   }
 }
+/* ============================================================
+   PHONE BOTTOM NAVIGATION BUTTON DIMENSION FIX
+============================================================ */
+@media (max-width: 768px) {
+  /* Ensure all buttons have exact same dimensions */
+  .action-bar-btn,
+  #addNewProfileButton,
+  #toggleModeButton,
+  #logoutButton {
+    width: 95% !important;       /* Slight margin inside grid cell */
+    height: 90% !important;      /* Slight margin inside grid cell */
+    min-height: 44px !important;
+    max-height: 50px !important; /* Consistent max height */
+    margin: 0 !important;        /* Remove all margins */
+    padding: 4px 2px !important; /* Reduced padding for better fit */
+    font-size: 0.65rem !important; /* Slightly smaller text */
+  }
+  
+  /* Fix grid gaps to be tighter */
+  .action-bar {
+    gap: 4px !important;         /* Reduced gap between buttons */
+    padding: 8px 5px !important; /* Reduced container padding */
+  }
+  
+  /* Ensure text doesn't overflow */
+  .action-bar-btn span,
+  #addNewProfileButton,
+  #toggleModeButton,
+  #logoutButton {
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    line-height: 1.2 !important;
+  }
+}
