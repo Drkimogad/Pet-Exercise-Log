@@ -5779,16 +5779,30 @@ and optimizing the grid layout while keeping your image size consistent across a
   }
 }
 
-/* Force 3-column grid for basic fields on mobile */
-@media (max-width: 768px) {
-  .basic-info-content .basic-fields {
-    grid-template-columns: repeat(3, 1fr) !important;
-    gap: 8px;
+/*=============================
+This creates a 2-2-1 layout (2 fields per row, 3 rows total) which fits 
+much better on phone screens and avoid overflowing on the right side
+=================================*/
+@media (max-width: 480px) {
+  .basic-fields {
+    grid-template-columns: repeat(2, 1fr) !important; /* 2 columns instead of 3 */
+    gap: 6px !important;
   }
   
-  .basic-info-content .field-item {
-    min-height: 40px;
-    padding: 6px 4px;
+  .basic-info-bottom-row {
+    grid-template-columns: 80px 1fr !important; /* Smaller image on phones */
+    gap: 8px !important;
+  }
+  
+  .profile-image {
+    width: 80px !important;
+    height: 80px !important;
+  }
+  
+  .field-item {
+    padding: 4px 2px !important;
+    min-height: 35px !important;
+    font-size: 0.8rem !important;
   }
 }
 
@@ -5946,26 +5960,26 @@ while keeping all existing styling.
 This puts Select + Delete side-by-side and makes Generate Report full width on phones only.
    ACTION BUTTONS - PHONE LAYOUT (768px-)
 ============================================================ */
-/* Create two-row layout for action buttons on mobile */
 @media (max-width: 768px) {
   .action-buttons-section {
     display: flex !important;
     flex-direction: column !important;
-    gap: 10px !important;
+    gap: 8px !important;
   }
   
-  .action-buttons-top-row {
-    display: flex !important;
-    gap: 10px !important;
-    width: 100% !important;
-  }
-  
+  /* Target the first two buttons specifically */
   .select-btn, .delete-btn {
-    flex: 1 !important;
+    display: inline-block !important;
+    width: 48% !important; /* Side by side */
+    margin-right: 2% !important;
+  }
+  
+  .select-btn:last-of-type, .delete-btn:last-of-type {
+    margin-right: 0 !important;
   }
   
   .report-btn {
-    width: 100% !important;
+    width: 100% !important; /* Full width below */
   }
 }
 
