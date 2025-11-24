@@ -6059,50 +6059,159 @@ This creates two clean rows without squashing text, using the full tablet width 
 
    DASHBOARD HEADER BUTTONS - TABLET TWO-ROW LAYOUT (769px-1024px)
 ============================================================ */
+/* ============================================================
+   DASHBOARD HEADER - TABLET SINGLE ROW STACKED BUTTONS
+============================================================ */
 @media (min-width: 769px) and (max-width: 1024px) {
-    .action-bar {
-        flex-direction: column;
-        gap: 12px;
-        padding: 1rem;
-    }
-    
-    .action-bar-left,
-    .action-bar-right {
-        width: 100%;
-        display: flex;
-        justify-content: center;
-        gap: 10px;
-    }
-    
-    .action-bar-btn,
-    #addNewProfileButton,
-    #toggleModeButton,
-    #logoutButton {
-        padding: 0.7rem 1rem;
-        font-size: 0.9rem;
-        min-width: 140px;
-        white-space: nowrap;
-        flex: 1;
-        max-width: 160px;
-    }
+  .action-bar {
+    flex-direction: row !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    padding: 1rem !important;
+    gap: 10px !important;
+    flex-wrap: nowrap !important;
+  }
+  
+  .action-bar-left,
+  .action-bar-right {
+    display: flex !important;
+    gap: 8px !important;
+    flex: 1 !important;
+    min-width: 0 !important;
+  }
+  
+  .action-bar-left {
+    justify-content: flex-start !important;
+  }
+  
+  .action-bar-right {
+    justify-content: flex-end !important;
+  }
+  
+  /* Base button styles for tablet */
+  .action-bar-btn,
+  #addNewProfileButton,
+  #toggleModeButton,
+  #logoutButton {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-height: 60px !important;
+    padding: 8px 6px !important;
+    border: 2px solid var(--primary-yellow) !important;
+    border-radius: 8px !important;
+    font-weight: 600 !important;
+    text-align: center !important;
+    white-space: nowrap !important;
+    transition: all 0.3s ease !important;
+    box-sizing: border-box !important;
+  }
+  
+  /* Left buttons - slightly larger */
+  .action-bar-left .action-bar-btn {
+    flex: 1.2 !important;
+    background: var(--dark-purple) !important;
+    color: var(--primary-yellow) !important;
+    font-size: 0.85rem !important;
+    min-width: 110px !important;
+  }
+  
+  .action-bar-left .action-bar-btn:hover {
+    background: var(--primary-yellow) !important;
+    color: var(--dark-purple) !important;
+    transform: translateY(-2px) !important;
+  }
+  
+  /* Right buttons - slightly smaller */
+  #addNewProfileButton,
+  #toggleModeButton,
+  #logoutButton {
+    flex: 0.8 !important;
+    background: var(--primary-mustard) !important;
+    color: var(--white) !important;
+    font-size: 0.75rem !important;
+    min-width: 90px !important;
+  }
+  
+  #addNewProfileButton:hover,
+  #toggleModeButton:hover,
+  #logoutButton:hover {
+    background: var(--dark-mustard) !important;
+    color: var(--white) !important;
+    transform: translateY(-2px) !important;
+  }
+  
+  /* Icon styling */
+  .action-bar-btn::before,
+  #addNewProfileButton::before,
+  #toggleModeButton::before,
+  #logoutButton::before {
+    display: block !important;
+    font-size: 1.2rem !important;
+    margin-bottom: 4px !important;
+  }
+  
+  /* Ensure badges and progress fit */
+  .action-badge,
+  .goals-progress {
+    position: absolute !important;
+    top: -5px !important;
+    right: -5px !important;
+    font-size: 0.7rem !important;
+    min-width: 18px !important;
+    height: 18px !important;
+  }
+  
+  /* Text wrapping prevention */
+  .action-bar-btn span:not(.action-badge):not(.goals-progress),
+  #addNewProfileButton,
+  #toggleModeButton,
+  #logoutButton {
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
 }
 
 /* ============================================================
    DASHBOARD HEADER BUTTONS - DESKTOP OPTIMIZATION (1025px+)
 ============================================================ */
+/* ============================================================
+   DASHBOARD HEADER - DESKTOP SINGLE ROW
+============================================================ */
 @media (min-width: 1025px) {
-    .action-bar {
-        padding: 1rem 1.5rem;
-    }
-    
-    .action-bar-btn,
-    #addNewProfileButton,
-    #toggleModeButton,
-    #logoutButton {
-        padding: 0.7rem 1.2rem;
-        font-size: 0.95rem;
-        min-width: 130px;
-    }
+  .action-bar {
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 1rem 2rem;
+  }
+  
+  .action-bar-left,
+  .action-bar-right {
+    display: flex;
+    gap: 15px;
+    flex: 0 1 auto;
+  }
+  
+  .action-bar-btn,
+  #addNewProfileButton,
+  #toggleModeButton,
+  #logoutButton {
+    min-width: 140px;
+    padding: 0.8rem 1.2rem;
+    font-size: 0.95rem;
+    white-space: nowrap;
+  }
+  
+  /* Equal button dimensions */
+  .action-bar-btn,
+  .icon-btn {
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 }
 
 
