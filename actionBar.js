@@ -48,13 +48,20 @@ function setupGlobalModalHandlers() {
         }
     });
 
-    // Backdrop click handler (will be delegated)
-    document.addEventListener('click', function(e) {
-        if (e.target.classList.contains('modal-overlay')) {
-            console.log('🔒 [MODAL SYSTEM] Backdrop clicked, closing modal');
-            closeModal(e.target.id.replace('Overlay', ''));
-        }
-    });
+// Backdrop click handler (will be delegated)
+// ENHANCED MAIN HANDLER (Replace lines 85-91)
+document.addEventListener('click', function(e) {
+    if (e.target.classList.contains('modal-overlay')) {
+        const modalId = e.target.id.replace('Overlay', '');
+        console.log(`🔒 [MODAL SYSTEM] Backdrop clicked, closing modal: ${modalId}`);
+        console.log('🔍 [DEBUG] Backdrop click details:', {
+            modalId: modalId,
+            timestamp: new Date().getTime(),
+            element: e.target
+        });
+        closeModal(modalId);
+    }
+});
 }
 
 /**
@@ -143,13 +150,7 @@ function closeAllModals() {
     console.log(`✅ [MODAL SYSTEM] Closed ${closedCount} modals`);
     return closedCount;
 }
-
-// ADD THIS DEBUG FUNCTION AT THE BOTTOM OF YOUR MODAL SYSTEM:
-document.addEventListener('click', function(e) {
-    if (e.target.classList.contains('modal-overlay')) {
-        console.log('🔍 [DEBUG] Backdrop clicked:', e.target.id, 'at:', new Date().getTime());
-    }
-});
+// old handler removed and first handler enhanced
 
 /**
  * Check if a modal is currently open
