@@ -1025,6 +1025,10 @@ function createGoalsModalHTML() {
 
 /**
  * Load and display goals content
+ What the highlights add:
+Individual reset buttons - Reset button for each pet's progress in the main view
+Global reset button - Reset all pets' progress at once
+Quick access - No need to go to settings for quick resets
  */
 async function loadGoalsContent() {
     console.log('🔄 [GOALS] Loading goals content');
@@ -1064,11 +1068,27 @@ async function loadGoalsContent() {
             <div class="goals-summary">
                 <div class="weekly-progress">
                     <h4>This Week's Progress</h4>
+                    
+                    <!-- NEW: Global reset button -->
+                    <div class="global-reset-section">
+                        <button class="action-btn reset-all-btn" data-action="reset-all-weeks" 
+                                title="Reset all progress for this week">
+                            🔄 Reset All Progress This Week
+                        </button>
+                        <small>Start fresh for all pets</small>
+                    </div>
+                    
                     ${goalsProgress.map(goal => `
                         <div class="goal-item" data-pet-index="${goal.petIndex}">
                             <div class="goal-header">
                                 <span class="pet-name">${goal.petName}</span>
                                 <span class="goal-count">${goal.exercisesDone}/${goal.target}</span>
+                                
+                                <!-- NEW: Individual reset button -->
+                                <button class="action-btn reset-single-btn" data-action="reset-week" 
+                                        data-pet-index="${goal.petIndex}" title="Reset progress for ${goal.petName}">
+                                    🔄
+                                </button>
                             </div>
                             <div class="progress-bar">
                                 <div class="progress-fill" style="width: ${goal.progressPercent}%"></div>
@@ -1106,6 +1126,8 @@ async function loadGoalsContent() {
     }
 }
 
+
+
 /**
  * Setup event handlers for goals modal
  */
@@ -1137,8 +1159,15 @@ function setupGoalsEventHandlers() {
 
 /**
  * Centralized event handler for goal actions
+ What the highlights add:
+Reset week handler - Handles individual pet reset requests
+Reset all handler - Handles bulk reset for all pets
+Pet index parsing - Extracts pet index from button data attributes
  */
 async function handleGoalAction(event) {
+    console.log('🔍 [GOALS DEBUG] Event triggered on:', event.target);
+    console.log('🔍 [GOALS DEBUG] Event type:', event.type);
+    
     const target = event.target;
     if (!target.classList.contains('action-btn')) return;
 
@@ -1146,8 +1175,9 @@ async function handleGoalAction(event) {
     event.stopPropagation();
 
     const action = target.dataset.action;
+    const petIndex = target.dataset.petIndex ? parseInt(target.dataset.petIndex) : null;
 
-    console.log(`👆 [GOALS] User action: ${action}`);
+    console.log(`👆 [GOALS] User action: ${action} for pet ${petIndex}`);
 
     try {
         switch (action) {
@@ -1156,6 +1186,15 @@ async function handleGoalAction(event) {
                 break;
             case 'retry':
                 await loadGoalsContent();
+                break;
+            // NEW: Handle reset actions
+            case 'reset-week':
+                if (petIndex !== null) {
+                    await showResetConfirmation(petIndex);
+                }
+                break;
+            case 'reset-all-weeks':
+                await showResetAllConfirmation();
                 break;
             default:
                 console.warn(`⚠️ [GOALS] Unknown action: ${action}`);
@@ -1229,8 +1268,15 @@ function createGoalsSettingsModalHTML() {
 }
 
 /**
- * Load goals settings content
+ * Load goals settings content updated
  */
+/*
+What the highlights add:
+Reset options section - Radio buttons to choose between resetting progress or 
+keeping it when changing targets
+Manual reset button - Allows resetting current week's progress to zero immediately
+Progress context - Shows current progress in the reset options for informed decisions
+*/
 async function loadGoalsSettingsContent() {
     console.log('🔄 [GOALS-SETTINGS] Loading settings content');
     
@@ -1286,6 +1332,29 @@ async function loadGoalsSettingsContent() {
                                     </select>
                                     <div class="current-progress">
                                         This week: <strong>${goals.exercisesThisWeek || 0}</strong> exercises
+                                    </div>
+                                    
+                                    <!-- NEW: Reset progress option -->
+                                    <div class="reset-options">
+                                        <label class="reset-label">When changing target:</label>
+                                        <div class="reset-choice">
+                                            <input type="radio" id="reset_${index}" name="reset_${index}" 
+                                                value="reset" class="reset-radio" checked>
+                                            <label for="reset_${index}">Reset progress to 0</label>
+                                        </div>
+                                        <div class="reset-choice">
+                                            <input type="radio" id="keep_${index}" name="reset_${index}" 
+                                                value="keep" class="reset-radio">
+                                            <label for="keep_${index}">Keep current progress (${goals.exercisesThisWeek || 0} exercises)</label>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- NEW: Manual reset button -->
+                                    <div class="manual-reset">
+                                        <button class="action-btn reset-week-btn" data-action="reset-week" data-pet-index="${index}">
+                                            🔄 Reset This Week's Progress
+                                        </button>
+                                        <small>Start fresh from 0 exercises this week</small>
                                     </div>
                                 </div>
                             </div>
@@ -1404,67 +1473,86 @@ console.log('🔍 [GOALS-SETTINGS DEBUG] Event triggered on:', event.target);
 /**
  * Save goals settings
  */
+/*What the highlights add:
+Reset progress logic - Detects when target changes and resets progress based on user choice
+Progress preservation - Keeps current progress if user selects "keep progress" option
+Target change detection - Only resets when weekly target actually changes
+*/
 async function saveGoalsSettings() {
     console.log('💾 [GOALS-SETTINGS] Saving goals settings');
     
     try {
-        const pets = await getPets(); // ← MAKE SURE THIS IS AWAITED
+        const pets = await getPets();
         let settingsChanged = false;
 
         // Update each pet's goal settings
         const goalItems = safeQueryAll('.pet-goal-item');
         
-        for (const item of goalItems) { // ← USE for...of NOT forEach
+        for (const item of goalItems) {
             const petIndex = parseInt(item.dataset.petIndex);
             const toggle = item.querySelector('.goal-toggle');
             const targetSelect = item.querySelector('.target-select');
+            const resetRadio = item.querySelector('.reset-radio:checked');
             
             if (!pets[petIndex]) continue;
             
             const enabled = toggle.checked;
             const weeklyTarget = parseInt(targetSelect.value);
+            const resetProgress = resetRadio ? resetRadio.value === 'reset' : true;
+            
+            // NEW: Check if target changed and handle progress reset
+            const targetChanged = pets[petIndex].goalSettings.weeklyTarget !== weeklyTarget;
             
             if (pets[petIndex].goalSettings.enabled !== enabled || 
-                pets[petIndex].goalSettings.weeklyTarget !== weeklyTarget) {
+                targetChanged) {
                 
                 pets[petIndex].goalSettings.enabled = enabled;
                 pets[petIndex].goalSettings.weeklyTarget = weeklyTarget;
+                
+                // NEW: Reset progress if target changed and user chose to reset
+                if (targetChanged && resetProgress) {
+                    pets[petIndex].goalSettings.exercisesThisWeek = 0;
+                    console.log(`🔄 [GOALS-SETTINGS] Reset progress for ${pets[petIndex].petDetails.name} due to target change`);
+                }
+                
                 settingsChanged = true;
                 
                 console.log(`📊 [GOALS-SETTINGS] Updated ${pets[petIndex].petDetails.name} goals: ${enabled ? 'enabled' : 'disabled'}, target: ${weeklyTarget}`);
             }
         }
 
-if (settingsChanged) {
-    // SAVE TO STORAGE
-    if (window.petDataService) {
-        for (const pet of pets) {
-            await window.petDataService.savePet(pet);
+        if (settingsChanged) {
+            // SAVE TO STORAGE
+            if (window.petDataService) {
+                for (const pet of pets) {
+                    await window.petDataService.savePet(pet);
+                }
+            } else {
+                localStorage.setItem('pets', JSON.stringify(pets));
+            }
+            
+            showSuccess('Goals settings saved!');
+            console.log('✅ [GOALS-SETTINGS] Settings saved successfully');
+            
+            // FORCE REFRESH GOALS DATA
+            await updateAllExerciseCounts();
+            await updateGoalsProgress();
+            
+            // Close settings modal and reopen main goals modal WITH REFRESHED DATA
+            closeModal('goalsSettings');
+            setTimeout(showGoalsModal, 100);
+            
+        } else {
+            showSuccess('No changes made');
         }
-    } else {
-        localStorage.setItem('pets', JSON.stringify(pets));
-    }
-    
-    showSuccess('Goals settings saved!');
-    console.log('✅ [GOALS-SETTINGS] Settings saved successfully');
-    
-    // FORCE REFRESH GOALS DATA
-    await updateAllExerciseCounts();
-    await updateGoalsProgress();
-    
-    // Close settings modal and reopen main goals modal WITH REFRESHED DATA
-    closeModal('goalsSettings');
-    setTimeout(showGoalsModal, 100); // This will load fresh data
-    
-} else {
-    showSuccess('No changes made');
-}
 
     } catch (error) {
         console.error('❌ [GOALS-SETTINGS] Failed to save settings:', error);
         throw error;
     }
 }
+
+
 
 // from old functions
 async function initializeGoalsData() {
@@ -1593,9 +1681,25 @@ function countExercisesThisWeek(pet, weekStart) {
     }).length;
 }
 
+/*
+calculatePetGoalProgress(pet, petIndex)
+What the highlights add:
+Manual reset awareness - Checks if manual reset occurred this week
+Reset progress tracking - Uses exercises since reset instead of total exercises
+Reset status flag - Provides data for UI to show reset state
+*/
 function calculatePetGoalProgress(pet, petIndex) {
     const goals = getGoalSettings(petIndex);
-    const exercisesDone = goals.exercisesThisWeek || 0;
+    
+    // NEW: Check for manual reset this week
+    const currentWeekStart = getCurrentWeekStart();
+    let exercisesDone = goals.exercisesThisWeek || 0;
+    
+    // If manual reset happened this week, use reset progress
+    if (goals.lastManualReset && goals.lastManualReset >= currentWeekStart) {
+        exercisesDone = goals.exercisesSinceReset || 0;
+    }
+    
     const target = goals.weeklyTarget || 5;
     const progressPercent = Math.min(100, (exercisesDone / target) * 100);
     const exercisesRemaining = Math.max(0, target - exercisesDone);
@@ -1609,7 +1713,9 @@ function calculatePetGoalProgress(pet, petIndex) {
         exercisesRemaining: exercisesRemaining,
         streak: goals.streak || 0,
         goalMet: exercisesDone >= target,
-        goalAlmostMet: exercisesDone >= target - 1 && exercisesDone < target
+        goalAlmostMet: exercisesDone >= target - 1 && exercisesDone < target,
+        // NEW: Add reset status for UI
+        wasReset: !!(goals.lastManualReset && goals.lastManualReset >= currentWeekStart)
     };
 }
 
@@ -1675,6 +1781,107 @@ function showGoalAchievedNotification(petName) {
     console.log(`🎉 Goal achieved for ${petName}`);
     // You can enhance this with a nice notification later
     // For now, we'll just log it
+}
+/*
+NEW FUNCTIONS IMPLEMENTED 
+*/
+// resetWeeklyProgress()
+async function resetWeeklyProgress(petIndex) {
+    console.log(`🔄 [GOALS] Resetting weekly progress for pet ${petIndex}`);
+    
+    try {
+        const pets = await getPets();
+        if (!pets[petIndex]) {
+            throw new Error(`Pet not found at index ${petIndex}`);
+        }
+        
+        // Reset progress but preserve settings
+        pets[petIndex].goalSettings.exercisesThisWeek = 0;
+        pets[petIndex].goalSettings.lastManualReset = new Date().toISOString().split('T')[0];
+        pets[petIndex].goalSettings.exercisesSinceReset = 0;
+        
+        // Save changes
+        if (window.petDataService) {
+            await window.petDataService.savePet(pets[petIndex]);
+        } else {
+            localStorage.setItem('pets', JSON.stringify(pets));
+        }
+        
+        console.log(`✅ [GOALS] Progress reset for pet ${petIndex}`);
+        return true;
+        
+    } catch (error) {
+        console.error(`❌ [GOALS] Failed to reset progress:`, error);
+        throw error;
+    }
+}
+
+async function showResetConfirmation(petIndex) {
+    const pets = await getPets();
+    const pet = pets[petIndex];
+    const goals = getGoalSettings(petIndex);
+    
+    if (!pet) return;
+    
+    const confirmed = confirm(
+        `Reset weekly progress for ${pet.petDetails.name}?\n\n` +
+        `Current progress: ${goals.exercisesThisWeek || 0}/${goals.weeklyTarget} exercises\n` +
+        `This will set progress to 0 and start fresh for this week.\n\n` +
+        `Note: Your goal settings and streak will be preserved.`
+    );
+    
+    if (confirmed) {
+        try {
+            await resetWeeklyProgress(petIndex);
+            showSuccess(`Progress reset for ${pet.petDetails.name}!`);
+            
+            // Refresh the goals display
+            await loadGoalsContent();
+            await updateGoalsProgress();
+            
+        } catch (error) {
+            showError('Failed to reset progress');
+        }
+    }
+}
+
+async function showResetAllConfirmation() {
+    const pets = await getPets();
+    const activeGoals = pets.filter(pet => pet.goalSettings && pet.goalSettings.enabled);
+    
+    if (activeGoals.length === 0) {
+        showError('No active goals to reset');
+        return;
+    }
+    
+    const petNames = activeGoals.map(pet => pet.petDetails.name).join(', ');
+    const totalProgress = activeGoals.reduce((sum, pet) => sum + (pet.goalSettings.exercisesThisWeek || 0), 0);
+    
+    const confirmed = confirm(
+        `Reset weekly progress for ALL pets?\n\n` +
+        `Affected pets: ${petNames}\n` +
+        `Total progress being reset: ${totalProgress} exercises\n\n` +
+        `This will set all progress to 0 and start fresh for this week.`
+    );
+    
+    if (confirmed) {
+        try {
+            for (let i = 0; i < pets.length; i++) {
+                if (pets[i].goalSettings && pets[i].goalSettings.enabled) {
+                    await resetWeeklyProgress(i);
+                }
+            }
+            
+            showSuccess('All progress reset!');
+            
+            // Refresh the goals display
+            await loadGoalsContent();
+            await updateGoalsProgress();
+            
+        } catch (error) {
+            showError('Failed to reset some progress');
+        }
+    }
 }
 
 //===============================================
