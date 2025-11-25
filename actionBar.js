@@ -784,9 +784,9 @@ async function saveRemindersSettings() {
     }
 }
 // old functions
-function initializeRemindersData() {
+async function initializeRemindersData() {
     // This will be called when we implement the settings form later
-    const pets = getPets();
+    const pets = await getPets();
     pets.forEach((pet, index) => {
         if (!pet.reminderSettings) {
             pet.reminderSettings = {
@@ -799,14 +799,14 @@ function initializeRemindersData() {
     localStorage.setItem('pets', JSON.stringify(pets));
 }
 
-function getReminderSettings(petIndex) {
-    const pets = getPets();
+async function getReminderSettings(petIndex) {
+    const pets = await getPets();
     const pet = pets[petIndex];
     return pet?.reminderSettings || { enabled: true, threshold: 3, lastChecked: new Date().toISOString().split('T')[0] };
 }
 
-function updateReminderSettings(petIndex, settings) {
-    const pets = getPets();
+async function updateReminderSettings(petIndex, settings) {
+    const pets = await getPets();
     if (pets[petIndex]) {
         pets[petIndex].reminderSettings = { ...pets[petIndex].reminderSettings, ...settings };
         localStorage.setItem('pets', JSON.stringify(pets));
@@ -903,7 +903,7 @@ async function handleNotedReminder(petIndex) {
     console.log(`✅ Marking reminder as noted for pet ${petIndex}`);
     
     // Update last checked date
-    updateReminderSettings(petIndex, {
+    await updateReminderSettings(petIndex, {
         lastChecked: new Date().toISOString().split('T')[0]
     });
     
@@ -1688,8 +1688,8 @@ Manual reset awareness - Checks if manual reset occurred this week
 Reset progress tracking - Uses exercises since reset instead of total exercises
 Reset status flag - Provides data for UI to show reset state
 */
-function calculatePetGoalProgress(pet, petIndex) {
-    const goals = getGoalSettings(petIndex);
+async function calculatePetGoalProgress(pet, petIndex) {
+    const goals = await getGoalSettings(petIndex);
     
     // NEW: Check for manual reset this week
     const currentWeekStart = getCurrentWeekStart();
