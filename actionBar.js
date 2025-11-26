@@ -1630,7 +1630,7 @@ async function calculateWeeklyGoals() {
         
         if (!goals.enabled) continue;
         
-        const progress = calculatePetGoalProgress(pet, index);
+        const progress = await calculatePetGoalProgress(pet, index);
         goalsProgress.push(progress);
     }
     
@@ -1735,9 +1735,10 @@ async function updateGoalsProgress() {
         return;
     }
     
-    // Calculate overall progress
-    const totalExercises = goalsProgress.reduce((sum, goal) => sum + goal.exercisesDone, 0);
-    const totalTarget = goalsProgress.reduce((sum, goal) => sum + goal.target, 0);
+    // Calculate overall progress FIXED:
+    const totalExercises = goalsProgress.reduce((sum, goal) => sum + (goal.exercisesDone || 0), 0);
+    const totalTarget = goalsProgress.reduce((sum, goal) => sum + (goal.target || 0), 0);
+    
     const overallProgress = totalTarget > 0 ? Math.round((totalExercises / totalTarget) * 100) : 0;
     
     // Show progress in action bar
