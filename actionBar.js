@@ -1070,44 +1070,29 @@ async function loadGoalsContent() {
                 <div class="weekly-progress">
                     <h4>This Week's Progress</h4>
                     
-                    <!-- NEW: Global reset button -->
-                    <div class="global-reset-section">
-                        <button class="action-btn reset-all-btn" data-action="reset-all-weeks" 
-                                title="Reset all progress for this week">
-                            🔄 Reset All Progress This Week
-                        </button>
-                        <small>Start fresh for all pets</small>
-                    </div>
-                    
                     ${goalsProgress.map(goal => `
-                        <div class="goal-item" data-pet-index="${goal.petIndex}">
-                            <div class="goal-header">
-                                <span class="pet-name">${goal.petName}</span>
-                                <span class="goal-count">${goal.exercisesDone}/${goal.target}</span>
-                                
-                                <!-- NEW: Individual reset button -->
-                             <button class="action-btn reset-single-btn" data-action="reset-week" 
-                                    data-pet-index="${goal.petIndex}" title="Reset progress for ${goal.petName}">
-                                    🔄
-                                </button>
-                            </div>
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="width: ${goal.progressPercent}%"></div>
-                            </div>
-                            <div class="goal-status">
-                                ${goal.goalMet ? 
-                                    '<span class="goal-met">🎉 Goal Achieved!</span>' :
-                                    goal.goalAlmostMet ?
-                                    `<span class="goal-almost">Almost there! ${goal.exercisesRemaining} to go</span>` :
-                                    `<span class="goal-progress">${goal.exercisesRemaining} exercises remaining</span>`
-                                }
-                            </div>
-                            ${goal.streak > 0 ? `
-                                <div class="streak-display">
-                                    🔥 ${goal.streak} week streak
-                                </div>
-                            ` : ''}
-                        </div>
+
+<div class="goal-item" data-pet-index="${goal.petIndex}">
+    <div class="goal-header">
+        <span class="pet-name">${goal.petName}</span>
+        <span class="goal-count">${goal.exercisesDone}/${goal.target}</span>
+    </div>
+    <div class="progress-bar">
+        <div class="progress-fill" style="width: ${goal.progressPercent}%"></div>
+    </div>
+    <div class="goal-actions">
+        <button class="action-btn reset-week-btn" data-action="reset-week" 
+                data-pet-index="${goal.petIndex}">
+            🔄 Reset This Week's Progress
+        </button>
+        <span class="exercises-remaining">${goal.exercisesRemaining} exercises remaining</span>
+    </div>
+    ${goal.streak > 0 ? `
+        <div class="streak-display">
+            🔥 ${goal.streak} week streak
+        </div>
+    ` : ''}
+</div>
                     `).join('')}
                 </div>
             </div>
