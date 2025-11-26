@@ -1337,8 +1337,8 @@ async function loadGoalsSettingsContent() {
                                     
                                     <!-- NEW: Manual reset button -->
                                     <div class="manual-reset">
-                                        <button class="action-btn reset-week-btn" data-action="reset-week" data-pet-index="${index}">
-                                            🔄 Reset This Week's Progress
+                                        <button class="action-btn reset-week-btn" data-action="reset-week-settings" data-pet-index="${index}">
+                                           🔄 Reset This Week's Progress
                                         </button>
                                         <small>Start fresh from 0 exercises this week</small>
                                     </div>
@@ -1421,9 +1421,6 @@ function setupGoalsSettingsHandlers() {
  * Centralized event handler for goals settings actions
  */
 async function handleGoalsSettingsAction(event) {
-console.log('🔍 [GOALS-SETTINGS DEBUG] Event triggered on:', event.target);
- console.log('🔍 [GOALS-SETTINGS DEBUG] Event type:', event.type);
-  
     const target = event.target;
     if (!target.classList.contains('action-btn')) return;
 
@@ -1431,8 +1428,9 @@ console.log('🔍 [GOALS-SETTINGS DEBUG] Event triggered on:', event.target);
     event.stopPropagation();
 
     const action = target.dataset.action;
+    const petIndex = target.dataset.petIndex ? parseInt(target.dataset.petIndex) : null;
 
-    console.log(`👆 [GOALS-SETTINGS] User action: ${action}`);
+    console.log(`👆 [GOALS-SETTINGS] User action: ${action} for pet ${petIndex}`);
 
     try {
         switch (action) {
@@ -1441,11 +1439,16 @@ console.log('🔍 [GOALS-SETTINGS DEBUG] Event triggered on:', event.target);
                 break;
             case 'cancel-goals-settings':
                 closeModal('goalsSettings');
-                // Reopen main goals modal
                 setTimeout(showGoalsModal, 100);
                 break;
             case 'retry-goals-settings':
                 await loadGoalsSettingsContent();
+                break;
+            // ADD THIS NEW CASE:
+            case 'reset-week-settings':
+                if (petIndex !== null) {
+                    await showResetConfirmation(petIndex);
+                }
                 break;
             default:
                 console.warn(`⚠️ [GOALS-SETTINGS] Unknown action: ${action}`);
