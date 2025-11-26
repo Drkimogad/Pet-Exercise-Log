@@ -1086,8 +1086,8 @@ async function loadGoalsContent() {
                                 <span class="goal-count">${goal.exercisesDone}/${goal.target}</span>
                                 
                                 <!-- NEW: Individual reset button -->
-                                <button class="action-btn reset-single-btn" data-action="reset-week" 
-                                        data-pet-index="${goal.petIndex}" title="Reset progress for ${goal.petName}">
+                             <button class="action-btn reset-single-btn" data-action="reset-week" 
+                                    data-pet-index="${goal.petIndex}" title="Reset progress for ${goal.petName}">
                                     🔄
                                 </button>
                             </div>
