@@ -6801,6 +6801,20 @@ keeping all layouts intact.
     border-color: var(--light-charcoal);
 }
 
+/* for centralizing rhe modal based on content*/
+.action-modal {
+    width: auto !important;
+    max-width: 95vw !important;
+    min-width: 300px;
+    margin: 0 auto;
+}
+.action-modal.wide-modal {
+    max-width: 700px !important;
+}
+.action-modal.extra-wide-modal {
+    max-width: 90vw !important;
+}
+
 .dark-mode .pet-name {
     color: var(--primary-yellow);
 }
