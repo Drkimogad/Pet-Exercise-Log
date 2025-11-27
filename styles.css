@@ -5513,6 +5513,111 @@ input:checked + .toggle-slider:before {
 }
 
 /* ============================================================
+   LANDSCAPE TABLET OPTIMIZATION (768px - 1024px in landscape)
+============================================================ */
+@media (min-width: 768px) and (max-width: 1024px) and (orientation: landscape) and (max-height: 768px) {
+  
+  /* Auth Page Fixes */
+  .split-auth-container {
+    height: 100vh;
+  }
+  
+  .auth-banner-side {
+    flex: 0 0 30vh;
+    min-height: 30vh;
+  }
+  
+  .auth-forms-side {
+    padding: 1rem 2rem;
+    min-height: 70vh;
+  }
+  
+  .auth-forms-container {
+    max-width: 90%;
+    gap: 1rem;
+  }
+  
+  .auth-form-section {
+    padding: 1.5rem;
+  }
+  
+  .form-group input {
+    font-size: 16px;
+    padding: 12px 16px;
+    height: 44px;
+  }
+  
+  /* Dashboard & Forms Readability */
+  .profile-card {
+    padding: 1rem;
+    margin: 0.5rem auto;
+    max-width: 95%;
+  }
+  
+  .basic-info-section {
+    gap: 12px;
+  }
+  
+  .basic-fields {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+  }
+  
+  .field-item {
+    padding: 6px 8px;
+    min-height: 35px;
+  }
+  
+  .field-text {
+    font-size: 0.85rem;
+  }
+  
+  /* Action Bar Optimization */
+  .action-bar {
+    padding: 0.8rem 1rem;
+  }
+  
+  .action-bar-btn {
+    padding: 0.6rem 0.8rem;
+    font-size: 0.8rem;
+    min-width: 120px;
+  }
+  
+  /* Modal Readability */
+  .action-modal {
+    max-width: 85vw;
+    max-height: 85vh;
+  }
+  
+  .modal-content {
+    padding: 1.5rem;
+  }
+  
+  /* Form elements throughout app */
+  .profile-form {
+    padding: 1.5rem;
+    margin: 1rem auto;
+    max-width: 95%;
+  }
+  
+  .form-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+  }
+  
+  .form-group label {
+    font-size: 0.9rem;
+  }
+  
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    font-size: 16px;
+    padding: 10px 12px;
+  }
+}
+
+/* ============================================================
    READABILITY FIXES - MOBILE (768px and below)
 ============================================================ */
 @media (max-width: 768px) {
