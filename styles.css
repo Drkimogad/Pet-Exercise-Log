@@ -5512,45 +5512,6 @@ input:checked + .toggle-slider:before {
   }
 }
 
-/* ============================================================
-   READABILITY FIXES - LANDSCAPE TABLET (768px and below height)
-============================================================ */
-@media (max-width: 1024px) and (max-height: 768px) and (orientation: landscape) {
-  .form-group input {
-    background: var(--high-contrast-light) !important;
-    color: var(--high-contrast-text) !important;
-    border-color: var(--dark-charcoal) !important;
-    font-size: 16px !important;
-    font-weight: 600 !important;
-    padding: 14px 16px !important;
-    height: 52px !important;
-  }
-  
-  .form-group label {
-    color: var(--high-contrast-text) !important;
-    font-weight: 700 !important;
-    font-size: 1rem !important;
-  }
-  
-  .auth-btn {
-    background: var(--dark-purple) !important;
-    color: var(--high-contrast-light) !important;
-    font-weight: 700 !important;
-    font-size: 1.1rem !important;
-    height: 52px !important;
-  }
-  
-  /* Ensure same fixes apply inside the app forms */
-  .profile-form .form-group input,
-  .profile-form .form-group select,
-  .profile-form .form-group textarea {
-    background: var(--high-contrast-light) !important;
-    color: var(--high-contrast-text) !important;
-    border-color: var(--dark-charcoal) !important;
-    font-size: 16px !important;
-    font-weight: 600 !important;
-  }
-}
 
 /* ============================================================
    READABILITY FIXES - MOBILE (768px and below)
@@ -5637,6 +5598,44 @@ input:checked + .toggle-slider:before {
     color: var(--high-contrast-light);
     background: var(--dark-charcoal);
     border-color: var(--primary-yellow);
+  }
+}
+   READABILITY FIXES - LANDSCAPE TABLET (768px and below height)
+============================================================ */
+@media (max-width: 1024px) and (max-height: 768px) and (orientation: landscape) {
+  .form-group input {
+    background: var(--high-contrast-light) !important;
+    color: var(--high-contrast-text) !important;
+    border-color: var(--dark-charcoal) !important;
+    font-size: 16px !important;
+    font-weight: 600 !important;
+    padding: 14px 16px !important;
+    height: 52px !important;
+  }
+  
+  .form-group label {
+    color: var(--high-contrast-text) !important;
+    font-weight: 700 !important;
+    font-size: 1rem !important;
+  }
+  
+  .auth-btn {
+    background: var(--dark-purple) !important;
+    color: var(--high-contrast-light) !important;
+    font-weight: 700 !important;
+    font-size: 1.1rem !important;
+    height: 52px !important;
+  }
+  
+  /* Ensure same fixes apply inside the app forms */
+  .profile-form .form-group input,
+  .profile-form .form-group select,
+  .profile-form .form-group textarea {
+    background: var(--high-contrast-light) !important;
+    color: var(--high-contrast-text) !important;
+    border-color: var(--dark-charcoal) !important;
+    font-size: 16px !important;
+    font-weight: 600 !important;
   }
 }
 
