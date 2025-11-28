@@ -430,6 +430,7 @@
 ============================================================ */
 .delete-account-link {
     text-align: center;
+    margin-top: 0.5rem;
 }
 
 #deleteAccountLink {
@@ -444,29 +445,28 @@
     text-decoration: underline;
 }
 
-/* Desktop/Tablet: Same line as forgot password */
+/* Desktop/Tablet: Forgot Password + Delete Account on same line */
 @media (min-width: 768px) {
     .auth-links {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 0.5rem;
+        margin-bottom: 0;
     }
     
     .delete-account-link {
         margin-top: 0;
-        text-align: right;
-    }
-    
-    /* Keep auth-switch centered below */
-    .auth-switch {
-        text-align: center;
-        margin-top: 0.5rem;
+        flex-shrink: 0;
     }
 }
 
-/* Mobile: Delete account below forgot password */
+/* Mobile: Stack vertically */
 @media (max-width: 767px) {
+    .auth-links {
+        display: block;
+        text-align: center;
+    }
+    
     .delete-account-link {
         margin-top: 0.5rem;
     }
@@ -480,7 +480,6 @@
 .dark-mode #deleteAccountLink:hover {
     color: var(--primary-yellow);
 }
-
 
 /* ============================
     notification rules 
