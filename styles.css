@@ -425,7 +425,57 @@
     color: var(--primary-mustard);
 }
 
+/* ============================================================
+    DELETE ACCOUNT LINK STYLING
+============================================================ */
+.delete-account-link {
+    margin-top: 1rem;
+    text-align: center;
+}
 
+#deleteAccountLink {
+    color: var(--light-charcoal);
+    font-size: 0.85rem;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+#deleteAccountLink:hover {
+    color: var(--primary-mustard);
+    text-decoration: underline;
+}
+
+/* Desktop/Tablet: Same line as forgot password */
+@media (min-width: 768px) {
+    .auth-links {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+    }
+    
+    .delete-account-link {
+        margin-top: 0;
+        text-align: right;
+        flex-shrink: 0;
+    }
+}
+
+/* Mobile: Stack below */
+@media (max-width: 767px) {
+    .delete-account-link {
+        margin-top: 0.5rem;
+    }
+}
+
+/* Dark Mode */
+.dark-mode #deleteAccountLink {
+    color: var(--light-purple);
+}
+
+.dark-mode #deleteAccountLink:hover {
+    color: var(--primary-yellow);
+}
 
 
 /* ============================
