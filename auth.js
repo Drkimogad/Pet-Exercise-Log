@@ -223,47 +223,37 @@ function showForgotPasswordForm() {
 //===========================================
     // Delete Account Function
 //======================================
+// Delete Account Function - Works without being signed in
 async function deleteAccount() {
-    // 1. Show strong confirmation
-    const confirmed = confirm('🚨 PERMANENT ACCOUNT DELETION\n\nThis will:\n• Delete ALL your pet profiles and data\n• Remove your account permanently\n• Cannot be undone!\n\nType DELETE to confirm:');
-    
-    if (!confirmed) return;
-    
-    const userInput = prompt('Please type DELETE to confirm permanent account deletion:');
-    if (userInput !== 'DELETE') {
-        showError('Account deletion cancelled.');
-        return;
-    }
-
-    // 2. Check connection
-    const isOnline = await checkConnection();
-    if (!isOnline) {
-        showError('Cannot delete account while offline. Please check your internet connection.');
-        return;
-    }
-
     try {
-        // 3. Get current user and re-authenticate
-        const user = firebase.auth().currentUser;
-        if (!user) {
-            // User not logged in but wants to delete - need to sign in first
-            showError('Please sign in to delete your account.');
-            showSignInForm();
+        // 1. Get email and password
+        const email = prompt('Enter your email address to delete account:');
+        if (!email) {
+            showError('Email required for account deletion.');
             return;
         }
 
-        // 4. Get password for re-authentication
-        const password = prompt('Please enter your password to confirm account deletion:');
+        const password = prompt('Enter your password to confirm account deletion:');
         if (!password) {
             showError('Password required for account deletion.');
             return;
         }
 
-        // 5. Re-authenticate user
-        const credential = firebase.auth.EmailAuthProvider.credential(user.email, password);
-        await user.reauthenticateWithCredential(credential);
+        // 2. Authenticate user directly
+        showError('Verifying credentials...');
+        const userCredential = await firebase.auth().signInWithEmailAndPassword(email, password);
+        const user = userCredential.user;
 
-        // 6. Delete Firestore data first (petProfiles and yearly reports)
+        // 3. Final confirmation
+        const userInput = prompt('🚨 PERMANENT ACCOUNT DELETION\n\nThis will delete ALL your data permanently!\n\nType DELETE to confirm:');
+        if (userInput !== 'DELETE') {
+            // Sign out the temporary session
+            await firebase.auth().signOut();
+            showError('Account deletion cancelled.');
+            return;
+        }
+
+        // 4. Delete Firestore data
         const userId = user.uid;
         const batch = firebase.firestore().batch();
         
@@ -280,30 +270,36 @@ async function deleteAccount() {
         await batch.commit();
         console.log('✅ All user data deleted from Firestore');
 
-        // 7. Delete user from Firebase Auth
+        // 5. Delete user from Firebase Auth
         await user.delete();
         
-        // 8. Clear local data and show success
+        // 6. Clear local data and show success
         currentUser = null;
         resetUI();
         showSuccess('Account and all data permanently deleted.');
         
-        // 9. Show auth page
+        // 7. Show auth page
         showAuth();
         
     } catch (error) {
         console.error('❌ Account deletion failed:', error);
         
         // Handle specific errors
-        if (error.code === 'auth/wrong-password') {
-            showError('Incorrect password. Account deletion cancelled.');
-        } else if (error.code === 'auth/requires-recent-login') {
-            showError('Please sign in again to delete your account.');
-            logout(); // Force re-authentication
+        if (error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password') {
+            showError('Invalid email or password. Account deletion cancelled.');
+        } else if (error.code === 'auth/user-not-found') {
+            showError('No account found with this email.');
         } else if (error.code === 'auth/network-request-failed') {
             showError('Network error. Please check your connection and try again.');
         } else {
             showError('Account deletion failed: ' + error.message);
+        }
+        
+        // Ensure user is signed out if authentication was attempted
+        try {
+            await firebase.auth().signOut();
+        } catch (signOutError) {
+            // Ignore sign out errors
         }
     }
 }
