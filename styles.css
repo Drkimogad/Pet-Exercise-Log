@@ -426,7 +426,7 @@
 }
 
 /* =============================================
-    DELETE ACCOUNT STYLING - FIXED
+    DELETE ACCOUNT STYLING - CORRECTED
 ============================================================ */
 .delete-account-link {
     display: inline-block;
@@ -445,21 +445,28 @@
     text-decoration: underline;
 }
 
-/* Desktop/Tablet: All links in one line */
+/* Desktop/Tablet: Forgot Password + Delete Account on same line */
 @media (min-width: 768px) {
     .auth-links {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 1rem;
+        display: block;
     }
     
-    .auth-switch {
-        margin-top: 0;
+    /* Target the first two direct children: forgot password and delete account */
+    .auth-links > a:first-child,
+    .auth-links > .delete-account-link {
+        display: inline-block;
+        margin-right: 1rem;
+    }
+    
+    /* Keep auth-switch as block element below */
+    .auth-links > .auth-switch {
+        display: block;
+        margin-top: 0.5rem;
+        text-align: center;
     }
 }
 
-/* Mobile: Stack vertically */
+/* Mobile: Stack all vertically */
 @media (max-width: 767px) {
     .auth-links {
         display: flex;
@@ -477,6 +484,7 @@
 .dark-mode #deleteAccountLink:hover {
     color: var(--primary-yellow);
 }
+
 
 /* ============================
     notification rules 
