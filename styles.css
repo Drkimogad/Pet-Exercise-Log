@@ -429,7 +429,6 @@
     DELETE ACCOUNT LINK STYLING
 ============================================================ */
 .delete-account-link {
-    margin-top: 1rem;
     text-align: center;
 }
 
@@ -451,17 +450,22 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        gap: 1rem;
+        margin-bottom: 0.5rem;
     }
     
     .delete-account-link {
         margin-top: 0;
         text-align: right;
-        flex-shrink: 0;
+    }
+    
+    /* Keep auth-switch centered below */
+    .auth-switch {
+        text-align: center;
+        margin-top: 0.5rem;
     }
 }
 
-/* Mobile: Stack below */
+/* Mobile: Delete account below forgot password */
 @media (max-width: 767px) {
     .delete-account-link {
         margin-top: 0.5rem;
