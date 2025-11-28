@@ -5602,86 +5602,45 @@ input:checked + .toggle-slider:before {
 }
 
 /* ============================================================
-   TABLET LANDSCAPE - ALL FORM INPUTS
-============================================================ */
-@media (max-width: 1024px) and (orientation: landscape) {
-  /* AUTH FORM INPUTS */
-  .auth-form-section .form-group input,
-  .auth-form-section .form-group select {
-    background: #FFFFFF !important;
-    color: #000000 !important;
-    border-color: #2C3840 !important;
-    font-size: 16px !important;
-    font-weight: 600 !important;
-    padding: 14px 16px !important;
-    height: 52px !important;
-  }
-  
-  .auth-form-section .form-group label {
-    color: #000000 !important;
-    font-weight: 700 !important;
-    font-size: 1rem !important;
-  }
+   UNIVERSAL TABLET LANDSCAPE READABILITY FIX
+   ============================================================ */
+@media (orientation: landscape) and (min-width: 768px) and (max-height: 900px) {
 
-  /* HEALTH ASSESSMENT FORM INPUTS */
-  .profile-form .form-group input,
-  .profile-form .form-group select,
-  .profile-form .form-group textarea {
-    background: #FFFFFF !important;
-    color: #000000 !important;
-    border-color: #2C3840 !important;
-    font-size: 16px !important;
-    font-weight: 600 !important;
-    padding: 14px 16px !important;
-    height: 52px !important;
-  }
-  
-  .profile-form .form-group label {
-    color: #000000 !important;
-    font-weight: 700 !important;
-    font-size: 1rem !important;
-  }
+    /* All input fields across the entire app */
+    input,
+    select,
+    textarea {
+        background: var(--input-bg) !important;
+        color: var(--high-contrast-text) !important;
+        border-color: var(--input-border) !important;
+        outline: none !important;
+    }
 
-  /* DAILY LOG FORM INPUTS */
-  #dailyLogForm .form-group input,
-  #dailyLogForm .form-group select,
-  #dailyLogForm .form-group textarea {
-    background: #FFFFFF !important;
-    color: #000000 !important;
-    border-color: #2C3840 !important;
-    font-size: 16px !important;
-    font-weight: 600 !important;
-    padding: 14px 16px !important;
-    height: 52px !important;
-  }
-  
-  #dailyLogForm .form-group label {
-    color: #000000 !important;
-    font-weight: 700 !important;
-    font-size: 1rem !important;
-  }
+    /* On focus, keep strong contrast */
+    input:focus,
+    select:focus,
+    textarea:focus {
+        border-color: var(--border-focus) !important;
+        box-shadow: 0 0 0 3px rgba(0,0,0,0.15) !important;
+    }
 
-  /* DARK MODE OVERRIDES FOR ALL */
-  .dark-mode .auth-form-section .form-group input,
-  .dark-mode .auth-form-section .form-group select,
-  .dark-mode .profile-form .form-group input,
-  .dark-mode .profile-form .form-group select,
-  .dark-mode .profile-form .form-group textarea,
-  .dark-mode #dailyLogForm .form-group input,
-  .dark-mode #dailyLogForm .form-group select,
-  .dark-mode #dailyLogForm .form-group textarea {
-    background: #FFFFFF !important;
-    color: #000000 !important;
-    border-color: #2C3840 !important;
-  }
-  
-  .dark-mode .auth-form-section .form-group label,
-  .dark-mode .profile-form .form-group label,
-  .dark-mode #dailyLogForm .form-group label {
-    color: #000000 !important;
-  }
+    /* Dark mode override */
+    .dark-mode input,
+    .dark-mode select,
+    .dark-mode textarea {
+        background: var(--dark-charcoal) !important;
+        color: var(--high-contrast-light) !important;
+        border-color: var(--primary-mustard) !important;
+    }
+
+    .dark-mode input:focus,
+    .dark-mode select:focus,
+    .dark-mode textarea:focus {
+        border-color: var(--primary-yellow) !important;
+        box-shadow: 0 0 0 3px rgba(255,255,255,0.2) !important;
+    }
 }
-  
+
 
 
 /* ============================================================
