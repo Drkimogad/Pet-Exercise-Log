@@ -425,12 +425,11 @@
     color: var(--primary-mustard);
 }
 
-/* ============================================================
-    DELETE ACCOUNT LINK STYLING
+/* =============================================
+    DELETE ACCOUNT STYLING - FIXED
 ============================================================ */
 .delete-account-link {
-    text-align: center;
-    margin-top: 0.5rem;
+    display: inline-block;
 }
 
 #deleteAccountLink {
@@ -438,6 +437,7 @@
     font-size: 0.85rem;
     text-decoration: none;
     transition: color 0.3s ease;
+    white-space: nowrap;
 }
 
 #deleteAccountLink:hover {
@@ -445,30 +445,27 @@
     text-decoration: underline;
 }
 
-/* Desktop/Tablet: Forgot Password + Delete Account on same line */
+/* Desktop/Tablet: All links in one line */
 @media (min-width: 768px) {
     .auth-links {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 0;
+        gap: 1rem;
     }
     
-    .delete-account-link {
+    .auth-switch {
         margin-top: 0;
-        flex-shrink: 0;
     }
 }
 
 /* Mobile: Stack vertically */
 @media (max-width: 767px) {
     .auth-links {
-        display: block;
-        text-align: center;
-    }
-    
-    .delete-account-link {
-        margin-top: 0.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        align-items: center;
     }
 }
 
