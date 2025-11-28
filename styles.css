@@ -5602,10 +5602,10 @@ input:checked + .toggle-slider:before {
 }
 
 /* ============================================================
-   TABLET LANDSCAPE READABILITY FIXES - EXPANDED COVERAGE
+   TABLET LANDSCAPE READABILITY FIXES - TARGETED CONTAINERS
 ============================================================ */
 @media (max-width: 1024px) and (orientation: landscape) {
-  /* AUTH FORM FIXES */
+  /* AUTH FORM CONTAINERS */
   .auth-form-section .form-group input,
   .auth-form-section .form-group select {
     background: var(--high-contrast-light) !important;
@@ -5623,7 +5623,7 @@ input:checked + .toggle-slider:before {
     font-size: 1rem !important;
   }
   
-  .auth-btn {
+  .auth-form-section .auth-btn {
     background: var(--dark-purple) !important;
     color: var(--high-contrast-light) !important;
     font-weight: 700 !important;
@@ -5631,7 +5631,7 @@ input:checked + .toggle-slider:before {
     height: 52px !important;
   }
   
-  /* HEALTH ASSESSMENT FORM FIXES */
+  /* HEALTH ASSESSMENT FORM CONTAINER */
   .profile-form .form-group input,
   .profile-form .form-group select,
   .profile-form .form-group textarea {
@@ -5650,7 +5650,7 @@ input:checked + .toggle-slider:before {
     font-size: 1rem !important;
   }
   
-  /* DAILY LOG FORM FIXES - Target the specific containers */
+  /* DAILY LOG FORM CONTAINER */
   #dailyLogForm .form-group input,
   #dailyLogForm .form-group select,
   #dailyLogForm .form-group textarea {
@@ -5669,10 +5669,11 @@ input:checked + .toggle-slider:before {
     font-size: 1rem !important;
   }
   
-  /* FORM BUTTON CONSISTENCY */
-  .primary-btn, 
-  .secondary-btn,
-  .daily-log-btn {
+  /* FORM BUTTONS IN SPECIFIC CONTAINERS */
+  .profile-form .primary-btn,
+  .profile-form .secondary-btn,
+  #dailyLogForm .primary-btn,
+  #dailyLogForm .secondary-btn {
     background: var(--dark-purple) !important;
     color: var(--high-contrast-light) !important;
     font-weight: 700 !important;
@@ -5680,15 +5681,9 @@ input:checked + .toggle-slider:before {
     height: 52px !important;
     border: 2px solid var(--dark-charcoal) !important;
   }
-  
-  /* FORM CONTAINER BACKGROUNDS FOR BETTER CONTRAST */
-  .auth-form-section,
-  .profile-form,
-  #dailyLogForm {
-    background: var(--white) !important;
-    border: 2px solid var(--dark-charcoal) !important;
-  }
 }
+  
+
 
 /* ============================================================
 This reduces wasted space by tightening gaps, adjusting padding, 
