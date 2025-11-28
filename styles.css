@@ -5602,15 +5602,15 @@ input:checked + .toggle-slider:before {
 }
 
 /* ============================================================
-   TABLET LANDSCAPE READABILITY FIXES - TARGETED CONTAINERS
+   TABLET LANDSCAPE - ALL FORM INPUTS
 ============================================================ */
 @media (max-width: 1024px) and (orientation: landscape) {
-  /* AUTH FORM CONTAINERS */
+  /* AUTH FORM INPUTS */
   .auth-form-section .form-group input,
   .auth-form-section .form-group select {
-    background: var(--high-contrast-light) !important;
-    color: var(--high-contrast-text) !important;
-    border-color: var(--dark-charcoal) !important;
+    background: #FFFFFF !important;
+    color: #000000 !important;
+    border-color: #2C3840 !important;
     font-size: 16px !important;
     font-weight: 600 !important;
     padding: 14px 16px !important;
@@ -5618,26 +5618,18 @@ input:checked + .toggle-slider:before {
   }
   
   .auth-form-section .form-group label {
-    color: var(--high-contrast-text) !important;
+    color: #000000 !important;
     font-weight: 700 !important;
     font-size: 1rem !important;
   }
-  
-  .auth-form-section .auth-btn {
-    background: var(--dark-purple) !important;
-    color: var(--high-contrast-light) !important;
-    font-weight: 700 !important;
-    font-size: 1.1rem !important;
-    height: 52px !important;
-  }
-  
-  /* HEALTH ASSESSMENT FORM CONTAINER */
+
+  /* HEALTH ASSESSMENT FORM INPUTS */
   .profile-form .form-group input,
   .profile-form .form-group select,
   .profile-form .form-group textarea {
-    background: var(--high-contrast-light) !important;
-    color: var(--high-contrast-text) !important;
-    border-color: var(--dark-charcoal) !important;
+    background: #FFFFFF !important;
+    color: #000000 !important;
+    border-color: #2C3840 !important;
     font-size: 16px !important;
     font-weight: 600 !important;
     padding: 14px 16px !important;
@@ -5645,18 +5637,18 @@ input:checked + .toggle-slider:before {
   }
   
   .profile-form .form-group label {
-    color: var(--high-contrast-text) !important;
+    color: #000000 !important;
     font-weight: 700 !important;
     font-size: 1rem !important;
   }
-  
-  /* DAILY LOG FORM CONTAINER */
+
+  /* DAILY LOG FORM INPUTS */
   #dailyLogForm .form-group input,
   #dailyLogForm .form-group select,
   #dailyLogForm .form-group textarea {
-    background: var(--high-contrast-light) !important;
-    color: var(--high-contrast-text) !important;
-    border-color: var(--dark-charcoal) !important;
+    background: #FFFFFF !important;
+    color: #000000 !important;
+    border-color: #2C3840 !important;
     font-size: 16px !important;
     font-weight: 600 !important;
     padding: 14px 16px !important;
@@ -5664,22 +5656,29 @@ input:checked + .toggle-slider:before {
   }
   
   #dailyLogForm .form-group label {
-    color: var(--high-contrast-text) !important;
+    color: #000000 !important;
     font-weight: 700 !important;
     font-size: 1rem !important;
   }
+
+  /* DARK MODE OVERRIDES FOR ALL */
+  .dark-mode .auth-form-section .form-group input,
+  .dark-mode .auth-form-section .form-group select,
+  .dark-mode .profile-form .form-group input,
+  .dark-mode .profile-form .form-group select,
+  .dark-mode .profile-form .form-group textarea,
+  .dark-mode #dailyLogForm .form-group input,
+  .dark-mode #dailyLogForm .form-group select,
+  .dark-mode #dailyLogForm .form-group textarea {
+    background: #FFFFFF !important;
+    color: #000000 !important;
+    border-color: #2C3840 !important;
+  }
   
-  /* FORM BUTTONS IN SPECIFIC CONTAINERS */
-  .profile-form .primary-btn,
-  .profile-form .secondary-btn,
-  #dailyLogForm .primary-btn,
-  #dailyLogForm .secondary-btn {
-    background: var(--dark-purple) !important;
-    color: var(--high-contrast-light) !important;
-    font-weight: 700 !important;
-    font-size: 1.1rem !important;
-    height: 52px !important;
-    border: 2px solid var(--dark-charcoal) !important;
+  .dark-mode .auth-form-section .form-group label,
+  .dark-mode .profile-form .form-group label,
+  .dark-mode #dailyLogForm .form-group label {
+    color: #000000 !important;
   }
 }
   
