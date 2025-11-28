@@ -5601,10 +5601,13 @@ input:checked + .toggle-slider:before {
   }
 }
 
-/* READABILITY FIXES - LANDSCAPE TABLET (768px and below height)
+/* ============================================================
+   TABLET LANDSCAPE READABILITY FIXES - EXPANDED COVERAGE
 ============================================================ */
-@media (max-width: 1024px) and (max-height: 768px) and (orientation: landscape) {
-  .form-group input {
+@media (max-width: 1024px) and (orientation: landscape) {
+  /* AUTH FORM FIXES */
+  .auth-form-section .form-group input,
+  .auth-form-section .form-group select {
     background: var(--high-contrast-light) !important;
     color: var(--high-contrast-text) !important;
     border-color: var(--dark-charcoal) !important;
@@ -5614,7 +5617,7 @@ input:checked + .toggle-slider:before {
     height: 52px !important;
   }
   
-  .form-group label {
+  .auth-form-section .form-group label {
     color: var(--high-contrast-text) !important;
     font-weight: 700 !important;
     font-size: 1rem !important;
@@ -5628,7 +5631,7 @@ input:checked + .toggle-slider:before {
     height: 52px !important;
   }
   
-  /* Ensure same fixes apply inside the app forms */
+  /* HEALTH ASSESSMENT FORM FIXES */
   .profile-form .form-group input,
   .profile-form .form-group select,
   .profile-form .form-group textarea {
@@ -5637,6 +5640,53 @@ input:checked + .toggle-slider:before {
     border-color: var(--dark-charcoal) !important;
     font-size: 16px !important;
     font-weight: 600 !important;
+    padding: 14px 16px !important;
+    height: 52px !important;
+  }
+  
+  .profile-form .form-group label {
+    color: var(--high-contrast-text) !important;
+    font-weight: 700 !important;
+    font-size: 1rem !important;
+  }
+  
+  /* DAILY LOG FORM FIXES - Target the specific containers */
+  #dailyLogForm .form-group input,
+  #dailyLogForm .form-group select,
+  #dailyLogForm .form-group textarea {
+    background: var(--high-contrast-light) !important;
+    color: var(--high-contrast-text) !important;
+    border-color: var(--dark-charcoal) !important;
+    font-size: 16px !important;
+    font-weight: 600 !important;
+    padding: 14px 16px !important;
+    height: 52px !important;
+  }
+  
+  #dailyLogForm .form-group label {
+    color: var(--high-contrast-text) !important;
+    font-weight: 700 !important;
+    font-size: 1rem !important;
+  }
+  
+  /* FORM BUTTON CONSISTENCY */
+  .primary-btn, 
+  .secondary-btn,
+  .daily-log-btn {
+    background: var(--dark-purple) !important;
+    color: var(--high-contrast-light) !important;
+    font-weight: 700 !important;
+    font-size: 1.1rem !important;
+    height: 52px !important;
+    border: 2px solid var(--dark-charcoal) !important;
+  }
+  
+  /* FORM CONTAINER BACKGROUNDS FOR BETTER CONTRAST */
+  .auth-form-section,
+  .profile-form,
+  #dailyLogForm {
+    background: var(--white) !important;
+    border: 2px solid var(--dark-charcoal) !important;
   }
 }
 
