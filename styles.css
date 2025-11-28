@@ -5600,7 +5600,8 @@ input:checked + .toggle-slider:before {
     border-color: var(--primary-yellow);
   }
 }
-   READABILITY FIXES - LANDSCAPE TABLET (768px and below height)
+
+/* READABILITY FIXES - LANDSCAPE TABLET (768px and below height)
 ============================================================ */
 @media (max-width: 1024px) and (max-height: 768px) and (orientation: landscape) {
   .form-group input {
