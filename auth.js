@@ -275,6 +275,8 @@ async function deleteAccount() {
         
         // 6. Clear local data and show success
         currentUser = null;
+      // Add this line before resetUI() in deleteAccount()
+      if (window.petDataService) window.petDataService.clearAllUserData();
         resetUI();
         showSuccess('Account and all data permanently deleted.');
         
