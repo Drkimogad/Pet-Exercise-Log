@@ -18,28 +18,6 @@ function registerServiceWorker() {
     }
 }
 
-// Error handling - UPDATED
-function showError(msg) {
-    const error = document.createElement('div');
-    error.className = 'error-message';
-    error.textContent = msg;
-    
-    // Target full screen container
-    const container = document.querySelector('.split-auth-container') || document.body;
-    container.appendChild(error);
-    setTimeout(() => error.remove(), 5000);
-}
-
-function showSuccess(msg) {
-    const success = document.createElement('div');
-    success.className = 'success-message';
-    success.textContent = msg;
-    
-    // Target full screen container
-    const container = document.querySelector('.split-auth-container') || document.body;
-    container.appendChild(success);
-    setTimeout(() => success.remove(), 5000);
-}
 
 // Check if user is authenticated - IMPROVED
 function checkAuth() {
