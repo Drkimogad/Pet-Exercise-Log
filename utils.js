@@ -871,6 +871,17 @@ removeFromLocalStorage(petId) {
     localStorage.setItem('pets', JSON.stringify(updatedPets));
 }
     
+// Add to PetDataService class - after removeFromLocalStorage method
+clearAllUserData() {
+    // Clear local storage
+    localStorage.removeItem('pets');
+    localStorage.removeItem('firebaseAuthToken');
+    localStorage.removeItem('lastActivePage');
+    sessionStorage.removeItem('user');
+    
+    // Reset service state
+    this.userId = null;
+}    
 }
 
 window.petDataService = new PetDataService();
