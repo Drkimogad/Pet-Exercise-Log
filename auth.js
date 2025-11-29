@@ -3,6 +3,34 @@ same for ./offline.html.....> offline.html
 */
 
 "use strict";
+// Error handling - MOVED FROM UTILS.JS
+function showError(msg) {
+    const error = document.createElement('div');
+    error.className = 'error-message';
+    error.textContent = msg;
+    
+    // Target full screen container
+    const container = document.querySelector('.split-auth-container') || document.body;
+    container.appendChild(error);
+    setTimeout(() => error.remove(), 5000);
+}
+
+// Keep this plural one too, in case is used in other js files too 
+// and it displays the singular anyway!!
+function showErrors(msgs) {
+    msgs.forEach(msg => showError(msg));
+}
+
+function showSuccess(msg) {
+    const success = document.createElement('div');
+    success.className = 'success-message';
+    success.textContent = msg;
+    
+    // Target full screen container
+    const container = document.querySelector('.split-auth-container') || document.body;
+    container.appendChild(success);
+    setTimeout(() => success.remove(), 5000);
+}
 
 let currentUser = null;
 
