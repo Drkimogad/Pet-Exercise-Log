@@ -119,8 +119,9 @@ async function handleSignUp(e) {
     if (formData.password !== formData.confirmPassword) errors.push('Passwords do not match');
 
     if (errors.length) return showErrors(errors);
-    // show loader here
+    // show loader here outside try block SAFER
     lottiesManager.show();
+    showSuccess('Creating your account...'); // ✅ Use success style
 
     try {
         // Firebase Auth - Create user with email/password
@@ -204,8 +205,9 @@ async function handleSignIn(e) {
     if (formData.password.length < 8) errors.push('Password must be at least 8 characters');
 
     if (errors.length) return showErrors(errors);
-    // show loader
+    // show loader SAFER OUTSIDE TRY BLOCK
     lottiesManager.show();
+    showSuccess('Signing in...'); // ← ADD THIS
 
     try {
         console.log('Attempting Firebase sign in...'); // ADD THIS
@@ -505,6 +507,7 @@ function resetUI() {
 function logout() {
     console.log('🚪 User logging out');
     lottiesManager.show();
+    showSuccess('Logging out...'); // ← ADD THIS
     
     // Firebase sign out
     firebase.auth().signOut().then(() => {
@@ -518,8 +521,8 @@ function logout() {
         showAuth();
         
         console.log('✅ Logout successful');
+        setTimeout(() => lottiesManager.hide(), 2000); // incrrased from 1000
         showSuccess('Logged out successfully!');
-        setTimeout(() => lottiesManager.hide(), 1500);
         
     }).catch((error) => {
         console.error('❌ Firebase logout error:', error);
