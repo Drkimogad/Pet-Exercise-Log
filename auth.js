@@ -149,6 +149,7 @@ async function handleSignUp(e) {
       // showExerciseLog();
               // Wait for dashboard.js to load
    setTimeout(() => {
+       lottiesManager.hide();
     if (typeof showExerciseLog === 'function') {
         showExerciseLog();
       } else {
@@ -227,11 +228,10 @@ async function handleSignIn(e) {
         // Show success and show dashboard
         showSuccess('Signed in successfully!');
 
-          // Show success and show dashboard
-showSuccess('Signed in successfully!');
-
 // Wait for dashboard.js to load
 setTimeout(() => {
+         // ✅ ADD THIS - Success case hide loader
+       lottiesManager.hide();
     if (typeof showExerciseLog === 'function') {
         showExerciseLog();
     } else {
@@ -326,6 +326,7 @@ async function deleteAccount() {
         lottiesManager.show();
         const userCredential = await firebase.auth().signInWithEmailAndPassword(email, password);
         const user = userCredential.user;
+        lottiesManager.hide(); // ← ADD HERE
 
         // 3. Final confirmation
         const userInput = prompt('🚨 PERMANENT ACCOUNT DELETION\n\nThis will delete ALL your data permanently!\n\nType DELETE to confirm:');
@@ -335,7 +336,8 @@ async function deleteAccount() {
             showError('Account deletion cancelled.');
             return;
         }
-
+        lottiesManager.show(); // ← ADD HERE
+        
         // 4. Delete Firestore data
         const userId = user.uid;
         const batch = firebase.firestore().batch();
@@ -362,7 +364,7 @@ async function deleteAccount() {
       if (window.petDataService) window.petDataService.clearAllUserData();
         resetUI();
         showSuccess('Account and all data permanently deleted.');
-        
+        lottiesManager.hide();    
         // 7. Show auth page
         showAuth();
         
