@@ -32,6 +32,52 @@ function showSuccess(msg) {
     setTimeout(() => success.remove(), 5000);
 }
 
+// ============================
+// Lotties Manager - Loader with 3 random animations
+//======================================
+class LottiesManager {
+    constructor() {
+        this.animations = [
+            'animations/loading1.json',
+            'animations/loading2.json', 
+            'animations/loading3.json'
+        ];
+        this.currentAnim = null;
+    }
+
+    show() {
+        const loader = document.getElementById('lottieLoader');
+        const container = document.getElementById('lottieAnimation');
+        if (!loader || !container) return;
+
+        // Random animation
+        const randomAnim = this.animations[Math.floor(Math.random() * this.animations.length)];
+        
+        loader.style.display = 'flex';
+        this.currentAnim = lottie.loadAnimation({
+            container: container,
+            renderer: 'svg',
+            loop: true,
+            autoplay: true,
+            path: randomAnim
+        });
+    }
+
+    hide() {
+        const loader = document.getElementById('lottieLoader');
+        if (!loader) return;
+
+        if (this.currentAnim) {
+            this.currentAnim.destroy();
+            this.currentAnim = null;
+        }
+        loader.style.display = 'none';
+    }
+}
+
+// Global instance
+window.lottiesManager = new LottiesManager();
+
 let currentUser = null;
 
 // Add this connection check function at the top of auth.js (if not already there)
@@ -73,6 +119,8 @@ async function handleSignUp(e) {
     if (formData.password !== formData.confirmPassword) errors.push('Passwords do not match');
 
     if (errors.length) return showErrors(errors);
+    // show loader here
+    lottiesManager.show();
 
     try {
         // Firebase Auth - Create user with email/password
@@ -114,6 +162,8 @@ async function handleSignUp(e) {
         
     } catch (error) {
         console.error('Firebase sign up error:', error);
+        // hide loader
+        lottiesManager.hide();
         
         // Handle specific Firebase errors
         if (error.code === 'auth/email-already-in-use') {
@@ -153,6 +203,8 @@ async function handleSignIn(e) {
     if (formData.password.length < 8) errors.push('Password must be at least 8 characters');
 
     if (errors.length) return showErrors(errors);
+    // show loader
+    lottiesManager.show();
 
     try {
         console.log('Attempting Firebase sign in...'); // ADD THIS
@@ -194,6 +246,8 @@ setTimeout(() => {
         
     } catch (error) {
         console.error('Firebase sign in error:', error);
+        // hide loader
+        lottiesManager.hide();
         
         // Handle specific Firebase errors
         if (error.code === 'auth/user-not-found') {
@@ -269,6 +323,7 @@ async function deleteAccount() {
 
         // 2. Authenticate user directly
         showError('Verifying credentials...');
+        lottiesManager.show();
         const userCredential = await firebase.auth().signInWithEmailAndPassword(email, password);
         const user = userCredential.user;
 
@@ -313,6 +368,7 @@ async function deleteAccount() {
         
     } catch (error) {
         console.error('❌ Account deletion failed:', error);
+        lottiesManager.hide();
         
         // Handle specific errors
         if (error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password') {
@@ -446,6 +502,7 @@ function resetUI() {
 // Simplified logout - users can logout anytime, online or offline
 function logout() {
     console.log('🚪 User logging out');
+    lottiesManager.show();
     
     // Firebase sign out
     firebase.auth().signOut().then(() => {
@@ -460,9 +517,12 @@ function logout() {
         
         console.log('✅ Logout successful');
         showSuccess('Logged out successfully!');
+        setTimeout(() => lottiesManager.hide(), 1500);
         
     }).catch((error) => {
         console.error('❌ Firebase logout error:', error);
+        // Error - hide loader immediately
+         lottiesManager.hide();
         showError('Logout failed. Please try again.');
     });
 }
