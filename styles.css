@@ -490,32 +490,37 @@
     notification rules 
 ============================================*/
 .error-message {
-    background-color: #ffebee;
-    color: #c62828;
-    padding: 10px;
-    margin: 10px;
-    border-radius: 4px;
-    border-left: 4px solid #c62828;
+    background-color: var(--off-white);
+    color: var(--primary-mustard);
+    padding: 12px 20px;
+    border-radius: 8px;
+    border-left: 4px solid var(--primary-mustard);
     position: fixed;
     top: 20px;
-    right: 20px;
-    z-index: 1000;
-    max-width: 300px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10000;
+    max-width: 400px;
+    box-shadow: var(--shadow-md);
+    font-weight: 600;
 }
 
 .success-message {
-    background-color: #e8f5e9;
-    color: #2e7d32;
-    padding: 10px;
-    margin: 10px;
-    border-radius: 4px;
-    border-left: 4px solid #2e7d32;
+    background-color: var(--off-white);
+    color: var(--border-focus);
+    padding: 12px 20px;
+    border-radius: 8px;
+    border-left: 4px solid var(--border-focus);
     position: fixed;
     top: 20px;
-    right: 20px;
-    z-index: 1000;
-    max-width: 300px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10000;
+    max-width: 400px;
+    box-shadow: var(--shadow-md);
+    font-weight: 600;
 }
+
 /* ============================================================
     SIMPLIFIED DASHBOARD LAYOUT - UPDATED
 ============================================================ */
