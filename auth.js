@@ -459,6 +459,7 @@ function logout() {
         showAuth();
         
         console.log('✅ Logout successful');
+        showSuccess('Logged out successfully!');
         
     }).catch((error) => {
         console.error('❌ Firebase logout error:', error);
@@ -487,6 +488,7 @@ function initAuth() {
         const isOnline = await checkConnection();
         if (!isOnline) {
             console.log('❌ No connection on startup - redirecting to offline page');
+            showError('No internet connection. Please check your connection.');
             window.location.href = 'offline.html';
             return;
         }
