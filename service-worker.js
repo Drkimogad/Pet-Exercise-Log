@@ -7,7 +7,7 @@ Handle failures gracefully - don't break the whole install
 This pattern works reliably for GitHub Pages' specific URL structure! 🚀
 */
 
-const CACHE_NAME = 'Pet-Exercise-Log-cache-v2.1.1';
+const CACHE_NAME = 'Pet-Exercise-Log-cache-v2.1.2';
 const OFFLINE_PAGE = '/offline.html';
 
 // Environment configuration - CHANGE THIS WHEN DEPLOYING
@@ -19,7 +19,8 @@ const ENV_CONFIG = {
             js: '/Pet-Exercise-Log/js/',
             images: '/Pet-Exercise-Log/images/',
             icons: '/Pet-Exercise-Log/icons/',
-            banner: '/Pet-Exercise-Log/banner/'
+            banner: '/Pet-Exercise-Log/banner/',
+            animations:'/Pet-Exercise-Log/animations/'
         }
     },
     // For Firebase Hosting production
@@ -29,7 +30,8 @@ const ENV_CONFIG = {
             js: '/js/',
             images: '/images/',
             icons: '/icons/',
-            banner: '/banner/'
+            banner: '/banner/',
+            animations:'/animations/'
         }
     }
 };
@@ -69,9 +71,13 @@ function getUrlsToCache() {
         'banner/treadmillingpets.png', 
         'icons/icon-192x192.png',
         'icons/icon-512x512.png',
-        
+        'animations/loading1.json',
+        'animations/loading2.json',
+        'animations/loading3.json',
+
         // External Dependencies
-        'https://cdn.jsdelivr.net/npm/chart.js'
+        'https://cdn.jsdelivr.net/npm/chart.js',
+        'https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.7.8/lottie.min.js'
     ];
 }
 
