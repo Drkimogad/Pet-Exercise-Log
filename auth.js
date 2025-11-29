@@ -120,8 +120,7 @@ async function handleSignUp(e) {
 
     if (errors.length) return showErrors(errors);
     // show loader here outside try block SAFER
-    lottiesManager.show();
-    showSuccess('Creating your account...'); // ✅ Use success style
+   lottiesManager.showWithMessage('Creating your account...');
 
     try {
         // Firebase Auth - Create user with email/password
@@ -206,8 +205,7 @@ async function handleSignIn(e) {
 
     if (errors.length) return showErrors(errors);
     // show loader SAFER OUTSIDE TRY BLOCK
-    lottiesManager.show();
-    showSuccess('Signing in...'); // ← ADD THIS
+    lottiesManager.showWithMessage('Signing in...');
 
     try {
         console.log('Attempting Firebase sign in...'); // ADD THIS
@@ -338,7 +336,7 @@ async function deleteAccount() {
             showError('Account deletion cancelled.');
             return;
         }
-        lottiesManager.show(); // ← ADD HERE
+       lottiesManager.showWithMessage('Deleting account...');
         
         // 4. Delete Firestore data
         const userId = user.uid;
@@ -506,8 +504,7 @@ function resetUI() {
 // Simplified logout - users can logout anytime, online or offline
 function logout() {
     console.log('🚪 User logging out');
-    lottiesManager.show();
-    showSuccess('Logging out...'); // ← ADD THIS
+    lottiesManager.showWithMessage('Logging out...');
     
     // Firebase sign out
     firebase.auth().signOut().then(() => {
