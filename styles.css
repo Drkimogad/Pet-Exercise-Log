@@ -21,6 +21,9 @@
   --shadow-md: 0 4px 6px rgba(0,0,0,0.15);
   --dark-mustard: #92400E;
   --header-text: var(--primary-yellow);
+--success-color: #10B981;      
+--error-color: #EF4444;   
+--warning-color: #F59E0B;   
   */
 
     
@@ -48,6 +51,10 @@
       /* Add this for high-contrast text */
   --high-contrast-text: #000000; /* Pure black for light backgrounds */
   --high-contrast-light: #FFFFFF; /* Pure white for dark backgrounds */
+    /* Notification colors */
+--success-color: #10B981;      /* Green for success */
+--error-color: #EF4444;        /* Red for errors */
+--warning-color: #F59E0B;      /* Orange for warnings */
 }
     
 
@@ -491,10 +498,10 @@
 ============================================*/
 .error-message {
     background-color: var(--off-white);
-    color: var(--primary-mustard);
+    color: var(--error-color);
     padding: 12px 20px;
     border-radius: 8px;
-    border-left: 4px solid var(--primary-mustard);
+    border-left: 4px solid var(--error-color);
     position: fixed;
     top: 20px;
     left: 50%;
@@ -507,10 +514,10 @@
 
 .success-message {
     background-color: var(--off-white);
-    color: var(--border-focus);
+    color: var(--success-color);
     padding: 12px 20px;
     border-radius: 8px;
-    border-left: 4px solid var(--border-focus);
+    border-left: 4px solid var(--success-color);
     position: fixed;
     top: 20px;
     left: 50%;
