@@ -24,35 +24,21 @@ function showError(msg) {
     error.className = 'error-message';
     error.textContent = msg;
     
-    // Use auth container for messages
-    const authContainer = document.getElementById('auth-container');
-    if (authContainer) {
-        authContainer.appendChild(error);
-        setTimeout(() => error.remove(), 5000);
-    } else {
-        console.error('Error:', msg); // Fallback to console
-    }
+    // Target full screen container
+    const container = document.querySelector('.split-auth-container') || document.body;
+    container.appendChild(error);
+    setTimeout(() => error.remove(), 5000);
 }
 
-function showErrors(msgs) {
-    msgs.forEach(msg => showError(msg));
-}
-
-
-// Success message function - UPDATED
 function showSuccess(msg) {
     const success = document.createElement('div');
     success.className = 'success-message';
     success.textContent = msg;
     
-    // Use auth container for messages
-    const authContainer = document.getElementById('auth-container');
-    if (authContainer) {
-        authContainer.appendChild(success);
-        setTimeout(() => success.remove(), 5000);
-    } else {
-        console.log('Success:', msg); // Fallback to console
-    }
+    // Target full screen container
+    const container = document.querySelector('.split-auth-container') || document.body;
+    container.appendChild(success);
+    setTimeout(() => success.remove(), 5000);
 }
 
 // Check if user is authenticated - IMPROVED
