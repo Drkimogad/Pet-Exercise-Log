@@ -185,8 +185,23 @@
 <!-- Lottie Loader -->
 <div id="lottieLoader" class="lottie-loader" style="display: none;">
     <div class="lottie-content">
+        <!-- Lottie Animation Container -->
         <div id="lottieAnimation" class="lottie-animation"></div>
-        <div id="lottieMessage" class="lottie-message"></div>
+        
+        <!-- Inline SVG Fallback Loader -->
+        <svg class="inline-loader" width="50" height="50" viewBox="0 0 50 50" style="display: none;">
+            <circle cx="25" cy="25" r="20" fill="none" stroke="var(--primary-yellow)" stroke-width="4" stroke-dasharray="31.415, 31.415">
+                <animateTransform attributeName="transform" type="rotate" from="0 25 25" to="360 25 25" dur="1s" repeatCount="indefinite"/>
+            </circle>
+        </svg>
+
+        <!-- Pre-defined Loader Messages -->
+        <div class="lottie-message" id="signingInMsg" style="display: none;">Signing in...</div>
+        <div class="lottie-message" id="creatingAccountMsg" style="display: none;">Creating your account...</div>
+        <div class="lottie-message" id="loggingOutMsg" style="display: none;">Logging out...</div>
+        <div class="lottie-message" id="deletingAccountMsg" style="display: none;">Deleting account...</div>
+        <div class="lottie-message" id="deletingProfileMsg" style="display: none;">Deleting profile...</div>
+        <div class="lottie-message" id="generatingReportMsg" style="display: none;">Generating report...</div>
     </div>
 </div>
 
