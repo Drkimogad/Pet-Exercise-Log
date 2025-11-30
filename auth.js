@@ -45,22 +45,72 @@ class LottiesManager {
         this.currentAnim = null;
     }
 
-    show() {
+    // Private method to show specific message
+    _showMessage(messageId) {
+        // Hide all messages first
+        document.querySelectorAll('.lottie-message').forEach(msg => {
+            msg.style.display = 'none';
+        });
+        // Show the specific message
+        const messageEl = document.getElementById(messageId);
+        if (messageEl) messageEl.style.display = 'block';
+    }
+
+    // Private method to handle animation loading with fallback
+    _loadAnimation(container) {
+        const randomAnim = this.animations[Math.floor(Math.random() * this.animations.length)];
+        const fallbackLoader = document.querySelector('.inline-loader');
+        
+        try {
+            this.currentAnim = lottie.loadAnimation({
+                container: container,
+                renderer: 'svg',
+                loop: true,
+                autoplay: true,
+                path: randomAnim
+            });
+            
+            // Hide fallback if Lottie loads successfully
+            this.currentAnim.addEventListener('DOMLoaded', () => {
+                if (fallbackLoader) fallbackLoader.style.display = 'none';
+            });
+            
+            // Show fallback if Lottie fails
+            this.currentAnim.addEventListener('error', () => {
+                if (fallbackLoader) fallbackLoader.style.display = 'block';
+                if (container) container.style.display = 'none';
+            });
+            
+        } catch (error) {
+            // Fallback to SVG loader
+            if (fallbackLoader) fallbackLoader.style.display = 'block';
+            if (container) container.style.display = 'none';
+        }
+    }
+
+    // Specific methods for each action
+    showSignIn() { this._showLoaderWithMessage('signingInMsg'); }
+    showSignUp() { this._showLoaderWithMessage('creatingAccountMsg'); }
+    showLogout() { this._showLoaderWithMessage('loggingOutMsg'); }
+    showDeleteAccount() { this._showLoaderWithMessage('deletingAccountMsg'); }
+    showDeleteProfile() { this._showLoaderWithMessage('deletingProfileMsg'); }
+    showGenerateReport() { this._showLoaderWithMessage('generatingReportMsg'); }
+
+    // Private loader with message
+    _showLoaderWithMessage(messageId) {
         const loader = document.getElementById('lottieLoader');
         const container = document.getElementById('lottieAnimation');
-        if (!loader || !container) return;
+        const fallbackLoader = document.querySelector('.inline-loader');
+        
+        if (!loader) return;
 
-        // Random animation
-        const randomAnim = this.animations[Math.floor(Math.random() * this.animations.length)];
+        // Reset states
+        if (fallbackLoader) fallbackLoader.style.display = 'none';
+        if (container) container.style.display = 'block';
         
         loader.style.display = 'flex';
-        this.currentAnim = lottie.loadAnimation({
-            container: container,
-            renderer: 'svg',
-            loop: true,
-            autoplay: true,
-            path: randomAnim
-        });
+        this._showMessage(messageId);
+        this._loadAnimation(container);
     }
 
     hide() {
@@ -71,12 +121,22 @@ class LottiesManager {
             this.currentAnim.destroy();
             this.currentAnim = null;
         }
+        
+        // Hide all messages
+        document.querySelectorAll('.lottie-message').forEach(msg => {
+            msg.style.display = 'none';
+        });
+        
+        // Reset fallback
+        const fallbackLoader = document.querySelector('.inline-loader');
+        if (fallbackLoader) fallbackLoader.style.display = 'none';
+        
         loader.style.display = 'none';
     }
 }
 
-// Global instance
 window.lottiesManager = new LottiesManager();
+
 
 let currentUser = null;
 
@@ -120,7 +180,7 @@ async function handleSignUp(e) {
 
     if (errors.length) return showErrors(errors);
     // show loader here outside try block SAFER
-   lottiesManager.showWithMessage('Creating your account...');
+    lottiesManager.showSignUp();
 
     try {
         // Firebase Auth - Create user with email/password
@@ -204,8 +264,8 @@ async function handleSignIn(e) {
     if (formData.password.length < 8) errors.push('Password must be at least 8 characters');
 
     if (errors.length) return showErrors(errors);
-    // show loader SAFER OUTSIDE TRY BLOCK
-    lottiesManager.showWithMessage('Signing in...');
+    // show loader SAFER OUTSIDE TRY BLOCk
+   lottiesManager.showSignIn();
 
     try {
         console.log('Attempting Firebase sign in...'); // ADD THIS
@@ -322,8 +382,8 @@ async function deleteAccount() {
         }
 
         // 2. Authenticate user directly
-        showError('Verifying credentials...');
-        lottiesManager.show();
+        showError('Verifying credentials...'); 
+        lottiesManager.showVerifyCredentials();
         const userCredential = await firebase.auth().signInWithEmailAndPassword(email, password);
         const user = userCredential.user;
         lottiesManager.hide(); // ← ADD HERE
@@ -336,7 +396,7 @@ async function deleteAccount() {
             showError('Account deletion cancelled.');
             return;
         }
-       lottiesManager.showWithMessage('Deleting account...');
+      lottiesManager.showDeleteAccount();
         
         // 4. Delete Firestore data
         const userId = user.uid;
@@ -504,7 +564,7 @@ function resetUI() {
 // Simplified logout - users can logout anytime, online or offline
 function logout() {
     console.log('🚪 User logging out');
-    lottiesManager.showWithMessage('Logging out...');
+    lottiesManager.showLogout();
     
     // Firebase sign out
     firebase.auth().signOut().then(() => {
